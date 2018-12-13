@@ -233,7 +233,7 @@
 										    <div class="collapsible-region collapse" id="heading{$node['id']}">
 												<div class="tile-sub">
 													<br>
-                                                {if $node['class'] > $user->class}
+                                                {if $node['class'] > $user->class && ! $user->is_admin }
 													<div class="card">
 														<div class="card-main">
 															<div class="card-inner">
