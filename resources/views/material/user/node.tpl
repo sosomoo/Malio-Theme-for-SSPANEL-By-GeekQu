@@ -102,7 +102,7 @@
 
 						</div>
 						<div class="node-tip cust-model" tipindex="{$node@index}">
-								{if $node['class'] > $user->class}
+								{if $node['class'] > $user->class && ! $user->is_admin}
 									<p class="card-heading" align="center"><b> <i class="icon icon-lg">visibility_off</i>
 										您当前等级不足以使用该节点，如需升级请<a href="/user/shop">点击这里</a>升级套餐</b></p>
 								{else}

@@ -111,16 +111,25 @@ class URL
 
     public static function getClashInfo($user) {
         $result = [];
-        $v2ray_nodes = $nodes=Node::where(
-            function ($query) {
-                $query->where('sort', 11);
-            }
-        )->where(
-            function ($query) use ($user){
-                $query->where("node_group", "=", $user->node_group)
-                    ->orWhere("node_group", "=", 0);
-            }
-        )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
+        if ($user->is_admin){
+            $v2ray_nodes = $nodes=Node::where(
+                function ($query) {
+                    $query->where('sort', 11);
+                }
+            )->where("type", "1")->orderBy("name")->get();
+        }else{
+
+            $v2ray_nodes = $nodes=Node::where(
+                function ($query) {
+                    $query->where('sort', 11);
+                }
+            )->where(
+                function ($query) use ($user){
+                    $query->where("node_group", "=", $user->node_group)
+                        ->orWhere("node_group", "=", 0);
+                }
+            )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
+        }
 
         foreach ($v2ray_nodes as $v2ray_node) {
             $node_explode = explode(';', $v2ray_node->server);
@@ -165,17 +174,29 @@ class URL
         }
 
         if (self::SSCanConnect($user, 0)) {
-            $shadowsocks_nodes = Node::where(
-                function ($query) {
-                    $query->where('sort', 0)
-                        ->orwhere('sort', 10);
-                }
-            )->where(
-                function ($query) use ($user){
-                    $query->where("node_group", "=", $user->node_group)
-                        ->orWhere("node_group", "=", 0);
-                }
-            )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
+            if ($user->is_admin){
+
+                $shadowsocks_nodes = Node::where(
+                    function ($query) {
+                        $query->where('sort', 0)
+                            ->orwhere('sort', 10);
+                    }
+                )->where("type", "1")->orderBy("name")->get();
+
+            }else{
+                $shadowsocks_nodes = Node::where(
+                    function ($query) {
+                        $query->where('sort', 0)
+                            ->orwhere('sort', 10);
+                    }
+                )->where(
+                    function ($query) use ($user){
+                        $query->where("node_group", "=", $user->node_group)
+                            ->orWhere("node_group", "=", 0);
+                    }
+                )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
+            }
+
 
             foreach ($shadowsocks_nodes as $node) {
                 $result[] = [
@@ -406,12 +427,20 @@ class URL
     }
 
     public static function getAllVMessUrl($user) {
-        $nodes = Node::where('sort', 11)->where(
-            function ($query) use ($user){
-                $query->where("node_group", "=", $user->node_group)
-                    ->orWhere("node_group", "=", 0);
-            }
-        )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
+        if ($user->is_admin) {
+
+            $nodes = Node::where('sort', 11)->where("type", "1")->orderBy("name")->get();
+
+        } else {
+
+            $nodes = Node::where('sort', 11)->where(
+                function ($query) use ($user){
+                    $query->where("node_group", "=", $user->node_group)
+                        ->orWhere("node_group", "=", 0);
+                }
+            )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
+
+        }
 
         $result = "";
 
