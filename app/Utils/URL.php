@@ -421,6 +421,11 @@ class URL
 
         if (count($node_explode) >= 6) {
             $item = array_merge($item, URL::parse_args($node_explode[5]));
+
+            if (array_key_exists("server",$item)){
+                $item['add']=$item['server'];
+                unset($item['server']);
+            }
         }
 
         return "vmess://".base64_encode((json_encode($item, JSON_UNESCAPED_UNICODE)));

@@ -25,7 +25,7 @@ class LinkController extends BaseController
 
     public static function GenerateRandomLink()
     {
-        $i =0;
+        $i = 0;
         for ($i = 0; $i < 10; $i++) {
             $token = Tools::genRandomChar(16);
             $Elink = Link::where("token", "=", $token)->first();
@@ -109,11 +109,11 @@ class LinkController extends BaseController
 
         switch ($Elink->type) {
             case 9:
-                $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename='.$token.'.acl');//->getBody()->write($builder->output());
+                $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.acl');//->getBody()->write($builder->output());
                 $newResponse->getBody()->write(LinkController::GetAcl(User::where("id", "=", $Elink->userid)->first()));
                 return $newResponse;
             case 10:
-                $user=User::where("id", $Elink->userid)->first();
+                $user = User::where("id", $Elink->userid)->first();
                 if ($user == null) {
                     return null;
                 }
@@ -123,11 +123,11 @@ class LinkController extends BaseController
                     $is_ss = $request->getQueryParams()["is_ss"];
                 }
 
-                $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename='.$token.'.sh');//->getBody()->write($builder->output());
+                $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.sh');//->getBody()->write($builder->output());
                 $newResponse->getBody()->write(LinkController::GetRouter(User::where("id", "=", $Elink->userid)->first(), $Elink->geo, $is_ss));
                 return $newResponse;
             case 11:
-                $user=User::where("id", $Elink->userid)->first();
+                $user = User::where("id", $Elink->userid)->first();
                 if ($user == null) {
                     return null;
                 }
@@ -142,8 +142,13 @@ class LinkController extends BaseController
                     $mu = (int)$request->getQueryParams()["mu"];
                 }
 
-                $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename='.$token.'.txt');
-                $newResponse->getBody()->write(LinkController::GetSSRSub(User::where("id", "=", $Elink->userid)->first(), $mu, $max));
+                $app = 0;
+                if (isset($request->getQueryParams()['app'])) {
+                    $app = (int)$request->getQueryParams()['app'];
+                }
+
+                $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt');
+                $newResponse->getBody()->write(LinkController::GetSSRSub(User::where("id", "=", $Elink->userid)->first(), $mu, $max, $app));
                 return $newResponse;
             default:
                 break;
@@ -155,8 +160,8 @@ class LinkController extends BaseController
 
     public static function GetPcConf($user, $is_mu = 0, $is_ss = 0)
     {
-    if ($is_ss==0) {
-        $string='
+        if ($is_ss == 0) {
+            $string = '
             {
                 "index" : 0,
                 "random" : false,
@@ -164,7 +169,7 @@ class LinkController extends BaseController
                 "shareOverLan" : false,
                 "bypassWhiteList" : false,
                 "localPort" : 1080,
-                "localAuthPassword" : "'.Tools::genRandomChar(26).'",
+                "localAuthPassword" : "' . Tools::genRandomChar(26) . '",
                 "dns_server" : "",
                 "reconnectTimes" : 4,
                 "randomAlgorithm" : 0,
@@ -193,8 +198,8 @@ class LinkController extends BaseController
                 }
             }
         ';
-    } else {
-        $string='
+        } else {
+            $string = '
             {
                 "strategy": null,
                 "index": 6,
@@ -235,43 +240,43 @@ class LinkController extends BaseController
                 }
             }
         ';
-    }
+        }
 
-        $json=json_decode($string, true);
-        $temparray=array();
+        $json = json_decode($string, true);
+        $temparray = array();
 
         $items = URL::getAllItems($user, $is_mu, $is_ss);
-        foreach($items as $item) {
-            if ($is_ss==0) {
-                array_push($temparray, array("remarks"=>$item['remark'],
-                                            "server"=>$item['address'],
-                                            "server_port"=>$item['port'],
-                                            "method"=>$item['method'],
-                                            "obfs"=>$item['obfs'],
-                                            "obfsparam"=>$item['obfs_param'],
-                                            "remarks_base64"=>base64_encode($item['remark']),
-                                            "password"=>$item['passwd'],
-                                            "tcp_over_udp"=>false,
-                                            "udp_over_tcp"=>false,
-                                            "group"=>$item['group'],
-                                            "protocol"=>$item['protocol'],
-                                            "protoparam"=>$item['protocol_param'],
-                                            "protocolparam"=>$item['protocol_param'],
-                                            "obfs_udp"=>false,
-                                            "enable"=>true));
+        foreach ($items as $item) {
+            if ($is_ss == 0) {
+                array_push($temparray, array("remarks" => $item['remark'],
+                    "server" => $item['address'],
+                    "server_port" => $item['port'],
+                    "method" => $item['method'],
+                    "obfs" => $item['obfs'],
+                    "obfsparam" => $item['obfs_param'],
+                    "remarks_base64" => base64_encode($item['remark']),
+                    "password" => $item['passwd'],
+                    "tcp_over_udp" => false,
+                    "udp_over_tcp" => false,
+                    "group" => $item['group'],
+                    "protocol" => $item['protocol'],
+                    "protoparam" => $item['protocol_param'],
+                    "protocolparam" => $item['protocol_param'],
+                    "obfs_udp" => false,
+                    "enable" => true));
             } else {
-                array_push($temparray, array("server"=>$item['address'],
-                                            "server_port"=>$item['port'],
-                                            "password"=>$item['passwd'],
-                                            "method"=>$item['method'],
-                                            "plugin"=>"obfs-local",
-                                            "plugin_opts"=>str_replace(',',';',URL::getSurgeObfs($item)),
-                                            "remarks"=>$item['remark'],
-                                            "timeout"=>5));
+                array_push($temparray, array("server" => $item['address'],
+                    "server_port" => $item['port'],
+                    "password" => $item['passwd'],
+                    "method" => $item['method'],
+                    "plugin" => "obfs-local",
+                    "plugin_opts" => str_replace(',', ';', URL::getSurgeObfs($item)),
+                    "remarks" => $item['remark'],
+                    "timeout" => 5));
             }
         }
 
-        $json["configs"]=$temparray;
+        $json["configs"] = $temparray;
         return json_encode($json, JSON_PRETTY_PRINT);
     }
 
@@ -283,14 +288,14 @@ class LinkController extends BaseController
 
     private static function GetAcl($user)
     {
-        $rulelist = base64_decode(file_get_contents("https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt"))."\n".$user->pac;
+        $rulelist = base64_decode(file_get_contents("https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt")) . "\n" . $user->pac;
         $gfwlist = explode("\n", $rulelist);
 
         $count = 0;
         $acl_content = '';
         $find_function_content = '
 #Generated by sspanel-glzjin-mod v3
-#Time:'.date('Y-m-d H:i:s').'
+#Time:' . date('Y-m-d H:i:s') . '
 
 [bypass_all]
 
@@ -306,8 +311,8 @@ class LinkController extends BaseController
 
 ';
 
-        $isget=array();
-        foreach ($gfwlist as $index=>$rule) {
+        $isget = array();
+        foreach ($gfwlist as $index => $rule) {
             if (empty($rule)) {
                 continue;
             } elseif (substr($rule, 0, 1) == '!' || substr($rule, 0, 1) == '[') {
@@ -316,18 +321,18 @@ class LinkController extends BaseController
 
             if (substr($rule, 0, 2) == '@@') {
                 // ||开头表示前面还有路径
-                if (substr($rule, 2, 2) =='||') {
+                if (substr($rule, 2, 2) == '||') {
                     //$rule_reg = preg_match("/^((http|https):\/\/)?([^\/]+)/i",substr($rule, 2), $matches);
                     $host = substr($rule, 4);
                     //preg_match("/[^\.\/]+\.[^\.\/]+$/", $host, $matches);
                     if (isset($isget[$host])) {
                         continue;
                     }
-                    $isget[$host]=1;
+                    $isget[$host] = 1;
                     //$find_function_content.="DOMAIN,".$host.",DIRECT,force-remote-dns\n";
-                    $bypass_list .= $host."\n";
+                    $bypass_list .= $host . "\n";
                     continue;
-                // !开头相当于正则表达式^
+                    // !开头相当于正则表达式^
                 } elseif (substr($rule, 2, 1) == '|') {
                     preg_match("/(\d{1,3}\.){3}\d{1,3}/", substr($rule, 3), $matches);
                     if (!isset($matches[0])) {
@@ -339,9 +344,9 @@ class LinkController extends BaseController
                         if (isset($isget[$host])) {
                             continue;
                         }
-                        $isget[$host]=1;
+                        $isget[$host] = 1;
                         //$find_function_content.="IP-CIDR,".$host."/32,DIRECT,no-resolve \n";
-                        $bypass_list .= $host."/32\n";
+                        $bypass_list .= $host . "/32\n";
                         continue;
                     } else {
                         preg_match_all("~^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?~i", substr($rule, 3), $matches);
@@ -355,9 +360,9 @@ class LinkController extends BaseController
                             if (isset($isget[$host])) {
                                 continue;
                             }
-                            $isget[$host]=1;
+                            $isget[$host] = 1;
                             //$find_function_content.="DOMAIN-SUFFIX,".$host.",DIRECT,force-remote-dns\n";
-                            $bypass_list .= $host."\n";
+                            $bypass_list .= $host . "\n";
                             continue;
                         }
                     }
@@ -367,41 +372,41 @@ class LinkController extends BaseController
                         if (isset($isget[$host])) {
                             continue;
                         }
-                        $isget[$host]=1;
+                        $isget[$host] = 1;
                         //$find_function_content.="DOMAIN-SUFFIX,".$host.",DIRECT,force-remote-dns \n";
-                        $bypass_list .= $host."\n";
+                        $bypass_list .= $host . "\n";
                         continue;
                     }
                 }
             }
 
             // ||开头表示前面还有路径
-            if (substr($rule, 0, 2) =='||') {
+            if (substr($rule, 0, 2) == '||') {
                 //$rule_reg = preg_match("/^((http|https):\/\/)?([^\/]+)/i",substr($rule, 2), $matches);
                 $host = substr($rule, 2);
                 //preg_match("/[^\.\/]+\.[^\.\/]+$/", $host, $matches);
 
-                if (strpos($host, "*")!==false) {
-                    $host = substr($host, strpos($host, "*")+1);
-                    if (strpos($host, ".")!==false) {
-                        $host = substr($host, strpos($host, ".")+1);
+                if (strpos($host, "*") !== false) {
+                    $host = substr($host, strpos($host, "*") + 1);
+                    if (strpos($host, ".") !== false) {
+                        $host = substr($host, strpos($host, ".") + 1);
                     }
                     if (isset($isget[$host])) {
                         continue;
                     }
-                    $isget[$host]=1;
+                    $isget[$host] = 1;
                     //$find_function_content.="DOMAIN-KEYWORD,".$host.",Proxy,force-remote-dns\n";
-                    $proxy_list .= $host."\n";
+                    $proxy_list .= $host . "\n";
                     continue;
                 }
 
                 if (isset($isget[$host])) {
                     continue;
                 }
-                $isget[$host]=1;
+                $isget[$host] = 1;
                 //$find_function_content.="DOMAIN,".$host.",Proxy,force-remote-dns\n";
-                $proxy_list .= $host."\n";
-            // !开头相当于正则表达式^
+                $proxy_list .= $host . "\n";
+                // !开头相当于正则表达式^
             } elseif (substr($rule, 0, 1) == '|') {
                 preg_match("/(\d{1,3}\.){3}\d{1,3}/", substr($rule, 1), $matches);
 
@@ -414,15 +419,15 @@ class LinkController extends BaseController
                     if (isset($isget[$host])) {
                         continue;
                     }
-                    $isget[$host]=1;
+                    $isget[$host] = 1;
 
                     preg_match("/(\d{1,3}\.){3}\d{1,3}\/\d{1,2}/", substr($rule, 1), $matches_ips);
 
                     if (!isset($matches_ips[0])) {
-                        $proxy_list .= $host."/32\n";
+                        $proxy_list .= $host . "/32\n";
                     } else {
                         $host = $matches_ips[0];
-                        $proxy_list .= $host."\n";
+                        $proxy_list .= $host . "\n";
                     }
 
                     //$find_function_content.="IP-CIDR,".$host."/32,Proxy,no-resolve \n";
@@ -436,17 +441,17 @@ class LinkController extends BaseController
                     }
 
                     $host = $matches[4][0];
-                    if (strpos($host, "*")!==false) {
-                        $host = substr($host, strpos($host, "*")+1);
-                        if (strpos($host, ".")!==false) {
-                            $host = substr($host, strpos($host, ".")+1);
+                    if (strpos($host, "*") !== false) {
+                        $host = substr($host, strpos($host, "*") + 1);
+                        if (strpos($host, ".") !== false) {
+                            $host = substr($host, strpos($host, ".") + 1);
                         }
                         if (isset($isget[$host])) {
                             continue;
                         }
-                        $isget[$host]=1;
+                        $isget[$host] = 1;
                         //$find_function_content.="DOMAIN-KEYWORD,".$host.",Proxy,force-remote-dns\n";
-                        $proxy_list .= $host."\n";
+                        $proxy_list .= $host . "\n";
                         continue;
                     }
 
@@ -454,15 +459,15 @@ class LinkController extends BaseController
                         if (isset($isget[$host])) {
                             continue;
                         }
-                        $isget[$host]=1;
+                        $isget[$host] = 1;
                         //$find_function_content.="DOMAIN-SUFFIX,".$host.",Proxy,force-remote-dns\n";
-                        $proxy_list .= $host."\n";
+                        $proxy_list .= $host . "\n";
                         continue;
                     }
                 }
             } else {
                 $host = substr($rule, 0);
-                if (strpos($host, "/")!==false) {
+                if (strpos($host, "/") !== false) {
                     $host = substr($host, 0, strpos($host, "/"));
                 }
 
@@ -470,9 +475,9 @@ class LinkController extends BaseController
                     if (isset($isget[$host])) {
                         continue;
                     }
-                    $isget[$host]=1;
+                    $isget[$host] = 1;
                     //$find_function_content.="DOMAIN-KEYWORD,".$host.",PROXY,force-remote-dns \n";
-                    $proxy_list .= $host."\n";
+                    $proxy_list .= $host . "\n";
                     continue;
                 }
             }
@@ -481,10 +486,10 @@ class LinkController extends BaseController
             $count = $count + 1;
         }
 
-        $acl_content .= $find_function_content."\n".$proxy_list."\n".$bypass_list."\n".$outbound_block_list;
+        $acl_content .= $find_function_content . "\n" . $proxy_list . "\n" . $bypass_list . "\n" . $outbound_block_list;
         return $acl_content;
     }
-	   
+
     /**
      * This is a php implementation of autoproxy2pac
      */
@@ -506,7 +511,7 @@ class LinkController extends BaseController
 
     private static function get_pac($proxy_type, $proxy_host, $proxy_port, $proxy_google, $defined)
     {
-        $rulelist = base64_decode(file_get_contents("https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt"))."\n".$defined;
+        $rulelist = base64_decode(file_get_contents("https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt")) . "\n" . $defined;
         $gfwlist = explode("\n", $rulelist);
         if ($proxy_google == "true") {
             $gfwlist[] = ".google.com";
@@ -514,75 +519,75 @@ class LinkController extends BaseController
 
         $count = 0;
         $pac_content = '';
-        $find_function_content = 'function FindProxyForURL(url, host) { var PROXY = "'.$proxy_type.' '.$proxy_host.':'.$proxy_port.'; DIRECT"; var DEFAULT = "DIRECT";'."\n";
-        foreach ($gfwlist as $index=>$rule) {
+        $find_function_content = 'function FindProxyForURL(url, host) { var PROXY = "' . $proxy_type . ' ' . $proxy_host . ':' . $proxy_port . '; DIRECT"; var DEFAULT = "DIRECT";' . "\n";
+        foreach ($gfwlist as $index => $rule) {
             if (empty($rule)) {
                 continue;
             } elseif (substr($rule, 0, 1) == '!' || substr($rule, 0, 1) == '[') {
                 continue;
             }
             $return_proxy = 'PROXY';
-        // @@开头表示默认是直接访问
-        if (substr($rule, 0, 2) == '@@') {
-            $rule = substr($rule, 2);
-            $return_proxy = "DEFAULT";
-        }
+            // @@开头表示默认是直接访问
+            if (substr($rule, 0, 2) == '@@') {
+                $rule = substr($rule, 2);
+                $return_proxy = "DEFAULT";
+            }
 
-        // ||开头表示前面还有路径
-        if (substr($rule, 0, 2) =='||') {
-            $rule_reg = "^[\\w\\-]+:\\/+(?!\\/)(?:[^\\/]+\\.)?".LinkController::reg_encode(substr($rule, 2));
-        // !开头相当于正则表达式^
-        } elseif (substr($rule, 0, 1) == '|') {
-            $rule_reg = "^" . LinkController::reg_encode(substr($rule, 1));
-        // 前后匹配的/表示精确匹配
-        } elseif (substr($rule, 0, 1) == '/' && substr($rule, -1) == '/') {
-            $rule_reg = substr($rule, 1, strlen($rule) - 2);
-        } else {
-            $rule_reg = LinkController::reg_encode($rule);
-        }
-        // 以|结尾，替换为$结尾
-        if (preg_match("/\|$/i", $rule_reg)) {
-            $rule_reg = substr($rule_reg, 0, strlen($rule_reg) - 1)."$";
-        }
-            $find_function_content.='if (/' . $rule_reg . '/i.test(url)) return '.$return_proxy.';'."\n";
+            // ||开头表示前面还有路径
+            if (substr($rule, 0, 2) == '||') {
+                $rule_reg = "^[\\w\\-]+:\\/+(?!\\/)(?:[^\\/]+\\.)?" . LinkController::reg_encode(substr($rule, 2));
+                // !开头相当于正则表达式^
+            } elseif (substr($rule, 0, 1) == '|') {
+                $rule_reg = "^" . LinkController::reg_encode(substr($rule, 1));
+                // 前后匹配的/表示精确匹配
+            } elseif (substr($rule, 0, 1) == '/' && substr($rule, -1) == '/') {
+                $rule_reg = substr($rule, 1, strlen($rule) - 2);
+            } else {
+                $rule_reg = LinkController::reg_encode($rule);
+            }
+            // 以|结尾，替换为$结尾
+            if (preg_match("/\|$/i", $rule_reg)) {
+                $rule_reg = substr($rule_reg, 0, strlen($rule_reg) - 1) . "$";
+            }
+            $find_function_content .= 'if (/' . $rule_reg . '/i.test(url)) return ' . $return_proxy . ';' . "\n";
             $count = $count + 1;
         }
-        $find_function_content.='return DEFAULT;'."}";
-        $pac_content.=$find_function_content;
+        $find_function_content .= 'return DEFAULT;' . "}";
+        $pac_content .= $find_function_content;
         return $pac_content;
     }
 
     public static function GetRouter($user, $is_mu = 0, $is_ss = 0)
     {
-        $bash = '#!/bin/sh'."\n";
-        $bash .= 'export PATH=\'/opt/usr/sbin:/opt/usr/bin:/opt/sbin:/opt/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin\''."\n";
-        $bash .= 'export LD_LIBRARY_PATH=/lib:/opt/lib'."\n";
-        $bash .= 'nvram set ss_type='.($is_ss == 1 ? '0' : '1')."\n";
+        $bash = '#!/bin/sh' . "\n";
+        $bash .= 'export PATH=\'/opt/usr/sbin:/opt/usr/bin:/opt/sbin:/opt/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin\'' . "\n";
+        $bash .= 'export LD_LIBRARY_PATH=/lib:/opt/lib' . "\n";
+        $bash .= 'nvram set ss_type=' . ($is_ss == 1 ? '0' : '1') . "\n";
 
         $count = 0;
 
         $items = URL::getAllItems($user, $is_mu, $is_ss);
-        foreach($items as $item) {
-            if($is_ss == 0) {
-                $bash .= 'nvram set rt_ss_name_x'.$count.'="'.$item['remark']."\"\n";
-                $bash .= 'nvram set rt_ss_port_x'.$count.'='.$item['port']."\n";
-                $bash .= 'nvram set rt_ss_password_x'.$count.'="'.$item['passwd']."\"\n";
-                $bash .= 'nvram set rt_ss_server_x'.$count.'='.$item['address']."\n";
-                $bash .= 'nvram set rt_ss_usage_x'.$count.'="'."-o ".$item['obfs']." -g ".$item['obfs_param']." -O ".$item['protocol']." -G ".$item['protocol_param']."\"\n";
-                $bash .= 'nvram set rt_ss_method_x'.$count.'='.$item['method']."\n";
+        foreach ($items as $item) {
+            if ($is_ss == 0) {
+                $bash .= 'nvram set rt_ss_name_x' . $count . '="' . $item['remark'] . "\"\n";
+                $bash .= 'nvram set rt_ss_port_x' . $count . '=' . $item['port'] . "\n";
+                $bash .= 'nvram set rt_ss_password_x' . $count . '="' . $item['passwd'] . "\"\n";
+                $bash .= 'nvram set rt_ss_server_x' . $count . '=' . $item['address'] . "\n";
+                $bash .= 'nvram set rt_ss_usage_x' . $count . '="' . "-o " . $item['obfs'] . " -g " . $item['obfs_param'] . " -O " . $item['protocol'] . " -G " . $item['protocol_param'] . "\"\n";
+                $bash .= 'nvram set rt_ss_method_x' . $count . '=' . $item['method'] . "\n";
                 $count += 1;
-            }else{
-                $bash .= 'nvram set rt_ss_name_x'.$count.'="'.$item['remark']."\"\n";
-                $bash .= 'nvram set rt_ss_port_x'.$count.'='.$item['port']."\n";
-                $bash .= 'nvram set rt_ss_password_x'.$count.'="'.$item['passwd']."\"\n";
-                $bash .= 'nvram set rt_ss_server_x'.$count.'='.$item['address']."\n";
-                $bash .= 'nvram set rt_ss_usage_x'.$count.'=""'."\n";
-                $bash .= 'nvram set rt_ss_method_x'.$count.'='.$item['method']."\n";
+            } else {
+                $bash .= 'nvram set rt_ss_name_x' . $count . '="' . $item['remark'] . "\"\n";
+                $bash .= 'nvram set rt_ss_port_x' . $count . '=' . $item['port'] . "\n";
+                $bash .= 'nvram set rt_ss_password_x' . $count . '="' . $item['passwd'] . "\"\n";
+                $bash .= 'nvram set rt_ss_server_x' . $count . '=' . $item['address'] . "\n";
+                $bash .= 'nvram set rt_ss_usage_x' . $count . '=""' . "\n";
+                $bash .= 'nvram set rt_ss_method_x' . $count . '=' . $item['method'] . "\n";
                 $count += 1;
             }
         }
 
-        $bash .= "nvram set rt_ssnum_x=".$count."\n";
+        $bash .= "nvram set rt_ssnum_x=" . $count . "\n";
 
         return $bash;
     }
@@ -590,18 +595,23 @@ class LinkController extends BaseController
     const V2RYA_MU = 2;
     const SSD_MU = 3;
     const CLASH_MU = 4;
+    const OTHERS = 5;
+    const APP_SHADOWROCKET = 1;
 
-    public static function GetSSRSub($user, $mu = 0, $max = 0)
+    public static function GetSSRSub($user, $mu = 0, $max = 0, $app = 0)
     {
-        if ($mu==0||$mu==1) {
+        if ($app == LinkController::APP_SHADOWROCKET) {
+            $vmessall = URL::getAllVMessUrl($user);
+            $ssrall = URL::getAllUrl($user, $mu, 0, 1);
+            $all = $ssrall.$vmessall;
+            return Tools::base64_url_encode($all);
+        } elseif ($mu == 0 || $mu == 1) {
             return Tools::base64_url_encode(URL::getAllUrl($user, $mu, 0, 1));
-        } 
-		elseif ($mu == LinkController::V2RYA_MU){
+        } elseif ($mu == LinkController::V2RYA_MU) {
             return Tools::base64_url_encode(URL::getAllVMessUrl($user));
-        }
-		elseif ($mu==LinkController::SSD_MU) {
-			return URL::getAllSSDUrl($user);
-		} elseif ($mu==LinkController::CLASH_MU) {
+        } elseif ($mu == LinkController::SSD_MU) {
+            return URL::getAllSSDUrl($user);
+        } elseif ($mu == LinkController::CLASH_MU) {
             // Clash
             $render = ConfRender::getTemplateRender();
             $confs = URL::getClashInfo($user);
