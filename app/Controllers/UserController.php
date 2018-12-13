@@ -473,7 +473,7 @@ class UserController extends BaseController
 		$nodes_muport = array();
 
 		foreach($nodes as $node){
-			if($node->node_group!=$user->node_group && $node->node_group!=0){
+			if($node->node_group!=$user->node_group && $node->node_group!=0 && !$user->isAdmin()){
 				continue;
 			}
 			if ($node->sort == 9) {
