@@ -147,15 +147,88 @@ class LinkController extends BaseController
                     $app = (int)$request->getQueryParams()['app'];
                 }
 
-                $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt');
-                $newResponse->getBody()->write(LinkController::GetSSRSub(User::where("id", "=", $Elink->userid)->first(), $mu, $max, $app));
+                $quantumult = 0;
+                if (isset($request->getQueryParams()["quantumult"])) {
+                    $quantumult = $request->getQueryParams()["quantumult"];
+                }
+
+                if (($quantumult == 1 || $quantumult == 2) && ($mu == 0 || $mu == 1)) {
+                    $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf');
+                    $newResponse->getBody()->write(LinkController::GetQuantumult($user, $mu, $quantumult));
+                        return $newResponse;
+                }
+                else {
+                    $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt');
+                    $newResponse->getBody()->write(LinkController::GetSSRSub(User::where("id", "=", $Elink->userid)->first(), $mu, $max, $app));
                 return $newResponse;
+                }
             default:
                 break;
         }
         $newResponse = $response->withHeader('Content-type', ' application/x-ns-proxy-autoconfig; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate');//->getBody()->write($builder->output());
         $newResponse->getBody()->write(LinkController::GetPac($type, $Elink->address, $Elink->port, User::where("id", "=", $Elink->userid)->first()->pac));
         return $newResponse;
+    }
+    
+    public static function GetQuantumult($user, $mu = 0, $quantumult = 0)
+    {
+        $ss_group = "";
+        $ss_name = "";
+        $v2ray_group = "";
+        
+        if ($quantumult == 1) {
+            
+                    $v2rays = URL::getAllV2ray($user);
+        foreach($v2rays as $v2ray) {
+            
+            $v2ray_tls = ", over-tls=false, certificate=1";
+            if ($v2ray['tls'] == "tls"){
+                $v2ray_tls = ", over-tls=true, tls-host=".$v2ray['add'].", certificate=1";
+                }
+                
+            $v2ray_obfs = "";
+            if ($v2ray['net'] == "ws" || $v2ray['net'] == "http"){
+                $v2ray_obfs = ", obfs=http, obfs-path=\"".$v2ray['path']."\", obfs-header=\"Host: ".$v2ray['add']."[Rr][Nn]User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_0 like Mac OS X) AppleWebKit/888.8.88 (KHTML, like Gecko) Mobile/6666666\"";
+                }
+
+            if ($v2ray['net'] == "kcp"){
+                $v2ray_group .= "";
+                } else {
+                $v2ray_group .= "vmess://" . base64_encode($v2ray['ps'] . " = vmess, " . $v2ray['add'].", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "" . $v2ray_tls . $v2ray_obfs) . "\n";
+                }
+        }
+        
+        return base64_encode($v2ray_group);
+        
+        } else {
+            
+
+        $items = URL::getAllItems($user, $mu, 1);
+        foreach($items as $item) {
+            $ss_group .= $item['remark']." = shadowsocks, ".$item['address'].", ".$item['port'].", ".$item['method'].", \"".$item['passwd']."\", upstream-proxy=false, upstream-proxy-auth=false".URL::getSurgeObfs($item)."\n";
+            $ss_name .= "\n".$item['remark'];
+        }
+        
+        $quan_proxy_group = base64_encode("🍃 Proxy  :  static, 🏃 Auto\n🏃 Auto\n🚀 Direct\n" . $ss_name);
+        $quan_auto_group = base64_encode("🏃 Auto  :  auto\n".$ss_name);
+        $quan_domestic_group = base64_encode("🍂 Domestic  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
+        $quan_others_group = base64_encode("☁️ Others  :   static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
+        $quan_direct_group = base64_encode("🚀 Direct : static, DIRECT\nDIRECT");
+        $quan_apple_group = base64_encode("🍎 Only  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
+        
+         $render = ConfRender::getTemplateRender();
+         $render->assign('user', $user)
+         ->assign('ss_group', $ss_group)
+         ->assign('quan_proxy_group', $quan_proxy_group)
+         ->assign('quan_auto_group', $quan_auto_group)
+         ->assign('quan_domestic_group', $quan_domestic_group)
+         ->assign('quan_others_group', $quan_others_group)
+         ->assign('quan_direct_group', $quan_direct_group)
+         ->assign('quan_apple_group', $quan_apple_group)
+         ;
+
+         return $render->fetch('quantumult.tpl');
+}
     }
 
     public static function GetPcConf($user, $is_mu = 0, $is_ss = 0)
