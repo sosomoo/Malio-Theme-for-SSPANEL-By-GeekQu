@@ -456,6 +456,62 @@ class URL
         return $result;
     }
 
+    public static function getV2ray($user, $node){
+        $node_explode = explode(';', $node->server);
+        $item = [
+            'v'=>'2',
+            'host'=>'',
+            'path'=>'',
+            'tls'=>''
+        ];
+        $item['ps'] = $node->name;
+        $item['add'] = $node_explode[0];
+        $item['port'] = $node_explode[1];
+        $item['id'] = $user->getUuid();
+        $item['aid'] = $node_explode[2];
+        $item['net'] = "tcp";
+        $item['type'] = "none";
+        if (count($node_explode) >= 4) {
+            $item['net'] = $node_explode[3];
+            if ($item['net'] == 'ws') {
+                $item['path'] = '/';
+            } else if ($item['net'] == 'tls') {
+                $item['tls'] = 'tls';
+            }
+        }
+        if (count($node_explode) >= 5 ) {
+            if (in_array($item['net'], array("kcp", "http"))){
+
+                $item['type'] = $node_explode[4];
+            } else if ($node_explode[4]=='ws'){
+                $item['net'] = 'ws';
+            }
+        }
+
+        if (count($node_explode) >= 6) {
+            $item = array_merge($item, URL::parse_args($node_explode[5]));
+        }
+
+        return $item;
+    }
+
+    public static function getAllV2ray($user) {
+        $nodes = Node::where('sort', 11)->where(
+            function ($query) use ($user){
+                $query->where("node_group", "=", $user->node_group)
+                    ->orWhere("node_group", "=", 0);
+            }
+        )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
+
+        $return_array = array();
+
+        foreach ($nodes as $node) {
+            array_push($return_array, URL::getV2ray($user, $node));
+        }
+
+        return $return_array;
+    }
+
 	public static function getAllSSDUrl($user){
 		if (!URL::SSCanConnect($user)){
 			return null;
