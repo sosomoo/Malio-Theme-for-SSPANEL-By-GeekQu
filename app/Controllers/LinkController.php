@@ -147,6 +147,11 @@ class LinkController extends BaseController
                     $app = (int)$request->getQueryParams()['app'];
                 }
 
+                $surge = 0;
+                if (isset($request->getQueryParams()["surge"])) {
+                    $quantumult = $request->getQueryParams()["surge"];
+                }                
+
                 $quantumult = 0;
                 if (isset($request->getQueryParams()["quantumult"])) {
                     $quantumult = $request->getQueryParams()["quantumult"];
@@ -155,6 +160,11 @@ class LinkController extends BaseController
                 if (($quantumult == 1 || $quantumult == 2) && ($mu == 0 || $mu == 1)) {
                     $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf');
                     $newResponse->getBody()->write(LinkController::GetQuantumult($user, $mu, $quantumult));
+                        return $newResponse;
+                }
+                elseif (($surge == 1 || $surge == 2 || $surge == 3) && ($mu == 0 || $mu == 1)) {
+                    $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Surge.conf');
+                    $newResponse->getBody()->write(LinkController::GetSurge($user, $mu, $surge));
                         return $newResponse;
                 }
                 else {
@@ -170,65 +180,136 @@ class LinkController extends BaseController
         return $newResponse;
     }
     
+    public static function GetIosConf($user, $mu = 0, $surge = 0)
+    {
+
+        $proxy_name="";
+        $proxy_group="";
+
+        $render = ConfRender::getTemplateRender();
+
+        $userapiUrl = Config::get('baseUrl') . "/link/" . LinkController::GenerateSSRSubCode($user->id, 0) . "?surge=" . $surge . "&mu=" . $mu;
+
+        $items = URL::getAllItems($user, $mu, 1);
+        foreach($items as $item) {
+
+            if ($surge == 1 || $surge == 3) {
+                $proxy_group .= $item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', encrypt-method=' . $item['method'] . ', password=' . $item['passwd'] . '' . URL::getSurgeObfs($item) . ", tfo=true, udp-relay=true\n";
+
+            } else {
+                $proxy_group .= $item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', ' . Config::get('baseUrl') . '/downloads/SSEncrypt.module' . URL::getSurgeObfs($item) . ", tfo=true, udp-relay=true\n";
+            }
+
+            $proxy_name .= ", ".$item['remark'];
+        }
+
+        if ($surge == 3) {
+
+            $render->assign('user', $user)
+            ->assign('userapiUrl', $userapiUrl)
+            ->assign('proxy_name', $proxy_name)
+            ->assign('proxy_group', $proxy_group);
+
+            return $render->fetch('surge3.tpl');            
+
+        } elseif ($surge == 2) {
+
+            $render->assign('user', $user)
+            ->assign('userapiUrl', $userapiUrl)
+            ->assign('proxy_name', $proxy_name)
+            ->assign('proxy_group', $proxy_group);
+
+            return $render->fetch('surge2.tpl');
+
+        } elseif ($surge == 1) {
+
+            return $proxy_group;
+
+        }
+
+    }
+
     public static function GetQuantumult($user, $mu = 0, $quantumult = 0)
     {
         $ss_group = "";
         $ss_name = "";
+        $ssr_group = "";
+        $ssr_name = "";
         $v2ray_group = "";
-        
-        if ($quantumult == 1) {
-            
-                    $v2rays = URL::getAllV2ray($user);
+        $v2ray_name = "";
+
+        $v2rays = URL::getAllV2ray($user);
+
         foreach($v2rays as $v2ray) {
-            
+
+            $v2ray_name .= "\n" . $v2ray['ps'];
+
             $v2ray_tls = ", over-tls=false, certificate=1";
             if ($v2ray['tls'] == "tls"){
-                $v2ray_tls = ", over-tls=true, tls-host=".$v2ray['add'].", certificate=1";
-                }
-                
+                $v2ray_tls = ", over-tls=true, tls-host=" . $v2ray['add'] . ", certificate=1";
+            }
+
             $v2ray_obfs = "";
             if ($v2ray['net'] == "ws" || $v2ray['net'] == "http"){
-                $v2ray_obfs = ", obfs=http, obfs-path=\"".$v2ray['path']."\", obfs-header=\"Host: ".$v2ray['add']."[Rr][Nn]User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_0 like Mac OS X) AppleWebKit/888.8.88 (KHTML, like Gecko) Mobile/6666666\"";
-                }
+                $v2ray_obfs = ", obfs=" . $v2ray['net'] . ", obfs-path=\"" . $v2ray['path'] . "\", obfs-header=\"Host: " . $v2ray['add'] . "[Rr][Nn]User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_0 like Mac OS X) AppleWebKit/888.8.88 (KHTML, like Gecko) Mobile/6666666\"";
+            }
 
             if ($v2ray['net'] == "kcp"){
                 $v2ray_group .= "";
+            } else {
+                if ($quantumult == 1) {
+                    $v2ray_group .= "vmess://" . base64_encode($v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "" . $v2ray_tls . $v2ray_obfs) . "\n";
                 } else {
-                $v2ray_group .= "vmess://" . base64_encode($v2ray['ps'] . " = vmess, " . $v2ray['add'].", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "" . $v2ray_tls . $v2ray_obfs) . "\n";
+                    $v2ray_group .= $v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\"" . $v2ray_tls . $v2ray_obfs . "\n";
                 }
+            }
         }
+
+        if ($quantumult == 1) {
         
-        return base64_encode($v2ray_group);
+            return base64_encode($v2ray_group);
         
         } else {
-            
 
-        $items = URL::getAllItems($user, $mu, 1);
-        foreach($items as $item) {
-            $ss_group .= $item['remark']." = shadowsocks, ".$item['address'].", ".$item['port'].", ".$item['method'].", \"".$item['passwd']."\", upstream-proxy=false, upstream-proxy-auth=false".URL::getSurgeObfs($item)."\n";
-            $ss_name .= "\n".$item['remark'];
+            $items = URL::getAllItems($user, $mu, 1);
+
+            foreach($items as $item) {
+
+                $ss_group .= $item['remark'] . " = shadowsocks, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", upstream-proxy=false, upstream-proxy-auth=false" . URL::getSurgeObfs($item) . "\n";
+
+                $ss_name .= "\n" . $item['remark'];
+            }
+
+            $ssrs = URL::getAllItems($user, $mu, 0);
+
+            foreach($ssrs as $item) {
+
+                $ssr_group .= $item['remark'] . " = shadowsocksr, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", protocol=" . $item['protocol'] . ", protocol_param=" . $item['protocol_param'] . ", obfs=" . $item['obfs'] . ", obfs_param=\"" . $item['obfs_param'] . "\"\n";
+
+                $ssr_name .= "\n" . $item['remark'];
+            }
+
+            $quan_proxy_group = base64_encode("🍃 Proxy  :  static, 🏃 Auto\n🏃 Auto\n🚀 Direct\n" . $ss_name . $ssr_name . $v2ray_name);
+            $quan_auto_group = base64_encode("🏃 Auto  :  auto\n" . $ss_name . $ssr_name . $v2ray_name);
+            $quan_domestic_group = base64_encode("🍂 Domestic  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
+            $quan_others_group = base64_encode("☁️ Others  :   static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
+            $quan_direct_group = base64_encode("🚀 Direct : static, DIRECT\nDIRECT");
+            $quan_apple_group = base64_encode("🍎 Only  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
+        
+            $render = ConfRender::getTemplateRender();
+            $render->assign('user', $user)
+            ->assign('ss_group', $ss_group)
+            ->assign('ssr_group', $ssr_group)
+            ->assign('v2ray_group', $v2ray_group)
+            ->assign('quan_proxy_group', $quan_proxy_group)
+            ->assign('quan_auto_group', $quan_auto_group)
+            ->assign('quan_domestic_group', $quan_domestic_group)
+            ->assign('quan_others_group', $quan_others_group)
+            ->assign('quan_direct_group', $quan_direct_group)
+            ->assign('quan_apple_group', $quan_apple_group);
+
+            return $render->fetch('quantumult.tpl');
         }
-        
-        $quan_proxy_group = base64_encode("🍃 Proxy  :  static, 🏃 Auto\n🏃 Auto\n🚀 Direct\n" . $ss_name);
-        $quan_auto_group = base64_encode("🏃 Auto  :  auto\n".$ss_name);
-        $quan_domestic_group = base64_encode("🍂 Domestic  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
-        $quan_others_group = base64_encode("☁️ Others  :   static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
-        $quan_direct_group = base64_encode("🚀 Direct : static, DIRECT\nDIRECT");
-        $quan_apple_group = base64_encode("🍎 Only  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
-        
-         $render = ConfRender::getTemplateRender();
-         $render->assign('user', $user)
-         ->assign('ss_group', $ss_group)
-         ->assign('quan_proxy_group', $quan_proxy_group)
-         ->assign('quan_auto_group', $quan_auto_group)
-         ->assign('quan_domestic_group', $quan_domestic_group)
-         ->assign('quan_others_group', $quan_others_group)
-         ->assign('quan_direct_group', $quan_direct_group)
-         ->assign('quan_apple_group', $quan_apple_group)
-         ;
-
-         return $render->fetch('quantumult.tpl');
-}
     }
 
     public static function GetPcConf($user, $is_mu = 0, $is_ss = 0)
