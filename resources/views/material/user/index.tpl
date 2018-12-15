@@ -534,7 +534,7 @@
 
 														<div><span class="icon icon-lg text-white">flash_auto</span> Quantumult(施工中)：</div>
 														<div class="float-clear"><input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$subUrl}{$ssr_sub_token}?mu=4" readonly="true" />
-															<button id="quan" class="copy-config btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" onclick=Copyconfig("{$subUrl}{$ssr_sub_token}?mu=4","#quan")>
+															<button id="quan" class="copy-config btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" onclick=Copyconfig("{$subUrl}{$ssr_sub_token}?mu=4","#quan","quantumult://settings?configuration=clipboard")>
 																点击复制
 															</button>
 															<br>
@@ -814,7 +814,7 @@ $(".copy-text").click(function () {
 	$("#msg").html("已拷贝订阅链接，请您继续接下来的操作。");
 });
 
-function Copyconfig(url,id) {
+function Copyconfig(url,id,jumpurl="") {
     $.ajax({
         url: url,
         type: 'get',
@@ -839,8 +839,16 @@ function Copyconfig(url,id) {
     });
     clipboard.on('success', function(e) {
         $("#result").modal();
-        $("#msg").html("已经复制成功");
+        if(jumpurl!=""){
+			$("#msg").html("已经复制成功,您将跳转到app设置");
+			window.setTimeout(function(){ window.open(jumpurl) }, 1000);
+
+		}else {
+
+			$("#msg").html("已经复制成功");
+		}
     });
+
 }
 
 $(function(){
