@@ -270,7 +270,7 @@
 																<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_password}">点击复制</button><br>
 															</div>
 														{else}
-															<p class="card-heading" align="center"><b> 
+															<p class="card-heading" align="center"><b>
 																<i class="icon icon-lg">visibility_off</i>等级至少为{$display_ios_class}可见，如需升级请<a href="/user/shop">点击这里</a>升级套餐。
 															</b></p>
 														{/if}
@@ -431,7 +431,7 @@
 													<div class="tab-pane fade" id="all_ss_mac">
 														<p><a href="/ssr-download/ss-mac.zip" class="btn-dl"><i class="material-icons">save_alt</i> 下载客户端</a>，安装，然后下载<a href="/user/getpcconf?is_mu=0&is_ss=1" class="btn-dl"><i class="material-icons icon-sm">how_to_vote</i>普通端口链接</a>或者<a href="/user/getpcconf?is_mu=1&is_ss=1" class="btn-dl"><i class="material-icons icon-sm">how_to_vote</i>单端口多用户链接</a>，运行程序，小飞机上右键 服务器列表 子菜单 的 “导入服务器配置文件...” 导入这个文件，然后选择一个合适的服务器，更新一下PAC，然后开启系统代理即可上网</p>
 													</div>
-													<div class="tab-pane fade" id="all_ss_ios">													
+													<div class="tab-pane fade" id="all_ss_ios">
 													{if $display_ios_class>=0}
 														<div><span class="icon icon-lg text-white">account_box</span> 公共iOS账户：</div>
 														{if $user->class>=$display_ios_class}
@@ -445,7 +445,7 @@
 																<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_password}">点击复制</button><br>
 															</div>
 														{else}
-															<p class="card-heading" align="center"><b> 
+															<p class="card-heading" align="center"><b>
 																<i class="icon icon-lg">visibility_off</i>等级至少为{$display_ios_class}可见，如需升级请<a href="/user/shop">点击这里</a>升级套餐。
 															</b></p>
 														{/if}
@@ -534,7 +534,7 @@
 
 														<div><span class="icon icon-lg text-white">flash_auto</span> Quantumult(施工中)：</div>
 														<div class="float-clear"><input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$subUrl}{$ssr_sub_token}?mu=4" readonly="true" />
-															<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$subUrl}{$ssr_sub_token}?mu=4">
+															<button id="quan" class="copy-config btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button">
 																点击复制
 															</button>
 															<br>
@@ -813,6 +813,36 @@ $(".copy-text").click(function () {
 	$("#result").modal();
 	$("#msg").html("已拷贝订阅链接，请您继续接下来的操作。");
 });
+
+$(".copy-config").click(function () {
+    $.ajax({
+        url: "{$subUrl}{$ssr_sub_token}?mu=4",
+        type: 'get',
+        async: false,
+        success: function(res) {
+            if(res) {
+                console.log(res);
+                $("#result").modal();
+                $("#msg").html("获取成功。");
+                $("#quan").data('data', res);
+
+            } else {
+                $("#result").modal();
+                $("#msg").html("获取失败,请稍后再试");
+            }
+        }
+    });
+    const clipboard = new Clipboard('.copy-config', {
+        text: function() {
+            return $("#quan").data('data');
+        }
+    });
+    clipboard.on('success', function(e) {
+        $("#result").modal();
+        $("#msg").html("已经复制成功");
+    });
+});
+
 $(function(){
 	new Clipboard('.reset-link');
 });
