@@ -534,7 +534,7 @@
 
 														<div><span class="icon icon-lg text-white">flash_auto</span> Quantumult(施工中)：</div>
 														<div class="float-clear"><input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$subUrl}{$ssr_sub_token}?mu=4" readonly="true" />
-															<button id="quan" class="copy-config btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button">
+															<button id="quan" class="copy-config btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" onclick=Copyconfig("{$subUrl}{$ssr_sub_token}?mu=4","#quan")>
 																点击复制
 															</button>
 															<br>
@@ -814,9 +814,9 @@ $(".copy-text").click(function () {
 	$("#msg").html("已拷贝订阅链接，请您继续接下来的操作。");
 });
 
-$(".copy-config").click(function () {
+function Copyconfig(url,id) {
     $.ajax({
-        url: "{$subUrl}{$ssr_sub_token}?mu=4",
+        url: url,
         type: 'get',
         async: false,
         success: function(res) {
@@ -824,7 +824,7 @@ $(".copy-config").click(function () {
                 console.log(res);
                 $("#result").modal();
                 $("#msg").html("获取成功。");
-                $("#quan").data('data', res);
+                $(id).data('data', res);
 
             } else {
                 $("#result").modal();
@@ -834,14 +834,14 @@ $(".copy-config").click(function () {
     });
     const clipboard = new Clipboard('.copy-config', {
         text: function() {
-            return $("#quan").data('data');
+            return $(id).data('data');
         }
     });
     clipboard.on('success', function(e) {
         $("#result").modal();
         $("#msg").html("已经复制成功");
     });
-});
+}
 
 $(function(){
 	new Clipboard('.reset-link');
