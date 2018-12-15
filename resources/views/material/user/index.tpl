@@ -531,6 +531,20 @@
 															</button>
 															<br>
 														</div>
+														<div><span class="icon icon-lg text-white">flash_auto</span> Kitsunebi订阅(普通订阅)：</div>
+														<div class="float-clear"><input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$subUrl}{$ssr_sub_token}?mu=0&app=2" readonly="true" />
+															<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$subUrl}{$ssr_sub_token}?mu=0&app=2">
+																点击复制
+															</button>
+															<br>
+														</div>
+														<div><span class="icon icon-lg text-white">flash_auto</span> Kitsunebi订阅(单端口节点订阅)：</div>
+														<div class="float-clear"><input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$subUrl}{$ssr_sub_token}?mu=1&app=2" readonly="true" />
+															<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$subUrl}{$ssr_sub_token}?mu=1&app=2">
+																点击复制
+															</button>
+															<br>
+														</div>
 
 														<div><span class="icon icon-lg text-white">flash_auto</span> Quantumult(施工中)：</div>
 														<div class="float-clear"><input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$subUrl}{$ssr_sub_token}?mu=4" readonly="true" />

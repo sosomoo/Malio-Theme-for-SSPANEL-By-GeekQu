@@ -597,12 +597,17 @@ class LinkController extends BaseController
     const CLASH_MU = 4;
     const OTHERS = 5;
     const APP_SHADOWROCKET = 1;
+    const APP_KITSUNEBI = 2;
 
     public static function GetSSRSub($user, $mu = 0, $max = 0, $app = 0)
     {
-        if ($app == LinkController::APP_SHADOWROCKET) {
+        if ($app == LinkController::APP_SHADOWROCKET or $app == LinkController::APP_KITSUNEBI) {
             $vmessall = URL::getAllVMessUrl($user);
-            $ssrall = URL::getAllUrl($user, $mu, 0, 1);
+            if ($app==LinkController::APP_SHADOWROCKET) {
+                $ssrall = URL::getAllUrl($user, $mu, 0, 1);
+            }else{
+                $ssrall = URL::getAllUrl($user, $mu, 1, 1);
+            }
             $all = $ssrall.$vmessall;
             return Tools::base64_url_encode($all);
         } elseif ($mu == 0 || $mu == 1) {
