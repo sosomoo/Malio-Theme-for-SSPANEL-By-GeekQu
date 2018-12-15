@@ -1,5 +1,5 @@
 [Proxy]
-{$ss_group}
+{$ss_group}{$ssr_group}{$v2ray_group}
 
 [POLICY]
 {$quan_proxy_group}

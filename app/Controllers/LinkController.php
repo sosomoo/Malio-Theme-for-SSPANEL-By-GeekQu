@@ -180,7 +180,7 @@ class LinkController extends BaseController
         return $newResponse;
     }
     
-    public static function GetIosConf($user, $mu = 0, $surge = 0)
+    public static function GetSurge($user, $mu = 0, $surge = 0)
     {
 
         $proxy_name="";
