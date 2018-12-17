@@ -490,18 +490,30 @@ class URL
 
         if (count($node_explode) >= 6) {
             $item = array_merge($item, URL::parse_args($node_explode[5]));
+
+            if (array_key_exists("server",$item)){
+                $item['add']=$item['server'];
+                unset($item['server']);
+            }
         }
 
         return $item;
     }
 
     public static function getAllV2ray($user) {
-        $nodes = Node::where('sort', 11)->where(
-            function ($query) use ($user){
-                $query->where("node_group", "=", $user->node_group)
-                    ->orWhere("node_group", "=", 0);
-            }
-        )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
+        if ($user->is_admin){
+
+            $nodes = Node::where('sort', 11)->where("type", "1")->orderBy("name")->get();
+
+        }else{
+
+            $nodes = Node::where('sort', 11)->where(
+                function ($query) use ($user){
+                    $query->where("node_group", "=", $user->node_group)
+                        ->orWhere("node_group", "=", 0);
+                }
+            )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
+        }
 
         $return_array = array();
 

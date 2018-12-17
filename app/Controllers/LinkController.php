@@ -258,9 +258,9 @@ class LinkController extends BaseController
                 $v2ray_group .= "";
             } else {
                 if ($quantumult == 1) {
-                    $v2ray_group .= "vmess://" . base64_encode($v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "" . $v2ray_tls . $v2ray_obfs) . "\n";
+                    $v2ray_group .= "vmess://" . base64_encode($v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') ."_v2". "" . $v2ray_tls . $v2ray_obfs) . "\n";
                 } else {
-                    $v2ray_group .= $v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\"" . $v2ray_tls . $v2ray_obfs . "\n";
+                    $v2ray_group .= $v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\"" .", group=" . Config::get('appName') ."_v2". $v2ray_tls . $v2ray_obfs . "\n";
                 }
             }
         }
@@ -275,7 +275,7 @@ class LinkController extends BaseController
 
             foreach($items as $item) {
 
-                $ss_group .= $item['remark'] . " = shadowsocks, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", upstream-proxy=false, upstream-proxy-auth=false" . URL::getSurgeObfs($item) . "\n";
+                $ss_group .= $item['remark'] . " = shadowsocks, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", upstream-proxy=false, upstream-proxy-auth=false" . URL::getSurgeObfs($item) . ",group=".Config::get('appName')."\n";
 
                 $ss_name .= "\n" . $item['remark'];
             }
@@ -284,7 +284,7 @@ class LinkController extends BaseController
 
             foreach($ssrs as $item) {
 
-                $ssr_group .= $item['remark'] . " = shadowsocksr, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", protocol=" . $item['protocol'] . ", protocol_param=" . $item['protocol_param'] . ", obfs=" . $item['obfs'] . ", obfs_param=\"" . $item['obfs_param'] . "\"\n";
+                $ssr_group .= $item['remark'] . " = shadowsocksr, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", protocol=" . $item['protocol'] . ", protocol_param=" . $item['protocol_param'] . ", obfs=" . $item['obfs'] . ", obfs_param=\"" . $item['obfs_param'] . "\"".",group=".Config::get('appName')."\n";
 
                 $ssr_name .= "\n" . $item['remark'];
             }
