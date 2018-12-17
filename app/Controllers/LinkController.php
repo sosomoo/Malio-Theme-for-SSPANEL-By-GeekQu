@@ -203,23 +203,15 @@ class LinkController extends BaseController
             $proxy_name .= ", ".$item['remark'];
         }
 
-        if ($surge == 3) {
+        if ($surge == 3 || $surge == 2) {
 
             $render->assign('user', $user)
+            ->assign('surge', $surge)
             ->assign('userapiUrl', $userapiUrl)
             ->assign('proxy_name', $proxy_name)
             ->assign('proxy_group', $proxy_group);
 
-            return $render->fetch('surge3.tpl');            
-
-        } elseif ($surge == 2) {
-
-            $render->assign('user', $user)
-            ->assign('userapiUrl', $userapiUrl)
-            ->assign('proxy_name', $proxy_name)
-            ->assign('proxy_group', $proxy_group);
-
-            return $render->fetch('surge2.tpl');
+            return $render->fetch('surge.tpl');            
 
         } elseif ($surge == 1) {
 

@@ -4,16 +4,24 @@
 loglevel = notify
 dns-server = system, 119.29.29.29, 223.6.6.6, 80.80.80.80
 skip-proxy = 127.0.0.1, 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, 100.64.0.0/10, 17.0.0.0/8, localhost, *.local, *.crashlytics.com
-external-controller-access = MaxChina@0.0.0.0:8233
+external-controller-access = MixChina@0.0.0.0:8233
 allow-wifi-access = true
-interface = 0.0.0.0
-socks-interface = 0.0.0.0
-port = 8234
-socks-port = 8235
 enhanced-mode-by-rule = false
 exclude-simple-hostnames = true
 ipv6 = true
 replica = false
+{if $surge == 3}
+http-listen = 0.0.0.0:8234
+socks5-listen = 0.0.0.0:8235
+internet-test-url = http://baidu.com
+proxy-test-url = http://bing.com
+test-timeout = 3
+{else}
+interface = 0.0.0.0
+socks-interface = 0.0.0.0
+port = 8234
+socks-port = 8235
+{/if}
 
 [Replica]
 hide-apple-request = true
@@ -40,10 +48,16 @@ use-keyword-filter = false
 🏃 Auto = url-test{$proxy_name}, url = http://www.gstatic.com/generate_204, interval = 1200
 
 [Rule]
+{if $surge == 3}
+RULE-SET,https://raw.githubusercontent.com/lhie1/Rules/master/Surge3/apple.list,🍎 Only
+RULE-SET,https://raw.githubusercontent.com/lhie1/Rules/master/Surge3/proxy.list,🍃 Proxy
+RULE-SET,https://raw.githubusercontent.com/lhie1/Rules/master/Surge3/domestic.list,🍂 Domestic
+RULE-SET,SYSTEM,DIRECT
+{else}
 {file_get_contents("https://raw.githubusercontent.com/lhie1/Rules/master/Auto/Apple.conf")}
-{file_get_contents("https://raw.githubusercontent.com/lhie1/Rules/master/Auto/DIRECT.conf")}
 {file_get_contents("https://raw.githubusercontent.com/lhie1/Rules/master/Auto/PROXY.conf")}
-
+{file_get_contents("https://raw.githubusercontent.com/lhie1/Rules/master/Auto/DIRECT.conf")}
+{/if}
 GEOIP,CN,🍂 Domestic
 FINAL,☁️ Others,dns-failed
 
@@ -118,5 +132,3 @@ syria.sy = 127.0.0.1
 ^*.c114.com.cn header-del Referer
 ^https?://www.biquge.com.tw header-del Cookie
 ^https?://www.zhihu.com/question/ header-replace User-Agent Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.45 Safari/537.36
-
-[MITM]
