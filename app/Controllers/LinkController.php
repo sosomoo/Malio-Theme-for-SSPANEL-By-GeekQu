@@ -142,19 +142,34 @@ class LinkController extends BaseController
                     $mu = (int)$request->getQueryParams()["mu"];
                 }
 
-                $app = 0;
-                if (isset($request->getQueryParams()['app'])) {
-                    $app = (int)$request->getQueryParams()['app'];
+                $sub = 0;
+                if (isset($request->getQueryParams()["sub"])) {
+                    $sub = $request->getQueryParams()["sub"];
+                }
+
+                $ssd = 0;
+                if (isset($request->getQueryParams()["ssd"])) {
+                    $ssd = $request->getQueryParams()["ssd"];
+                }
+
+                $clash = 0;
+                if (isset($request->getQueryParams()["clash"])) {
+                    $clash = $request->getQueryParams()["clash"];
                 }
 
                 $surge = 0;
                 if (isset($request->getQueryParams()["surge"])) {
-                    $quantumult = $request->getQueryParams()["surge"];
-                }                
+                    $surge = $request->getQueryParams()["surge"];
+                }
 
                 $quantumult = 0;
                 if (isset($request->getQueryParams()["quantumult"])) {
                     $quantumult = $request->getQueryParams()["quantumult"];
+                }
+
+                $surfboard = 0;
+                if (isset($request->getQueryParams()["surfboard"])) {
+                    $surfboard = $request->getQueryParams()["surfboard"];
                 }
 
                 if (($quantumult == 1 || $quantumult == 2) && ($mu == 0 || $mu == 1)) {
@@ -167,9 +182,24 @@ class LinkController extends BaseController
                     $newResponse->getBody()->write(LinkController::GetSurge($user, $mu, $surge));
                         return $newResponse;
                 }
+                elseif ($surfboard == 1 && ($mu == 0 || $mu == 1)) {
+                    $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Surfboard.conf');
+                    $newResponse->getBody()->write(LinkController::GetSurfboard($user, $mu));
+                        return $newResponse;
+                }
+                elseif ($clash == 1 && ($mu == 0 || $mu == 1)) {
+                    $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Clash.conf');
+                    $newResponse->getBody()->write(LinkController::GetClash($user, $mu));
+                        return $newResponse;
+                }
+                elseif ($ssd == 1 && ($mu == 0 || $mu == 1)) {
+                    $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=SSD.txt');
+                    $newResponse->getBody()->write(LinkController::GetSSD($user, $mu));
+                        return $newResponse;
+                }
                 else {
                     $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt');
-                    $newResponse->getBody()->write(LinkController::GetSSRSub(User::where("id", "=", $Elink->userid)->first(), $mu, $max, $app));
+                    $newResponse->getBody()->write(LinkController::GetSub($user, $mu, $max, $sub));
                 return $newResponse;
                 }
             default:
@@ -185,8 +215,6 @@ class LinkController extends BaseController
 
         $proxy_name="";
         $proxy_group="";
-
-        $render = ConfRender::getTemplateRender();
 
         $userapiUrl = Config::get('baseUrl') . "/link/" . LinkController::GenerateSSRSubCode($user->id, 0) . "?surge=" . $surge . "&mu=" . $mu;
 
@@ -205,13 +233,14 @@ class LinkController extends BaseController
 
         if ($surge == 3 || $surge == 2) {
 
+            $render = ConfRender::getTemplateRender();
             $render->assign('user', $user)
             ->assign('surge', $surge)
             ->assign('userapiUrl', $userapiUrl)
             ->assign('proxy_name', $proxy_name)
             ->assign('proxy_group', $proxy_group);
 
-            return $render->fetch('surge.tpl');            
+            return $render->fetch('surge.tpl');
 
         } elseif ($surge == 1) {
 
@@ -302,6 +331,49 @@ class LinkController extends BaseController
 
             return $render->fetch('quantumult.tpl');
         }
+    }
+
+    public static function GetSurfboard($user, $mu = 0)
+    {
+        $userapiUrl = Config::get('baseUrl') . "/link/" . LinkController::GenerateSSRSubCode($user->id, 0) . "?surfboard=1&mu=" . $mu;
+
+        $ss_name="";
+        $ss_group="";
+
+        $items = URL::getAllItems($user, $mu, 1);
+        foreach($items as $item) {
+            $ss_group .= $item['remark'].' = custom, '.$item['address'].', '.$item['port'].', '.$item['method'].', '.$item['passwd'].', '.Config::get('baseUrl').'/downloads/SSEncrypt.module'.URL::getSurgeObfs($item).", tfo=true, udp-relay=true\n";
+            $ss_name .= ", ".$item['remark'];
+        }
+
+        $render = ConfRender::getTemplateRender();
+        $render->assign('user', $user)
+        ->assign('userapiUrl', $userapiUrl)
+        ->assign('ss_name', $ss_name)
+        ->assign('ss_group', $ss_group);
+
+        return $render->fetch('surfboard.tpl');
+    }
+
+    public static function GetClash($user, $mu = 0)
+    {
+        $render = ConfRender::getTemplateRender();
+        $confs = URL::getClashInfo($user);
+
+        $render->assign('user', $user)
+        ->assign('confs', $confs)
+        ->assign('proxies', array_map(function ($conf) {
+                return $conf['name'];
+            }, $confs));
+
+        return $render->fetch('clash.tpl');
+    }
+
+    public static function GetSSD($user, $mu = 0)
+    {
+
+        return URL::getAllSSDUrl($user);
+
     }
 
     public static function GetPcConf($user, $is_mu = 0, $is_ss = 0)
@@ -738,35 +810,41 @@ class LinkController extends BaseController
         return $bash;
     }
 
-    const V2RYA_MU = 2;
-    const SSD_MU = 3;
-    const CLASH_MU = 4;
-    const OTHERS = 5;
-    const APP_SHADOWROCKET = 1;
-
-    public static function GetSSRSub($user, $mu = 0, $max = 0, $app = 0)
+    public static function GetSub($user, $mu = 0, $max = 0, $sub = 0)
     {
-        if ($app == LinkController::APP_SHADOWROCKET) {
+        // SSR
+        if ($sub == 1) {
+
+            return Tools::base64_url_encode(URL::getAllUrl($user, $mu, 0, 1));
+
+        }
+        // SS
+        elseif ($sub == 2) {
+
+            # code...
+
+        }
+        // V2
+        elseif ($sub == 3) {
+
+            return Tools::base64_url_encode(URL::getAllVMessUrl($user));
+
+        }
+        // V2 + SS
+        elseif ($sub == 4) {
+
+            # code...
+            
+        }
+        // V2 + SS + SSR
+        elseif ($sub == 5) {
+
             $vmessall = URL::getAllVMessUrl($user);
             $ssrall = URL::getAllUrl($user, $mu, 0, 1);
-            $all = $ssrall.$vmessall;
-            return Tools::base64_url_encode($all);
-        } elseif ($mu == 0 || $mu == 1) {
-            return Tools::base64_url_encode(URL::getAllUrl($user, $mu, 0, 1));
-        } elseif ($mu == LinkController::V2RYA_MU) {
-            return Tools::base64_url_encode(URL::getAllVMessUrl($user));
-        } elseif ($mu == LinkController::SSD_MU) {
-            return URL::getAllSSDUrl($user);
-        } elseif ($mu == LinkController::CLASH_MU) {
-            // Clash
-            $render = ConfRender::getTemplateRender();
-            $confs = URL::getClashInfo($user);
+            $SubAll = $ssrall . $vmessall;
 
-            $render->assign('user', $user)->assign('confs', $confs)->assign('proxies', array_map(function ($conf) {
-                return $conf['name'];
-            }, $confs));
-
-            return $render->fetch('clash.tpl');
+            return Tools::base64_url_encode($SubAll);
         }
+
     }
 }
