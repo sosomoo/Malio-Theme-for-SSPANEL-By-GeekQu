@@ -172,27 +172,27 @@ class LinkController extends BaseController
                     $surfboard = $request->getQueryParams()["surfboard"];
                 }
 
-                if (($quantumult == 1 || $quantumult == 2) && ($mu == 0 || $mu == 1)) {
+                if (in_array($quantumult, array(1, 2))) {
                     $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf');
                     $newResponse->getBody()->write(LinkController::GetQuantumult($user, $mu, $quantumult));
                         return $newResponse;
                 }
-                elseif (($surge == 1 || $surge == 2 || $surge == 3) && ($mu == 0 || $mu == 1)) {
+                elseif (in_array($surge, array(1, 2, 3))) {
                     $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Surge.conf');
                     $newResponse->getBody()->write(LinkController::GetSurge($user, $mu, $surge));
                         return $newResponse;
                 }
-                elseif ($surfboard == 1 && ($mu == 0 || $mu == 1)) {
+                elseif ($surfboard == 1) {
                     $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Surfboard.conf');
                     $newResponse->getBody()->write(LinkController::GetSurfboard($user, $mu));
                         return $newResponse;
                 }
-                elseif ($clash == 1 && ($mu == 0 || $mu == 1)) {
+                elseif ($clash == 1) {
                     $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Clash.conf');
                     $newResponse->getBody()->write(LinkController::GetClash($user, $mu));
                         return $newResponse;
                 }
-                elseif ($ssd == 1 && ($mu == 0 || $mu == 1)) {
+                elseif ($ssd == 1) {
                     $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=SSD.txt');
                     $newResponse->getBody()->write(LinkController::GetSSD($user, $mu));
                         return $newResponse;
@@ -221,7 +221,7 @@ class LinkController extends BaseController
         $items = URL::getAllItems($user, $mu, 1);
         foreach($items as $item) {
 
-            if ($surge == 1 || $surge == 3) {
+            if (in_array($surge, array(1, 3))) {
                 $proxy_group .= $item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', encrypt-method=' . $item['method'] . ', password=' . $item['passwd'] . '' . URL::getSurgeObfs($item) . ", tfo=true, udp-relay=true\n";
 
             } else {
@@ -231,7 +231,7 @@ class LinkController extends BaseController
             $proxy_name .= ", ".$item['remark'];
         }
 
-        if ($surge == 3 || $surge == 2) {
+        if (in_array($surge, array(2, 3))) {
 
             $render = ConfRender::getTemplateRender();
             $render->assign('user', $user)
@@ -242,7 +242,7 @@ class LinkController extends BaseController
 
             return $render->fetch('surge.tpl');
 
-        } elseif ($surge == 1) {
+        } else {
 
             return $proxy_group;
 
@@ -821,7 +821,7 @@ class LinkController extends BaseController
         // SS
         elseif ($sub == 2) {
 
-            # code...
+            return Tools::base64_url_encode(URL::getAllUrl($user, $mu, 1, 1));
 
         }
         // V2
@@ -833,15 +833,19 @@ class LinkController extends BaseController
         // V2 + SS
         elseif ($sub == 4) {
 
-            # code...
-            
+            $vmessall = URL::getAllVMessUrl($user);
+            $ssall = URL::getAllUrl($user, $mu, 1, 1);
+            $SubAll = $ssall . $vmessall;
+
+            return Tools::base64_url_encode($SubAll);
         }
         // V2 + SS + SSR
         elseif ($sub == 5) {
 
             $vmessall = URL::getAllVMessUrl($user);
             $ssrall = URL::getAllUrl($user, $mu, 0, 1);
-            $SubAll = $ssrall . $vmessall;
+            $ssall = URL::getAllUrl($user, $mu, 1, 1);
+            $SubAll = $ssrall . $ssall . $vmessall;
 
             return Tools::base64_url_encode($SubAll);
         }
