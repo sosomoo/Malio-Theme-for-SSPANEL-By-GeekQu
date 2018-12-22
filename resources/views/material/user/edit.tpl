@@ -63,7 +63,21 @@
 						</div>
                       
                     
-                      
+						<div class="card margin-bottom-no">
+							<div class="card-main">
+								<div class="card-inner">
+									<div class="card-inner">
+										<div class="cardbtn-edit">
+												<div class="card-heading">重置订阅链接</div>
+												<div class="reset-flex">
+													<a class="reset-link btn btn-brand-accent btn-flat" ><i class="icon">autorenew</i>&nbsp;</a>
+												</div>
+										</div>
+                                        <p>点击会重置您的订阅链接，此操作不可逆，请谨慎。</p>
+									</div>
+								</div>
+							</div>
+						</div>
 
 
 						<div class="card margin-bottom-no">
@@ -873,5 +887,17 @@ $(".copy-text").click(function () {
             })
         })
     })
+</script>
+
+<script>
+	$(function(){
+		new Clipboard('.reset-link');
+	});
+	
+	$(".reset-link").click(function () {
+		$("#result").modal();
+		$("#msg").html("已重置您的订阅链接，请变更或添加您的订阅链接！");
+		window.setTimeout("location.href='/user/url_reset'", {$config['jump_delay']});
+	});
 </script>
 

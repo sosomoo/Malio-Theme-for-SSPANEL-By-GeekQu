@@ -167,7 +167,6 @@
 									<div class="card-inner margin-bottom-no">
 									<div class="cardbtn-edit">
 											<div class="card-heading"><i class="icon icon-md">phonelink</i> 快速添加节点</div>
-											<div class="reset-flex"><span>重置订阅链接</span><a class="reset-link btn btn-brand-accent btn-flat" ><i class="icon">autorenew</i>&nbsp;</a></div>
 									</div>
 										<nav class="tab-nav margin-top-no">
 											<ul class="nav nav-list">
@@ -812,15 +811,6 @@ $(function(){
 $(".copy-text").click(function () {
 	$("#result").modal();
 	$("#msg").html("已拷贝订阅链接，请您继续接下来的操作。");
-});
-$(function(){
-	new Clipboard('.reset-link');
-});
-
-$(".reset-link").click(function () {
-	$("#result").modal();
-	$("#msg").html("已重置您的订阅链接，请变更或添加您的订阅链接！");
-	window.setTimeout("location.href='/user/url_reset'", {$config['jump_delay']});
 });
 
  {if $user->transfer_enable-($user->u+$user->d) == 0}
