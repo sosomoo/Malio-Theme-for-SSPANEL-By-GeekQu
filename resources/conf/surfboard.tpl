@@ -16,15 +16,13 @@ ipv6 = true
 {$ss_group}
 
 [Proxy Group]
-🍃 Proxy = select, 🍈 Select, 🏃 Auto, 🚀 Direct
+🍃 Proxy = select, 🍈 Select, 🚀 Direct
 
 🍂 Domestic = select, 🚀 Direct, 🍃 Proxy
 
 ☁️ Others = select, 🍃 Proxy, 🚀 Direct
 
 🍈 Select = select{$ss_name}
-
-🏃 Auto = url-test{$ss_name}, url = http://www.gstatic.com/generate_204, interval = 1200
 
 [Rule]
 {file_get_contents("https://raw.githubusercontent.com/lhie1/Rules/master/Auto/PROXY.conf")}

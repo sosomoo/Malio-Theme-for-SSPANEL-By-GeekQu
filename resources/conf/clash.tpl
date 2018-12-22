@@ -618,4 +618,4 @@ Rule:
 
 # 最终规则
 - GEOIP,CN,DIRECT
-- FINAL,,{config::get("appName")}
+- MATCH,{config::get("appName")}

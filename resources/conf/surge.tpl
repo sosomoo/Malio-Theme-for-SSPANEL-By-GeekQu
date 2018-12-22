@@ -113,7 +113,7 @@ syria.sy = 127.0.0.1
 ^https?:\/\/www\.iqshw\.com\/d\/js\/m http://burpsuite.applinzi.com/Interface header
 ^https?:\/\/www\.iqshw\.com\/d\/js\/m http://rewrite.websocket.site:10/Other/Static/JS/Package.js? header
 
-// Tiktok
+// Tiktok US
 (?<=aweme\/v1\/)playwm play 302
 (?<=&ac=)4G(?=.*) WIFI 302
 (?<=_region=)CN(?=&) US 302
