@@ -165,6 +165,79 @@
 							<div class="card quickadd">
 								<div class="card-main">
 									<div class="card-inner margin-bottom-no">
+
+										<div class="cardbtn-edit">
+											<div class="card-heading"><i class="icon icon-md">phonelink</i> 使用方案</div>
+										</div>
+
+										<nav class="tab-nav margin-top-no">
+											<ul class="nav nav-list">
+												<li class="active">
+													<a class="" data-toggle="tab" href="#sub_center"><i class="icon icon-lg">info_outline</i>&nbsp;订阅中心</a>
+												</li>
+												<li>
+													<a class="" data-toggle="tab" href="#soft_center"><i class="icon icon-lg">flight_takeoff</i>&nbsp;其他说明</a>
+												</li>
+											</ul>
+										</nav>
+
+										<div class="card-inner">
+											<div class="tab-content">
+
+												<div class="tab-pane fade" id="soft_center">
+													<p>预留~</p>
+												</div>
+
+												<div class="tab-pane fade active in" id="sub_center">
+													<nav class="tab-nav margin-top-no">
+														<ul class="nav nav-list">
+															<li class="active">
+																<a class="" data-toggle="tab" href="#sub_center_windows"><i class="icon icon-lg">desktop_windows</i>&nbsp;Windows</a>
+															</li>
+															<li>
+																<a class="" data-toggle="tab" href="#sub_center_mac"><i class="icon icon-lg">laptop_mac</i>&nbsp;MacOS</a>
+															</li>
+															<li>
+																<a class="" data-toggle="tab" href="#sub_center_ios"><i class="icon icon-lg">phone_iphone</i>&nbsp;iOS</a>
+															</li>
+															<li>
+																<a class="" data-toggle="tab" href="#sub_center_android"><i class="icon icon-lg">android</i>&nbsp;Android</a>
+															</li>
+														</ul>
+													</nav>
+													<div class="tab-pane fade active in" id="sub_center_windows">
+														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Windows/releases"><i class="material-icons">save_alt</i></a> SSD - [ SS ]：</p>
+														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/Fndroid/clash_for_windows_pkg/releases"><i class="material-icons">save_alt</i></a> Clash for Windows - [ SS/VMess ]：</p>
+													</div>
+													<div class="tab-pane fade" id="sub_center_mac">
+														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://nssurge.com/mac/v3/Surge-latest.zip"><i class="material-icons">save_alt</i></a> Surge - [ SS ]：</p>
+														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/yichengchen/clashX/releases"><i class="material-icons">save_alt</i></a> ClashX - [ SS/VMess ]：</p>
+													</div>
+													<div class="tab-pane fade" id="sub_center_ios">
+														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/surge-3/id1442620678?ls=1&mt=8"><i class="material-icons">save_alt</i></a> Surge - [ SS ]：</p>
+														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/kitsunebi-proxy-utility/id1446584073?ls=1&mt=8"><i class="material-icons">save_alt</i></a> Kitsunebi - [ SS/VMess ]：</p>
+														<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/quantumult/id1252015438?ls=1&mt=8"><i class="material-icons">save_alt</i></a> Quantumult - [ SS/SSR/VMess ]：</p>
+														<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/shadowrocket/id932747118?mt=8"><i class="material-icons">save_alt</i></a> Shadowrocket - [ SS/SSR/VMess ]：</p>
+													</div>
+													<div class="tab-pane fade" id="sub_center_android">
+														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Android/releases"><i class="material-icons">save_alt</i></a> SSD - [ SS ]：</p>
+														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="#"><i class="material-icons">save_alt</i></a> SSR - [ SSR ]：</p>
+														<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://github.com/2dust/v2rayNG/releases"><i class="material-icons">save_alt</i></a> V2rayN - [ VMess ]：</p>
+														<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://rink.hockeyapp.net/recruit/2113783c503645abb0a5ec6317e1a169"><i class="material-icons">save_alt</i></a> Surfboard - [ SS ]：</p>
+													</div>
+												</div>
+
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+
+							<div class="card quickadd">
+								<div class="card-main">
+									<div class="card-inner margin-bottom-no">
 									<div class="cardbtn-edit">
 											<div class="card-heading"><i class="icon icon-md">phonelink</i> 快速添加节点</div>
 									</div>
