@@ -636,21 +636,22 @@ class URL
         }
         return $plugin;
     }
+
     public static function getSurgeObfs($item) {
         $ss_obfs_list = Config::getSupportParam('ss_obfs');
         $plugin = "";
         if(in_array($item['obfs'], $ss_obfs_list)) {
             if(strpos($item['obfs'], 'http') !== FALSE) {
-                $plugin .= "obfs=http";
+                $plugin .= ", obfs=http";
             }
 			else {
-                $plugin .= "obfs=tls";
+                $plugin .= ", obfs=tls";
             }
             if($item['obfs_param'] != '') {
-                $plugin .= ",obfs-host=".$item['obfs_param'];
+                $plugin .= ", obfs-host=".$item['obfs_param'];
             }
 			else {
-				$plugin .= ",obfs-host=wns.windows.com";
+				$plugin .= ", obfs-host=wns.windows.com";
 			}
 
         }
