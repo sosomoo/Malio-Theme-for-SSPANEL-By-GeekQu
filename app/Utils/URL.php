@@ -239,6 +239,7 @@ class URL
         $new_user->protocol = str_replace("_compatible", "", $new_user->protocol);
         return $new_user;
     }
+
     public static function getAllItems($user, $is_mu = 0, $is_ss = 0) {
         $return_array = array();
         if ($user->is_admin) {
@@ -336,10 +337,11 @@ class URL
         }
         return $return_array;
     }
+
     public static function getAllUrl($user, $is_mu, $is_ss = 0, $enter = 0) {
         $return_url = '';
-        $return_url .= URL::getUserTraffic($user, $is_mu).($enter == 0 ? ' ' : "\n");
-        $return_url .= URL::getUserClassExpiration($user, $is_mu).($enter == 0 ? ' ' : "\n");
+        $return_url .= URL::getUserTraffic($user, $is_mu, $is_ss).($enter == 0 ? ' ' : "\n");
+        $return_url .= URL::getUserClassExpiration($user, $is_mu, $is_ss).($enter == 0 ? ' ' : "\n");
         if(strtotime($user->expire_in)<time()){
 			return $return_url;
 		}
@@ -387,6 +389,7 @@ class URL
             return $ssurl;
         }
     }
+
     public static function getV2Url($user, $node){
         $node_explode = explode(';', $node->server);
         $item = [
@@ -718,34 +721,71 @@ class URL
         }
         return $return_array;
     }
+
     public static function cloneUser($user) {
         $new_user = clone $user;
         return $new_user;
     }
 
-	public static function getUserTraffic($user, $is_mu = 0){
+	public static function getUserTraffic($user, $is_mu = 0, $is_ss = 0){
+
         $group_name = Config::get('appName');
 		if(!Config::get('mergeSub') and $is_mu == 1){
 			$group_name .= ' - 单端口';
 		}
-		if(strtotime($user->expire_in)>time()){
-			$ssurl = "www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("剩余流量：".number_format(($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100,2)."% ".$user->unusedTraffic())."&group=".Tools::base64_url_encode($group_name);
-		}else{
-			$ssurl = "www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("账户已过期，请续费后使用")."&group=".Tools::base64_url_encode($group_name);
-		}
-      	return "ssr://".Tools::base64_url_encode($ssurl);
+
+        if (!$is_ss) {
+
+            if(strtotime($user->expire_in)>time()){
+                $ssurl = "www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("剩余流量：".number_format(($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100,2)."% ".$user->unusedTraffic())."&group=".Tools::base64_url_encode($group_name);
+            }else{
+                $ssurl = "www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("账户已过期，请续费后使用")."&group=".Tools::base64_url_encode($group_name);
+            }
+
+            return "ssr://".Tools::base64_url_encode($ssurl);
+
+        } else {
+    
+            if(strtotime($user->expire_in)>time()){
+                    $remark = "剩余流量：".number_format(($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100,2)."% ".$user->unusedTraffic();
+            }else{
+                $remark = "账户已过期，请续费后使用";
+            }
+
+            $ssurl = "ss://" . Tools::base64_url_encode("chacha20:YnJlYWt3YWxs@www.google.com:1") . "#" . rawurlencode($remark);
+
+            return $ssurl;
+        }
 	}
 
-    public static function getUserClassExpiration($user, $is_mu = 0){
+    public static function getUserClassExpiration($user, $is_mu = 0, $is_ss = 0){
         $group_name = Config::get('appName');
 		if(!Config::get('mergeSub') and $is_mu == 1){
 			$group_name .= ' - 单端口';
 		}
-		if(strtotime($user->expire_in)>time()){
-			$ssurl = "www.google.com:2:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("过期时间：".$user->class_expire)."&group=".Tools::base64_url_encode($group_name);
-		}else{
-			$ssurl = "www.google.com:2:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("账户已过期，请续费后使用")."&group=".Tools::base64_url_encode($group_name);
-		}
-	return "ssr://".Tools::base64_url_encode($ssurl);
-  }
+
+        if (!$is_ss) {
+
+            if(strtotime($user->expire_in)>time()){
+                $ssurl = "www.google.com:2:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("过期时间：".$user->class_expire)."&group=".Tools::base64_url_encode($group_name);
+            } else {
+                $ssurl = "www.google.com:2:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("账户已过期，请续费后使用")."&group=".Tools::base64_url_encode($group_name);
+            }
+
+            return "ssr://".Tools::base64_url_encode($ssurl);
+
+        } else {
+    
+            if(strtotime($user->expire_in)>time()){
+                $remark= "过期时间：".$user->class_expire;
+            }else{
+                $remark= "账户已过期，请续费后使用";
+            }
+
+            $ssurl = "ss://".Tools::base64_url_encode("chacha20:YnJlYWt3YWxs@www.google.com:1") . "#" . rawurlencode($remark);
+
+            return $ssurl;
+        }
+    }
+
 }
