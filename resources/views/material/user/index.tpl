@@ -871,7 +871,7 @@ function Copyconfig(url,id,jumpurl="") {
                 $("#result").modal();
                 $("#msg").html("获取成功。");
                 $(id).data('data', res);
-
+				console.log(res);
             } else {
                 $("#result").modal();
                 $("#msg").html("获取失败,请稍后再试");
@@ -898,7 +898,9 @@ function Copyconfig(url,id,jumpurl="") {
 			}
     );
     clipboard.on("error",function(e){
-    	console.log(e.toString())
+		console.error('Action:', e.action);
+		console.error('Trigger:', e.trigger);
+		console.error('Text:', e.text);
 			}
 	);
 
