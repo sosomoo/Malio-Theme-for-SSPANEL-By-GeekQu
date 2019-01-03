@@ -16,8 +16,10 @@
         <link rel="shortcut icon" href="/favicon.ico"/>
         <link rel="bookmark" href="/favicon.ico"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-		<link rel="stylesheet" href="/assets/css/main.css"/>
-        <noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>   
+	<link rel="stylesheet" href="/assets/css/main.css"/>
+        <noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>
+	<link href="//unpkg.com/nprogress@0.2.0/nprogress.css" rel="stylesheet" />
+    <script src="//unpkg.com/nprogress@0.2.0/nprogress.js"></script>
   </head>
   
        <body>
@@ -61,7 +63,7 @@
 								如果想自定义文本请删除下面这段script代码,格式为
 								<p>自定义文本</p>
 								-->
-								<script type="text/javascript" src="https://api.lwl12.com/hitokoto/v1?encode=js&charset=utf-8"></script><div id="lwlhitokoto"><script>lwlhitokoto()</script></div>
+								<div id="lwlhitokoto"></div>
                           </div>
                       </div>	
                               <nav>
@@ -158,5 +160,42 @@ try{
 };
  
 </script>
-	</body>
+<!-- 進度條 -->
+<script>
+	$(function() {
+       $(window).load(function(){
+	   NProgress.done();
+		});
+       NProgress.set(0.0);
+       NProgress.configure({ showSpinner: false });
+       NProgress.configure({ minimum: 0.4 });
+       NProgress.configure({ easing: 'ease', speed: 1200 });
+       NProgress.configure({ trickleSpeed: 200 });
+       NProgress.configure({ trickleRate: 0.2, trickleSpeed: 1200 });
+       NProgress.inc();
+       $(window).ready(function(){
+	   NProgress.start();
+		});
+	})
+
+	window.addEventListener('load',()=>{
+		fetch('https://api.lwl12.com/hitokoto/v1?encode=realjson',{
+			method: 'GET',
+		}).then((response)=>{
+			return response.json();
+		}).then((r)=>{
+			insertHitokoto(r);
+		})
+	});
+
+	function insertHitokoto(data) {
+		let hitokoto = document.getElementById('lwlhitokoto');
+		if (data.author || data.source) {
+			hitokoto.innerHTML = `${ldelim}data.text{rdelim} —— ${ldelim}data.author{rdelim} ${ldelim}data.source{rdelim}`;
+		} else {
+			hitokoto.innerHTML = `${ldelim}data.text{rdelim}`;
+		}
+	}
+</script>
+</body>
 </html>
