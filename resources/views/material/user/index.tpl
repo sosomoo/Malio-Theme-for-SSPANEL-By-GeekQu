@@ -868,7 +868,6 @@ function Copyconfig(url,id,jumpurl="") {
         async: false,
         success: function(res) {
             if(res) {
-                console.log(res);
                 $("#result").modal();
                 $("#msg").html("获取成功。");
                 $(id).data('data', res);
@@ -885,16 +884,23 @@ function Copyconfig(url,id,jumpurl="") {
         }
     });
     clipboard.on('success', function(e) {
-        $("#result").modal();
-        if(jumpurl!=""){
-			$("#msg").html("已经复制成功,您将跳转到app设置");
-			window.setTimeout(function(){ window.open(jumpurl) }, 1000);
+				$("#result").modal();
+				if (jumpurl != "") {
+					$("#msg").html("已经复制成功,您将跳转到app设置");
+					window.setTimeout(function () {
+						window.open(jumpurl)
+					}, 1000);
 
-		}else {
+				} else {
 
-			$("#msg").html("已经复制成功");
-		}
-    });
+					$("#msg").html("已经复制成功");
+				}
+			}
+    );
+    clipboard.on("error",function(e){
+    	console.log(e.toString())
+			}
+	);
 
 }
 
