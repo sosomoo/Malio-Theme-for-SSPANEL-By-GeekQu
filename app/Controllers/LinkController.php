@@ -37,46 +37,6 @@ class LinkController extends BaseController
         return "couldn't alloc token";
     }
 
-    public static function GenerateAclCode($address, $port, $userid, $geo, $method)
-    {
-        $Elink = Link::where("type", "=", 9)->where("address", "=", $address)->where("port", "=", $port)->where("userid", "=", $userid)->where("geo", "=", $geo)->where("method", "=", $method)->first();
-        if ($Elink != null) {
-            return $Elink->token;
-        }
-        $NLink = new Link();
-        $NLink->type = 9;
-        $NLink->address = $address;
-        $NLink->port = $port;
-        $NLink->ios = 0;
-        $NLink->geo = $geo;
-        $NLink->method = $method;
-        $NLink->userid = $userid;
-        $NLink->token = LinkController::GenerateRandomLink();
-        $NLink->save();
-
-        return $NLink->token;
-    }
-
-    public static function GenerateRouterCode($userid, $without_mu)
-    {
-        $Elink = Link::where("type", "=", 10)->where("userid", "=", $userid)->where("geo", $without_mu)->first();
-        if ($Elink != null) {
-            return $Elink->token;
-        }
-        $NLink = new Link();
-        $NLink->type = 10;
-        $NLink->address = "";
-        $NLink->port = 0;
-        $NLink->ios = 0;
-        $NLink->geo = $without_mu;
-        $NLink->method = "";
-        $NLink->userid = $userid;
-        $NLink->token = LinkController::GenerateRandomLink();
-        $NLink->save();
-
-        return $NLink->token;
-    }
-
     public static function GenerateSSRSubCode($userid, $without_mu)
     {
         $Elink = Link::where("type", "=", 11)->where("userid", "=", $userid)->where("geo", $without_mu)->first();
@@ -106,129 +66,39 @@ class LinkController extends BaseController
         if ($Elink == null) {
             return null;
         }
-
-        switch ($Elink->type) {
-            case 9:
-                $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.acl');//->getBody()->write($builder->output());
-                $newResponse->getBody()->write(LinkController::GetAcl(User::where("id", "=", $Elink->userid)->first()));
-                return $newResponse;
-            case 10:
-                $user = User::where("id", $Elink->userid)->first();
-                if ($user == null) {
-                    return null;
-                }
-
-                $is_ss = 0;
-                if (isset($request->getQueryParams()["is_ss"])) {
-                    $is_ss = $request->getQueryParams()["is_ss"];
-                }
-
-                $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.sh');//->getBody()->write($builder->output());
-                $newResponse->getBody()->write(LinkController::GetRouter(User::where("id", "=", $Elink->userid)->first(), $Elink->geo, $is_ss));
-                return $newResponse;
-            case 11:
-                $user = User::where("id", $Elink->userid)->first();
-                if ($user == null) {
-                    return null;
-                }
-
-                $max = 0;
-                if (isset($request->getQueryParams()["max"])) {
-                    $max = (int)$request->getQueryParams()["max"];
-                }
-
-                $mu = 0;
-                if (isset($request->getQueryParams()["mu"])) {
-                    $mu = (int)$request->getQueryParams()["mu"];
-                }
-
-                $app = 0;
-                if (isset($request->getQueryParams()['app'])) {
-                    $app = (int)$request->getQueryParams()['app'];
-                }
-
-                $surge = 0;
-                if (isset($request->getQueryParams()["surge"])) {
-                    $quantumult = $request->getQueryParams()["surge"];
-                }                
-
-                $quantumult = 0;
-                if (isset($request->getQueryParams()["quantumult"])) {
-                    $quantumult = $request->getQueryParams()["quantumult"];
-                }
-
-                if (($quantumult == 1 || $quantumult == 2) && ($mu == 0 || $mu == 1)) {
-                    $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf');
-                    $newResponse->getBody()->write(LinkController::GetQuantumult($user, $mu, $quantumult));
-                        return $newResponse;
-                }
-                elseif (($surge == 1 || $surge == 2 || $surge == 3) && ($mu == 0 || $mu == 1)) {
-                    $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Surge.conf');
-                    $newResponse->getBody()->write(LinkController::GetSurge($user, $mu, $surge));
-                        return $newResponse;
-                }
-                else {
-                    $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt');
-                    $newResponse->getBody()->write(LinkController::GetSSRSub(User::where("id", "=", $Elink->userid)->first(), $mu, $max, $app));
-                return $newResponse;
-                }
-            default:
-                break;
+		if($Elink->type!=11){
+			return null;
+		}
+        $user = User::where("id", $Elink->userid)->first();
+        if ($user == null) {
+            return null;
         }
-        $newResponse = $response->withHeader('Content-type', ' application/x-ns-proxy-autoconfig; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate');//->getBody()->write($builder->output());
-        $newResponse->getBody()->write(LinkController::GetPac($type, $Elink->address, $Elink->port, User::where("id", "=", $Elink->userid)->first()->pac));
+
+        $mu = 0;
+        if (isset($request->getQueryParams()["mu"])) {
+            $mu = (int)$request->getQueryParams()["mu"];
+        }
+
+        $app = 0;
+        if (isset($request->getQueryParams()['app'])) {
+            $app = (int)$request->getQueryParams()['app'];
+        }
+        $quantumult = 0;
+        if (isset($request->getQueryParams()["quantumult"])) {
+            $quantumult = $request->getQueryParams()["quantumult"];
+        }
+
+        if (($quantumult == 1 || $quantumult == 2) && ($mu == 0 || $mu == 1)) {
+            $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf');
+            $newResponse->getBody()->write(LinkController::GetQuantumult($user, $mu, $quantumult));
+            return $newResponse;
+        }
+        else {
+            $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt');
+            $newResponse->getBody()->write(LinkController::GetSSRSub(User::where("id", "=", $Elink->userid)->first(), $mu,$app));
         return $newResponse;
-    }
-    
-    public static function GetSurge($user, $mu = 0, $surge = 0)
-    {
-
-        $proxy_name="";
-        $proxy_group="";
-
-        $render = ConfRender::getTemplateRender();
-
-        $userapiUrl = Config::get('baseUrl') . "/link/" . LinkController::GenerateSSRSubCode($user->id, 0) . "?surge=" . $surge . "&mu=" . $mu;
-
-        $items = URL::getAllItems($user, $mu, 1);
-        foreach($items as $item) {
-
-            if ($surge == 1 || $surge == 3) {
-                $proxy_group .= $item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', encrypt-method=' . $item['method'] . ', password=' . $item['passwd'] . '' . URL::getSurgeObfs($item) . ", tfo=true, udp-relay=true\n";
-
-            } else {
-                $proxy_group .= $item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', ' . Config::get('baseUrl') . '/downloads/SSEncrypt.module' . URL::getSurgeObfs($item) . ", tfo=true, udp-relay=true\n";
-            }
-
-            $proxy_name .= ", ".$item['remark'];
         }
-
-        if ($surge == 3) {
-
-            $render->assign('user', $user)
-            ->assign('userapiUrl', $userapiUrl)
-            ->assign('proxy_name', $proxy_name)
-            ->assign('proxy_group', $proxy_group);
-
-            return $render->fetch('surge3.tpl');            
-
-        } elseif ($surge == 2) {
-
-            $render->assign('user', $user)
-            ->assign('userapiUrl', $userapiUrl)
-            ->assign('proxy_name', $proxy_name)
-            ->assign('proxy_group', $proxy_group);
-
-            return $render->fetch('surge2.tpl');
-
-        } elseif ($surge == 1) {
-
-            return $proxy_group;
-
-        }
-
     }
-
     public static function GetQuantumult($user, $mu = 0, $quantumult = 0)
     {
         $ss_group = "";
@@ -266,9 +136,9 @@ class LinkController extends BaseController
         }
 
         if ($quantumult == 1) {
-        
+
             return base64_encode($v2ray_group);
-        
+
         } else {
 
             $items = URL::getAllItems($user, $mu, 1);
@@ -295,18 +165,18 @@ class LinkController extends BaseController
             $quan_others_group = base64_encode("☁️ Others  :   static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
             $quan_direct_group = base64_encode("🚀 Direct : static, DIRECT\nDIRECT");
             $quan_apple_group = base64_encode("🍎 Only  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
-        
+
             $render = ConfRender::getTemplateRender();
             $render->assign('user', $user)
-            ->assign('ss_group', $ss_group)
-            ->assign('ssr_group', $ssr_group)
-            ->assign('v2ray_group', $v2ray_group)
-            ->assign('quan_proxy_group', $quan_proxy_group)
-            ->assign('quan_auto_group', $quan_auto_group)
-            ->assign('quan_domestic_group', $quan_domestic_group)
-            ->assign('quan_others_group', $quan_others_group)
-            ->assign('quan_direct_group', $quan_direct_group)
-            ->assign('quan_apple_group', $quan_apple_group);
+                ->assign('ss_group', $ss_group)
+                ->assign('ssr_group', $ssr_group)
+                ->assign('v2ray_group', $v2ray_group)
+                ->assign('quan_proxy_group', $quan_proxy_group)
+                ->assign('quan_auto_group', $quan_auto_group)
+                ->assign('quan_domestic_group', $quan_domestic_group)
+                ->assign('quan_others_group', $quan_others_group)
+                ->assign('quan_direct_group', $quan_direct_group)
+                ->assign('quan_apple_group', $quan_apple_group);
 
             return $render->fetch('quantumult.tpl');
         }
@@ -434,318 +304,6 @@ class LinkController extends BaseController
         return json_encode($json, JSON_PRETTY_PRINT);
     }
 
-    private static function GetPac($type, $address, $port, $defined)
-    {
-        header('Content-type: application/x-ns-proxy-autoconfig; charset=utf-8');
-        return LinkController::get_pac($type, $address, $port, true, $defined);
-    }
-
-    private static function GetAcl($user)
-    {
-        $rulelist = base64_decode(file_get_contents("https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt")) . "\n" . $user->pac;
-        $gfwlist = explode("\n", $rulelist);
-
-        $count = 0;
-        $acl_content = '';
-        $find_function_content = '
-#Generated by sspanel-glzjin-mod v3
-#Time:' . date('Y-m-d H:i:s') . '
-
-[bypass_all]
-
-';
-
-        $proxy_list = '[proxy_list]
-
-';
-        $bypass_list = '[bypass_list]
-
-';
-        $outbound_block_list = '[outbound_block_list]
-
-';
-
-        $isget = array();
-        foreach ($gfwlist as $index => $rule) {
-            if (empty($rule)) {
-                continue;
-            } elseif (substr($rule, 0, 1) == '!' || substr($rule, 0, 1) == '[') {
-                continue;
-            }
-
-            if (substr($rule, 0, 2) == '@@') {
-                // ||开头表示前面还有路径
-                if (substr($rule, 2, 2) == '||') {
-                    //$rule_reg = preg_match("/^((http|https):\/\/)?([^\/]+)/i",substr($rule, 2), $matches);
-                    $host = substr($rule, 4);
-                    //preg_match("/[^\.\/]+\.[^\.\/]+$/", $host, $matches);
-                    if (isset($isget[$host])) {
-                        continue;
-                    }
-                    $isget[$host] = 1;
-                    //$find_function_content.="DOMAIN,".$host.",DIRECT,force-remote-dns\n";
-                    $bypass_list .= $host . "\n";
-                    continue;
-                    // !开头相当于正则表达式^
-                } elseif (substr($rule, 2, 1) == '|') {
-                    preg_match("/(\d{1,3}\.){3}\d{1,3}/", substr($rule, 3), $matches);
-                    if (!isset($matches[0])) {
-                        continue;
-                    }
-
-                    $host = $matches[0];
-                    if ($host != "") {
-                        if (isset($isget[$host])) {
-                            continue;
-                        }
-                        $isget[$host] = 1;
-                        //$find_function_content.="IP-CIDR,".$host."/32,DIRECT,no-resolve \n";
-                        $bypass_list .= $host . "/32\n";
-                        continue;
-                    } else {
-                        preg_match_all("~^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?~i", substr($rule, 3), $matches);
-
-                        if (!isset($matches[4][0])) {
-                            continue;
-                        }
-
-                        $host = $matches[4][0];
-                        if ($host != "") {
-                            if (isset($isget[$host])) {
-                                continue;
-                            }
-                            $isget[$host] = 1;
-                            //$find_function_content.="DOMAIN-SUFFIX,".$host.",DIRECT,force-remote-dns\n";
-                            $bypass_list .= $host . "\n";
-                            continue;
-                        }
-                    }
-                } elseif (substr($rule, 2, 1) == '.') {
-                    $host = substr($rule, 3);
-                    if ($host != "") {
-                        if (isset($isget[$host])) {
-                            continue;
-                        }
-                        $isget[$host] = 1;
-                        //$find_function_content.="DOMAIN-SUFFIX,".$host.",DIRECT,force-remote-dns \n";
-                        $bypass_list .= $host . "\n";
-                        continue;
-                    }
-                }
-            }
-
-            // ||开头表示前面还有路径
-            if (substr($rule, 0, 2) == '||') {
-                //$rule_reg = preg_match("/^((http|https):\/\/)?([^\/]+)/i",substr($rule, 2), $matches);
-                $host = substr($rule, 2);
-                //preg_match("/[^\.\/]+\.[^\.\/]+$/", $host, $matches);
-
-                if (strpos($host, "*") !== false) {
-                    $host = substr($host, strpos($host, "*") + 1);
-                    if (strpos($host, ".") !== false) {
-                        $host = substr($host, strpos($host, ".") + 1);
-                    }
-                    if (isset($isget[$host])) {
-                        continue;
-                    }
-                    $isget[$host] = 1;
-                    //$find_function_content.="DOMAIN-KEYWORD,".$host.",Proxy,force-remote-dns\n";
-                    $proxy_list .= $host . "\n";
-                    continue;
-                }
-
-                if (isset($isget[$host])) {
-                    continue;
-                }
-                $isget[$host] = 1;
-                //$find_function_content.="DOMAIN,".$host.",Proxy,force-remote-dns\n";
-                $proxy_list .= $host . "\n";
-                // !开头相当于正则表达式^
-            } elseif (substr($rule, 0, 1) == '|') {
-                preg_match("/(\d{1,3}\.){3}\d{1,3}/", substr($rule, 1), $matches);
-
-                if (!isset($matches[0])) {
-                    continue;
-                }
-
-                $host = $matches[0];
-                if ($host != "") {
-                    if (isset($isget[$host])) {
-                        continue;
-                    }
-                    $isget[$host] = 1;
-
-                    preg_match("/(\d{1,3}\.){3}\d{1,3}\/\d{1,2}/", substr($rule, 1), $matches_ips);
-
-                    if (!isset($matches_ips[0])) {
-                        $proxy_list .= $host . "/32\n";
-                    } else {
-                        $host = $matches_ips[0];
-                        $proxy_list .= $host . "\n";
-                    }
-
-                    //$find_function_content.="IP-CIDR,".$host."/32,Proxy,no-resolve \n";
-
-                    continue;
-                } else {
-                    preg_match_all("~^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?~i", substr($rule, 1), $matches);
-
-                    if (!isset($matches[4][0])) {
-                        continue;
-                    }
-
-                    $host = $matches[4][0];
-                    if (strpos($host, "*") !== false) {
-                        $host = substr($host, strpos($host, "*") + 1);
-                        if (strpos($host, ".") !== false) {
-                            $host = substr($host, strpos($host, ".") + 1);
-                        }
-                        if (isset($isget[$host])) {
-                            continue;
-                        }
-                        $isget[$host] = 1;
-                        //$find_function_content.="DOMAIN-KEYWORD,".$host.",Proxy,force-remote-dns\n";
-                        $proxy_list .= $host . "\n";
-                        continue;
-                    }
-
-                    if ($host != "") {
-                        if (isset($isget[$host])) {
-                            continue;
-                        }
-                        $isget[$host] = 1;
-                        //$find_function_content.="DOMAIN-SUFFIX,".$host.",Proxy,force-remote-dns\n";
-                        $proxy_list .= $host . "\n";
-                        continue;
-                    }
-                }
-            } else {
-                $host = substr($rule, 0);
-                if (strpos($host, "/") !== false) {
-                    $host = substr($host, 0, strpos($host, "/"));
-                }
-
-                if ($host != "") {
-                    if (isset($isget[$host])) {
-                        continue;
-                    }
-                    $isget[$host] = 1;
-                    //$find_function_content.="DOMAIN-KEYWORD,".$host.",PROXY,force-remote-dns \n";
-                    $proxy_list .= $host . "\n";
-                    continue;
-                }
-            }
-
-
-            $count = $count + 1;
-        }
-
-        $acl_content .= $find_function_content . "\n" . $proxy_list . "\n" . $bypass_list . "\n" . $outbound_block_list;
-        return $acl_content;
-    }
-
-    /**
-     * This is a php implementation of autoproxy2pac
-     */
-    private static function reg_encode($str)
-    {
-        $tmp_str = $str;
-        $tmp_str = str_replace('/', "\\/", $tmp_str);
-        $tmp_str = str_replace('.', "\\.", $tmp_str);
-        $tmp_str = str_replace(':', "\\:", $tmp_str);
-        $tmp_str = str_replace('%', "\\%", $tmp_str);
-        $tmp_str = str_replace('*', ".*", $tmp_str);
-        $tmp_str = str_replace('-', "\\-", $tmp_str);
-        $tmp_str = str_replace('&', "\\&", $tmp_str);
-        $tmp_str = str_replace('?', "\\?", $tmp_str);
-        $tmp_str = str_replace('+', "\\+", $tmp_str);
-
-        return $tmp_str;
-    }
-
-    private static function get_pac($proxy_type, $proxy_host, $proxy_port, $proxy_google, $defined)
-    {
-        $rulelist = base64_decode(file_get_contents("https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt")) . "\n" . $defined;
-        $gfwlist = explode("\n", $rulelist);
-        if ($proxy_google == "true") {
-            $gfwlist[] = ".google.com";
-        }
-
-        $count = 0;
-        $pac_content = '';
-        $find_function_content = 'function FindProxyForURL(url, host) { var PROXY = "' . $proxy_type . ' ' . $proxy_host . ':' . $proxy_port . '; DIRECT"; var DEFAULT = "DIRECT";' . "\n";
-        foreach ($gfwlist as $index => $rule) {
-            if (empty($rule)) {
-                continue;
-            } elseif (substr($rule, 0, 1) == '!' || substr($rule, 0, 1) == '[') {
-                continue;
-            }
-            $return_proxy = 'PROXY';
-            // @@开头表示默认是直接访问
-            if (substr($rule, 0, 2) == '@@') {
-                $rule = substr($rule, 2);
-                $return_proxy = "DEFAULT";
-            }
-
-            // ||开头表示前面还有路径
-            if (substr($rule, 0, 2) == '||') {
-                $rule_reg = "^[\\w\\-]+:\\/+(?!\\/)(?:[^\\/]+\\.)?" . LinkController::reg_encode(substr($rule, 2));
-                // !开头相当于正则表达式^
-            } elseif (substr($rule, 0, 1) == '|') {
-                $rule_reg = "^" . LinkController::reg_encode(substr($rule, 1));
-                // 前后匹配的/表示精确匹配
-            } elseif (substr($rule, 0, 1) == '/' && substr($rule, -1) == '/') {
-                $rule_reg = substr($rule, 1, strlen($rule) - 2);
-            } else {
-                $rule_reg = LinkController::reg_encode($rule);
-            }
-            // 以|结尾，替换为$结尾
-            if (preg_match("/\|$/i", $rule_reg)) {
-                $rule_reg = substr($rule_reg, 0, strlen($rule_reg) - 1) . "$";
-            }
-            $find_function_content .= 'if (/' . $rule_reg . '/i.test(url)) return ' . $return_proxy . ';' . "\n";
-            $count = $count + 1;
-        }
-        $find_function_content .= 'return DEFAULT;' . "}";
-        $pac_content .= $find_function_content;
-        return $pac_content;
-    }
-
-    public static function GetRouter($user, $is_mu = 0, $is_ss = 0)
-    {
-        $bash = '#!/bin/sh' . "\n";
-        $bash .= 'export PATH=\'/opt/usr/sbin:/opt/usr/bin:/opt/sbin:/opt/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin\'' . "\n";
-        $bash .= 'export LD_LIBRARY_PATH=/lib:/opt/lib' . "\n";
-        $bash .= 'nvram set ss_type=' . ($is_ss == 1 ? '0' : '1') . "\n";
-
-        $count = 0;
-
-        $items = URL::getAllItems($user, $is_mu, $is_ss);
-        foreach ($items as $item) {
-            if ($is_ss == 0) {
-                $bash .= 'nvram set rt_ss_name_x' . $count . '="' . $item['remark'] . "\"\n";
-                $bash .= 'nvram set rt_ss_port_x' . $count . '=' . $item['port'] . "\n";
-                $bash .= 'nvram set rt_ss_password_x' . $count . '="' . $item['passwd'] . "\"\n";
-                $bash .= 'nvram set rt_ss_server_x' . $count . '=' . $item['address'] . "\n";
-                $bash .= 'nvram set rt_ss_usage_x' . $count . '="' . "-o " . $item['obfs'] . " -g " . $item['obfs_param'] . " -O " . $item['protocol'] . " -G " . $item['protocol_param'] . "\"\n";
-                $bash .= 'nvram set rt_ss_method_x' . $count . '=' . $item['method'] . "\n";
-                $count += 1;
-            } else {
-                $bash .= 'nvram set rt_ss_name_x' . $count . '="' . $item['remark'] . "\"\n";
-                $bash .= 'nvram set rt_ss_port_x' . $count . '=' . $item['port'] . "\n";
-                $bash .= 'nvram set rt_ss_password_x' . $count . '="' . $item['passwd'] . "\"\n";
-                $bash .= 'nvram set rt_ss_server_x' . $count . '=' . $item['address'] . "\n";
-                $bash .= 'nvram set rt_ss_usage_x' . $count . '=""' . "\n";
-                $bash .= 'nvram set rt_ss_method_x' . $count . '=' . $item['method'] . "\n";
-                $count += 1;
-            }
-        }
-
-        $bash .= "nvram set rt_ssnum_x=" . $count . "\n";
-
-        return $bash;
-    }
-
     const V2RYA_MU = 2;
     const SSD_MU = 3;
     const CLASH_MU = 4;
@@ -753,7 +311,7 @@ class LinkController extends BaseController
     const APP_SHADOWROCKET = 1;
     const APP_KITSUNEBI = 2;
 
-    public static function GetSSRSub($user, $mu = 0, $max = 0, $app = 0)
+    public static function GetSSRSub($user, $mu = 0, $app = 0)
     {
         if ($app == LinkController::APP_SHADOWROCKET or $app == LinkController::APP_KITSUNEBI) {
             $vmessall = URL::getAllVMessUrl($user);

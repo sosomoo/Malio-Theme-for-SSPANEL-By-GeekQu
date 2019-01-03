@@ -239,6 +239,7 @@ class URL
         $new_user->protocol = str_replace("_compatible", "", $new_user->protocol);
         return $new_user;
     }
+
     public static function getAllItems($user, $is_mu = 0, $is_ss = 0) {
         $return_array = array();
         if ($user->is_admin) {
@@ -336,7 +337,7 @@ class URL
         }
         return $return_array;
     }
-    public static function getAllUrl($user, $is_mu, $is_ss = 0, $enter = 0) {
+    public static function getAllUrl($user, $is_mu, $is_ss = 0) {
         $return_url = '';
         $return_url .= URL::getUserTraffic($user, $is_mu,$is_ss).($enter == 0 ? ' ' : "\n");
         $return_url .= URL::getUserClassExpiration($user, $is_mu,$is_ss).($enter == 0 ? ' ' : "\n");
@@ -345,13 +346,13 @@ class URL
 		}
         $items = URL::getAllItems($user, $is_mu, $is_ss);
         foreach($items as $item) {
-            $return_url .= URL::getItemUrl($item, $is_ss).($enter == 0 ? ' ' : "\n");
+            $return_url .= URL::getItemUrl($item, $is_ss).PHP_EOL;
         }
         if(Config::get('mergeSub') and in_array($is_mu, array(0, 1))){
             $is_mu = $is_mu==0?1:0;
             $items = URL::getAllItems($user, $is_mu, $is_ss);
             foreach($items as $item) {
-                $return_url .= URL::getItemUrl($item, $is_ss).($enter == 0 ? ' ' : "\n");
+                $return_url .= URL::getItemUrl($item, $is_ss).PHP_EOL;
             }
         }
         return $return_url;
@@ -786,6 +787,5 @@ class URL
             $ssurl .= "#".rawurlencode(Config::get('appName')." - ".$remark);
             return $ssurl;
         }
-
   }
 }
