@@ -124,12 +124,12 @@ class XCat
             $rule->port = $user->port;
             $rule->save();
         }
-		
+
 		if ($user->save()) {
             echo "重置成功!\n";
 		}
     }
-	
+
     public function resetAllPort()
     {
         $users = User::all();

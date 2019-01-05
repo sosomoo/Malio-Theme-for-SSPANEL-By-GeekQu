@@ -68,6 +68,7 @@ $app->add(new WhoopsMiddleware);
 
 // Home
 $app->get('/', 'App\Controllers\HomeController:index');
+$app->get('/indexold', 'App\Controllers\HomeController:indexold');
 $app->get('/404', 'App\Controllers\HomeController:page404');
 $app->get('/405', 'App\Controllers\HomeController:page405');
 $app->get('/500', 'App\Controllers\HomeController:page500');
@@ -182,6 +183,7 @@ $app->group('/auth', function () {
     $this->post('/send', 'App\Controllers\AuthController:sendVerify');
     $this->get('/logout', 'App\Controllers\AuthController:logout');
     $this->get('/telegram_oauth', 'App\Controllers\AuthController:telegram_oauth');
+    $this->get('/login_getCaptcha', 'App\Controllers\AuthController:getCaptcha');
 })->add(new Guest());
 
 // Password
