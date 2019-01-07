@@ -1,162 +1,611 @@
-<!DOCTYPE HTML> 
-<!--
-	Dimension by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-{if $config['appName'] == '跑路'}
-<script>window.location.href='{$config["baseUrl"]}/paolu.html';</script>
-{/if}
-<html>
-	<head>
-		<title>{$config["appName"]}</title>
-        <meta name="keywords" content=""/>
-        <meta name="description" content=""/>
-        <meta charset="utf-8" />
-        <link rel="shortcut icon" href="/favicon.ico"/>
-        <link rel="bookmark" href="/favicon.ico"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-		<link rel="stylesheet" href="/assets/css/main.css"/>
-        <noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>   
-  </head>
-  
-       <body>
-			<div id="wrapper">
-              <!--首页开始-->
-					<header id="header">
-						<div class="logo">
-						<span class="icon fa-rocket"></span>
-                      </div>
-                       {if $user->isLogin}
-						<div class="content">
-							<div class="inner">
-                                  <p>用户：<code>{$user->user_name}</code>
-                                    等级：{if $user->class!=0}
-											<code>VIP{$user->class}</code>
-                                          {else}
-                                             <code>免费</code>
-                                              {/if}
-                                    过期时间：{if $user->class_expire!="1989-06-04 00:05:00"}
-											    <code>{$user->class_expire}</code>
-                                          {else}
-                                              <code>不过期</code>
-                                              {/if}</p>
-                                  <p>总流量：<code>{$user->enableTraffic()}</code>
-                                  已用流量：<code>{$user->usedTraffic()}</code>
-                                  剩余流量：<code>{$user->unusedTraffic()}</code></p>
-                          </div>
-                      </div>	
-					  	<nav>
-							<ul>
-                                <li><a href="#1">简介</a></li>
-					            <li><a href="/user">用户中心</a></li>
-								<li><a href="/user/logout">退出登录</a></li>
-                        </ul>
-						</nav>
-                              {else}
-                              <div class="content">
-							<div class="inner">
-								<h1>{$config["appName"]}</h1>
-								<!--
-								如果想自定义文本请删除下面这段script代码,格式为
-								<p>自定义文本</p>
-								-->
-								<script type="text/javascript" src="https://api.lwl12.com/hitokoto/v1?encode=js&charset=utf-8"></script><div id="lwlhitokoto"><script>lwlhitokoto()</script></div>
-                          </div>
-                      </div>	
-                              <nav>
-							<ul>
-                               <li><a href="#1">简介</a></li>
-								<li><a href="/auth/login">登录</a></li>
-								<li><a href="/auth/register">注册</a></li>
-                              
-                           </ul>
-						</nav>
-                              {/if}
+<!DOCTYPE html>
+<html lang="en">
 
-              </header> 
-              <!--首页结束-->
-					<div id="main">
-                      <!--标签1开始-->
-                      <article id="1">
-                      <h2 class="major">简介</h2>
-                      <p>「ホワイトアルバムの季節」が、また、やってきた。</p></article>
-					  <!--
-					  简介修改示例: 
-					  <p> 123</p>
-					  一个  <p> 123</p>  为一行，请不要删除 </article>
-					  -->
-                     <!--标签4开始-->
-                      <article id="4">
-								<h2 class="major">联系我们</h2>
-								<ul class="icons">
-                                   <p>此处填写联系方式</p>
-                                    <li>
-                                      <a target="_blank" href="#" class="icon fa-facebook">
-									 <!-- 请在fontawesome.com寻找替换图标 href替换链接 -->
-                                      <span class="label">Facebook</span>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                  </article>
-                      	<article id="login">  
-		
-								<h2 class="major">登录</h2>
-								<form method="post" action="javascript:void(0);">
-									<div class="field half first">
-										<label for="email2">邮箱</label>
-										<input type="text" name="Email" id="email2" />
-									</div>
-									<div class="field half">
-										<label for="passwd">密码</label>
-										<input type="password" name="Password" id="passwd" />
-									</div>
-									
-									<ul class="actions">
-										<li><input id="login" type="submit" value="登录" class="special" /></li>
-										<li><input type="reset" value="清空" /></li>
-									</ul>
-								</form>
-						
+<head>
+    <meta charset="UTF-8">
+    <meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <link rel="shortcut icon" href="/favicon.ico"/>
+    <link rel="bookmark" href="/favicon.ico"/>
+    <title>Document</title>
+    <link rel="stylesheet" href="/theme/material/css/index_base.css">
+    <link rel="stylesheet" href="/theme/material/css/index.css">
+</head>
 
-                             	<div class="field half">
-											<input value="week" id="remember_me" name="remember_me" type="checkbox" checked>
-											<label for="remember_me">记住我</label>
-								</div>
+<body>
+    <div id="index">
+        <div class="nav pure-g">
+            <div class="pure-u-1-2 logo-sm">
+                <a href="/indexold">
+                    <img class="logo" src="/images/logo_white.png" alt="logo">
+                    <div class="info">
+                        <div class="name">$[indexMsg.appname]$</div>
+                        <div class="sign">世界加钱可及</div>
+                    </div>
+                </a>
+            </div>
+            <div class="pure-u-1-2 auth-sm">
+                <router-link v-if="loginToken === ''" class="button-index" :to="routerInfo[routerN].href">$[routerInfo[routerN].name]$</router-link>
+                <a v-else href="/user" class="button-index">用户中心</a>
+            </div>
+        </div>
+        <div class="main pure-g">
+            <router-view :routermsg="indexMsg"></router-view>
+        </div>
+        <div class="footer pure-g">
+            <div class="pure-u-1 pure-u-sm-1-2 staff">POWERED BY <a href="./staff">SSPANEL-UIM</a></div>
+            <div class="pure-u-1 pure-u-sm-1-2 time">&copy;$[indexMsg.date]$ $[indexMsg.appname]$</div>
+        </div>
+    </div>
 
 
-								<br>
+    {if $recaptcha_sitekey != null}
+    <script src="https://recaptcha.net/recaptcha/api.js?render=explicit" async defer></script>
+    {/if}
+    <script src="/theme/material/js/vue.min.js"></script>
+    <script src="/theme/material/js/vue-router.min.js"></script>
+    <script src="/theme/material/js/axios.min.js"></script>
+    {if isset($geetest_html)}
+	<script src="//static.geetest.com/static/tools/gt.js"></script>
+    {/if}
+    
+</body>
 
-								<div id="result" role="dialog" >
-													<p color class="h5 margin-top-sm text-black-hint" id="msg"></p>
-								</div>
-						</article> 
-                      <!--全部标签结束-->
-                      
-                              </div>
-                     <!-- 版权底部 -->
-                      <footer id="footer">
-                   <p class="copyright">&copy;{date("Y")} {$config["appName"]}</p>
-                      </footer>
-              <!-- 版权结束 -->
-			 </div>
-                <!-- BG -->
-			<div id="bg"></div>
-	        	<!-- Scripts -->
-			<script src="https://cdn.jsdelivr.net/npm/jquery@1.11.3"></script>
-			<script src="https://cdn.jsdelivr.net/gh/ajlkn/skel@3.0.1/dist/skel.min.js"></script>
-			<script src="/assets/js/util.js"></script>
-         <script src="/assets/js/main.js"></script>
-	     <script language="javascript">
-try{
-	if(window.console&&window.console.log){
-        
-		console.log("%c{$config["appName"]}"," text-shadow: 0 1px 0 #ccc,0 2px 0 #c9c9c9,0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 5px rgba(0,0,0,.2),0 5px 10px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15);font-size:5em");
-		console.log("%chttps://github.com/NimaQu/ss-panel-v3-mod_Uim","background: rgba(252,234,187,1);background: -moz-linear-gradient(left, rgba(252,234,187,1) 0%, rgba(175,250,77,1) 12%, rgba(0,247,49,1) 28%, rgba(0,210,247,1) 39%,rgba(0,189,247,1) 51%, rgba(133,108,217,1) 64%, rgba(177,0,247,1) 78%, rgba(247,0,189,1) 87%, rgba(245,22,52,1) 100%);background: -webkit-gradient(left top, right top, color-stop(0%, rgba(252,234,187,1)), color-stop(12%, rgba(175,250,77,1)), color-stop(28%, rgba(0,247,49,1)), color-stop(39%, rgba(0,210,247,1)), color-stop(51%, rgba(0,189,247,1)), color-stop(64%, rgba(133,108,217,1)), color-stop(78%, rgba(177,0,247,1)), color-stop(87%, rgba(247,0,189,1)), color-stop(100%, rgba(245,22,52,1)));background: -webkit-linear-gradient(left, rgba(252,234,187,1) 0%, rgba(175,250,77,1) 12%, rgba(0,247,49,1) 28%, rgba(0,210,247,1) 39%, rgba(0,189,247,1) 51%, rgba(133,108,217,1) 64%, rgba(177,0,247,1) 78%, rgba(247,0,189,1) 87%, rgba(245,22,52,1) 100%);background: -o-linear-gradient(left, rgba(252,234,187,1) 0%, rgba(175,250,77,1) 12%, rgba(0,247,49,1) 28%, rgba(0,210,247,1) 39%, rgba(0,189,247,1) 51%, rgba(133,108,217,1) 64%, rgba(177,0,247,1) 78%, rgba(247,0,189,1) 87%, rgba(245,22,52,1) 100%);background: -ms-linear-gradient(left, rgba(252,234,187,1) 0%, rgba(175,250,77,1) 12%, rgba(0,247,49,1) 28%, rgba(0,210,247,1) 39%, rgba(0,189,247,1) 51%, rgba(133,108,217,1) 64%, rgba(177,0,247,1) 78%, rgba(247,0,189,1) 87%, rgba(245,22,52,1) 100%);background: linear-gradient(to right, rgba(252,234,187,1) 0%, rgba(175,250,77,1) 12%, rgba(0,247,49,1) 28%, rgba(0,210,247,1) 39%, rgba(0,189,247,1) 51%, rgba(133,108,217,1) 64%, rgba(177,0,247,1) 78%, rgba(247,0,189,1) 87%, rgba(245,22,52,1) 100%);filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', endColorstr='#f51634', GradientType=1 );font-size:3em");
-	}
-}catch(e){
-};
- 
-</script>
-	</body>
 </html>
+
+{if $geetest_html != null}
+    <script>
+        var handlerEmbed = function(captchaObj) {
+            // 将验证码加到id为captcha的元素里
+
+            // captchaObj.onSuccess(function () {
+            //      validate = captchaObj.getValidate();
+            // });
+
+            captchaObj.appendTo("#embed-captcha");
+
+            captcha = captchaObj;
+            // 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html
+        };
+
+        
+    </script>
+{/if}
+
+<script>
+
+var store = {
+    data: function() {
+        return {
+            captchaProvider: '{$config["captcha_provider"]}',
+            recaptchaSiteKey: '{$recaptcha_sitekey}',
+            jumpDelay: '{$config["jump_delay"]}',
+            isGetestSuccess: '{if $geetest_html && $geetest_html->success}1{else}0{/if}',
+            registMode: '{$config["register_mode"]}',
+            isEmailVeryify: '{$config["enable_email_verify"]}',
+            enableLoginCaptcha: '{$enable_logincaptcha}',
+            enableRegCaptcha: '{$enable_regcaptcha}',
+        }
+    },
+}
+
+var storeAuth = {
+    methods: {
+        loadCaptcha() {
+            if (this.recaptchaSiteKey !== '' ) {
+                this.$nextTick(function(){
+                    this.grecaptchaRender();                    
+                })
+            }
+        },
+        loadGT() {
+            if (this.captchaProvider === 'geetest') {
+                this.$nextTick(function(){
+
+                    axios({
+                        method: 'get',
+                        url: '/auth/login_getCaptcha',
+                        responseType: 'json',
+                    }).then((r)=>{
+                        let GeConfig = {
+                            gt: r.data.GtSdk.gt,
+                            challenge: r.data.GtSdk.challenge,
+                            product: "embed",
+                        }
+
+                        if (parseInt(this.isGetestSuccess)) {
+                            GeConfig.offline = 0;
+                        } else {
+                            GeConfig.offline = 1;
+                        }
+
+                        initGeetest(GeConfig, handlerEmbed);
+
+                    });
+
+                });
+            }
+        },
+        //加载完成的时间很谜
+        grecaptchaRender() {
+            setTimeout(function() {
+                if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render ==='undefined') {
+                    this.grecaptchaRender();
+                } else {
+                    grecaptcha.render('g-recaptcha');
+                }
+            },300)
+        }
+    },
+}
+
+var tmp = {
+    state: {
+        wait: 60,
+        logintoken: '{$user->isLogin}',
+    },
+    setTmp(key,newValue) {
+        this.state[key] = newValue;
+    }
+}
+
+const Root = {
+    delimiters: ['$[',']$'],
+    template: /*html*/ `
+    <div class="title pure-g">
+        <div class="pure-u-1 pure-u-xl-1-2 title-left">
+            <h1>$[routermsg.appname]$</h1>
+            <span>$[routermsg.hitokoto]$</span>
+            <a class="button-index" href="/auth/login">登录</a>
+            <a class="button-index" href="/auth/register">注册</a>
+        </div>
+        <div class="pure-u-xl-1-2 logo-bg">
+            <img src="/images/logo_white.png" alt="" class="logo">
+        </div>
+    </div>
+    `,
+    props: ['routermsg'],
+};
+
+const Auth = {
+    delimiters: ['$[',']'],
+    template: /*html*/ `
+    <div class="auth pure-g">
+        <div class="pure-u-5-24">
+            <router-link class="button-round" to="/auth/login">登录</router-link>
+            <router-link class="button-round" to="/auth/register">注册</router-link>
+        </div>
+        <router-view></router-view>
+    </div>
+    `,
+    props: ['routermsg'],
+};
+
+const Login = {
+    delimiters: ['$[',']'],
+    mixins: [store,storeAuth],
+    template: /*html*/ `
+    <div class="page-auth pure-g pure-u-19-24">
+        <h1>登录</h1>
+        <div class="input-control">
+            <label for="Email">邮箱</label>
+            <input v-model="email" type="text" name="Email">        
+        </div>
+        <div class="input-control">
+            <label for="Password">密码</label>
+            <input v-model="passwd" type="password" name="Password">        
+        </div>
+        <div class="input-control">
+            <div v-if="captchaProvider === 'geetest'" id="embed-captcha"></div>
+            <form action="?" method="POST">    
+            <div v-if="recaptchaSiteKey" id="g-recaptcha" class="g-recaptcha" :data-sitekey="recaptchaSiteKey"></div>
+            </form>
+        </div>
+        <button @click="login" class="auth-submit" id="login" type="submit" :disabled="isDisabled">
+            确认登录
+        </button>
+    </div>
+    `,
+    data: function () {
+        return {
+            email: '',
+            passwd: '',
+            isDisabled: false,
+        }
+    },
+    methods: {
+        login() {
+
+            this.isDisabled = true;
+
+            let ajaxCon = {
+                email: this.email,
+                passwd: this.passwd,
+            };
+
+            if (this.captchaProvider === 'recaptcha') {
+                ajaxCon.recaptcha = grecaptcha.getResponse();
+            }
+
+            if (this.captchaProvider === 'geetest' && captcha.getValidate()) {
+                let validate = captcha.getValidate();
+                ajaxCon.geetest_challenge = validate.geetest_challenge;
+                ajaxCon.geetest_validate = validate.geetest_validate;
+                ajaxCon.geetest_seccode = validate.geetest_seccode;
+            }
+
+            axios({
+                method: 'post',
+                url: '/auth/login',
+                data: ajaxCon,
+            }).then((r)=>{
+                if (r.data.ret == 1) {
+                    console.log(r.data.ret);
+                    window.setTimeout(()=>{
+                        tmp.setTmp('logintoken',1)
+                        this.$router.replace('/user/panel');
+                    }, this.jumpDelay);
+                } else {
+                    this.isDisabled = false;
+                    console.log(r.data.ret);
+                }
+            });
+
+        },
+    },
+    mounted() {
+        if (this.enableLoginCaptcha === 'false') {
+            return;
+        }
+        this.loadCaptcha();
+        this.loadGT();
+    },
+};
+
+const Register = {
+    delimiters: ['$[',']$'],
+    mixins: [store,storeAuth],
+    template: /*html*/ `
+    <div class="page-auth pure-g pure-u-19-24">
+        <h1>账号注册</h1>
+        <div class="input-control">
+            <label for="usrname">昵称</label>
+            <input v-model="usrname" type="text" name="usrname">        
+        </div>
+        <div class="input-control">
+            <label for="email">邮箱(唯一凭证请认真对待)</label>
+            <input v-model="email" type="text" name="email">        
+        </div>
+        <div class="input-control">
+            <label for="password">密码</label>
+            <input v-model="passwd" type="password" name="password">        
+        </div>
+        <div class="input-control">
+            <label for="repasswd">重复密码</label>
+            <input v-model="repasswd" type="password" name="repasswd">        
+        </div>
+        <div class="input-control">
+            <label for="imtype">选择您的联络方式</label>
+            <select v-model="imtype" name="imtype" id="imtype">
+                <option value="1">微信</option>
+                <option value="2">QQ</option>
+                <option value="3">Facebook</option>
+                <option value="4">Telegram</option>
+            </select>        
+        </div>
+        <div class="input-control">
+            <label for="contect">联络方式账号</label>
+            <input v-model="contect" type="text" name="contect">        
+        </div>
+        <div v-if="registMode === 'invite'" class="input-control">
+            <label for="code">邀请码(必填)</label>
+            <input v-model="code" type="text" name="code">        
+        </div>
+        <div v-if="isEmailVeryify === 'true'" class="input-control">
+            <label for="email_code">邮箱验证码</label>
+            <input v-model="email_code" type="text" name="email_code">
+            <button class="auth-submit" @click="sendVerifyMail" :disabled="isVmDisabled">$[vmText]$</button>    
+        </div>
+        <div class="input-control">
+            <div v-if="captchaProvider === 'geetest'" id="embed-captcha"></div>
+            <form action="?" method="POST">    
+            <div v-if="recaptchaSiteKey" id="g-recaptcha" class="g-recaptcha" :data-sitekey="recaptchaSiteKey"></div>
+            </form>
+        </div>
+        <button @click="register" class="auth-submit" id="register" type="submit" :disabled="isDisabled">
+            确认注册
+        </button>
+    </div>
+    `,
+    data: function() {
+        return {
+            usrname: '',
+            email: '',
+            passwd: '',
+            repasswd: '',
+            contect: '',
+            code: '',
+            imtype: '',
+            email_code: '',
+            isDisabled: false,
+            vmText: '获取邮箱验证码',
+            isVmDisabled: false,
+        }
+    },
+    methods: {
+        register() {
+
+            let ajaxCon = {
+                    email: this.email,
+                    name: this.usrname,
+                    passwd: this.passwd,
+                    repasswd: this.repasswd,
+                    wechat: this.contect,
+                    imtype: this.imtype,
+                    code: this.code,
+                };
+
+            if (this.registMode !== 'invite') {
+                ajaxCon.code = 0;
+                if ((this.getCookie('code'))!='') {
+                    ajaxCon.code = this.getCookie('code');
+                }
+            }
+
+            if (this.captchaProvider === 'recaptcha') {
+                ajaxCon.recaptcha = grecaptcha.getResponse();
+            }
+
+            if (this.captchaProvider === 'geetest' && captcha.getValidate()) {
+                let validate = captcha.getValidate();
+                ajaxCon.geetest_challenge = validate.geetest_challenge;
+                ajaxCon.geetest_validate = validate.geetest_validate;
+                ajaxCon.geetest_seccode = validate.geetest_seccode;
+            }
+
+            axios({
+                method: 'post',
+                url: '/auth/register',
+                responseType: 'json',
+                data: ajaxCon,
+            }).then((r)=>{
+                if (r.data.ret == 1) {
+                    console.log(r.data.ret);
+                    window.setTimeout("location.href='#/auth/login'", this.jumpDelay);
+                } else {
+                    this.isDisabled = false;
+                    console.log(r.data.ret);
+                }
+            });
+        },
+        //dumplin：轮子1.js读取url参数
+        getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i=0;i<vars.length;i++) {
+                        var pair = vars[i].split("=");
+                        if(pair[0] == variable){
+                            return pair[1];
+                        }
+            }
+            return "";
+        },
+        //dumplin:轮子2.js写入cookie
+        setCookie(cname,cvalue,exdays) {
+            var d = new Date();
+            d.setTime(d.getTime()+(exdays*24*60*60*1000));
+            var expires = "expires="+d.toGMTString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+        },
+        //dumplin:轮子3.js读取cookie
+        getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0; i<ca.length; i++) 
+            {
+                var c = ca[i].trim();
+                if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+            }
+            return "";
+        },
+        time(time) {
+            console.log(time);
+            console.log(this.vmText);
+            if (time == 0) {
+                this.isVmDisabled = false;
+                this.vmText = "获取验证码";
+                time = 60;
+            } else {
+                this.isVmDisabled = true;
+                this.vmText = '重新发送(' +  time + ')';
+                time = time -1;
+                setTimeout(()=> {
+                    this.time(time);
+                },
+                1000);
+            }
+        },
+        sendVerifyMail() {
+            let time = tmp.state.wait;            
+            this.time(time);
+
+            let ajaxCon = {
+                    email: this.email,
+                }
+
+            axios({
+                method: 'post',
+                url: 'auth/send',
+                responseType: 'json',
+                data: ajaxCon,
+            }).then((r)=>{
+                if (r.data.ret) {
+                    console.log(r.data.ret);
+                    console.log(r.data.msg);
+                } else {
+                    console.log(r.data.ret);
+                    console.log(r.data.msg);
+                }
+            });
+        },
+    },
+    mounted() {
+        //dumplin:读取url参数写入cookie，自动跳转隐藏url邀请码
+        if (this.getQueryVariable('code')!=''){
+            this.setCookie('code',this.getQueryVariable('code'),30);
+            window.location.href='#/auth/register'; 
+        }
+        //dumplin:读取cookie，自动填入邀请码框
+        if (this.registMode == 'invite') {
+            if ((this.getCookie('code'))!=''){
+                this.code = this.getCookie('code');
+            }
+        }
+        //验证加载
+        if (this.enableRegCaptcha === 'false') {
+            return;
+        }
+        this.loadCaptcha();
+        this.loadGT();    
+    }
+};
+
+const User = {
+    delimiters: ['$[',']'],
+    template: /*html*/ `
+    <div class="user pure-g">
+        <router-view></router-view>
+    </div>
+    `,
+    props: ['routermsg'],
+};
+
+const Panel = {
+    delimiters: ['$[',']'],
+    template: /*html*/ `
+    <div class="page-user pure-u-1">
+        <h1>用户页面demo</h1>
+        <a href="/user" class="button-index">进入用户中心</a>
+    </div>
+    `,
+    props: ['routermsg'],
+    mounted() {
+        axios.get('/user/getuserinfo')
+            .then((r)=>{
+                console.log(r);
+            });
+    },
+    beforeRouteLeave (to, from, next) {
+        next(false);
+    }
+};
+
+const vueRoutes = [
+    {
+        path: '/',
+        component: Root,
+    },
+    {
+        path: '/auth/',
+        component: Auth,
+        children: [
+            {
+                path: 'login',
+                component: Login,
+                meta: {
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'register',
+                component: Register,
+                meta: {
+                    requiresAuth: true
+                }
+            },
+        ],
+    },
+    {
+        path: '/user/',
+        component: User,
+        children: [
+            {
+                path: 'panel',
+                component: Panel,
+            }
+        ]
+    }
+];
+
+const Router = new VueRouter({
+    routes: vueRoutes,
+});
+
+Router.beforeEach((to,from,next)=>{
+   
+    if ((tmp.state.logintoken !== '') && to.matched.some(function(record) {
+        return record.meta.requiresAuth
+    })) {
+        next('/user/panel');
+    } else {
+        next();
+    }
+})
+
+const indexPage = new Vue({
+    router: Router,
+    el: '#index',
+    delimiters: ['$[',']$'],
+    mixins: [store],
+    data: {
+        routerInfo: [
+            {
+                name: '登录/注册',
+                href: '/auth/login',
+            },
+            {
+                name: '首页',
+                href: '/',
+            },
+        ],
+        routerN: 0,
+        indexMsg: {
+            appname: '{$config["appName"]}',
+            hitokoto: '',
+            date: '{date("Y")}',
+        },
+        loginToken: '',
+    },
+    methods: {
+        routeJudge() {
+            this.loginToken = tmp.state.logintoken;
+            if (this.$route.path === '/') {
+                this.routerN = 0;
+            } else {
+                this.routerN = 1; 
+            }
+        },
+    },
+    watch: {
+        $route: 'routeJudge',
+    },
+    beforeMount() {
+        axios.get('https://api.lwl12.com/hitokoto/v1')
+        .then((r)=>{
+            this.indexMsg.hitokoto = r.data;
+        })
+    },
+    mounted() {
+        this.routeJudge();
+        tmp.setTmp('time',2);
+    },
+    
+});
+</script>
+<?php
+$a=$_POST['Email'];
+$b=$_POST['Password'];
+?>
+
