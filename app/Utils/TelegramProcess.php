@@ -17,8 +17,7 @@ class TelegramProcess
         "?mu=1&app=1" => "Shadowrocket(单端口)",
         "?mu=0&app=2" => "Kitsunebi(普通订阅)",
         "?mu=1&app=2" => "Kitsunebi(单端口节点订阅)",
-        "?mu=0&quantumult=1" => "Quantumult(Vmess订阅)",
-        "?mu=0&quantumult=2" => "Quantumult(完整配置)"];
+        "?mu=0&quantumult=1" => "Quantumult(Vmess订阅)"];
 
     private static function callback_bind_method($bot,$message,$command){
 
@@ -301,6 +300,8 @@ class TelegramProcess
                 $message->setFrom($callback->getFrom());
                 TelegramProcess::callback_bind_method($bot,$message,$callback->getData());
             }, function($update){
+                $callback = $update->getCallbackQuery();
+                if (is_null($callback) || !strlen($callback->getData())){return false; }
                 return true;
             });
 
