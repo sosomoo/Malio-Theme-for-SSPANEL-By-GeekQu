@@ -27,7 +27,7 @@
                 </a>
             </div>
             <div class="pure-u-1-2 auth-sm">
-                <router-link v-if="!parseInt(isLogin)" class="button-index" :to="routerInfo[routerN].href">$[routerInfo[routerN].name]$</router-link>
+                <router-link v-if="loginToken === ''" class="button-index" :to="routerInfo[routerN].href">$[routerInfo[routerN].name]$</router-link>
                 <a v-else href="/user" class="button-index">用户中心</a>
             </div>
         </div>
@@ -38,17 +38,24 @@
             <div class="pure-u-1 pure-u-sm-1-2 staff">POWERED BY <a href="./staff">SSPANEL-UIM</a></div>
             <div class="pure-u-1 pure-u-sm-1-2 time">&copy;$[indexMsg.date]$ $[indexMsg.appname]$</div>
         </div>
+
+        <uim-messager v-show="msgrCon.isShow">
+            <i slot="icon" :class="msgrCon.icon"></i>
+            <span slot="msg">$[msgrCon.msg]$</span>
+        </uim-messager>
     </div>
 
+    {if $recaptcha_sitekey != null}
+    <script src="https://recaptcha.net/recaptcha/api.js?render=explicit" async defer></script>
+    {/if}
     <script src="/theme/material/js/vue.min.js"></script>
+    <script src="/theme/material/js/vuex.min.js"></script>
     <script src="/theme/material/js/vue-router.min.js"></script>
     <script src="/theme/material/js/axios.min.js"></script>
     {if isset($geetest_html)}
 	<script src="//static.geetest.com/static/tools/gt.js"></script>
     {/if}
-    {if $recaptcha_sitekey != null}
-    <script src="https://recaptcha.net/recaptcha/api.js" async defer></script>
-    {/if}
+    
 </body>
 
 </html>
@@ -67,6 +74,8 @@
             captcha = captchaObj;
             // 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html
         };
+
+        
     </script>
 {/if}
 
@@ -75,77 +84,100 @@
 var store = {
     data: function() {
         return {
-            isLogin: '{$user->isLogin}',
             captchaProvider: '{$config["captcha_provider"]}',
             recaptchaSiteKey: '{$recaptcha_sitekey}',
             jumpDelay: '{$config["jump_delay"]}',
             isGetestSuccess: '{if $geetest_html && $geetest_html->success}1{else}0{/if}',
             registMode: '{$config["register_mode"]}',
             isEmailVeryify: '{$config["enable_email_verify"]}',
-        }
-    },
-    mounted() {
-        if (parseInt(this.isLogin)) {
-            this.$router.replace('/');
+            enableLoginCaptcha: '{$enable_logincaptcha}',
+            enableRegCaptcha: '{$enable_regcaptcha}',
         }
     },
 }
 
 var storeAuth = {
-    mounted() {
+    methods: {
+        loadCaptcha() {
+            if (this.recaptchaSiteKey !== '' ) {
+                this.$nextTick(function(){
+                    this.grecaptchaRender();                    
+                })
+            }
+        },
+        loadGT() {
+            if (this.captchaProvider === 'geetest') {
+                this.$nextTick(function(){
 
-    if (parseInt(this.isLogin)) {
-        return;
-    }
+                    axios({
+                        method: 'get',
+                        url: '/auth/login_getCaptcha',
+                        responseType: 'json',
+                    }).then((r)=>{
+                        let GeConfig = {
+                            gt: r.data.GtSdk.gt,
+                            challenge: r.data.GtSdk.challenge,
+                            product: "embed",
+                        }
 
+                        if (parseInt(this.isGetestSuccess)) {
+                            GeConfig.offline = 0;
+                        } else {
+                            GeConfig.offline = 1;
+                        }
 
-    if (this.recaptchaSiteKey !== '' && tmp.state.time !== 1) {
-        this.$nextTick(function(){
-            grecaptcha.render('g-recaptcha');
-        })
-    }
+                        initGeetest(GeConfig, handlerEmbed);
 
-    tmp.setTmp('time',2);
+                    });
 
-    if (this.captchaProvider === 'geetest') {
-        this.$nextTick(function(){
-
-            axios({
-                method: 'get',
-                url: '/auth/login_getCaptcha',
-                responseType: 'json',
-            }).then((r)=>{
-
-                let GeConfig = {
-                    gt: r.data.GtSdk.gt,
-                    challenge: r.data.GtSdk.challenge,
-                    product: "embed",
-                }
-
-                if (parseInt(this.isGetestSuccess)) {
-                    GeConfig.offline = 0;
+                });
+            }
+        },
+        //加载完成的时间很谜
+        grecaptchaRender() {
+            setTimeout(function() {
+                if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render ==='undefined') {
+                    this.grecaptchaRender();
                 } else {
-                    GeConfig.offline = 1;
+                    grecaptcha.render('g-recaptcha');
                 }
-
-                initGeetest(GeConfig, handlerEmbed);
-
-            });
-
-        });
-    }
-    
+            },300)
+        }
     },
 }
 
-var tmp = {
+const tmp = new Vuex.Store({
     state: {
-        time: 1,
+        wait: 60,
+        logintoken: '{$user->isLogin}',
+        msgrCon: {
+            msg: '操作成功',
+            icon: ['fa','fa-check-square-o'],
+            isShow: false,
+        },
     },
-    setTmp(key,newValue) {
-        this.state[key] = newValue;
+    mutations: {
+        SET_LOGINTOKEN (state,n) {
+            state.logintoken = n;
+        },
+        SET_MSGRCON (state,config) {
+            state.msgrCon.msg = config.msg;
+            state.msgrCon.icon[1] = config.icon;
+        },
+        ISSHOW_MSGR (state,boolean) {
+            state.msgrCon.isShow = boolean;
+        }
+    },
+    actions: {
+        CALL_MSGR ({ commit,state },config) {
+            commit('SET_MSGRCON',config);
+            commit('ISSHOW_MSGR',true);
+            window.setTimeout(function() {
+                commit('ISSHOW_MSGR',false);
+            },2500)
+        }
     }
-}
+});
 
 const Root = {
     delimiters: ['$[',']$'],
@@ -166,7 +198,7 @@ const Root = {
 };
 
 const Auth = {
-    delimiters: ['$[',']'],
+    delimiters: ['$[',']$'],
     template: /*html*/ `
     <div class="auth pure-g">
         <div class="pure-u-5-24">
@@ -180,10 +212,10 @@ const Auth = {
 };
 
 const Login = {
-    delimiters: ['$[',']'],
+    delimiters: ['$[',']$'],
     mixins: [store,storeAuth],
     template: /*html*/ `
-    <div class="page-login pure-g pure-u-19-24">
+    <div class="page-auth pure-g pure-u-19-24">
         <h1>登录</h1>
         <div class="input-control">
             <label for="Email">邮箱</label>
@@ -196,7 +228,7 @@ const Login = {
         <div class="input-control">
             <div v-if="captchaProvider === 'geetest'" id="embed-captcha"></div>
             <form action="?" method="POST">    
-            <div v-if="recaptchaSiteKey" id="g-recaptcha" class="g-recaptcha" data-sitekey="{$recaptcha_sitekey}"></div>
+            <div v-if="recaptchaSiteKey" id="g-recaptcha" class="g-recaptcha" :data-sitekey="recaptchaSiteKey"></div>
             </form>
         </div>
         <button @click="login" class="auth-submit" id="login" type="submit" :disabled="isDisabled">
@@ -213,7 +245,7 @@ const Login = {
     },
     methods: {
         login() {
-
+           
             this.isDisabled = true;
 
             let ajaxCon = {
@@ -221,7 +253,7 @@ const Login = {
                 passwd: this.passwd,
             };
 
-            if (this.recaptchaSiteKey !== '') {
+            if (this.captchaProvider === 'recaptcha') {
                 ajaxCon.recaptcha = grecaptcha.getResponse();
             }
 
@@ -238,23 +270,43 @@ const Login = {
                 data: ajaxCon,
             }).then((r)=>{
                 if (r.data.ret == 1) {
-                    console.log(r.data.ret);
-                    window.setTimeout("location.href='/user'", this.jumpDelay);
+                    let callConfig = {
+                            msg: '登录成功Kira~',
+                            icon: 'fa-check-square-o',
+                        };
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                    window.setTimeout(()=>{
+                        tmp.commit('SET_LOGINTOKEN',1);
+                        this.$router.replace('/user/panel');
+                    }, this.jumpDelay);
                 } else {
-                    this.isDisabled = false;
-                    console.log(r.data.ret);
+                    let callConfig = {
+                            msg: '登录失败Boommm',
+                            icon: 'fa-times-circle-o',
+                        };
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                    window.setTimeout(()=>{
+                        this.isDisabled = false;
+                    },3000)
                 }
             });
 
         },
     },
+    mounted() {
+        if (this.enableLoginCaptcha === 'false') {
+            return;
+        }
+        this.loadCaptcha();
+        this.loadGT();
+    },
 };
 
 const Register = {
-    delimiters: ['$[',']'],
+    delimiters: ['$[',']$'],
     mixins: [store,storeAuth],
     template: /*html*/ `
-    <div class="page-login pure-g pure-u-19-24">
+    <div class="page-auth pure-g pure-u-19-24">
         <h1>账号注册</h1>
         <div class="input-control">
             <label for="usrname">昵称</label>
@@ -292,12 +344,12 @@ const Register = {
         <div v-if="isEmailVeryify === 'true'" class="input-control">
             <label for="email_code">邮箱验证码</label>
             <input v-model="email_code" type="text" name="email_code">
-            <button class="auth-submit">获取邮箱验证码</button>    
+            <button class="auth-submit" @click="sendVerifyMail" :disabled="isVmDisabled">$[vmText]$</button>    
         </div>
         <div class="input-control">
             <div v-if="captchaProvider === 'geetest'" id="embed-captcha"></div>
             <form action="?" method="POST">    
-            <div v-if="recaptchaSiteKey" id="g-recaptcha" class="g-recaptcha" data-sitekey="{$recaptcha_sitekey}"></div>
+            <div v-if="recaptchaSiteKey" id="g-recaptcha" class="g-recaptcha" :data-sitekey="recaptchaSiteKey"></div>
             </form>
         </div>
         <button @click="register" class="auth-submit" id="register" type="submit" :disabled="isDisabled">
@@ -316,10 +368,14 @@ const Register = {
             imtype: '',
             email_code: '',
             isDisabled: false,
+            vmText: '获取邮箱验证码',
+            isVmDisabled: false,
         }
     },
     methods: {
         register() {
+
+            this.isDisabled = true;
 
             let ajaxCon = {
                     email: this.email,
@@ -331,14 +387,14 @@ const Register = {
                     code: this.code,
                 };
 
-            if (registMode !== 'invite') {
+            if (this.registMode !== 'invite') {
                 ajaxCon.code = 0;
-                if ((getCookie('code'))!='') {
-                    ajaxCon.code = getCookie('code');
+                if ((this.getCookie('code'))!='') {
+                    ajaxCon.code = this.getCookie('code');
                 }
             }
 
-            if (this.recaptchaSiteKey !== '') {
+            if (this.captchaProvider === 'recaptcha') {
                 ajaxCon.recaptcha = grecaptcha.getResponse();
             }
 
@@ -356,21 +412,160 @@ const Register = {
                 data: ajaxCon,
             }).then((r)=>{
                 if (r.data.ret == 1) {
-                    console.log(r.data.ret);
-                    window.setTimeout("location.href='#/auth/login'", this.jumpDelay);
+                    let callConfig = {
+                            msg: '注册成功meow~',
+                            icon: 'fa-check-square-o',
+                        };
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                    window.setTimeout(()=>{
+                        this.$router.replace('/auth/login');
+                    }, this.jumpDelay);
                 } else {
-                    this.isDisabled = false;
-                    console.log(r.data.ret);
+                    let callConfig = {
+                            msg: 'WTF……注册失败',
+                            icon: 'fa-times-circle-o',
+                        };
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                    window.setTimeout(()=>{
+                        this.isDisabled = false;
+                    },3000)
                 }
             });
+        },
+        //dumplin：轮子1.js读取url参数
+        getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i=0;i<vars.length;i++) {
+                        var pair = vars[i].split("=");
+                        if(pair[0] == variable){
+                            return pair[1];
+                        }
+            }
+            return "";
+        },
+        //dumplin:轮子2.js写入cookie
+        setCookie(cname,cvalue,exdays) {
+            var d = new Date();
+            d.setTime(d.getTime()+(exdays*24*60*60*1000));
+            var expires = "expires="+d.toGMTString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+        },
+        //dumplin:轮子3.js读取cookie
+        getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0; i<ca.length; i++) 
+            {
+                var c = ca[i].trim();
+                if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+            }
+            return "";
+        },
+        time(time) {
+            if (time == 0) {
+                this.isVmDisabled = false;
+                this.vmText = "获取验证码";
+                time = 60;
+            } else {
+                this.isVmDisabled = true;
+                this.vmText = '重新发送(' +  time + ')';
+                time = time -1;
+                setTimeout(()=> {
+                    this.time(time);
+                },
+                1000);
+            }
+        },
+        sendVerifyMail() {
+            let time = tmp.state.wait;            
+            this.time(time);
+
+            let ajaxCon = {
+                    email: this.email,
+                }
+
+            axios({
+                method: 'post',
+                url: 'auth/send',
+                responseType: 'json',
+                data: ajaxCon,
+            }).then((r)=>{
+                if (r.data.ret) {
+                    let callConfig = {
+                            msg: 'biu~邮件发送成功',
+                            icon: 'fa-check-square-o',
+                        };
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                } else {
+                    let callConfig = {
+                            msg: 'emm……邮件发送失败',
+                            icon: 'fa-times-circle-o',
+                        };
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                }
+            });
+        },
+    },
+    mounted() {
+        //dumplin:读取url参数写入cookie，自动跳转隐藏url邀请码
+        if (this.getQueryVariable('code')!=''){
+            this.setCookie('code',this.getQueryVariable('code'),30);
+            window.location.href='#/auth/register'; 
         }
+        //dumplin:读取cookie，自动填入邀请码框
+        if (this.registMode == 'invite') {
+            if ((this.getCookie('code'))!=''){
+                this.code = this.getCookie('code');
+            }
+        }
+        //验证加载
+        if (this.enableRegCaptcha === 'false') {
+            return;
+        }
+        this.loadCaptcha();
+        this.loadGT();    
+    }
+};
+
+const User = {
+    delimiters: ['$[',']$'],
+    template: /*html*/ `
+    <div class="user pure-g">
+        <router-view></router-view>
+    </div>
+    `,
+    props: ['routermsg'],
+};
+
+const Panel = {
+    delimiters: ['$[',']$'],
+    template: /*html*/ `
+    <div class="page-user pure-u-1">
+        <h1>用户页面demo</h1>
+        <a href="/user" class="button-index">进入用户中心</a>
+    </div>
+    `,
+    props: ['routermsg'],
+    mounted() {
+        axios.get('/user/getuserinfo')
+            .then((r)=>{
+                if (r.data.ret === 1) {
+                    console.log(r.data.info);
+                }
+            });
+    },
+    beforeRouteLeave (to, from, next) {
+        next(false);
     }
 };
 
 const vueRoutes = [
     {
         path: '/',
-        component: Root,
+        components: {
+            default: Root,
+        }
     },
     {
         path: '/auth/',
@@ -380,14 +575,27 @@ const vueRoutes = [
                 path: 'login',
                 component: Login,
                 meta: {
-                    keepAlive: true,
+                    requiresAuth: true
                 }
             },
             {
                 path: 'register',
                 component: Register,
+                meta: {
+                    requiresAuth: true
+                }
             },
         ],
+    },
+    {
+        path: '/user/',
+        component: User,
+        children: [
+            {
+                path: 'panel',
+                component: Panel,
+            }
+        ]
     }
 ];
 
@@ -395,11 +603,32 @@ const Router = new VueRouter({
     routes: vueRoutes,
 });
 
+Router.beforeEach((to,from,next)=>{
+   
+    if ((tmp.state.logintoken !== '') && to.matched.some(function(record) {
+        return record.meta.requiresAuth
+    })) {
+        next('/user/panel');
+    } else {
+        next();
+    }
+})
+
+Vue.component('uim-messager',{
+    delimiters: ['$[',']$'],
+    template: /*html*/ `
+    <div class="uim-messager">
+        <div><slot name="icon"></slot><slot name="msg"></slot></div>
+    </div>
+    `,
+})
+
 const indexPage = new Vue({
     router: Router,
     el: '#index',
     delimiters: ['$[',']$'],
     mixins: [store],
+    store: tmp,
     data: {
         routerInfo: [
             {
@@ -417,13 +646,18 @@ const indexPage = new Vue({
             hitokoto: '',
             date: '{date("Y")}',
         },
+        loginToken: '',
     },
+    computed: Vuex.mapState({
+        msgrCon: 'msgrCon',
+    }),
     methods: {
         routeJudge() {
+            this.loginToken = tmp.state.logintoken;
             if (this.$route.path === '/') {
                 this.routerN = 0;
             } else {
-                this.routerN = 1;                
+                this.routerN = 1; 
             }
         },
     },
@@ -438,9 +672,12 @@ const indexPage = new Vue({
     },
     mounted() {
         this.routeJudge();
-        tmp.setTmp('time',2);
     },
     
 });
 </script>
+<?php
+$a=$_POST['Email'];
+$b=$_POST['Password'];
+?>
 

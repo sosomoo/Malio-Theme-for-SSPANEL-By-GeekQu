@@ -1,3 +1,5 @@
+@import url(https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css);
+
 body {
     background-color: #1D1D1D;
     color: white;
@@ -141,7 +143,7 @@ a {
     width: 32%;
 }
 
-.auth {
+.auth,.user {
     width: 100%;
 }
 
@@ -149,7 +151,8 @@ a {
     font-size: 3.5rem;
 }
 
-.page-login {
+.page-auth,
+.page-user {
     text-align: center;
 }
 
@@ -178,6 +181,10 @@ a {
 
 input[name] {
     height: 46px;
+}
+
+select {
+    color: black;
 }
 
 @media screen and (min-width:35.5em) {
@@ -229,4 +236,28 @@ input[name] {
         display: unset;
         margin-left: 10rem;
     }
+}
+
+/* 组件 */
+
+.uim-messager {
+    position: absolute;
+    top: 6rem;
+    left: 0;
+    right: 0;
+    margin-right: auto;
+    margin-left: auto;
+    display: inline-block;
+    text-align: center;
+    border-radius: 3px;
+    z-index: 10;
+    padding: 7px 10px;
+    color: black;
+    background: white;
+    width: 200px;
+    min-height: 36px;
+}
+
+.uim-messager span {
+    margin-left: .6rem;
 }
