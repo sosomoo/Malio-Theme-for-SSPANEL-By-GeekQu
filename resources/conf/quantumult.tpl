@@ -13,11 +13,10 @@
 system, 119.29.29.29, 223.6.6.6, 80.80.81.81, 1.1.1.1
 
 [Rule]
-{file_get_contents("https://raw.githubusercontent.com/lhie1/Rules/master/Auto/Apple.conf")}
+{include file='rule/Apple.conf'}
+{include file='rule/PROXY.conf'}
+{include file='rule/DIRECT.conf'}
 
-{file_get_contents("https://raw.githubusercontent.com/lhie1/Rules/master/Auto/PROXY.conf")}
-
-{file_get_contents("https://raw.githubusercontent.com/lhie1/Rules/master/Auto/DIRECT.conf")}
 GEOIP,CN,🍂 Domestic
 FINAL,☁️ Others
 
