@@ -211,7 +211,7 @@ class LinkController extends BaseController
             if ($quantumult == 1) {
                 return base64_encode($v2ray_group);
             }
-            else ($quantumult == 3) {
+            elseif ($quantumult == 3) {
                 $ss_group = "";
                 $ss_name = "";
                 $items = URL::getAllItems($user, $mu, 1);
