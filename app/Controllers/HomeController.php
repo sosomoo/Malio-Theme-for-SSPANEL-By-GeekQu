@@ -142,4 +142,33 @@ class HomeController extends BaseController
         }
         return $response->getBody()->write(json_encode(['res' => AliPay::setOrder($sn, $url)]));
     }
+
+    public function docCenter()
+    {
+        return $this->view()->display('doc/index.tpl');
+    }
+
+    public function sublinkOut($request, $response, $args)
+    {
+        $user = Auth::getUser();
+        if (!$user->isLogin) {
+            $msg = "₍₍ ◝(・ω・)◟ ⁾⁾ 您没有登录噢，登录之后再刷新就阔以了啦";
+        } else {
+            $subUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0);
+            switch ($request->getParam('type')) {
+                case 'quantumult':
+                    $msg =  "```
+专属 V2ray 订阅：" . $subUrl . "?quantumult=1
+个人端口[全部订阅]：" . $subUrl . "?quantumult=2&mu=0
+公共端口[全部订阅]：" . $subUrl . "?quantumult=2&mu=1
+```";
+                    break;
+                default:
+                    $msg = '获取失败了呢...';
+                    break;
+            }
+        }
+        return $msg;
+    }
+
 }

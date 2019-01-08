@@ -385,5 +385,13 @@ $app->group('/admin', function () {
 })->add(new Admin());
 // chenPay end
 
+//doc
+$app->group('/doc', function () {
+    $this->get('', 'App\Controllers\HomeController:docCenter');
+    $this->get('/', 'App\Controllers\HomeController:docCenter');
+});
+$app->get('/sublink', 'App\Controllers\HomeController:sublinkOut');
+//doc end
+
 // Run Slim Routes for App
 $app->run();
