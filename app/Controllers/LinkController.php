@@ -260,7 +260,8 @@ class LinkController extends BaseController
         ->assign('subUrl', $subUrl)
         ->assign('proxys', $proxys)
         ->assign('groups', $groups)
-        ->assign('quantumult', $quantumult);
+        ->assign('quantumult', $quantumult)
+        ->assign('appName', Config::get('appName'));
 
         return $render->fetch('quantumult.tpl');
     }
@@ -308,7 +309,7 @@ class LinkController extends BaseController
         return URL::getAllSSDUrl($user);
     }
 
-    public static function GetSub($user, $mu = 0, $max = 0, $sub = 0)
+    public static function GetSub($user, $mu = 0, $sub = 0)
     {
         // SSR
         if ($sub == 1) {

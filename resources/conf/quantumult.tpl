@@ -1,14 +1,14 @@
 {if $quantumult == 3}
-[Proxy]
-{$ss_group}{$ssr_group}{$v2ray_group}
+[SERVER]
+{$proxys['ss']}{$proxys['ssr']}{$proxys['v2ray']}
 
 [POLICY]
-{$quan_proxy_group}
-{$quan_auto_group}
-{$quan_domestic_group}
-{$quan_others_group}
-{$quan_apple_group}
-{$quan_direct_group}
+{$groups['proxy_group']}
+{$groups['domestic_group']}
+{$groups['others_group']}
+{$groups['apple_group']}
+{$groups['auto_group']}
+{$groups['direct_group']}
 
 [Rule]
 {include file='rule/Apple.conf'}
@@ -19,10 +19,12 @@ GEOIP,CN,🍂 Domestic
 FINAL,☁️ Others
 
 {elseif $quantumult == 2}
+[SERVER]
+
 [SOURCE]
-{$config["appName"]}_v2, server ,{$subUrl}?quantumult=1, false, true, false
-{$config["appName"]}_ss, server ,{$subUrl}?sub=2, false, true, false
-{$config["appName"]}_ssr, server ,{$subUrl}?sub=1, false, true, false
+{$appName}_v2, server ,{$subUrl}?quantumult=1, false, true, false
+{$appName}_ss, server ,{$subUrl}?sub=2&mu={$mu}, false, true, false
+{$appName}_ssr, server ,{$subUrl}?sub=1&mu={$mu}, false, true, false
 Hackl0us Rules, filter, https://raw.githubusercontent.com/Hackl0us/Surge-Rule-Snippets/master/LAZY_RULES/Quantumult.conf, true
 
 {/if}
