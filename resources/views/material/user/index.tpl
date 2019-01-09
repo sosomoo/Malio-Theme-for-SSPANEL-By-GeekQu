@@ -386,7 +386,7 @@
 																<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_password}">点击复制</button><br>
 															</div>
 														{else}
-															<p class="card-heading" align="center"><b> 
+															<p class="card-heading" align="center"><b>
 																<i class="icon icon-lg">visibility_off</i>等级至少为{$display_ios_class}可见，如需升级请<a href="/user/shop">点击这里</a>升级套餐。
 															</b></p>
 														{/if}
@@ -545,7 +545,7 @@
 														<p><span class="icon icon-lg text-white">filter_2</span> <a class="copy-text btn-dl" data-clipboard-text='{$ss_url_all}'><i class="material-icons icon-sm">how_to_vote</i>点我复制链接</a>，然后右击托盘小飞机图标->从剪贴板导入服务器配置链接</p>
 														<p><span class="icon icon-lg text-white">filter_3</span> 再次右击托盘小飞机图标->服务器，选择一个服务器即可上网</p>
 													</div>
-													<div class="tab-pane fade" id="all_ss_ios">													
+													<div class="tab-pane fade" id="all_ss_ios">
 													{if $display_ios_class>=0}
 														<div><span class="icon icon-lg text-white">account_box</span> 公共iOS账户：</div>
 														{if $user->class>=$display_ios_class}
@@ -559,7 +559,7 @@
 																<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_password}">点击复制</button><br>
 															</div>
 														{else}
-															<p class="card-heading" align="center"><b> 
+															<p class="card-heading" align="center"><b>
 																<i class="icon icon-lg">visibility_off</i>等级至少为{$display_ios_class}可见，如需升级请<a href="/user/shop">点击这里</a>升级套餐。
 															</b></p>
 														{/if}
@@ -674,10 +674,31 @@
 															</button>
 															<br>
 														</div>
+														<div><span class="icon icon-lg text-white">flash_auto</span> Kitsunebi订阅(普通订阅)：</div>
+														<div class="float-clear"><input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$subUrl}{$ssr_sub_token}?mu=0&app=2" readonly="true" />
+															<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$subUrl}{$ssr_sub_token}?mu=0&app=2">
+																点击复制
+															</button>
+															<br>
+														</div>
+														<div><span class="icon icon-lg text-white">flash_auto</span> Kitsunebi订阅(单端口节点订阅)：</div>
+														<div class="float-clear"><input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$subUrl}{$ssr_sub_token}?mu=1&app=2" readonly="true" />
+															<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$subUrl}{$ssr_sub_token}?mu=1&app=2">
+																点击复制
+															</button>
+															<br>
+														</div>
+														<div><span class="icon icon-lg text-white">flash_auto</span> Quantumult(Vmess订阅)：</div>
+														<div class="float-clear"><input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$subUrl}{$ssr_sub_token}?mu=0&quantumult=1" readonly="true" />
+															<button id="quan" class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$subUrl}{$ssr_sub_token}?mu=0&quantumult=1">
+																点击复制
+															</button>
+															<br>
+														</div>
 
-														<div><span class="icon icon-lg text-white">flash_auto</span> Quantumult(施工中)：</div>
-														<div class="float-clear"><input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$subUrl}{$ssr_sub_token}?mu=4" readonly="true" />
-															<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$subUrl}{$ssr_sub_token}?mu=4">
+														<div><span class="icon icon-lg text-white">flash_auto</span> Quantumult(完整config)：</div>
+														<div class="float-clear"><input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$subUrl}{$ssr_sub_token}?mu=0&quantumult=2" readonly="true" />
+															<button id="quan" class="copy-config btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" onclick=Copyconfig("{$subUrl}{$ssr_sub_token}?mu=0&quantumult=2","#quan","quantumult://settings?configuration=clipboard")>
 																点击复制
 															</button>
 															<br>
@@ -959,6 +980,51 @@ $(".copy-text").click(function () {
 	$("#result").modal();
 	$("#msg").html("已拷贝订阅链接，请您继续接下来的操作。");
 });
+
+function Copyconfig(url,id,jumpurl="") {
+    $.ajax({
+        url: url,
+        type: 'get',
+        async: false,
+        success: function(res) {
+            if(res) {
+                $("#result").modal();
+                $("#msg").html("获取成功。");
+                $(id).data('data', res);
+				console.log(res);
+            } else {
+                $("#result").modal();
+                $("#msg").html("获取失败,请稍后再试");
+            }
+        }
+    });
+    const clipboard = new Clipboard('.copy-config', {
+        text: function() {
+            return $(id).data('data');
+        }
+    });
+    clipboard.on('success', function(e) {
+				$("#result").modal();
+				if (jumpurl != "") {
+					$("#msg").html("已经复制成功,您将跳转到app设置");
+					window.setTimeout(function () {
+						window.open(jumpurl)
+					}, 1000);
+
+				} else {
+
+					$("#msg").html("已经复制成功");
+				}
+			}
+    );
+    clipboard.on("error",function(e){
+		console.error('Action:', e.action);
+		console.error('Trigger:', e.trigger);
+		console.error('Text:', e.text);
+			}
+	);
+
+}
 
  {if $user->transfer_enable-($user->u+$user->d) == 0}
 window.onload = function() {

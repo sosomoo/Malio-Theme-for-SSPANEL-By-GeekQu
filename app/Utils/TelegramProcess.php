@@ -10,9 +10,15 @@ class TelegramProcess
 {
     private static $all_rss = [ "?mu=0" => "SSR普通订阅" ,
         "?mu=1" => "SSR单端口订阅",
-        "?mu=3"=> "SS/SSD订阅",
+        "?mu=3" => "SS/SSD订阅",
         "?mu=2" => "V2ray订阅",
-        "?mu=4"=> "Clash订阅"];
+        "?mu=4" => "Clash订阅",
+        "?mu=0&app=1" => "Shadowrocket(普通订阅)",
+        "?mu=1&app=1" => "Shadowrocket(单端口)",
+        "?mu=0&app=2" => "Kitsunebi(普通订阅)",
+        "?mu=1&app=2" => "Kitsunebi(单端口节点订阅)",
+        "?mu=0&quantumult=1" => "Quantumult(Vmess订阅)",
+        "?mu=0&quantumult=2" => "Quantumult(完整配置)"];
 
     private static function callback_bind_method($bot,$message,$command){
 
@@ -20,10 +26,28 @@ class TelegramProcess
         $user = User::where('telegram_id', $message->getFrom()->getId())->first();
         if ($user != null) {
             switch (true){
+                case $command=="?mu=0&quantumult=2":
+                    $ssr_sub_token = LinkController::GenerateSSRSubCode($user->id, 0);
+                    $baseUrl =Config::get('baseUrl');
+                    $keyboard = new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
+                        [
+                            [
+                                ['text' => '点击跳转', 'url' => $baseUrl."/jump.html?url=quantumult://settings?configuration=clipboard"]
+                            ]
+                        ]
+                    );
+                    $bot->sendMessage($user->get_user_attributes("telegram_id"), "两种方法:\n 方法一:\n  1.点击打开以下配置文件\n  2. 选择分享->拷贝到\"Quantumult\"\n  3.选择更新配置\n 方法二:\n  1.长按配置文件\n  2. 选择更多->分享->拷贝\n  3.点击跳转APP,到Quan中保存" , $parseMode = null, $disablePreview = false, $replyToMessageId = null,$replyMarkup=$keyboard);
+                    $filepath ='/tmp/tg_'.$ssr_sub_token.'.txt';
+                    $fh = fopen($filepath, 'w+');
+                    $string = LinkController::GetQuantumult($user,0,2);
+                    fwrite($fh, $string);
+                    fclose($fh);
+                    $bot->sendDocument($user->get_user_attributes("telegram_id"), new \CURLFile($filepath,'','quantumult_'.$ssr_sub_token.'.conf'));
+                    break;
                 case (strpos($command,"mu")):
                     $ssr_sub_token = LinkController::GenerateSSRSubCode($user->id, 0);
                     $subUrl = Config::get('subUrl');
-                    $reply_message = self::$all_rss[$command].": ".$subUrl.$ssr_sub_token.$command."\n";
+                    $reply_message = self::$all_rss[$command].": ".$subUrl.$ssr_sub_token.$command.PHP_EOL;
                     $bot->sendMessage($message->getChat()->getId(), $reply_message , $parseMode = null, $disablePreview = false, $replyToMessageId = $reply_to);
                     break;
                 default:
@@ -31,7 +55,7 @@ class TelegramProcess
 
             }
         }
-}
+    }
     private static function needbind_method($bot, $message, $command, $user, $reply_to = null)
     {
         if ($user != null) {
@@ -275,7 +299,6 @@ class TelegramProcess
             $bot = new \TelegramBot\Api\Client(Config::get('telegram_token'));
             // or initialize with botan.io tracker api key
             // $bot = new \TelegramBot\Api\Client('YOUR_BOT_API_TOKEN', 'YOUR_BOTAN_TRACKER_API_KEY');
-
             $command_list = array("ping", "chat", "traffic", "help", "prpr", "checkin", "rss");
             foreach ($command_list as $command) {
                 $bot->command($command, function ($message) use ($bot, $command) {
