@@ -173,6 +173,7 @@ class LinkController extends BaseController
             return $proxy_group;
         }
     }
+    
     public static function GetQuantumult($user, $mu = 0, $quantumult = 0)
     {
         $proxys = [];
