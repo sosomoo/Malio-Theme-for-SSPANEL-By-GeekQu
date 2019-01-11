@@ -9,7 +9,7 @@
     <meta name="description" content=""/>
     <link rel="shortcut icon" href="/favicon.ico"/>
     <link rel="bookmark" href="/favicon.ico"/>
-    <title>Document</title>
+    <title>{$config["appName"]}</title>
     <link rel="stylesheet" href="/theme/material/css/index_base.css">
     <link rel="stylesheet" href="/theme/material/css/index.css">
 </head>
