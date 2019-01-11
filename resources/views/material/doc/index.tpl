@@ -39,7 +39,7 @@
       plugins: [
         function(hook, vm) {
           hook.beforeEach((markdown) => {
-            const result = markdown.replace(/\/sublink\?(\w+)/g, `//${root}/sublink?$1`)
+            const result = markdown.replace(/\/sublink\?type=(\w+)/g, `//${root}/sublink?type=$1`)
             return result
           })
         }
