@@ -202,17 +202,18 @@ class HomeController extends BaseController
 // 合并订阅，包含 ss、v2ray
 个人端口：" . $subUrl . "?sub=4&mu=0
 公共端口：" . $subUrl . "?sub=4&mu=1
-// 纯 v2ray 订阅
+// v2ray 订阅
 公共端口：" . $subUrl . "?sub=3
 ```";
                     break;
                 case 'quantumult_sub':
                     // Quantumult V2ray 专属格式
                     $msg =  "```
-专属 V2ray 订阅：" . $subUrl . "?quantumult=1
 // ssr 订阅
 个人端口：" . $subUrl . "?sub=1&mu=0
 公共端口：" . $subUrl . "?sub=1&mu=1
+// V2ray 订阅
+公共端口：" . $subUrl . "?quantumult=1
 ```";
                     break;
                 case 'quantumult_conf':
@@ -227,7 +228,7 @@ class HomeController extends BaseController
                     break;
                 case 'shadowrocket':
                     $msg =  "```
-// 纯 ssr 订阅
+// ssr 订阅
 个人端口：" . $subUrl . "?sub=1&mu=0
 公共端口：" . $subUrl . "?sub=1&mu=1
 // 合并订阅，包含 ss、ssr、v2ray

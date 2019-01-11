@@ -22,22 +22,33 @@
   </nav>
   <div id="docs">加载中...</div>
   <script>
+{literal}
+    const root = window.location.host;
     window.$docsify = {
       name: '文档中心',
       alias: {
             '/.*/_sidebar.md': '/_sidebar.md'
       },
-      basePath: '暂时留空',
+      basePath: 'https://raw.githubusercontent.com/GeekQu/PANEL_DOC/master/GeekQu',
       auto2top: true,
       loadSidebar: true,
       autoHeader: true,
       homepage: 'index.md',
       nameLink: '/doc/',
-      el: '#docs'
-      //...
+      el: '#docs',
+      plugins: [
+        function(hook, vm) {
+          hook.beforeEach((markdown) => {
+            const result = markdown.replace(/\/sublink\?(\w+)/g, `//${root}/sublink?$1`)
+            return result
+          })
+        }
+      ]
     }
+{/literal}
   </script>
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
   <script src="//unpkg.com/docsify/lib/plugins/emoji.js"></script>
+  <script src="//unpkg.com/docsify/lib/plugins/zoom-image.js"></script>
 </body>
 </html>
