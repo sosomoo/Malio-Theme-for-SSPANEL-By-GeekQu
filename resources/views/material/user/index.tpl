@@ -158,6 +158,8 @@
                                     <p class="card-heading"> <i class="icon icon-md">notifications_active</i>公告栏</p>
 										{if $ann != null}
 										<p>{$ann->content}</p>
+										<br/>
+										<strong>查看所有公告请<a href="/user/announcement">点击这里</a></strong>
 										{/if}
 										{if $config["enable_admin_contact"] == 'true'}
 										<p class="card-heading">管理员联系方式</p>
