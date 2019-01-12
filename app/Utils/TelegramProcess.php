@@ -45,6 +45,7 @@ class TelegramProcess
                     fwrite($fh, $string);
                     fclose($fh);
                     $bot->sendDocument($user->get_user_attributes("telegram_id"), new \CURLFile($filepath,'','quantumult_'.$ssr_sub_token.'.conf'));
+                    unlink($filepath);
                     break;
                 case (strpos($command,"mu")):
                     $ssr_sub_token = LinkController::GenerateSSRSubCode($user->id, 0);
