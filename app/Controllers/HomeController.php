@@ -206,6 +206,12 @@ class HomeController extends BaseController
 公共端口：" . $subUrl . "?sub=3
 ```";
                     break;
+                    case 'surfboard':
+                    $msg =  "```
+个人端口：" . $subUrl . "?surfboard=1&mu=0
+公共端口：" . $subUrl . "?surfboard=1&mu=1
+```";
+                    break;
                 case 'quantumult_sub':
                     // Quantumult V2ray 专属格式
                     $msg =  "```
