@@ -12,17 +12,30 @@
     <title>Document</title>
     <link rel="stylesheet" href="/theme/material/css/index_base.css">
     <link rel="stylesheet" href="/theme/material/css/index.css">
+    {if $config["enable_crisp"] == 'true'}
+    <literal><script type="text/javascript"> 
+    window.$crisp=[];
+    window.CRISP_WEBSITE_ID="{$config["crisp_id"]}";
+    $crisp.push(["set", "user:email", "{$user->email}"]);
+    $crisp.push(["config", "color:theme", "grey"]);
+    (function(){ d=document;s=d.createElement("script"); s.src="https://client.crisp.chat/l.js"; s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
+    </script></literal>
+    {/if}
 </head>
 
 <style>
-.slide-fade-enter-active,.fade-enter-active,.loading-fade-enter-active,.rotate-fade-enter-active {
+.slide-fade-enter-active,.fade-enter-active,.loading-fade-enter-active,.rotate-fade-enter-active,.loading-fadex-enter-active {
     transition: all .3s ease;
 }
-.slide-fade-leave-active,.fade-leave-active,.loading-fade-leave-active,.rotate-fade-leave-active {
+.slide-fade-leave-active,.fade-leave-active,.loading-fade-leave-active,.rotate-fade-leave-active,.loading-fadex-leave-active {
     transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
 }
 .loading-fade-enter {
     transform: scaleY(.75);
+    opacity: 0;
+}
+.loading-fadex-enter {
+    transform: scaleX(.75);
     opacity: 0;
 }
 .slide-fade-enter {
@@ -43,7 +56,7 @@
     -webkit-transform: rotateY(90deg);
     opacity: 0;
 }
-.fade-enter,.fade-leave-to {
+.fade-enter,.fade-leave-to,.loading-fade-leave-to,.loading-fadex-leave-to {
     opacity: 0;
 }
 </style>
@@ -85,7 +98,7 @@
                 </div>
                 <div class="footer pure-g">
                     <div class="pure-u-1 pure-u-sm-1-2 staff">POWERED BY <a href="./staff">SSPANEL-UIM</a></div>
-                    <div class="pure-u-1 pure-u-sm-1-2 time">&copy;$[globalConfig.indexMsg.date]$ $[globalConfig.indexMsg.appname]$</div>
+                    <div class="pure-u-1 pure-u-sm-1-2 time" :class="{ enableCrisp:globalConfig.crisp === 'true' }">&copy;$[globalConfig.indexMsg.date]$ $[globalConfig.indexMsg.appname]$</div>
                 </div>
                 
                 <transition name="slide-fade" mode="out-in">
@@ -101,10 +114,10 @@
     {if $recaptcha_sitekey != null}
     <script src="https://recaptcha.net/recaptcha/api.js?render=explicit" async defer></script>
     {/if}
-    <script src="/theme/material/js/vue.min.js"></script>
-    <script src="/theme/material/js/vuex.min.js"></script>
-    <script src="/theme/material/js/vue-router.min.js"></script>
-    <script src="/theme/material/js/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuex@3.0.1/dist/vuex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-router@3.0.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.19.0-beta.1/dist/axios.min.js"></script>
     {if isset($geetest_html)}
 	<script src="//static.geetest.com/static/tools/gt.js"></script>
     {/if}
@@ -137,6 +150,7 @@ const tmp = new Vuex.Store({
             jumpDelay: '',
             isGetestSuccess: '',
             registMode: '',
+            crisp: '',
             base_url: '',
             isEmailVeryify: '',
             login_token: '',
@@ -181,6 +195,7 @@ const tmp = new Vuex.Store({
             state.globalConfig.login_token = config.login_token;
             state.globalConfig.login_number = config.login_number;
             state.globalConfig.telegram_bot = config.telegram_bot;
+            state.globalConfig.crisp = config.enable_crisp;
             state.globalConfig.enable_telegram = config.enable_telegram;
             state.globalConfig.indexMsg.appname = config.appName;
             state.globalConfig.indexMsg.date = config.dateY;
@@ -203,13 +218,17 @@ const tmp = new Vuex.Store({
     }
 });
 
-var storeAuth = {
+var storeMap = {
     store: tmp,
     computed: Vuex.mapState({
         msgrCon: 'msgrCon',
         globalConfig: 'globalConfig',
         logintoken: 'logintoken',
+        isLoading: 'isLoading',
     }),
+}
+
+var storeAuth = {
     methods: {
         loadCaptcha(id) {
             if (this.globalConfig.recaptchaSiteKey !== null ) {
@@ -290,7 +309,7 @@ const Auth = {
     <div class="auth pure-g align-center">
         <div class="pure-u-1 pure-u-sm-4-24 flex wrap space-around auth-links">
             <router-link v-for="(links,key) in routerLinks" @click.native="setButtonState" :class="{ active:links.isActive }" class="button-round flex align-center" :to="links.href" :key="links.id">
-                <span class="icon-round"><i :class="links.icon"></i></span> $[links.content]$
+                <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i :class="links.icon"></i></span><span>$[links.content]$</span> 
             </router-link>
         </div>
         <transition name="slide-fade" mode="out-in">
@@ -306,21 +325,21 @@ const Auth = {
                     id: 'R_AUTH_0',
                     href: '/auth/login',
                     content: '登录',
-                    icon: ['fa','fa-pencil'],
+                    icon: ['fa','fa-sign-in','fa-stack-1x','fa-inverse'],
                     isActive: false,
                 },
                 register: {
                     id: 'R_AUTH_1',
                     href: '/auth/register',
                     content: '注册',
-                    icon: ['fa','fa-plus'],
+                    icon: ['fa','fa-user-plus','fa-stack-1x','fa-inverse'],
                     isActive: false,
                 },
                 reset: {
                     id: 'R_PW_0',
                     href: '/password/reset',
                     content: '密码重置',
-                    icon: ['fa','fa-gear'],
+                    icon: ['fa','fa-unlock-alt','fa-stack-1x','fa-inverse'],
                     isActive: false,
                 },
             },
@@ -337,6 +356,9 @@ const Auth = {
             }
         },
     },
+    watch: {
+        $route: 'setButtonState',
+    },
     beforeRouteEnter (to,from,next) {
         next(vm=>{
             vm.setButtonState();
@@ -350,12 +372,8 @@ const Auth = {
 
 const Login = {
     delimiters: ['$[',']$'],
-    mixins: [storeAuth],
+    mixins: [storeMap,storeAuth],
     computed: Vuex.mapState({
-        msgrCon: 'msgrCon',
-        globalConfig: 'globalConfig',
-        logintoken: 'logintoken',
-        isLoading: 'isLoading',
         telegramHref: function() {
             return 'https://t.me/' + this.globalConfig.telegram_bot;
         },
@@ -391,7 +409,7 @@ const Login = {
                 确认登录
             </button>
         </div>
-        <div v-if="globalConfig.enable_telegram === 'true'" class="pure-u-1 pure-u-sm-11-24 pure-g">
+        <div v-if="globalConfig.enable_telegram === 'true'" class="pure-u-1 pure-u-sm-11-24 pure-g auth-tg">
             <h3>Telegram登录</h3>
             <div>
                 <p>Telegram OAuth一键登陆</p>
@@ -558,9 +576,9 @@ const Login = {
 
 const Register = {
     delimiters: ['$[',']$'],
-    mixins: [storeAuth],
+    mixins: [storeMap,storeAuth],
     template: /*html*/ `
-    <div class="page-auth pure-g pure-u-20-24">
+    <div class="page-auth pure-g pure-u-1 pure-u-sm-20-24">
         <div class="title-back flex align-center">REGISTER</div>
         <h1>账号注册</h1>
         <div class="flex space-around reg">
@@ -652,6 +670,10 @@ const Register = {
                 msg: '',
                 icon: '',
             };
+
+            if (this.globalConfig.isEmailVeryify === 'true') {
+                ajaxCon.emailcode = this.email_code;
+            }
 
             if (this.globalConfig.registMode !== 'invite') {
                 ajaxCon.code = 0;
@@ -813,15 +835,64 @@ const Password = {
         <router-view></router-view>
     </div>
     `,
+    props: ['routermsg'],
 }
 
 const Reset = {
     delimiters: ['$[',']$'],
+    mixins: [storeMap],
     template: /*html*/ `
-    <div class="page-pw pure-u-1">
-        <h1>密码重置页demo</h1>
+    <div class="page-pw pure-u-1 pure-g flex align-center space-around wrap">
+        <div class="title-back flex align-center">PASSWORD</div>
+        <div class="pure-u-1 pure-u-sm-10-24 flex space-around wrap basis-max">
+            <h1>密码重置</h1>
+            <div class="input-control flex wrap">
+                <label for="Email" class="flex space-between align-center">
+                    <span>邮箱</span>
+                    <span><router-link class="button-index" to="/auth/login"><i class="fa fa-mail-forward"></i> 返回登录页</router-link></span>
+                </label>
+                <input v-model="email" type="text" name="Email">        
+            </div>
+            <button @click.prevent="reset" @keyup.13.native="reset" class="auth-submit" id="reset" type="submit" :disabled="isDisabled">
+                    重置密码
+            </button>
+        </div>
     </div>
     `,
+    data: function() {
+        return {
+            email: '',
+            isDisabled: false,
+        }
+    },
+    methods: {
+        reset() {
+            let callConfig = {
+                msg: '',
+                icon: '',
+            };
+
+            axios.post('/password/reset',{
+                email: this.email,
+            }).then(r=>{
+                if (r.data.ret == 1) {
+                    callConfig.msg += '邮件发送成功kira~';
+                    callConfig.icon += 'fa-check-square-o';
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                    window.setTimeout(()=>{
+                        this.$router.push('/auth/login');
+                    }, this.globalConfig.jumpDelay);
+                } else {
+                    callConfig.msg += 'WTF……邮件发送失败，请检查邮箱地址';
+                    callConfig.icon += 'fa-times-circle-o';
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                    window.setTimeout(()=>{
+                        this.isDisabled = false;
+                    },3000)
+                }
+            })
+        }
+    },
 }
 
 const User = {
@@ -838,18 +909,46 @@ const Panel = {
     delimiters: ['$[',']$'],
     template: /*html*/ `
     <div class="page-user pure-u-1">
-        <h1>用户页面demo</h1>
-        <a href="/user" class="button-index">进入用户中心</a>
+        <div class="title-back flex align-center">USERCENTER</div>
+        <transition name="loading-fadex" mode="out-in">
+            <div class="loading flex align-center" v-if="userLoadState === 'beforeload'">USERCENTER</div>
+
+            <div class="loading flex align-center" v-else-if="userLoadState === 'loading'" key="loading">
+                <div class="spinnercube">
+                    <div class="cube1"></div>
+                    <div class="cube2"></div>
+                </div>
+            </div>
+
+            <div class="usrcenter text-left" v-else-if="userLoadState === 'loaded'">
+                <h1>用户中心</h1>
+                <a href="/user" class="button-index">进入管理面板</a>
+            </div>
+        </transition>
     </div>
     `,
     props: ['routermsg'],
+    data: function() {
+        return {
+            userLoadState: 'beforeload',
+            userCon: '',
+        }
+    },
     mounted() {
+        let self = this;
+        this.userLoadState = 'loading';                        
         axios.get('/user/getuserinfo')
-            .then((r)=>{
-                if (r.data.ret === 1) {
-                    console.log(r.data.info);
-                }
-            });
+        .then((r)=>{
+            if (r.data.ret === 1) {
+                console.log(r.data.info);
+                this.userCon = r.data.info.user;
+                console.log(this.userCon);
+            }
+        }).then(r=>{
+            setTimeout(()=>{
+                self.userLoadState = 'loaded';
+            },1000)
+        });
     },
     beforeRouteLeave (to, from, next) {
         if (to.matched.some(function(record) {
@@ -1003,17 +1102,11 @@ const indexPage = new Vue({
     router: Router,
     el: '#index',
     delimiters: ['$[',']$'],
-    store: tmp,
+    mixins: [storeMap],
     data: {
         routerN: 'auth',
         transType: 'slide-fade'
     },
-    computed: Vuex.mapState({
-        msgrCon: 'msgrCon',
-        globalConfig: 'globalConfig',
-        logintoken: 'logintoken',
-        isLoading: 'isLoading',
-    }),
     methods: {
         routeJudge() {
             switch(this.$route.path) {
@@ -1054,7 +1147,7 @@ const indexPage = new Vue({
         this.routeJudge();
         setTimeout(()=>{
             tmp.commit('SET_LOADSTATE');
-        },1000)
+        },1000);
     },
     
 });
