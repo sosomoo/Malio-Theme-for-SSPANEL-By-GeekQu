@@ -50,15 +50,16 @@ dns:
 
 Proxy:
 {foreach $confs as $conf}
-- {json_encode($conf,JSON_UNESCAPED_SLASHES)}
+  - {json_encode($conf,JSON_UNESCAPED_SLASHES)}
 {/foreach}
 
 Proxy Group:
-- { name: "Auto", type: url-test, proxies: {$proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
-- { name: "Proxy", type: select, proxies: {$proxies|json_encode} }
-- { name: "Domestic", type: select, proxies: [DIRECT] }
-- { name: "China_media", type: select, proxies: ["Domestic"]}
-- { name: "Global_media", type: select, proxies: ["Proxy"]}
-- { name: "Others", type: select, proxies: ["Proxy","Domestic","Auto"]}
+  - { name: "Auto", type: url-test, proxies: {$proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
+{append var='proxies' value='Auto'}
+  - { name: "Proxy", type: select, proxies: {$proxies|json_encode} }
+  - { name: "Domestic", type: select, proxies: ["DIRECT","Proxy"] }
+  - { name: "China_media", type: select, proxies: ["Domestic","Proxy"]}
+  - { name: "Global_media", type: select, proxies: ["Proxy"]}
+  - { name: "Others", type: select, proxies: ["Proxy","Domestic"]}
 
 {include file='rule/Rule.yml'}
