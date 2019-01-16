@@ -130,8 +130,10 @@
 										{if $user->im_type==4}
 										Telegram
 										{/if}
-										{$user->im_value}
 										</code>
+										</p>
+										<p>当前联络方式账号：
+										<code>{$user->im_value}</code>
 										</p>
 										<div class="form-group form-group-label control-highlight-custom dropdown">
 											<label class="floating-label" for="imtype">选择您的联络方式</label>

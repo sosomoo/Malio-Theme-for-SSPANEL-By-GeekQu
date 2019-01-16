@@ -7,22 +7,35 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="keywords" content=""/>
     <meta name="description" content=""/>
+    <title>{$config["appName"]}</title>
     <link rel="shortcut icon" href="/favicon.ico"/>
     <link rel="bookmark" href="/favicon.ico"/>
-    <title>{$config["appName"]}</title>
     <link rel="stylesheet" href="/theme/material/css/index_base.css">
     <link rel="stylesheet" href="/theme/material/css/index.css">
+    {if $config["enable_crisp"] == 'true'}
+    <literal><script type="text/javascript"> 
+    window.$crisp=[];
+    window.CRISP_WEBSITE_ID="{$config["crisp_id"]}";
+    $crisp.push(["set", "user:email", "{$user->email}"]);
+    $crisp.push(["config", "color:theme", "grey"]);
+    (function(){ d=document;s=d.createElement("script"); s.src="https://client.crisp.chat/l.js"; s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
+    </script></literal>
+    {/if}
 </head>
 
 <style>
-.slide-fade-enter-active,.fade-enter-active,.loading-fade-enter-active,.rotate-fade-enter-active {
+.slide-fade-enter-active,.fade-enter-active,.loading-fade-enter-active,.rotate-fade-enter-active,.loading-fadex-enter-active {
     transition: all .3s ease;
 }
-.slide-fade-leave-active,.fade-leave-active,.loading-fade-leave-active,.rotate-fade-leave-active {
+.slide-fade-leave-active,.fade-leave-active,.loading-fade-leave-active,.rotate-fade-leave-active,.loading-fadex-leave-active {
     transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
 }
 .loading-fade-enter {
     transform: scaleY(.75);
+    opacity: 0;
+}
+.loading-fadex-enter {
+    transform: scaleX(.75);
     opacity: 0;
 }
 .slide-fade-enter {
@@ -43,7 +56,7 @@
     -webkit-transform: rotateY(90deg);
     opacity: 0;
 }
-.fade-enter,.fade-leave-to {
+.fade-enter,.fade-leave-to,.loading-fade-leave-to,.loading-fadex-leave-to {
     opacity: 0;
 }
 </style>
@@ -85,7 +98,7 @@
                 </div>
                 <div class="footer pure-g">
                     <div class="pure-u-1 pure-u-sm-1-2 staff">POWERED BY <a href="./staff">SSPANEL-UIM</a></div>
-                    <div class="pure-u-1 pure-u-sm-1-2 time">&copy;$[globalConfig.indexMsg.date]$ $[globalConfig.indexMsg.appname]$</div>
+                    <div class="pure-u-1 pure-u-sm-1-2 time" :class="{ enableCrisp:globalConfig.crisp === 'true' }">&copy;$[globalConfig.indexMsg.date]$ $[globalConfig.indexMsg.appname]$</div>
                 </div>
                 
                 <transition name="slide-fade" mode="out-in">
@@ -101,20 +114,87 @@
     {if $recaptcha_sitekey != null}
     <script src="https://recaptcha.net/recaptcha/api.js?render=explicit" async defer></script>
     {/if}
-    <script src="/theme/material/js/vue.min.js"></script>
-    <script src="/theme/material/js/vuex.min.js"></script>
-    <script src="/theme/material/js/vue-router.min.js"></script>
-    <script src="/theme/material/js/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuex@3.0.1/dist/vuex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-router@3.0.2"></script>
+
     {if isset($geetest_html)}
 	<script src="//static.geetest.com/static/tools/gt.js"></script>
     {/if}
-    
+    {if $config['enable_telegram'] == 'true'}
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs@gh-pages/qrcode.min.js"></script>
+    {/if}
 </body>
 
 </html>
 
 <script>
-    
+{*/**
+ * A wrapper of window.Fetch API
+ * @author Sukka (https://skk.moe)
+
+/**
+ * A Request Helper of Fetch
+ * @function _request
+ * @param {string} url
+ * @param {string} body
+ * @param {string} method
+ * @returns {function} - A Promise Object
+ */*}
+const _request = (url, body, method) =>
+    fetch(url, {
+        method: method,
+        body: body,
+        headers: {
+            'content-type': 'application/json'
+        }
+    }).then(resp => {
+        return Promise.all([resp.ok, resp.status, resp.json()]);
+    }).then(([ok, status, json]) => {
+        if (ok) {
+            return json;
+        } else {
+            throw new Error(JSON.stringify(json.error));
+        }
+    }).catch(error => {
+        throw error;
+    });
+
+{*/**
+ * A Wrapper of Fetch GET Method
+ * @function _get
+ * @param {string} url
+ * @returns {function} - A Promise Object
+ * @example
+ * get('https://example.com').then(resp => { console.log(resp) })
+ */*}
+const _get = (url,credentials) =>
+    fetch(url, {
+        method: 'GET',
+        credentials,
+    }).then(resp => Promise.all([resp.ok, resp.status, resp.json(), resp.headers]))
+    .then(([ok, status, json, headers]) => {
+        if (ok) {
+            return json;
+        } else {
+            throw new Error(JSON.stringify(json.error));
+        }
+    }).catch(error => {
+        throw error;
+    });
+
+{*/**
+ * A Wrapper of Fetch POST Method
+ * @function _post
+ * @param {string} url
+ * @param {string} json - The POST Body in JSON Format
+ * @returns {function} - A Promise Object
+ * @example
+ * _post('https://example.com', JSON.stringify(data)).then(resp => { console.log(resp) })
+ */*}
+
+const _post = (url, body) => _request(url, body, 'POST');
+
 let validate,captcha;
 
 let globalConfig;
@@ -135,7 +215,13 @@ const tmp = new Vuex.Store({
             jumpDelay: '',
             isGetestSuccess: '',
             registMode: '',
+            crisp: '',
+            base_url: '',
             isEmailVeryify: '',
+            login_token: '',
+            login_number: '',
+            telegram_bot: '',
+            enable_telegram: '',
             enableLoginCaptcha: '',
             enableRegCaptcha: '',
             indexMsg: {
@@ -162,6 +248,7 @@ const tmp = new Vuex.Store({
         },
         SET_GLOBALCONFIG (state,config) {
             state.logintoken = config.isLogin
+            state.globalConfig.base_url = config.base_url;
             state.globalConfig.captchaProvider = config.captcha_provider;
             state.globalConfig.recaptchaSiteKey = config.recaptcha_sitekey;
             state.globalConfig.jumpDelay = config.jump_delay;
@@ -173,6 +260,8 @@ const tmp = new Vuex.Store({
             state.globalConfig.login_token = config.login_token;
             state.globalConfig.login_number = config.login_number;
             state.globalConfig.telegram_bot = config.telegram_bot;
+            state.globalConfig.crisp = config.enable_crisp;
+            state.globalConfig.enable_telegram = config.enable_telegram;
             state.globalConfig.indexMsg.appname = config.appName;
             state.globalConfig.indexMsg.date = config.dateY;
         },
@@ -181,7 +270,7 @@ const tmp = new Vuex.Store({
         },
         SET_JINRISHICI (state,content) {
             state.globalConfig.indexMsg.jinrishici = content;
-        }
+        },
     },
     actions: {
         CALL_MSGR ({ commit,state },config) {
@@ -194,13 +283,17 @@ const tmp = new Vuex.Store({
     }
 });
 
-var storeAuth = {
+var storeMap = {
     store: tmp,
     computed: Vuex.mapState({
         msgrCon: 'msgrCon',
         globalConfig: 'globalConfig',
         logintoken: 'logintoken',
+        isLoading: 'isLoading',
     }),
+}
+
+var storeAuth = {
     methods: {
         loadCaptcha(id) {
             if (this.globalConfig.recaptchaSiteKey !== null ) {
@@ -213,14 +306,11 @@ var storeAuth = {
             if (this.globalConfig.captchaProvider === 'geetest') {
                 this.$nextTick(function(){
 
-                    axios({
-                        method: 'get',
-                        url: '/auth/login_getCaptcha',
-                        responseType: 'json',
-                    }).then((r)=>{
+                _get('/auth/login_getCaptcha')
+                    .then((r) => {
                         let GeConfig = {
-                            gt: r.data.GtSdk.gt,
-                            challenge: r.data.GtSdk.challenge,
+                            gt: r.GtSdk.gt,
+                            challenge: r.GtSdk.challenge,
                             product: "embed",
                         }
 
@@ -244,14 +334,21 @@ var storeAuth = {
             }
         },
         //加载完成的时间很谜
+
+        /* 当然很迷了。
+           你的 reCAPTCHA 的 container 是在注册页面才渲染的
+           所以你应该把的 reCAPTCHA 渲染绑定在注册页面渲染事件上。
+
+           Sukka. 2019-01-06
+         */
         grecaptchaRender(id) {
-            setTimeout(function() {
-                if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render ==='undefined') {
-                    this.grecaptchaRender();
+            setTimeout(() => {
+                if (!grecaptcha || !grecaptcha.render) {
+                    this.grecaptchaRender(id);
                 } else {
                     grecaptcha.render(id);
                 }
-            },300)
+            }, 300)
         }
     },
 };
@@ -281,7 +378,7 @@ const Auth = {
     <div class="auth pure-g align-center">
         <div class="pure-u-1 pure-u-sm-4-24 flex wrap space-around auth-links">
             <router-link v-for="(links,key) in routerLinks" @click.native="setButtonState" :class="{ active:links.isActive }" class="button-round flex align-center" :to="links.href" :key="links.id">
-                <span class="icon-round"><i :class="links.icon"></i></span> $[links.content]$
+                <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i :class="links.icon"></i></span><span>$[links.content]$</span> 
             </router-link>
         </div>
         <transition name="slide-fade" mode="out-in">
@@ -297,21 +394,21 @@ const Auth = {
                     id: 'R_AUTH_0',
                     href: '/auth/login',
                     content: '登录',
-                    icon: ['fa','fa-pencil'],
+                    icon: ['fa','fa-sign-in','fa-stack-1x','fa-inverse'],
                     isActive: false,
                 },
                 register: {
                     id: 'R_AUTH_1',
                     href: '/auth/register',
                     content: '注册',
-                    icon: ['fa','fa-plus'],
+                    icon: ['fa','fa-user-plus','fa-stack-1x','fa-inverse'],
                     isActive: false,
                 },
                 reset: {
                     id: 'R_PW_0',
                     href: '/password/reset',
                     content: '密码重置',
-                    icon: ['fa','fa-gear'],
+                    icon: ['fa','fa-unlock-alt','fa-stack-1x','fa-inverse'],
                     isActive: false,
                 },
             },
@@ -328,6 +425,9 @@ const Auth = {
             }
         },
     },
+    watch: {
+        $route: 'setButtonState',
+    },
     beforeRouteEnter (to,from,next) {
         next(vm=>{
             vm.setButtonState();
@@ -341,33 +441,66 @@ const Auth = {
 
 const Login = {
     delimiters: ['$[',']$'],
-    mixins: [storeAuth],
+    mixins: [storeMap,storeAuth],
+    computed: Vuex.mapState({
+        telegramHref: function() {
+            return 'https://t.me/' + this.globalConfig.telegram_bot;
+        },
+        isTgEnabled: function() {
+            return this.globalConfig.enable_telegram === 'true';
+        }
+    }),
     template: /*html*/ `
-    <div class="page-auth pure-g pure-u-1 pure-u-sm-20-24">
+    <div class="page-auth pure-g pure-u-1 pure-u-sm-20-24 wrap">
         <div class="title-back flex align-center">LOGIN</div>
         <h1>登录</h1>
-        <div class="input-control flex wrap">
-            <label for="Email">邮箱</label>
-            <input v-model="email" type="text" name="Email">        
+        <div class="pure-u-1 basis-max" :class="[ isTgEnabled ? 'pure-u-sm-11-24' : 'pure-u-sm-1-2' ]">
+            <div class="input-control flex wrap">
+                <label for="Email">邮箱</label>
+                <input v-model="email" type="text" name="Email">        
+            </div>
+            <div class="input-control flex wrap">
+                <label for="Password">密码</label>
+                <input v-model="passwd" type="password" name="Password">        
+            </div>
+            <div class="input-control flex wrap">
+                <uim-checkbox v-model="remember_me">
+                    <span slot="content">记住我</span>
+                </uim-checkbox>
+            </div>
+            <div class="input-control flex wrap">
+                <div v-if="globalConfig.captchaProvider === 'geetest'" id="embed-captcha-login"></div>
+                <form action="?" method="POST">    
+                <div v-if="globalConfig.recaptchaSiteKey" id="g-recaptcha-login" class="g-recaptcha" :data-sitekey="globalConfig.recaptchaSiteKey"></div>
+                </form>
+            </div>
+            <button @click.prevent="login" @keyup.13.native="login" class="auth-submit" id="login" type="submit" :disabled="isDisabled">
+                确认登录
+            </button>
         </div>
-        <div class="input-control flex wrap">
-            <label for="Password">密码</label>
-            <input v-model="passwd" type="password" name="Password">        
-        </div>
-        <div class="input-control flex wrap">
-            <uim-checkbox v-model="remember_me">
-                <span slot="content">记住我</span>
-            </uim-checkbox>
-        </div>
-        <div class="input-control flex wrap">
-            <div v-if="globalConfig.captchaProvider === 'geetest'" id="embed-captcha-login"></div>
-            <form action="?" method="POST">    
-            <div v-if="globalConfig.recaptchaSiteKey" id="g-recaptcha-login" class="g-recaptcha" :data-sitekey="globalConfig.recaptchaSiteKey"></div>
-            </form>
-        </div>
-        <button @click.prevent="login" @keyup.13.native="login" class="auth-submit" id="login" type="submit" :disabled="isDisabled">
-            确认登录
-        </button>
+        <div v-if="globalConfig.enable_telegram === 'true'" class="pure-u-1 pure-u-sm-11-24 pure-g auth-tg">
+            <h3>Telegram登录</h3>
+            <div>
+                <p>Telegram OAuth一键登陆</p>
+            </div>
+            <p id="telegram-alert">正在载入 Telegram，如果长时间未显示请刷新页面或检查代理</p>
+            <div class="text-center" id="telegram-login-box"></div>
+            <p>或者添加机器人账号 <a :href="telegramHref">@$[globalConfig.telegram_bot]$</a>，发送下面的数字/二维码验证码给它
+            </p>
+            <transition name="fade" mode="out-in">
+            <div v-if="!isTgtimeout" class="pure-g pure-u-20-24" key="notTimeout">
+                <div class="text-center qr-center pure-u-11-24">
+                    <div id="telegram-qr" class="flex space-around"></div>
+                </div>
+                <div class="pure-u-11-24">
+                    <div class="auth-submit" id="code_number">$[globalConfig.login_number]$</div>
+                </div>
+            </div>
+            <div v-else class="pure-g space-around" key="timeout">
+                <div class="auth-submit pure-u-18-24 tg-timeout">验证方式已过期，请刷新页面后重试</div>
+            </div>
+            </transition>
+        </div>  
     </div>
     `,
     data: function () {
@@ -376,6 +509,7 @@ const Login = {
             passwd: '',
             remember_me: false,
             isDisabled: false,
+            isTgtimeout: false,
         }
     },
     methods: {
@@ -411,16 +545,12 @@ const Login = {
                 }
             }
 
-            axios({
-                method: 'post',
-                url: '/auth/login',
-                data: ajaxCon,
-            }).then((r)=>{
-                if (r.data.ret == 1) {
+            _post('/auth/login', JSON.stringify(ajaxCon)).then((r) => {
+                if (r.ret === 1) {
                     callConfig.msg += '登录成功Kira~';
                     callConfig.icon += 'fa-check-square-o';
                     tmp.dispatch('CALL_MSGR',callConfig);
-                    window.setTimeout(()=>{
+                    window.setTimeout(() => {
                         tmp.commit('SET_LOGINTOKEN',1);
                         this.$router.replace('/user/panel');
                     }, this.globalConfig.jumpDelay);
@@ -430,11 +560,65 @@ const Login = {
                     tmp.dispatch('CALL_MSGR',callConfig);
                     window.setTimeout(()=>{
                         this.isDisabled = false;
-                    },3000)
+                    }, 3000)
                 }
             });
 
         },
+        telegramRender() {
+            let el = document.createElement('script');
+            document.getElementById('telegram-login-box').append(el);
+            el.onload = function () {
+                document.getElementById('telegram-alert').outerHTML = '';
+            }
+            el.src = 'https://telegram.org/js/telegram-widget.js?4';
+            el.setAttribute('data-size', 'large');
+            el.setAttribute('data-telegram-login', this.globalConfig.telegram_bot);
+            el.setAttribute('data-auth-url', this.globalConfig.base_url + '/auth/telegram_oauth');
+            el.setAttribute('data-request-access', 'write');
+
+            let telegram_qrcode = 'mod://login/' + this.globalConfig.login_token;
+            let qrcode = new QRCode(document.getElementById("telegram-qr"));
+            qrcode.clear();
+            qrcode.makeCode(telegram_qrcode);
+        },
+        tgAuthTrigger(tid) {
+            if (this.logintoken == true) {
+                return;
+            }
+            let callConfig = {
+                msg: '',
+                icon: '',
+            };
+            _post('/auth/qrcode_check', JSON.stringify({
+                token: this.globalConfig.login_token,
+                number: this.globalConfig.login_number,
+            })).then((r) => {
+                if(r.ret > 0) {
+                    clearTimeout(tid);
+                    
+                    _post('/auth/qrcode_login',JSON.stringify({
+                        token: this.globalConfig.login_token,
+                        number: this.globalConfig.login_number,
+                    })).then(r=>{
+                        if (r.ret) {
+                            callConfig.msg += '登录成功Kira~';
+                            callConfig.icon += 'fa-check-square-o';
+                            tmp.dispatch('CALL_MSGR',callConfig);
+                            window.setTimeout(()=>{
+                                tmp.commit('SET_LOGINTOKEN',1);
+                                this.$router.replace('/user/panel');
+                            }, this.globalConfig.jumpDelay);
+                        }
+                    })
+                } else if (r.ret == -1) {
+                    this.isTgtimeout = true;
+                }
+            });
+            tid = setTimeout(()=>{
+                this.tgAuthTrigger(tid);
+            }, 2500);
+        }
     },
     mounted() {
         document.addEventListener('keyup',(e)=>{
@@ -442,6 +626,13 @@ const Login = {
                 this.login();
             }
         });
+
+        if (this.globalConfig.enable_telegram === 'true') {
+            this.telegramRender();
+            let tid = setTimeout(() => {
+                this.tgAuthTrigger(tid);
+            }, 2500);
+        }
 
         if (this.globalConfig.enableLoginCaptcha === 'false') {
             return;
@@ -453,9 +644,9 @@ const Login = {
 
 const Register = {
     delimiters: ['$[',']$'],
-    mixins: [storeAuth],
+    mixins: [storeMap,storeAuth],
     template: /*html*/ `
-    <div class="page-auth pure-g pure-u-20-24">
+    <div class="page-auth pure-g pure-u-1 pure-u-sm-20-24">
         <div class="title-back flex align-center">REGISTER</div>
         <h1>账号注册</h1>
         <div class="flex space-around reg">
@@ -548,9 +739,13 @@ const Register = {
                 icon: '',
             };
 
+            if (this.globalConfig.isEmailVeryify === 'true') {
+                ajaxCon.emailcode = this.email_code;
+            }
+
             if (this.globalConfig.registMode !== 'invite') {
                 ajaxCon.code = 0;
-                if ((this.getCookie('code'))!='') {
+                if ((this.getCookie('code')) !== '') {
                     ajaxCon.code = this.getCookie('code');
                 }
             }
@@ -570,15 +765,10 @@ const Register = {
                         }      
                         break;
                 }
-            }      
+            }
 
-            axios({
-                method: 'post',
-                url: '/auth/register',
-                responseType: 'json',
-                data: ajaxCon,
-            }).then((r)=>{
-                if (r.data.ret == 1) {
+            _post('/auth/register', JSON.stringify(ajaxCon)).then((r)=>{
+                if (r.ret == 1) {
                     callConfig.msg += '注册成功meow~';
                     callConfig.icon += 'fa-check-square-o';
                     tmp.dispatch('CALL_MSGR',callConfig);
@@ -651,13 +841,8 @@ const Register = {
                     email: this.email,
                 }
 
-            axios({
-                method: 'post',
-                url: 'auth/send',
-                responseType: 'json',
-                data: ajaxCon,
-            }).then((r)=>{
-                if (r.data.ret) {
+            _post('auth/send', JSON.stringify(ajaxCon)).then((r)=>{
+                if (r.ret) {
                     let callConfig = {
                             msg: 'biu~邮件发送成功',
                             icon: 'fa-check-square-o',
@@ -686,7 +871,7 @@ const Register = {
             }
         }
         
-        document.addEventListener('keyup',(e)=>{
+        document.addEventListener('keyup', (e) => {
             if (e.keyCode == 13) {
                 this.register();
             }
@@ -708,15 +893,64 @@ const Password = {
         <router-view></router-view>
     </div>
     `,
+    props: ['routermsg'],
 }
 
 const Reset = {
     delimiters: ['$[',']$'],
+    mixins: [storeMap],
     template: /*html*/ `
-    <div class="page-pw pure-u-1">
-        <h1>密码重置页demo</h1>
+    <div class="page-pw pure-u-1 pure-g flex align-center space-around wrap">
+        <div class="title-back flex align-center">PASSWORD</div>
+        <div class="pure-u-1 pure-u-sm-10-24 flex space-around wrap basis-max">
+            <h1>密码重置</h1>
+            <div class="input-control flex wrap">
+                <label for="Email" class="flex space-between align-center">
+                    <span>邮箱</span>
+                    <span><router-link class="button-index" to="/auth/login"><i class="fa fa-mail-forward"></i> 返回登录页</router-link></span>
+                </label>
+                <input v-model="email" type="text" name="Email">        
+            </div>
+            <button @click.prevent="reset" @keyup.13.native="reset" class="auth-submit" id="reset" type="submit" :disabled="isDisabled">
+                    重置密码
+            </button>
+        </div>
     </div>
     `,
+    data: function() {
+        return {
+            email: '',
+            isDisabled: false,
+        }
+    },
+    methods: {
+        reset() {
+            let callConfig = {
+                msg: '',
+                icon: '',
+            };
+
+            _post('/password/reset', JSON.stringify({
+                email: this.email,
+            })).then(r => {
+                if (r.ret == 1) {
+                    callConfig.msg += '邮件发送成功kira~';
+                    callConfig.icon += 'fa-check-square-o';
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                    window.setTimeout(() => {
+                        this.$router.push('/auth/login');
+                    }, this.globalConfig.jumpDelay);
+                } else {
+                    callConfig.msg += 'WTF……邮件发送失败，请检查邮箱地址';
+                    callConfig.icon += 'fa-times-circle-o';
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                    window.setTimeout(()=>{
+                        this.isDisabled = false;
+                    }, 3000)
+                }
+            })
+        }
+    },
 }
 
 const User = {
@@ -733,18 +967,45 @@ const Panel = {
     delimiters: ['$[',']$'],
     template: /*html*/ `
     <div class="page-user pure-u-1">
-        <h1>用户页面demo</h1>
-        <a href="/user" class="button-index">进入用户中心</a>
+        <div class="title-back flex align-center">USERCENTER</div>
+        <transition name="loading-fadex" mode="out-in">
+            <div class="loading flex align-center" v-if="userLoadState === 'beforeload'">USERCENTER</div>
+
+            <div class="loading flex align-center" v-else-if="userLoadState === 'loading'" key="loading">
+                <div class="spinnercube">
+                    <div class="cube1"></div>
+                    <div class="cube2"></div>
+                </div>
+            </div>
+
+            <div class="usrcenter text-left" v-else-if="userLoadState === 'loaded'">
+                <h1>用户中心</h1>
+                <a href="/user" class="button-index">进入管理面板</a>
+            </div>
+        </transition>
     </div>
     `,
     props: ['routermsg'],
+    data: function() {
+        return {
+            userLoadState: 'beforeload',
+            userCon: '',
+        }
+    },
     mounted() {
-        axios.get('/user/getuserinfo')
-            .then((r)=>{
-                if (r.data.ret === 1) {
-                    console.log(r.data.info);
-                }
-            });
+        let self = this;
+        this.userLoadState = 'loading';                        
+         _get('/user/getuserinfo').then((r) => {
+            if (r.ret === 1) {
+                console.log(r.info);
+                this.userCon = r.info.user;
+                console.log(this.userCon);
+            }
+        }).then(r=>{
+            setTimeout(()=>{
+                self.userLoadState = 'loaded';
+            },1000)
+        });
     },
     beforeRouteLeave (to, from, next) {
         if (to.matched.some(function(record) {
@@ -762,6 +1023,9 @@ const vueRoutes = [
         path: '/',
         components: {
             default: Root,
+        },
+        meta: {
+            title: 'Index',
         }
     },
     {
@@ -769,16 +1033,22 @@ const vueRoutes = [
         component: Auth,
         redirect: '/auth/login',
         meta: {
-            alreadyAuth: true
+            alreadyAuth: true,
         },
         children: [
             {
-                path: 'login',
+                path: 'Login',
                 component: Login,
+                meta: {
+                    title: 'login',
+                }
             },
             {
                 path: 'register',
                 component: Register,
+                meta: {
+                    title: 'Register',
+                }
             },
         ],
     },
@@ -793,6 +1063,9 @@ const vueRoutes = [
             {
                 path: 'reset',
                 component: Reset,
+                meta: {
+                    title: 'Reset',
+                }
             },
         ],
     },
@@ -807,6 +1080,9 @@ const vueRoutes = [
             {
                 path: 'panel',
                 component: Panel,
+                meta: {
+                    title: 'Usercenter',
+                }
             }
         ]
     }
@@ -818,10 +1094,9 @@ const Router = new VueRouter({
 
 Router.beforeEach((to,from,next)=>{
     if (!globalConfig) {
-        axios.get('/globalconfig')
-        .then((r)=>{
-            if (r.data.ret == 1) {
-                    globalConfig = r.data.globalConfig;
+        _get('/globalconfig').then((r)=>{
+            if (r.ret == 1) {
+                    globalConfig = r.globalConfig;
                     if (globalConfig.geetest_html && globalConfig.geetest_html.success) {
                         globalConfig.isGetestSuccess = '1';
                         tmp.commit('SET_GLOBALCONFIG',globalConfig);
@@ -847,6 +1122,7 @@ Router.beforeEach((to,from,next)=>{
         })) {
             next('/auth/login');
         } else {
+            document.title = tmp.state.globalConfig.indexMsg.appname + ' - ' + to.meta.title;
             next();
         }
     }
@@ -898,17 +1174,11 @@ const indexPage = new Vue({
     router: Router,
     el: '#index',
     delimiters: ['$[',']$'],
-    store: tmp,
+    mixins: [storeMap],
     data: {
         routerN: 'auth',
         transType: 'slide-fade'
     },
-    computed: Vuex.mapState({
-        msgrCon: 'msgrCon',
-        globalConfig: 'globalConfig',
-        logintoken: 'logintoken',
-        isLoading: 'isLoading',
-    }),
     methods: {
         routeJudge() {
             switch(this.$route.path) {
@@ -935,21 +1205,24 @@ const indexPage = new Vue({
         }
     },
     beforeMount() {
-        axios.get('https://api.lwl12.com/hitokoto/v1')
-        .then((r)=>{
-            tmp.commit('SET_HITOKOTO',r.data);
+        _get('https://api.lwl12.com/hitokoto/v1?encode=realjson').then((r) => {
+            let hitokoto
+            if (r.author === '' && r.source === '') {
+                hitokoto = r.text;
+            } else {
+                hitokoto = r.text + ' —— ' + r.author + r.source; 
+            }
+            tmp.commit('SET_HITOKOTO',hitokoto);
         })
-        axios.get('https://v2.jinrishici.com/one.json',{
-            withCredentials: true,
-        }).then((r)=>{
-            tmp.commit('SET_JINRISHICI',r.data.data.content);
+        _get('https://v2.jinrishici.com/one.json','include').then((r) => {
+            tmp.commit('SET_JINRISHICI',r.data.content);
         })
     },
     mounted() {
         this.routeJudge();
         setTimeout(()=>{
             tmp.commit('SET_LOADSTATE');
-        },1000)
+        },1000);
     },
     
 });

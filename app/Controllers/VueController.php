@@ -21,6 +21,8 @@ use App\Utils\TelegramProcess;
 use App\Utils\Spay_tool;
 use App\Utils\Geetest;
 
+use voku\helper\AntiXSS;
+
 class VueController extends BaseController {
 
     private $user;
@@ -64,7 +66,7 @@ class VueController extends BaseController {
             "telegram_bot" => Config::get('telegram_bot'),
             "enable_logincaptcha" => Config::get('enable_login_captcha'),
             "enable_regcaptcha" => Config::get('enable_reg_captcha'),
-            "base_url" => Config::get('enable_reg_captcha'),
+            "base_url" => Config::get('baseUrl'),
             "recaptcha_sitekey" => $recaptcha_sitekey,
             "captcha_provider" => Config::get('captcha_provider'),
             "jump_delay" => Config::get('jump_delay'),
@@ -73,6 +75,8 @@ class VueController extends BaseController {
             "appName" => Config::get('appName'),
             "dateY" => date("Y"),
             "isLogin" => $user->isLogin,
+            "enable_telegram" => Config::get('enable_telegram'),
+            "enable_crisp" => Config::get('enable_crisp'),
         );
 
         $res['ret'] = 1;
