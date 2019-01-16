@@ -391,7 +391,7 @@ class URL
         }
     }
 
-    public static function getV2Url($user, $node){
+    public static function getV2Url($user, $node, $arrout = 0){
         $node_explode = explode(';', $node->server);
         $item = [
             'v'=>'2',
@@ -416,101 +416,29 @@ class URL
         }
         if (count($node_explode) >= 5 ) {
             if (in_array($item['net'], array("kcp", "http"))){
-
                 $item['type'] = $node_explode[4];
-            } else if ($node_explode[4]=='ws'){
+            } else if ($node_explode[4] == 'ws'){
                 $item['net'] = 'ws';
             }
         }
-
         if (count($node_explode) >= 6) {
             $item = array_merge($item, URL::parse_args($node_explode[5]));
-
             if (array_key_exists("server",$item)){
-                $item['add']=$item['server'];
+                $item['add'] = $item['server'];
                 unset($item['server']);
             }
         }
-
-        return "vmess://".base64_encode((json_encode($item, JSON_UNESCAPED_UNICODE)));
-    }
-
-    public static function getAllVMessUrl($user) {
-        if ($user->is_admin) {
-
-            $nodes = Node::where('sort', 11)->where("type", "1")->orderBy("name")->get();
-
+        if ($arrout == 0) {
+            return "vmess://".base64_encode((json_encode($item, JSON_UNESCAPED_UNICODE)));
         } else {
-
-            $nodes = Node::where('sort', 11)->where(
-                function ($query) use ($user){
-                    $query->where("node_group", "=", $user->node_group)
-                        ->orWhere("node_group", "=", 0);
-                }
-            )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
-
+            return $item;
         }
-
-        $result = "";
-
-        foreach ($nodes as $node) {
-            $result .= (URL::getV2Url($user, $node) . "\n");
-        }
-
-        return $result;
     }
 
-    public static function getV2ray($user, $node){
-        $node_explode = explode(';', $node->server);
-        $item = [
-            'v'=>'2',
-            'host'=>'',
-            'path'=>'',
-            'tls'=>''
-        ];
-        $item['ps'] = $node->name;
-        $item['add'] = $node_explode[0];
-        $item['port'] = $node_explode[1];
-        $item['id'] = $user->getUuid();
-        $item['aid'] = $node_explode[2];
-        $item['net'] = "tcp";
-        $item['type'] = "none";
-        if (count($node_explode) >= 4) {
-            $item['net'] = $node_explode[3];
-            if ($item['net'] == 'ws') {
-                $item['path'] = '/';
-            } else if ($item['net'] == 'tls') {
-                $item['tls'] = 'tls';
-            }
-        }
-        if (count($node_explode) >= 5 ) {
-            if (in_array($item['net'], array("kcp", "http"))){
-
-                $item['type'] = $node_explode[4];
-            } else if ($node_explode[4]=='ws'){
-                $item['net'] = 'ws';
-            }
-        }
-
-        if (count($node_explode) >= 6) {
-            $item = array_merge($item, URL::parse_args($node_explode[5]));
-
-            if (array_key_exists("server",$item)){
-                $item['add']=$item['server'];
-                unset($item['server']);
-            }
-        }
-
-        return $item;
-    }
-
-    public static function getAllV2ray($user) {
-        if ($user->is_admin){
-
+    public static function getAllVMessUrl($user, $arrout = 0) {
+        if ($user->is_admin) {
             $nodes = Node::where('sort', 11)->where("type", "1")->orderBy("name")->get();
-
-        }else{
-
+        } else {
             $nodes = Node::where('sort', 11)->where(
                 function ($query) use ($user){
                     $query->where("node_group", "=", $user->node_group)
@@ -518,14 +446,19 @@ class URL
                 }
             )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
         }
-
-        $return_array = array();
-
-        foreach ($nodes as $node) {
-            array_push($return_array, URL::getV2ray($user, $node));
+        if ($arrout == 0) {
+            $result = "";
+            foreach ($nodes as $node) {
+                $result .= (URL::getV2Url($user, $node, $arrout) . "\n");
+            }
+            return $result;
+        } else {
+            $result = [];
+            foreach ($nodes as $node) {
+                array_push($result, URL::getV2Url($user, $node, $arrout));
+            }
+            return $result;
         }
-
-        return $return_array;
     }
 
 	public static function getAllSSDUrl($user){

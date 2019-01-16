@@ -127,7 +127,7 @@ class LinkController extends BaseController
             return $newResponse;
         }
         elseif ($clash == 1) {
-            $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Clash.conf');
+            $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=config.yml');
             $newResponse->getBody()->write(LinkController::GetClash($user, $mu));
             return $newResponse;
         }
@@ -186,7 +186,7 @@ class LinkController extends BaseController
         else {
             $v2ray_group = "";
             $v2ray_name = "";
-            $v2rays = URL::getAllV2ray($user);
+            $v2rays = URL::getAllVMessUrl($user, 1);
             foreach($v2rays as $v2ray) {
                 $v2ray_name .= "\n" . $v2ray['ps'];
                 $v2ray_tls = ", over-tls=false, certificate=1";
