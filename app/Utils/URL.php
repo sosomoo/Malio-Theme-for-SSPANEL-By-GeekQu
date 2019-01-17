@@ -111,104 +111,49 @@ class URL
 
     public static function getClashInfo($user) {
         $result = [];
-        if ($user->is_admin){
-            $v2ray_nodes = $nodes=Node::where(
-                function ($query) {
-                    $query->where('sort', 11);
+        //ss
+        $items = URL::getAllItems($user, $mu, 1);
+        foreach ($items as $item) {
+            $sss = [
+                "name" => $item['remark'],
+                "type" => "ss",
+                "server" => $item['address'],
+                "port" => $item['port'],
+                "cipher" => $item['method'],
+                "password" => $item['passwd'],
+            ];
+            if (in_array($item['obfs'], array("tls", "http"))) {
+                $sss['obfs'] = $item['obfs'];
+                if ($item['obfs_param'] != '') {
+                    $sss['obfs-host'] = $item['obfs_param'];
+                } else {
+                    $sss['obfs-host'] = "wns.windows.com";
                 }
-            )->where("type", "1")->orderBy("name")->get();
-        }else{
-
-            $v2ray_nodes = $nodes=Node::where(
-                function ($query) {
-                    $query->where('sort', 11);
-                }
-            )->where(
-                function ($query) use ($user){
-                    $query->where("node_group", "=", $user->node_group)
-                        ->orWhere("node_group", "=", 0);
-                }
-            )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
+            }
+            $result[] = $sss;
         }
-
-        foreach ($v2ray_nodes as $v2ray_node) {
-            $node_explode = explode(';', $v2ray_node->server);
-            $docs = [
-                "name" => $v2ray_node->name,
+        //v2
+        $items = URL::getAllVMessUrl($user, 1);
+        foreach ($items as $item) {
+            $v2rays = [
+                "name" => $item['ps'],
                 "type" => "vmess",
-                "server" => $node_explode[0],
-                "port" => $node_explode[1],
-                "uuid" => $user->getUuid(),
-                "alterId" => $node_explode[2],
+                "server" => $item['add'],
+                "port" => $item['port'],
+                "uuid" => $item['id'],
+                "alterId" => $item['aid'],
                 "cipher" => "auto",
             ];
-
-            if (count($node_explode) >= 4) {
-                if ($node_explode[3] == 'ws') {
-                    $docs['network'] = 'ws';
-                } else if ($node_explode[3] == 'tls') {
-                    $docs['tls'] = true;
+            if ($item['net'] == "ws") {
+                $v2rays['network'] = 'ws';
+                $v2rays['ws-path'] = $item['path'];
+                if ($item['tls'] == 'tls') {
+                    $v2rays['tls'] = true;
                 }
+            } elseif ($item['net'] == "tls") {
+                $v2rays['tls'] = true;
             }
-
-            if (count($node_explode) >= 5) {
-                if ($node_explode[4] == "ws") {
-                    $docs['network'] = 'ws';
-                    $docs['ws-path'] = "/";
-                }
-            }
-
-            if (count($node_explode) >= 6) {
-                $temp_docs = URL::parse_args($node_explode[5]);
-
-                if (array_key_exists('path', $temp_docs)) {
-                    $docs['ws-path'] = $temp_docs['path'];
-                    unset($docs['path']);
-                }
-                if (array_key_exists("server",$temp_docs)){
-                    $docs['server']=$temp_docs['server'];
-                }
-
-            }
-            $result[] = $docs;
-        }
-
-        if (self::SSCanConnect($user, 0)) {
-            if ($user->is_admin){
-
-                $shadowsocks_nodes = Node::where(
-                    function ($query) {
-                        $query->where('sort', 0)
-                            ->orwhere('sort', 10);
-                    }
-                )->where("type", "1")->orderBy("name")->get();
-
-            }else{
-                $shadowsocks_nodes = Node::where(
-                    function ($query) {
-                        $query->where('sort', 0)
-                            ->orwhere('sort', 10);
-                    }
-                )->where(
-                    function ($query) use ($user){
-                        $query->where("node_group", "=", $user->node_group)
-                            ->orWhere("node_group", "=", 0);
-                    }
-                )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
-            }
-
-
-            foreach ($shadowsocks_nodes as $node) {
-                $result[] = [
-                    "name" => $node->name,
-                    "type" => "ss",
-                    "server" => $node->server,
-                    "port" => $user->port,
-                    // TODO: method mapper
-                    "cipher" => $user->method,
-                    "password" => $user->passwd,
-                ];
-            }
+            $result[] = $v2rays;
         }
 
         return $result;
