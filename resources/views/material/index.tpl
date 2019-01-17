@@ -7,9 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="keywords" content=""/>
     <meta name="description" content=""/>
+    <title>{$config["appName"]}</title>
     <link rel="shortcut icon" href="/favicon.ico"/>
     <link rel="bookmark" href="/favicon.ico"/>
-    <title>Document</title>
     <link rel="stylesheet" href="/theme/material/css/index_base.css">
     <link rel="stylesheet" href="/theme/material/css/index.css">
     {if $config["enable_crisp"] == 'true'}
@@ -117,7 +117,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuex@3.0.1/dist/vuex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-router@3.0.2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios@0.19.0-beta.1/dist/axios.min.js"></script>
+
     {if isset($geetest_html)}
 	<script src="//static.geetest.com/static/tools/gt.js"></script>
     {/if}
@@ -129,7 +129,72 @@
 </html>
 
 <script>
-    
+{*/**
+ * A wrapper of window.Fetch API
+ * @author Sukka (https://skk.moe)
+
+/**
+ * A Request Helper of Fetch
+ * @function _request
+ * @param {string} url
+ * @param {string} body
+ * @param {string} method
+ * @returns {function} - A Promise Object
+ */*}
+const _request = (url, body, method) =>
+    fetch(url, {
+        method: method,
+        body: body,
+        headers: {
+            'content-type': 'application/json'
+        }
+    }).then(resp => {
+        return Promise.all([resp.ok, resp.status, resp.json()]);
+    }).then(([ok, status, json]) => {
+        if (ok) {
+            return json;
+        } else {
+            throw new Error(JSON.stringify(json.error));
+        }
+    }).catch(error => {
+        throw error;
+    });
+
+{*/**
+ * A Wrapper of Fetch GET Method
+ * @function _get
+ * @param {string} url
+ * @returns {function} - A Promise Object
+ * @example
+ * get('https://example.com').then(resp => { console.log(resp) })
+ */*}
+const _get = (url,credentials) =>
+    fetch(url, {
+        method: 'GET',
+        credentials,
+    }).then(resp => Promise.all([resp.ok, resp.status, resp.json(), resp.headers]))
+    .then(([ok, status, json, headers]) => {
+        if (ok) {
+            return json;
+        } else {
+            throw new Error(JSON.stringify(json.error));
+        }
+    }).catch(error => {
+        throw error;
+    });
+
+{*/**
+ * A Wrapper of Fetch POST Method
+ * @function _post
+ * @param {string} url
+ * @param {string} json - The POST Body in JSON Format
+ * @returns {function} - A Promise Object
+ * @example
+ * _post('https://example.com', JSON.stringify(data)).then(resp => { console.log(resp) })
+ */*}
+
+const _post = (url, body) => _request(url, body, 'POST');
+
 let validate,captcha;
 
 let globalConfig;
@@ -241,14 +306,11 @@ var storeAuth = {
             if (this.globalConfig.captchaProvider === 'geetest') {
                 this.$nextTick(function(){
 
-                    axios({
-                        method: 'get',
-                        url: '/auth/login_getCaptcha',
-                        responseType: 'json',
-                    }).then((r)=>{
+                _get('/auth/login_getCaptcha')
+                    .then((r) => {
                         let GeConfig = {
-                            gt: r.data.GtSdk.gt,
-                            challenge: r.data.GtSdk.challenge,
+                            gt: r.GtSdk.gt,
+                            challenge: r.GtSdk.challenge,
                             product: "embed",
                         }
 
@@ -272,14 +334,21 @@ var storeAuth = {
             }
         },
         //加载完成的时间很谜
+
+        /* 当然很迷了。
+           你的 reCAPTCHA 的 container 是在注册页面才渲染的
+           所以你应该把的 reCAPTCHA 渲染绑定在注册页面渲染事件上。
+
+           Sukka. 2019-01-06
+         */
         grecaptchaRender(id) {
-            setTimeout(function() {
-                if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render ==='undefined') {
-                    this.grecaptchaRender();
+            setTimeout(() => {
+                if (!grecaptcha || !grecaptcha.render) {
+                    this.grecaptchaRender(id);
                 } else {
                     grecaptcha.render(id);
                 }
-            },300)
+            }, 300)
         }
     },
 };
@@ -476,16 +545,12 @@ const Login = {
                 }
             }
 
-            axios({
-                method: 'post',
-                url: '/auth/login',
-                data: ajaxCon,
-            }).then((r)=>{
-                if (r.data.ret == 1) {
+            _post('/auth/login', JSON.stringify(ajaxCon)).then((r) => {
+                if (r.ret === 1) {
                     callConfig.msg += '登录成功Kira~';
                     callConfig.icon += 'fa-check-square-o';
                     tmp.dispatch('CALL_MSGR',callConfig);
-                    window.setTimeout(()=>{
+                    window.setTimeout(() => {
                         tmp.commit('SET_LOGINTOKEN',1);
                         this.$router.replace('/user/panel');
                     }, this.globalConfig.jumpDelay);
@@ -495,7 +560,7 @@ const Login = {
                     tmp.dispatch('CALL_MSGR',callConfig);
                     window.setTimeout(()=>{
                         this.isDisabled = false;
-                    },3000)
+                    }, 3000)
                 }
             });
 
@@ -518,22 +583,25 @@ const Login = {
             qrcode.makeCode(telegram_qrcode);
         },
         tgAuthTrigger(tid) {
+            if (this.logintoken == true) {
+                return;
+            }
             let callConfig = {
                 msg: '',
                 icon: '',
             };
-            axios.post('/auth/qrcode_check',{
+            _post('/auth/qrcode_check', JSON.stringify({
                 token: this.globalConfig.login_token,
                 number: this.globalConfig.login_number,
-            }).then(r=>{
-                if(r.data.ret > 0) {
+            })).then((r) => {
+                if(r.ret > 0) {
                     clearTimeout(tid);
                     
-                    axios.post('/auth/qrcode_login',{
+                    _post('/auth/qrcode_login',JSON.stringify({
                         token: this.globalConfig.login_token,
                         number: this.globalConfig.login_number,
-                    }).then(r=>{
-                        if (r.data.ret) {
+                    })).then(r=>{
+                        if (r.ret) {
                             callConfig.msg += '登录成功Kira~';
                             callConfig.icon += 'fa-check-square-o';
                             tmp.dispatch('CALL_MSGR',callConfig);
@@ -543,10 +611,10 @@ const Login = {
                             }, this.globalConfig.jumpDelay);
                         }
                     })
-                } else if (r.data.ret == -1) {
+                } else if (r.ret == -1) {
                     this.isTgtimeout = true;
                 }
-            })
+            });
             tid = setTimeout(()=>{
                 this.tgAuthTrigger(tid);
             }, 2500);
@@ -561,7 +629,7 @@ const Login = {
 
         if (this.globalConfig.enable_telegram === 'true') {
             this.telegramRender();
-            let tid = setTimeout(()=>{
+            let tid = setTimeout(() => {
                 this.tgAuthTrigger(tid);
             }, 2500);
         }
@@ -677,7 +745,7 @@ const Register = {
 
             if (this.globalConfig.registMode !== 'invite') {
                 ajaxCon.code = 0;
-                if ((this.getCookie('code'))!='') {
+                if ((this.getCookie('code')) !== '') {
                     ajaxCon.code = this.getCookie('code');
                 }
             }
@@ -697,15 +765,10 @@ const Register = {
                         }      
                         break;
                 }
-            }      
+            }
 
-            axios({
-                method: 'post',
-                url: '/auth/register',
-                responseType: 'json',
-                data: ajaxCon,
-            }).then((r)=>{
-                if (r.data.ret == 1) {
+            _post('/auth/register', JSON.stringify(ajaxCon)).then((r)=>{
+                if (r.ret == 1) {
                     callConfig.msg += '注册成功meow~';
                     callConfig.icon += 'fa-check-square-o';
                     tmp.dispatch('CALL_MSGR',callConfig);
@@ -778,13 +841,8 @@ const Register = {
                     email: this.email,
                 }
 
-            axios({
-                method: 'post',
-                url: 'auth/send',
-                responseType: 'json',
-                data: ajaxCon,
-            }).then((r)=>{
-                if (r.data.ret) {
+            _post('auth/send', JSON.stringify(ajaxCon)).then((r)=>{
+                if (r.ret) {
                     let callConfig = {
                             msg: 'biu~邮件发送成功',
                             icon: 'fa-check-square-o',
@@ -813,7 +871,7 @@ const Register = {
             }
         }
         
-        document.addEventListener('keyup',(e)=>{
+        document.addEventListener('keyup', (e) => {
             if (e.keyCode == 13) {
                 this.register();
             }
@@ -872,14 +930,14 @@ const Reset = {
                 icon: '',
             };
 
-            axios.post('/password/reset',{
+            _post('/password/reset', JSON.stringify({
                 email: this.email,
-            }).then(r=>{
-                if (r.data.ret == 1) {
+            })).then(r => {
+                if (r.ret == 1) {
                     callConfig.msg += '邮件发送成功kira~';
                     callConfig.icon += 'fa-check-square-o';
                     tmp.dispatch('CALL_MSGR',callConfig);
-                    window.setTimeout(()=>{
+                    window.setTimeout(() => {
                         this.$router.push('/auth/login');
                     }, this.globalConfig.jumpDelay);
                 } else {
@@ -888,7 +946,7 @@ const Reset = {
                     tmp.dispatch('CALL_MSGR',callConfig);
                     window.setTimeout(()=>{
                         this.isDisabled = false;
-                    },3000)
+                    }, 3000)
                 }
             })
         }
@@ -937,11 +995,10 @@ const Panel = {
     mounted() {
         let self = this;
         this.userLoadState = 'loading';                        
-        axios.get('/user/getuserinfo')
-        .then((r)=>{
-            if (r.data.ret === 1) {
-                console.log(r.data.info);
-                this.userCon = r.data.info.user;
+         _get('/user/getuserinfo').then((r) => {
+            if (r.ret === 1) {
+                console.log(r.info);
+                this.userCon = r.info.user;
                 console.log(this.userCon);
             }
         }).then(r=>{
@@ -966,6 +1023,9 @@ const vueRoutes = [
         path: '/',
         components: {
             default: Root,
+        },
+        meta: {
+            title: 'Index',
         }
     },
     {
@@ -973,16 +1033,22 @@ const vueRoutes = [
         component: Auth,
         redirect: '/auth/login',
         meta: {
-            alreadyAuth: true
+            alreadyAuth: true,
         },
         children: [
             {
-                path: 'login',
+                path: 'Login',
                 component: Login,
+                meta: {
+                    title: 'login',
+                }
             },
             {
                 path: 'register',
                 component: Register,
+                meta: {
+                    title: 'Register',
+                }
             },
         ],
     },
@@ -997,6 +1063,9 @@ const vueRoutes = [
             {
                 path: 'reset',
                 component: Reset,
+                meta: {
+                    title: 'Reset',
+                }
             },
         ],
     },
@@ -1011,6 +1080,9 @@ const vueRoutes = [
             {
                 path: 'panel',
                 component: Panel,
+                meta: {
+                    title: 'Usercenter',
+                }
             }
         ]
     }
@@ -1022,10 +1094,9 @@ const Router = new VueRouter({
 
 Router.beforeEach((to,from,next)=>{
     if (!globalConfig) {
-        axios.get('/globalconfig')
-        .then((r)=>{
-            if (r.data.ret == 1) {
-                    globalConfig = r.data.globalConfig;
+        _get('/globalconfig').then((r)=>{
+            if (r.ret == 1) {
+                    globalConfig = r.globalConfig;
                     if (globalConfig.geetest_html && globalConfig.geetest_html.success) {
                         globalConfig.isGetestSuccess = '1';
                         tmp.commit('SET_GLOBALCONFIG',globalConfig);
@@ -1051,6 +1122,7 @@ Router.beforeEach((to,from,next)=>{
         })) {
             next('/auth/login');
         } else {
+            document.title = tmp.state.globalConfig.indexMsg.appname + ' - ' + to.meta.title;
             next();
         }
     }
@@ -1133,14 +1205,17 @@ const indexPage = new Vue({
         }
     },
     beforeMount() {
-        axios.get('https://api.lwl12.com/hitokoto/v1')
-        .then((r)=>{
-            tmp.commit('SET_HITOKOTO',r.data);
+        _get('https://api.lwl12.com/hitokoto/v1?encode=realjson').then((r) => {
+            let hitokoto
+            if (r.author === '' && r.source === '') {
+                hitokoto = r.text;
+            } else {
+                hitokoto = r.text + ' —— ' + r.author + r.source; 
+            }
+            tmp.commit('SET_HITOKOTO',hitokoto);
         })
-        axios.get('https://v2.jinrishici.com/one.json',{
-            withCredentials: true,
-        }).then((r)=>{
-            tmp.commit('SET_JINRISHICI',r.data.data.content);
+        _get('https://v2.jinrishici.com/one.json','include').then((r) => {
+            tmp.commit('SET_JINRISHICI',r.data.content);
         })
     },
     mounted() {
