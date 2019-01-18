@@ -112,7 +112,7 @@ class URL
     public static function getClashInfo($user) {
         $result = [];
         //ss
-        $items = URL::getAllItems($user, $mu, 1);
+        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach ($items as $item) {
             $sss = [
                 "name" => $item['remark'],
@@ -122,8 +122,12 @@ class URL
                 "cipher" => $item['method'],
                 "password" => $item['passwd'],
             ];
-            if (in_array($item['obfs'], array("tls", "http"))) {
-                $sss['obfs'] = $item['obfs'];
+            if (in_array($item['obfs'], array("simple_obfs_tls", "simple_obfs_http"))) {
+                if (strpos($item['obfs'], 'http')) {
+                    $sss['obfs'] = "http";
+                } else {
+                    $sss['obfs'] = "tls";
+                }
                 if ($item['obfs_param'] != '') {
                     $sss['obfs-host'] = $item['obfs_param'];
                 } else {
