@@ -23,8 +23,8 @@ FINAL,☁️ Others
 
 [SOURCE]
 {$appName}_v2, server ,{$subUrl}?quantumult=1, false, true, false
-{$appName}_ss, server ,{$subUrl}?sub=2&mu={$mu}, false, true, false
-{$appName}_ssr, server ,{$subUrl}?sub=1&mu={$mu}, false, true, false
+{$appName}_ss, server ,{$subUrl}?sub=2, false, true, false
+{$appName}_ssr, server ,{$subUrl}?sub=1, false, true, false
 Hackl0us Rules, filter, https://raw.githubusercontent.com/Hackl0us/Surge-Rule-Snippets/master/LAZY_RULES/Quantumult.conf, true
 
 {/if}

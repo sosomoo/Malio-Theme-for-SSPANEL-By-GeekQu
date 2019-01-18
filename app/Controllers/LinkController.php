@@ -141,25 +141,23 @@ class LinkController extends BaseController
             $newResponse->getBody()->write(LinkController::GetSub($user, $mu, $sub));
             return $newResponse;
         }
-
     }
     
     public static function GetSurge($user, $mu = 0, $surge = 0)
     {
-        $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0) . "?surge=" . $surge . "&mu=" . $mu;
-
+        $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0) . "?surge=" . $surge;
         $proxy_name = "";
         $proxy_group = "";
-        $items = URL::getAllItems($user, $mu, 1);
+        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach($items as $item) {
             if (in_array($surge, array(1, 3))) {
                 $proxy_group .= $item['remark'] . " = ss, " . $item['address'] . ", " . $item['port'] . ", encrypt-method=" . $item['method'] . ", password=" . $item['passwd'] . URL::getSurgeObfs($item) . ", tfo=true, udp-relay=true\n";
-            } else {
+            }
+            else {
                 $proxy_group .= $item['remark'] . " = custom, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", " . $item['passwd'] . ", https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module" . URL::getSurgeObfs($item) . ", tfo=true\n";
             }
             $proxy_name .= ", ".$item['remark'];
         }
-
         if (in_array($surge, array(2, 3))) {
             $render = ConfRender::getTemplateRender();
             $render->assign('user', $user)
@@ -167,9 +165,9 @@ class LinkController extends BaseController
             ->assign('userapiUrl', $userapiUrl)
             ->assign('proxy_name', $proxy_name)
             ->assign('proxy_group', $proxy_group);
-
             return $render->fetch('surge.tpl');
-        } else {
+        }
+        else {
             return $proxy_group;
         }
     }
@@ -179,7 +177,6 @@ class LinkController extends BaseController
         $proxys = [];
         $groups = [];
         $subUrl = "";
-
         if ($quantumult == 2) {
             $subUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0);
         }
@@ -207,34 +204,30 @@ class LinkController extends BaseController
                     }
                 }
             }
-
             if ($quantumult == 1) {
                 return base64_encode($v2ray_group);
             }
             elseif ($quantumult == 3) {
                 $ss_group = "";
                 $ss_name = "";
-                $items = URL::getAllItems($user, $mu, 1);
+                $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
                 foreach($items as $item) {
                     $ss_group .= $item['remark'] . " = shadowsocks, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", upstream-proxy=false, upstream-proxy-auth=false" . URL::getSurgeObfs($item) . ", group=" . Config::get('appName') . "\n";
                     $ss_name .= "\n" . $item['remark'];
                 }
-
                 $ssr_group = "";
                 $ssr_name = "";
-                $ssrs = URL::getAllItems($user, $mu, 0);
+                $ssrs = array_merge(URL::getAllItems($user, 0, 0), URL::getAllItems($user, 1, 0));
                 foreach($ssrs as $item) {
                     $ssr_group .= $item['remark'] . " = shadowsocksr, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", protocol=" . $item['protocol'] . ", protocol_param=" . $item['protocol_param'] . ", obfs=" . $item['obfs'] . ", obfs_param=\"" . $item['obfs_param'] . "\", group=" . Config::get('appName') . "\n";
                     $ssr_name .= "\n" . $item['remark'];
                 }
-
                 $quan_proxy_group = base64_encode("🍃 Proxy  :  static, 🏃 Auto\n🏃 Auto\n🚀 Direct\n" . $ss_name . $ssr_name . $v2ray_name);
                 $quan_auto_group = base64_encode("🏃 Auto  :  auto\n" . $ss_name . $ssr_name . $v2ray_name);
                 $quan_domestic_group = base64_encode("🍂 Domestic  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
                 $quan_others_group = base64_encode("☁️ Others  :   static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
                 $quan_apple_group = base64_encode("🍎 Only  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
                 $quan_direct_group = base64_encode("🚀 Direct : static, DIRECT\nDIRECT");
-
                 $proxys = [
                     "ss" => $ss_group,
                     "ssr" => $ssr_group,
@@ -253,54 +246,93 @@ class LinkController extends BaseController
                 return "悟空别闹...";
             }
         }
-
         $render = ConfRender::getTemplateRender();
         $render->assign('user', $user)
-        ->assign('mu', $mu)
         ->assign('subUrl', $subUrl)
         ->assign('proxys', $proxys)
         ->assign('groups', $groups)
         ->assign('quantumult', $quantumult)
         ->assign('appName', Config::get('appName'));
-
         return $render->fetch('quantumult.tpl');
     }
 
     public static function GetSurfboard($user, $mu = 0)
     {
-        $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0) . "?surfboard=1&mu=" . $mu;
-
-        $ss_name="";
-        $ss_group="";
-        $items = URL::getAllItems($user, $mu, 1);
+        $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0) . "?surfboard=1";
+        $ss_name = "";
+        $ss_group = "";
+        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach($items as $item) {
             $ss_group .= $item['remark'] . " = ss, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", " . $item['passwd'] . URL::getSurgeObfs($item) . "\n";
             $ss_name .= ", ".$item['remark'];
         }
-
         $render = ConfRender::getTemplateRender();
         $render->assign('user', $user)
         ->assign('userapiUrl', $userapiUrl)
         ->assign('ss_name', $ss_name)
         ->assign('ss_group', $ss_group);
-
         return $render->fetch('surfboard.tpl');
     }
 
     public static function GetClash($user, $mu = 0)
     {
-        $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0) . "?clash=1&mu=" . $mu;
-
+        $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0) . "?clash=1";
+        $confs = [];
+        // ss
+        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
+        foreach ($items as $item) {
+            $sss = [
+                "name" => $item['remark'],
+                "type" => "ss",
+                "server" => $item['address'],
+                "port" => $item['port'],
+                "cipher" => $item['method'],
+                "password" => $item['passwd'],
+            ];
+            if (in_array($item['obfs'], array("simple_obfs_tls", "simple_obfs_http"))) {
+                if (strpos($item['obfs'], 'http')) {
+                    $sss['obfs'] = "http";
+                } else {
+                    $sss['obfs'] = "tls";
+                }
+                if ($item['obfs_param'] != '') {
+                    $sss['obfs-host'] = $item['obfs_param'];
+                } else {
+                    $sss['obfs-host'] = "wns.windows.com";
+                }
+            }
+            $confs[] = $sss;
+        }
+        // v2
+        $items = URL::getAllVMessUrl($user, 1);
+        foreach ($items as $item) {
+            $v2rays = [
+                "name" => $item['ps'],
+                "type" => "vmess",
+                "server" => $item['add'],
+                "port" => $item['port'],
+                "uuid" => $item['id'],
+                "alterId" => $item['aid'],
+                "cipher" => "auto",
+            ];
+            if ($item['net'] == "ws") {
+                $v2rays['network'] = 'ws';
+                $v2rays['ws-path'] = $item['path'];
+                if ($item['tls'] == 'tls') {
+                    $v2rays['tls'] = true;
+                }
+            } elseif ($item['net'] == "tls") {
+                $v2rays['tls'] = true;
+            }
+            $confs[] = $v2rays;
+        }
         $render = ConfRender::getTemplateRender();
-        $confs = URL::getClashInfo($user);
-
         $render->assign('user', $user)
         ->assign('userapiUrl', $userapiUrl)
         ->assign('confs', $confs)
         ->assign('proxies', array_map(function ($conf) {
                 return $conf['name'];
             }, $confs));
-
         return $render->fetch('clash.tpl');
     }
 
@@ -311,13 +343,18 @@ class LinkController extends BaseController
 
     public static function GetSub($user, $mu = 0, $sub = 0)
     {
+        $return_url = '';
         // SSR
         if ($sub == 1) {
-            return Tools::base64_url_encode(URL::getAllUrl($user, $mu, 0));
+            $return_url .= URL::getAllUrl($user, 0, 0) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 1, 0) . PHP_EOL;
+            return Tools::base64_url_encode($return_url);
         }
         // SS
         elseif ($sub == 2) {
-            return Tools::base64_url_encode(URL::getAllUrl($user, $mu, 1));
+            $return_url .= URL::getAllUrl($user, 0, 1) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 1, 1) . PHP_EOL;
+            return Tools::base64_url_encode($return_url);
         }
         // V2
         elseif ($sub == 3) {
@@ -325,20 +362,19 @@ class LinkController extends BaseController
         }
         // V2 + SS
         elseif ($sub == 4) {
-            $vmessall = URL::getAllVMessUrl($user);
-            $ssall = URL::getAllUrl($user, $mu, 1);
-            $SubAll = $ssall . $vmessall;
-
-            return Tools::base64_url_encode($SubAll);
+            $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 0, 1) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 1, 1) . PHP_EOL;
+            return Tools::base64_url_encode($return_url);
         }
         // V2 + SS + SSR
         elseif ($sub == 5) {
-            $vmessall = URL::getAllVMessUrl($user);
-            $ssrall = URL::getAllUrl($user, $mu, 0);
-            $ssall = URL::getAllUrl($user, $mu, 1);
-            $SubAll = $ssrall . $ssall . $vmessall;
-
-            return Tools::base64_url_encode($SubAll);
+            $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 0, 0) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 1, 0) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 0, 1) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 1, 1) . PHP_EOL;
+            return Tools::base64_url_encode($return_url);
         }
     }
 }

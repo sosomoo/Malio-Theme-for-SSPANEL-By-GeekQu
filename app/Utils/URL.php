@@ -111,7 +111,7 @@ class URL
 
     public static function getClashInfo($user) {
         $result = [];
-        //ss
+        // ss
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach ($items as $item) {
             $sss = [
@@ -136,7 +136,7 @@ class URL
             }
             $result[] = $sss;
         }
-        //v2
+        // v2
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
             $v2rays = [
@@ -159,7 +159,6 @@ class URL
             }
             $result[] = $v2rays;
         }
-
         return $result;
     }
 
