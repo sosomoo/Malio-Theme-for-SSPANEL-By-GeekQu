@@ -958,9 +958,48 @@ const User = {
     props: ['routermsg'],
 };
 
+const UserAnnouncement = {
+    template: `
+    <div>
+        <div class="card-title">公告栏</div>
+        <div class="card-body">
+            <div class="ann" v-html="annC.content"></div>
+        </div>
+    </div>
+    `,
+    props: ['annC'],
+};
+
+const UserInvite = {
+    template: /*html*/ `
+    <div>
+        <div class="card-title">邀请链接</div>
+        <div class="card-body">
+            <div class="invite"></div>
+        </div>
+    </div>
+    `,
+}
+
+const UserShop = {
+    template: `
+    <div >
+        <div class="card-title">套餐购买</div>
+        <div class="card-body">
+            <div class="shop"></div>
+        </div>
+    </div>
+    `,
+}
+
 const Panel = {
     delimiters: ['$[',']$'],
     mixins: [storeMap],
+    components: {
+        'user-announcement': UserAnnouncement,
+        'user-invite': UserInvite,
+        'user-shop': UserShop,
+    },
     template: /*html*/ `
     <div class="page-user pure-u-1">
         <div class="title-back flex align-center">USERCENTER</div>
@@ -979,10 +1018,20 @@ const Panel = {
                     <div class="card account-base">
                         <div class="card-title">账户明细</div>
                         <div class="card-body">
-                            <p>用户名</p>
-                            <p>$[this.userCon.user_name]$</p>
-                            <p>邮箱</p>
-                            <p>$[this.userCon.email]$</p>
+                            <div class="pure-g">
+                                <div class="pure-u-1-2">
+                                    <p class="tips tips-blue">用户名</p>
+                                    <p class="font-light">$[userCon.user_name]$</p>
+                                    <p class="tips tips-blue">邮箱</p>
+                                    <p class="font-light">$[userCon.email]$</p>
+                                </div>
+                                <div class="pure-u-1-2">
+                                    <p class="tips tips-blue">VIP等级</p>
+                                    <p class="font-light">Lv. $[userCon.class]$</p>
+                                    <p class="tips tips-blue">余额</p>
+                                    <p class="font-light">$[userCon.money]$</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card">
@@ -993,19 +1042,32 @@ const Panel = {
                 <div class="pure-u-1 pure-u-sm-17-24">
                     <div class="card">
                         <div class="card-title">连接信息</div>
-                        <div class="card-body"></div>
+                        <div class="card-body">
+                            <div class="pure-g">
+                                <div v-for="tip in tipsLink" class="pure-u-lg-4-24" :key="tip.name">
+                                    <p class="tips tips-blue">$[tip.name]$</p>
+                                    <p class="font-light">$[tip.content]$</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="user-btngroup pure-g">
-                        <div class="pure-u-16-24"></div>
+                        <div class="pure-u-16-24">
+                            <uim-dropdown>
+                                <span slot="dpbtn-content">栏目选择</span>
+                                <ul slot="dp-menu">
+                                    <li @click="componentChange" v-for="menu in menuOptions" :data-component="menu.id" :key="menu.id">$[menu.name]$</li>
+                                </ul>
+                            </uim-dropdown>
+                        </div>
                         <div class="pure-u-8-24 text-right">
                             <a href="/user" class="btn-user">进入管理面板</a>
                             <button @click="logout" class="btn-user">登出</button>                            
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="card-title">公告栏</div>
-                        <div class="card-body"></div>
-                    </div>
+                    <transition name="fade" mode="out-in">
+                    <component :is="currentCardComponent" :annC="ann" class="card margin-nobottom"></component>
+                    </transition>
                 </div>
             </div>
         </transition>
@@ -1016,6 +1078,53 @@ const Panel = {
         return {
             userLoadState: 'beforeload',
             userCon: '',
+            ann: {
+                content: '',
+                date: '',
+                id: '',
+                markdown: '',
+            },
+            tipsLink: [
+                {
+                    name: '端口',
+                    content: '',
+                },
+                {
+                    name: '密码',
+                    content: '',
+                },
+                {
+                    name: '加密',
+                    content: '',
+                },
+                {
+                    name: '协议',
+                    content: '',
+                },
+                {
+                    name: '混淆',
+                    content: '',
+                },
+                {
+                    name: '混淆参数',
+                    content: '',
+                },
+            ],
+            menuOptions: [
+                {
+                    name: '公告栏',
+                    id: 'user-announcement',
+                },
+                {
+                    name: '邀请链接',
+                    id: 'user-invite',
+                },
+                {
+                    name: '套餐购买',
+                    id: 'user-shop',
+                },
+            ],
+            currentCardComponent: 'user-announcement',
         }
     },
     methods: {
@@ -1036,6 +1145,9 @@ const Panel = {
                 }
             });
         },
+        componentChange(e) {
+            this.currentCardComponent = e.target.dataset.component;
+        }
     },
     mounted() {
         let self = this;
@@ -1044,6 +1156,15 @@ const Panel = {
             if (r.ret === 1) {
                 console.log(r.info);
                 this.userCon = r.info.user;
+                if (r.info.ann) {
+                    this.ann = r.info.ann;
+                }
+                this.tipsLink[0].content = this.userCon.port;
+                this.tipsLink[1].content = this.userCon.passwd;
+                this.tipsLink[2].content = this.userCon.method;
+                this.tipsLink[3].content = this.userCon.protocol;
+                this.tipsLink[4].content = this.userCon.obfs;
+                this.tipsLink[5].content = this.userCon.obfs_param;
                 console.log(this.userCon);
             }
         }).then(r=>{
@@ -1213,6 +1334,42 @@ Vue.component('uim-checkbox',{
             }
         },
     },
+})
+
+Vue.component('uim-dropdown',{
+    delimiters: ['$[',']$'],
+    template: /*html*/ `
+    <div class="uim-dropdown">
+        <button @click.stop="show" class="uim-dropdown-btn"><slot name="dpbtn-content"></slot></button>
+        <transition name="dropdown-fade" mode="out-in">
+        <div v-show="isDropdown" @click.stop="hide" class="uim-dropdown-menu"><slot name="dp-menu"></slot></div>
+        </transition>
+    </div>
+    `,
+    data: function() {
+        return {
+            isDropdown: false,
+        }
+    },
+    methods: {
+        show() {
+            if (this.isDropdown === false) {
+                this.isDropdown = true;
+            } else {
+                this.isDropdown = false;
+            }
+        },
+        hide() {
+            if (this.isDropdown === true) {
+                this.isDropdown = false;
+            } 
+        }
+    },
+    mounted() {
+        document.addEventListener('click',()=>{
+            this.hide();
+        })
+    }
 })
 
 const indexPage = new Vue({
