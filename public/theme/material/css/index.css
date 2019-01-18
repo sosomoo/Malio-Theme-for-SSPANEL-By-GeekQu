@@ -35,6 +35,14 @@ a {
     text-align: left;
 }
 
+.text-right {
+    text-align: right;
+}
+
+.margin-nobottom {
+    margin-bottom: 0 !important;
+}
+
 [v-cloak] {
     display: none;
 }
@@ -153,6 +161,27 @@ a {
     border: 2px solid currentColor;
 }
 
+a.btn-user,
+button.btn-user,
+.uim-dropdown-btn {
+    font-size: 1rem;
+    padding: .5rem 1.5rem;
+    display: inline-block;
+    border: 1px solid #434857;
+    min-width: 80px;
+    text-align: center;
+    transition: all .3s;
+    background: inherit;
+    outline: none;
+}
+
+a.btn-user:hover,
+button.btn-user:hover,
+.uim-dropdown-btn:hover {
+    border: 1px solid white;
+    box-shadow: 0 0 5px 1px gray;
+}
+
 .footer {
     padding: 0 3rem;
 }
@@ -269,11 +298,13 @@ input.checkbox {
 }
 
 .twin>* {
-    flex-basis: 100%%;
+    flex-basis: 100%;
 }
 
-.input-control>input {
-    margin-bottom: 1rem;
+.input-control>input,
+.input-control-inner>input,
+.input-control>button {
+    margin-bottom: 1.5rem;
 }
 
 .reg {
@@ -388,6 +419,74 @@ select {
     color: #D1335B;
 }
 
+.card {
+    border: 1px solid #434857;
+    margin-bottom: 1.5rem;
+    transition: all .3s;
+}
+
+.user-btngroup {
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    border: 1px solid white;
+    box-shadow: 0 0 5px 1px gray;
+}
+
+.card-title {
+    font-size: 18px;
+    margin-bottom: .5rem;
+}
+
+.card-body,
+.card-title {
+    padding: 1rem;
+}
+
+.card-body {
+    padding-top: 0;
+}
+
+.font-light {
+    padding-right: 1rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: #b1b3bb;
+    margin: .75rem 0;
+    transition: all .3s;
+}
+
+.font-light:hover {
+    color: white;
+}
+
+.tips {
+    display: inline-block;
+    margin: 0;
+    padding: .2rem .7rem;
+    border: 1px solid;
+    font-size: 14px;
+    border-radius: 3px;
+    transition: all .3s;
+}
+
+.tips-blue {
+    color: #1997c6;
+    border-color: #1997c6;
+}
+
+.tips-blue:hover {
+    color: white;
+    background: #1997c6;
+}
+
+.ann {
+    background-color: rgba(255,255,255,0.2);
+    border-radius: 5px;
+    padding: .1rem 1rem;
+}
+
 @media screen and (min-width:35.5em) {
     .auth-tg {
         margin-top: 0;
@@ -443,11 +542,16 @@ select {
     }
 
     .usrcenter {
-        padding: 0 5rem;
+        padding: 0 10%;
     }
 
     .enableCrisp {
         padding-right: 3rem;
+    }
+
+    .ann {
+        max-height: 385px;
+        overflow: auto;
     }
 }
 
@@ -574,6 +678,55 @@ input[type=checkbox].uim-checkbox {
 .uimchecked {
     background: #D1335B;
     box-shadow: 0 0 5px 1px gray;
+}
+
+/* dropdown */
+
+.uim-dropdown {
+    position: relative;
+}
+
+.uim-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    min-width: 120px;
+    cursor: pointer;
+    background: #1d1d1d;
+}
+
+.uim-dropdown-menu ul {
+    margin: 0;
+    width: 100%;
+    padding: 0;
+    text-align: center;
+    border: 1px solid #1997c6;
+    box-shadow: 0 0 5px 1px gray; 
+}
+
+.uim-dropdown-menu li {
+    list-style: none;
+    width: 100%;
+    padding: .2rem 0;
+    transition: all .3s;
+}
+
+.uim-dropdown-menu li:hover {
+    background: #1997c6;
+    transition: all .3s;
+}
+
+.uim-dropdown-btn {
+    min-width: 120px;
+}
+
+.dropdown-fade-enter-active,.dropdown-fade-leave-active {
+    transition: all .1s ease;
+}
+
+.dropdown-fade-enter,.dropdown-fade-leave-to {
+    transform-origin: top;
+    transform: scaleY(0);
+    opacity: 0;
 }
 
 /* loading 动画 */

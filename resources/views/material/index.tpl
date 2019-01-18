@@ -172,7 +172,9 @@ const _get = (url,credentials) =>
     fetch(url, {
         method: 'GET',
         credentials,
-    }).then(resp => Promise.all([resp.ok, resp.status, resp.json(), resp.headers]))
+    }).then(resp => {
+        return Promise.all([resp.ok, resp.status, resp.json(), resp.headers])
+    })
     .then(([ok, status, json, headers]) => {
         if (ok) {
             return json;
@@ -334,13 +336,6 @@ var storeAuth = {
             }
         },
         //加载完成的时间很谜
-
-        /* 当然很迷了。
-           你的 reCAPTCHA 的 container 是在注册页面才渲染的
-           所以你应该把的 reCAPTCHA 渲染绑定在注册页面渲染事件上。
-
-           Sukka. 2019-01-06
-         */
         grecaptchaRender(id) {
             setTimeout(() => {
                 if (!grecaptcha || !grecaptcha.render) {
@@ -471,7 +466,7 @@ const Login = {
             <div class="input-control flex wrap">
                 <div v-if="globalConfig.captchaProvider === 'geetest'" id="embed-captcha-login"></div>
                 <form action="?" method="POST">    
-                <div v-if="globalConfig.recaptchaSiteKey" id="g-recaptcha-login" class="g-recaptcha" :data-sitekey="globalConfig.recaptchaSiteKey"></div>
+                <div v-if="globalConfig.recaptchaSiteKey" id="g-recaptcha-login" class="g-recaptcha" data-theme="dark" :data-sitekey="globalConfig.recaptchaSiteKey"></div>
                 </form>
             </div>
             <button @click.prevent="login" @keyup.13.native="login" class="auth-submit" id="login" type="submit" :disabled="isDisabled">
@@ -583,7 +578,7 @@ const Login = {
             qrcode.makeCode(telegram_qrcode);
         },
         tgAuthTrigger(tid) {
-            if (this.logintoken == true) {
+            if (this.logintoken === 1) {
                 return;
             }
             let callConfig = {
@@ -694,7 +689,7 @@ const Register = {
             <div class="input-control wrap flex align-center">
             <div v-if="globalConfig.captchaProvider === 'geetest'" id="embed-captcha-reg"></div>
                 <form action="?" method="POST">    
-                <div v-if="globalConfig.recaptchaSiteKey" id="g-recaptcha-reg" class="g-recaptcha" :data-sitekey="globalConfig.recaptchaSiteKey"></div>
+                <div v-if="globalConfig.recaptchaSiteKey" id="g-recaptcha-reg" class="g-recaptcha" data-theme="dark" :data-sitekey="globalConfig.recaptchaSiteKey"></div>
                 </form>
             </div>
         </div>
@@ -963,8 +958,48 @@ const User = {
     props: ['routermsg'],
 };
 
+const UserAnnouncement = {
+    template: `
+    <div>
+        <div class="card-title">公告栏</div>
+        <div class="card-body">
+            <div class="ann" v-html="annC.content"></div>
+        </div>
+    </div>
+    `,
+    props: ['annC'],
+};
+
+const UserInvite = {
+    template: /*html*/ `
+    <div>
+        <div class="card-title">邀请链接</div>
+        <div class="card-body">
+            <div class="invite"></div>
+        </div>
+    </div>
+    `,
+}
+
+const UserShop = {
+    template: `
+    <div >
+        <div class="card-title">套餐购买</div>
+        <div class="card-body">
+            <div class="shop"></div>
+        </div>
+    </div>
+    `,
+}
+
 const Panel = {
     delimiters: ['$[',']$'],
+    mixins: [storeMap],
+    components: {
+        'user-announcement': UserAnnouncement,
+        'user-invite': UserInvite,
+        'user-shop': UserShop,
+    },
     template: /*html*/ `
     <div class="page-user pure-u-1">
         <div class="title-back flex align-center">USERCENTER</div>
@@ -978,9 +1013,62 @@ const Panel = {
                 </div>
             </div>
 
-            <div class="usrcenter text-left" v-else-if="userLoadState === 'loaded'">
-                <h1>用户中心</h1>
-                <a href="/user" class="button-index">进入管理面板</a>
+            <div class="usrcenter text-left pure-g space-between" v-else-if="userLoadState === 'loaded'">
+                <div class="pure-u-1 pure-u-sm-6-24">
+                    <div class="card account-base">
+                        <div class="card-title">账户明细</div>
+                        <div class="card-body">
+                            <div class="pure-g">
+                                <div class="pure-u-1-2">
+                                    <p class="tips tips-blue">用户名</p>
+                                    <p class="font-light">$[userCon.user_name]$</p>
+                                    <p class="tips tips-blue">邮箱</p>
+                                    <p class="font-light">$[userCon.email]$</p>
+                                </div>
+                                <div class="pure-u-1-2">
+                                    <p class="tips tips-blue">VIP等级</p>
+                                    <p class="font-light">Lv. $[userCon.class]$</p>
+                                    <p class="tips tips-blue">余额</p>
+                                    <p class="font-light">$[userCon.money]$</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">导航菜单</div>
+                        <div class="card-body"></div>
+                    </div>
+                </div>
+                <div class="pure-u-1 pure-u-sm-17-24">
+                    <div class="card">
+                        <div class="card-title">连接信息</div>
+                        <div class="card-body">
+                            <div class="pure-g">
+                                <div v-for="tip in tipsLink" class="pure-u-lg-4-24" :key="tip.name">
+                                    <p class="tips tips-blue">$[tip.name]$</p>
+                                    <p class="font-light">$[tip.content]$</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-btngroup pure-g">
+                        <div class="pure-u-16-24">
+                            <uim-dropdown>
+                                <span slot="dpbtn-content">栏目选择</span>
+                                <ul slot="dp-menu">
+                                    <li @click="componentChange" v-for="menu in menuOptions" :data-component="menu.id" :key="menu.id">$[menu.name]$</li>
+                                </ul>
+                            </uim-dropdown>
+                        </div>
+                        <div class="pure-u-8-24 text-right">
+                            <a href="/user" class="btn-user">进入管理面板</a>
+                            <button @click="logout" class="btn-user">登出</button>                            
+                        </div>
+                    </div>
+                    <transition name="fade" mode="out-in">
+                    <component :is="currentCardComponent" :annC="ann" class="card margin-nobottom"></component>
+                    </transition>
+                </div>
             </div>
         </transition>
     </div>
@@ -990,6 +1078,75 @@ const Panel = {
         return {
             userLoadState: 'beforeload',
             userCon: '',
+            ann: {
+                content: '',
+                date: '',
+                id: '',
+                markdown: '',
+            },
+            tipsLink: [
+                {
+                    name: '端口',
+                    content: '',
+                },
+                {
+                    name: '密码',
+                    content: '',
+                },
+                {
+                    name: '加密',
+                    content: '',
+                },
+                {
+                    name: '协议',
+                    content: '',
+                },
+                {
+                    name: '混淆',
+                    content: '',
+                },
+                {
+                    name: '混淆参数',
+                    content: '',
+                },
+            ],
+            menuOptions: [
+                {
+                    name: '公告栏',
+                    id: 'user-announcement',
+                },
+                {
+                    name: '邀请链接',
+                    id: 'user-invite',
+                },
+                {
+                    name: '套餐购买',
+                    id: 'user-shop',
+                },
+            ],
+            currentCardComponent: 'user-announcement',
+        }
+    },
+    methods: {
+        logout() {
+            let callConfig = {
+                msg: '',
+                icon: '',
+            };
+            _get('/logout').then((r)=>{
+                if (r.ret === 1) {
+                    callConfig.msg += '账户成功登出Kira~';
+                    callConfig.icon += 'fa-check-square-o';
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                    window.setTimeout(() => {
+                        tmp.commit('SET_LOGINTOKEN',0);
+                        this.$router.replace('/');
+                    }, this.globalConfig.jumpDelay);
+                }
+            });
+        },
+        componentChange(e) {
+            this.currentCardComponent = e.target.dataset.component;
         }
     },
     mounted() {
@@ -999,6 +1156,15 @@ const Panel = {
             if (r.ret === 1) {
                 console.log(r.info);
                 this.userCon = r.info.user;
+                if (r.info.ann) {
+                    this.ann = r.info.ann;
+                }
+                this.tipsLink[0].content = this.userCon.port;
+                this.tipsLink[1].content = this.userCon.passwd;
+                this.tipsLink[2].content = this.userCon.method;
+                this.tipsLink[3].content = this.userCon.protocol;
+                this.tipsLink[4].content = this.userCon.obfs;
+                this.tipsLink[5].content = this.userCon.obfs_param;
                 console.log(this.userCon);
             }
         }).then(r=>{
@@ -1170,6 +1336,42 @@ Vue.component('uim-checkbox',{
     },
 })
 
+Vue.component('uim-dropdown',{
+    delimiters: ['$[',']$'],
+    template: /*html*/ `
+    <div class="uim-dropdown">
+        <button @click.stop="show" class="uim-dropdown-btn"><slot name="dpbtn-content"></slot></button>
+        <transition name="dropdown-fade" mode="out-in">
+        <div v-show="isDropdown" @click.stop="hide" class="uim-dropdown-menu"><slot name="dp-menu"></slot></div>
+        </transition>
+    </div>
+    `,
+    data: function() {
+        return {
+            isDropdown: false,
+        }
+    },
+    methods: {
+        show() {
+            if (this.isDropdown === false) {
+                this.isDropdown = true;
+            } else {
+                this.isDropdown = false;
+            }
+        },
+        hide() {
+            if (this.isDropdown === true) {
+                this.isDropdown = false;
+            } 
+        }
+    },
+    mounted() {
+        document.addEventListener('click',()=>{
+            this.hide();
+        })
+    }
+})
+
 const indexPage = new Vue({
     router: Router,
     el: '#index',
@@ -1205,14 +1407,10 @@ const indexPage = new Vue({
         }
     },
     beforeMount() {
-        _get('https://api.lwl12.com/hitokoto/v1?encode=realjson').then((r) => {
-            let hitokoto
-            if (r.author === '' && r.source === '') {
-                hitokoto = r.text;
-            } else {
-                hitokoto = r.text + ' —— ' + r.author + r.source; 
-            }
-            tmp.commit('SET_HITOKOTO',hitokoto);
+        fetch('https://api.lwl12.com/hitokoto/v1').then((r)=>{
+            return r.text();
+        }).then((r)=>{
+            tmp.commit('SET_HITOKOTO',r);            
         })
         _get('https://v2.jinrishici.com/one.json','include').then((r) => {
             tmp.commit('SET_JINRISHICI',r.data.content);
