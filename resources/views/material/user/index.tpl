@@ -283,7 +283,6 @@
 														<p>如您的应用不在下方的支持列表，那么请使用上方的使用方案：</p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://nssurge.com/mac/v3/Surge-latest.zip"><i class="material-icons">save_alt</i> GET</a> Surge - [ SS ]：</p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=3&mu=0"><i class="material-icons icon-sm">how_to_vote</i>3.x 托管</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=2&mu=0"><i class="material-icons icon-sm">how_to_vote</i>2.x 托管</a></p>
 															<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=3&mu=0"><i class="material-icons icon-sm">how_to_vote</i>3.x 托管</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=2&mu=0"><i class="material-icons icon-sm">how_to_vote</i>2.x 托管</a></p>
 														<hr/>
