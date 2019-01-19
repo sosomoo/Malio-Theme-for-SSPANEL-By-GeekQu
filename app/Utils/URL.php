@@ -233,11 +233,12 @@ class URL
         return $return_array;
     }
 
-    public static function getAllUrl($user, $is_mu, $is_ss = 0) {
+    public static function getAllUrl($user, $is_mu, $is_ss = 0, $extend = 0) {
         $return_url = '';
-        $return_url .= URL::getUserTraffic($user, $is_mu, $is_ss).PHP_EOL;
-        $return_url .= URL::getUserClassExpiration($user, $is_mu, $is_ss).PHP_EOL;
-
+        if ($extend == 1) {
+            $return_url .= URL::getUserTraffic($user, $is_mu, $is_ss).PHP_EOL;
+            $return_url .= URL::getUserClassExpiration($user, $is_mu, $is_ss).PHP_EOL;    
+        }
         if(strtotime($user->expire_in)<time()){
 			return $return_url;
 		}

@@ -81,11 +81,17 @@ class LinkController extends BaseController
             $mu = (int)$request->getQueryParams()["mu"];
         }
 
+        $extend = 0;
+        if (isset($request->getQueryParams()["extend"])) {
+            $extend = (int)$request->getQueryParams()["extend"];
+        }
+
         $sub = 0;
         if (isset($request->getQueryParams()["sub"])) {
             $sub = (int)$request->getQueryParams()["sub"];
         }
 
+        // apps
         $ssd = 0;
         if (isset($request->getQueryParams()["ssd"])) {
             $ssd = (int)$request->getQueryParams()["ssd"];
@@ -138,7 +144,7 @@ class LinkController extends BaseController
         }
         else {
             $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt');
-            $newResponse->getBody()->write(LinkController::GetSub($user, $mu, $sub));
+            $newResponse->getBody()->write(LinkController::GetSub($user, $mu, $sub, $extend));
             return $newResponse;
         }
     }
@@ -341,19 +347,19 @@ class LinkController extends BaseController
         return URL::getAllSSDUrl($user);
     }
 
-    public static function GetSub($user, $mu = 0, $sub = 0)
+    public static function GetSub($user, $mu = 0, $sub, $extend)
     {
         $return_url = '';
         // SSR
         if ($sub == 1) {
-            $return_url .= URL::getAllUrl($user, 0, 0) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 1, 0) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 0, 0, $extend) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 1, 0, $extend) . PHP_EOL;
             return Tools::base64_url_encode($return_url);
         }
         // SS
         elseif ($sub == 2) {
-            $return_url .= URL::getAllUrl($user, 0, 1) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 1, 1) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 0, 1, $extend) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 1, 1, $extend) . PHP_EOL;
             return Tools::base64_url_encode($return_url);
         }
         // V2
@@ -363,17 +369,17 @@ class LinkController extends BaseController
         // V2 + SS
         elseif ($sub == 4) {
             $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 1) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 1, 1) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 0, 1, $extend) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 1, 1, $extend) . PHP_EOL;
             return Tools::base64_url_encode($return_url);
         }
         // V2 + SS + SSR
         elseif ($sub == 5) {
             $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 0) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 1, 0) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 1) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 1, 1) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 0, 0, $extend) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 1, 0, $extend) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 0, 1, $extend) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, 1, 1, $extend) . PHP_EOL;
             return Tools::base64_url_encode($return_url);
         }
     }
