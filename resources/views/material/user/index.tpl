@@ -183,7 +183,7 @@
 									<div class="card-inner margin-bottom-no">
 
 										<div class="cardbtn-edit">
-											<div class="card-heading"><i class="icon icon-md">phonelink</i> <a id="quickadd" href="#quickadd"></a>使用方案</div>
+											<div class="card-heading"><i class="icon icon-md">phonelink</i> <a id="quickadd" href="#quickadd"></a> 快速使用</div>
 										</div>
 
 										<nav class="tab-nav margin-top-no">
@@ -201,7 +201,7 @@
 											<div class="tab-content">
 
 												<div class="tab-pane fade" id="info_center">
-													<p>您个人端口的链接信息：</p>
+													<p>您的链接信息：</p>
 													{if URL::SSRCanConnect($user)}
 													<dl class="dl-horizontal">
 														<p><dt>端口</dt>
@@ -258,106 +258,88 @@
 													</nav>
 													<div class="tab-pane fade active in" id="sub_center_windows">
 														<p><span class="icon icon-lg text-white">filter_1</span> [ SSR ]：</p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_2</span> [ VMess ]：</p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 														<hr/>
-														<p>优先选择个人端口，无法连接时再使用公共端口。</p>
 														<p>如您的应用不在下方的支持列表，那么请使用上方的使用方案：</p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Windows/releases"><i class="material-icons">save_alt</i> GET</a> SSD - [ SS ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/Windows/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?ssd=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?ssd=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?ssd=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/Fndroid/clash_for_windows_pkg/releases"><i class="material-icons">save_alt</i> GET</a> Clash for Windows - [ SS/VMess ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/Windows/Clash-for-Windows"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?clash=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a class="btn-dl" href="{$subUrl}{$ssr_sub_token}?clash=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?clash=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a class="btn-dl" href="{$subUrl}{$ssr_sub_token}?clash=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/Clash-for-Windows"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?clash=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a class="btn-dl" href="{$subUrl}{$ssr_sub_token}?clash=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
 													</div>
 													<div class="tab-pane fade" id="sub_center_mac">
 														<p><span class="icon icon-lg text-white">filter_1</span> [ SSR ]：</p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_2</span> [ VMess ]：</p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 														<hr/>
-														<p>优先选择个人端口，无法连接时再使用公共端口。</p>
 														<p>如您的应用不在下方的支持列表，那么请使用上方的使用方案：</p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://nssurge.com/mac/v3/Surge-latest.zip"><i class="material-icons">save_alt</i> GET</a> Surge - [ SS ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/macOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=3&mu=0"><i class="material-icons icon-sm">how_to_vote</i>3.x 托管</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=2&mu=0"><i class="material-icons icon-sm">how_to_vote</i>2.x 托管</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=3&mu=1"><i class="material-icons icon-sm">how_to_vote</i>3.x 托管</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=2&mu=1"><i class="material-icons icon-sm">how_to_vote</i>2.x 托管</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=3&mu=0"><i class="material-icons icon-sm">how_to_vote</i>3.x 托管</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=2&mu=0"><i class="material-icons icon-sm">how_to_vote</i>2.x 托管</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/yichengchen/clashX/releases"><i class="material-icons">save_alt</i> GET</a> ClashX - [ SS/VMess ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/macOS/ClashX"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?clash=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a class="btn-dl" href="{$subUrl}{$ssr_sub_token}?clash=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?clash=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a class="btn-dl" href="{$subUrl}{$ssr_sub_token}?clash=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/ClashX"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?clash=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a class="btn-dl" href="{$subUrl}{$ssr_sub_token}?clash=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
 													</div>
 													<div class="tab-pane fade" id="sub_center_ios">
 														<p><span class="icon icon-lg text-white">filter_1</span> [ SSR ]：</p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_2</span> [ VMess ]：</p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 														<hr/>
-														<p>优先选择个人端口，无法连接时再使用公共端口。</p>
 														<p>如您的应用不在下方的支持列表，那么请使用上方的使用方案：</p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/surge-3/id1442620678?ls=1&mt=8"><i class="material-icons">save_alt</i> GET</a> Surge - [ SS ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/iOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>个人端口：<a class="btn-dl" href="surge3:///install-config?url={urlencode($subUrl)}{$ssr_sub_token}{urlencode("?surge=3&mu=0")}"><i class="material-icons icon-sm">how_to_vote</i>3.x 一键</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="btn-dl" href="surge:///install-config?url={urlencode($subUrl)}{$ssr_sub_token}{urlencode("?surge=2&mu=0")}"><i class="material-icons icon-sm">how_to_vote</i>2.x 一键</a></p>
-															<p>公共端口：<a class="btn-dl" href="surge3:///install-config?url={urlencode($subUrl)}{$ssr_sub_token}{urlencode("?surge=3&mu=1")}"><i class="material-icons icon-sm">how_to_vote</i>3.x 一键</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="btn-dl" href="surge:///install-config?url={urlencode($subUrl)}{$ssr_sub_token}{urlencode("?surge=2&mu=1")}"><i class="material-icons icon-sm">how_to_vote</i>2.x 一键</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="btn-dl" href="surge3:///install-config?url={urlencode($subUrl)}{$ssr_sub_token}{urlencode("?surge=3&mu=0")}"><i class="material-icons icon-sm">how_to_vote</i>3.x 一键</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surge=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="btn-dl" href="surge:///install-config?url={urlencode($subUrl)}{$ssr_sub_token}{urlencode("?surge=2&mu=0")}"><i class="material-icons icon-sm">how_to_vote</i>2.x 一键</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/kitsunebi-proxy-utility/id1446584073?ls=1&mt=8"><i class="material-icons">save_alt</i> GET</a> Kitsunebi - [ SS/VMess ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/iOS/Kitsunebi"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3&mu=0"><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=4&mu=0"><i class="material-icons icon-sm">how_to_vote</i>SS + V2 混合订阅</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3&mu=1"><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=4&mu=1"><i class="material-icons icon-sm">how_to_vote</i>SS + V2 混合订阅</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Kitsunebi"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3&mu=0"><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=4&mu=0"><i class="material-icons icon-sm">how_to_vote</i>SS + V2 混合订阅</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/quantumult/id1252015438?ls=1&mt=8"><i class="material-icons">save_alt</i> GET</a> Quantumult - [ SS/SSR/VMess ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/iOS/Quantumult_sub"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a id="quan_sub" class="copy-config btn-dl" onclick=Copyconfig("{$subUrl}{$ssr_sub_token}?quantumult=2&mu=0","#quan_sub","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整订阅配置</a>.<a id="quan_conf" class="copy-config btn-dl" onclick=Copyconfig("{$subUrl}{$ssr_sub_token}?quantumult=3&mu=0","#quan_conf","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整策略组配置</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?quantumult=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a id="quan_sub_mu" class="copy-config btn-dl" onclick=Copyconfig("{$subUrl}{$ssr_sub_token}?quantumult=2&mu=1","#quan_sub_mu","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整订阅配置</a>.<a id="quan_conf_mu" class="copy-config btn-dl" onclick=Copyconfig("{$subUrl}{$ssr_sub_token}?quantumult=3&mu=0","#quan_conf_mu","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整策略组配置</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Quantumult_sub"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?quantumult=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a id="quan_sub" class="copy-config btn-dl" onclick=Copyconfig("{$subUrl}{$ssr_sub_token}?quantumult=2&mu=0","#quan_sub","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整订阅配置</a>.<a id="quan_conf" class="copy-config btn-dl" onclick=Copyconfig("{$subUrl}{$ssr_sub_token}?quantumult=3&mu=0","#quan_conf","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整策略组配置</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/shadowrocket/id932747118?mt=8"><i class="material-icons">save_alt</i> GET</a> Shadowrocket - [ SS/SSR/VMess ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/iOS/Shadowrocket"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>个人端口：<a class="btn-dl" onclick=AddSub("{$subUrl}{$ssr_sub_token}?sub=1&mu=0","sub://")><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a class="btn-dl" onclick=AddSub("{$subUrl}{$ssr_sub_token}?sub=5&mu=0","sub://")><i class="material-icons icon-sm">how_to_vote</i>SS(R) + V2 订阅</a></p>
-															<p>公共端口：<a class="btn-dl" onclick=AddSub("{$subUrl}{$ssr_sub_token}?sub=3","sub://")><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="btn-dl" onclick=AddSub("{$subUrl}{$ssr_sub_token}?sub=1&mu=1","sub://")><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a class="btn-dl" onclick=AddSub("{$subUrl}{$ssr_sub_token}?sub=5&mu=1","sub://")><i class="material-icons icon-sm">how_to_vote</i>SS(R) + V2 订阅</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Shadowrocket"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="btn-dl" onclick=AddSub("{$subUrl}{$ssr_sub_token}?sub=3","sub://")><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="btn-dl" onclick=AddSub("{$subUrl}{$ssr_sub_token}?sub=1&mu=0","sub://")><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a class="btn-dl" onclick=AddSub("{$subUrl}{$ssr_sub_token}?sub=5&mu=0","sub://")><i class="material-icons icon-sm">how_to_vote</i>SS(R) + V2 订阅</a></p>
 													</div>
 													<div class="tab-pane fade" id="sub_center_android">
 														<p><span class="icon icon-lg text-white">filter_1</span> [ SSR ]：</p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_2</span> [ VMess ]：</p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 														<hr/>
-														<p>优先选择个人端口，无法连接时再使用公共端口。</p>
 														<p>如您的应用不在下方的支持列表，那么请使用上方的使用方案：</p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Android/releases"><i class="material-icons">save_alt</i> GET</a> SSD - [ SS ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/Android/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?ssd=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?ssd=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/Android/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?ssd=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="#"><i class="material-icons">save_alt</i> GET</a> SSR - [ SSR ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/Android/ShadowsocksR"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/Android/ShadowsocksR"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://github.com/2dust/v2rayNG/releases"><i class="material-icons">save_alt</i> GET</a> V2rayNG - [ VMess ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/Android/v2rayNG"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/Android/v2rayNG"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?sub=3&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://rink.hockeyapp.net/recruit/2113783c503645abb0a5ec6317e1a169"><i class="material-icons">save_alt</i> GET</a> Surfboard - [ SS ]：</p>
-															<p>使用教程：<a class="btn-dl" href="/doc/#/Android/Surfboard"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>个人端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surfboard=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝托管</a>.<a class="btn-dl" href="{$subUrl}{$ssr_sub_token}?surfboard=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
-															<p>公共端口：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surfboard=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝托管</a>.<a class="btn-dl" href="{$subUrl}{$ssr_sub_token}?surfboard=1&mu=1"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
+															<p>教程文档：<a class="btn-dl" href="/doc/#/Android/Surfboard"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subUrl}{$ssr_sub_token}?surfboard=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>拷贝托管</a>.<a class="btn-dl" href="{$subUrl}{$ssr_sub_token}?surfboard=1&mu=0"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
 													</div>
 												</div>
 
