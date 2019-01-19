@@ -109,59 +109,6 @@ class URL
         }
     }
 
-    public static function getClashInfo($user) {
-        $result = [];
-        // ss
-        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
-        foreach ($items as $item) {
-            $sss = [
-                "name" => $item['remark'],
-                "type" => "ss",
-                "server" => $item['address'],
-                "port" => $item['port'],
-                "cipher" => $item['method'],
-                "password" => $item['passwd'],
-            ];
-            if (in_array($item['obfs'], array("simple_obfs_tls", "simple_obfs_http"))) {
-                if (strpos($item['obfs'], 'http')) {
-                    $sss['obfs'] = "http";
-                } else {
-                    $sss['obfs'] = "tls";
-                }
-                if ($item['obfs_param'] != '') {
-                    $sss['obfs-host'] = $item['obfs_param'];
-                } else {
-                    $sss['obfs-host'] = "wns.windows.com";
-                }
-            }
-            $result[] = $sss;
-        }
-        // v2
-        $items = URL::getAllVMessUrl($user, 1);
-        foreach ($items as $item) {
-            $v2rays = [
-                "name" => $item['ps'],
-                "type" => "vmess",
-                "server" => $item['add'],
-                "port" => $item['port'],
-                "uuid" => $item['id'],
-                "alterId" => $item['aid'],
-                "cipher" => "auto",
-            ];
-            if ($item['net'] == "ws") {
-                $v2rays['network'] = 'ws';
-                $v2rays['ws-path'] = $item['path'];
-                if ($item['tls'] == 'tls') {
-                    $v2rays['tls'] = true;
-                }
-            } elseif ($item['net'] == "tls") {
-                $v2rays['tls'] = true;
-            }
-            $result[] = $v2rays;
-        }
-        return $result;
-    }
-
     public static function getSSConnectInfo($user) {
         $new_user = clone $user;
         if(URL::CanObfsConnect($new_user->obfs) == 5) {
