@@ -1,5 +1,11 @@
 @import url(https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css);
 
+.pure-g {
+    align-content: unset;
+    -webkit-align-content: unset;
+    -ms-flex-line-pack: unset;
+}
+
 body {
     background-color: #1D1D1D;
     color: white;
@@ -177,7 +183,8 @@ button.btn-user,
 
 a.btn-user:hover,
 button.btn-user:hover,
-.uim-dropdown-btn:hover {
+.uim-dropdown-btn:hover,
+button.btn-user.index-btn-active {
     border: 1px solid white;
     box-shadow: 0 0 5px 1px gray;
 }
@@ -370,6 +377,7 @@ select {
     color: #2e2e2e;
     justify-content: center;
     font-weight: bolder;
+    word-break: break-all;
 }
 
 .basis-max .input-control {
@@ -475,16 +483,70 @@ select {
     color: #1997c6;
     border-color: #1997c6;
 }
+.tips-gold {
+    color: #faad14;
+    border-color: #faad14;
+}
 
 .tips-blue:hover {
     color: white;
     background: #1997c6;
+}
+.tips-gold:hover {
+    color: white;
+    background-color: #faad14;
 }
 
 .ann {
     background-color: rgba(255,255,255,0.2);
     border-radius: 5px;
     padding: .1rem 1rem;
+}
+
+.dl-link button {
+    font-size: 14px;
+}
+
+.input-copy,
+.input-copy>input {
+    width: 100%;
+}
+
+.input-copy input {
+    height: unset;
+    background: rgba(255,255,255,0);
+    cursor: pointer;
+}
+
+.input-copy>div,
+.input-copy input {
+    margin-bottom: .7rem;
+}
+
+.input-copy div input {
+    margin-bottom: 0;
+}
+
+.user-invite input,
+.btn-inline {
+    background: rgba(255,255,255,0);
+}
+
+.btn-inline {
+    border: 1px solid #D1335B;
+    color: #D1335B;
+    border-radius: 3px;
+    font-size: 14px;
+    padding: .3rem .8rem;
+    transition: all .3s;
+}
+.btn-inline:hover {
+    background: #D1335B;
+    color: white;
+}
+
+.invite-number {
+    font-size: 14px;
 }
 
 @media screen and (min-width:35.5em) {
@@ -692,6 +754,7 @@ input[type=checkbox].uim-checkbox {
     min-width: 120px;
     cursor: pointer;
     background: #1d1d1d;
+    z-index: 2;
 }
 
 .uim-dropdown-menu ul {
@@ -710,6 +773,12 @@ input[type=checkbox].uim-checkbox {
     transition: all .3s;
 }
 
+.uim-dropdown-menu li a {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 .uim-dropdown-menu li:hover {
     background: #1997c6;
     transition: all .3s;
@@ -720,13 +789,19 @@ input[type=checkbox].uim-checkbox {
 }
 
 .dropdown-fade-enter-active,.dropdown-fade-leave-active {
-    transition: all .1s ease;
+    transition: all .2s ease;
 }
 
 .dropdown-fade-enter,.dropdown-fade-leave-to {
     transform-origin: top;
     transform: scaleY(0);
     opacity: 0;
+}
+
+.dl-link .uim-dropdown-btn,
+.dl-link .uim-dropdown-menu {
+    min-width: unset;
+    width: 100%;
 }
 
 /* loading 动画 */
