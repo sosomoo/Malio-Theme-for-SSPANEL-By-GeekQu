@@ -149,6 +149,35 @@ class LinkController extends BaseController
         }
     }
     
+    public static function GetSubinfo($user, $int = 0)
+    {
+        if ($int == 0) {
+            $int = "";
+        }
+        $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0);
+        $return_info = [
+            // sub
+            "ss" => $userapiUrl . "?sub=2",
+            "ssr" => $userapiUrl . "?sub=1",
+            "v2ray" => $userapiUrl . "?sub=3",
+            "v2ray_ss" => $userapiUrl . "?sub=4",
+            "v2ray_ss_ssr" => $userapiUrl . "?sub=5",
+            // apps
+            "ssd" => $userapiUrl . "?ssd=1",
+            "clash" => $userapiUrl . "?clash=1",
+            "surge" => $userapiUrl . "?surge=" . $int,
+            "surge_node" => $userapiUrl . "?surge=1",
+            "surge2" => $userapiUrl . "?surge=2",
+            "surge3" => $userapiUrl . "?surge=3",
+            "surfboard" => $userapiUrl . "?surfboard=1",
+            "quantumult" => $userapiUrl . "?quantumult=" . $int,
+            "quantumult_v2" => $userapiUrl . "?quantumult=1",
+            "quantumult_sub" => $userapiUrl . "?quantumult=2",
+            "quantumult_conf" => $userapiUrl . "?quantumult=3",
+        ];
+        return $return_info;
+    }
+
     public static function GetSurge($user, $mu = 0, $surge = 0)
     {
         $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0) . "?surge=" . $surge;
