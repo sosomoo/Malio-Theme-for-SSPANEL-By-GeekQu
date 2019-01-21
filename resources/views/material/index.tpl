@@ -105,8 +105,10 @@
                     <uim-messager v-show="msgrCon.isShow">
                         <i slot="icon" :class="msgrCon.icon"></i>
                         <span slot="msg">$[msgrCon.msg]$</span>
+                        <div v-if="msgrCon.html !== ''" slot="html" v-html="msgrCon.html"></div>
                     </uim-messager>
                 </transition>
+
             </div>
         </transition>
     </div>
@@ -147,13 +149,14 @@
  * @param {string} method
  * @returns {function} - A Promise Object
  */*}
-const _request = (url, body, method) => 
+const _request = (url, body, method,credentials) => 
     fetch(url, {
         method: method,
         body: body,
         headers: {
             'content-type': 'application/json'
-        }
+        },
+        credentials: credentials,
     }).then(resp => {
         return Promise.all([resp.ok, resp.status, resp.json()]);
     }).then(([ok, status, json]) => {
@@ -205,11 +208,28 @@ const _get = (url,credentials) =>
  * _post('https://example.com', JSON.stringify(data)).then(resp => { console.log(resp) })
  */*}
 
-const _post = (url, body) => _request(url, body, 'POST');
+const _post = (url, body, credentials) => _request(url, body, 'POST', credentials);
 
 let validate,captcha;
 
 let globalConfig;
+
+const UserTmp = {
+    state: {
+        userCon: '',
+    },
+    mutations: {
+        SET_USERCON (state,config) {
+            state.userCon = config;
+        },
+        SET_USERMONEY (state,number) {
+            state.userCon.money = number;
+        }
+    },
+    actions: {
+
+    },
+}
 
 const tmp = new Vuex.Store({
     state: {
@@ -218,8 +238,15 @@ const tmp = new Vuex.Store({
         logintoken: false,
         msgrCon: {
             msg: '操作成功',
+            html: '',
             icon: ['fa','fa-check-square-o'],
             isShow: false,
+        },
+        modalCon: {
+            isMaskShow: false,
+            isCardShow: false,
+            title: '订单确认',
+            bodyContent: '',
         },
         globalConfig: {
             captchaProvider: '',
@@ -254,9 +281,16 @@ const tmp = new Vuex.Store({
         SET_MSGRCON (state,config) {
             state.msgrCon.msg = config.msg;
             state.msgrCon.icon[1] = config.icon;
+            state.msgrCon.html = config.html;
         },
         ISSHOW_MSGR (state,boolean) {
             state.msgrCon.isShow = boolean;
+        },
+        ISSHOW_MODAL_MASK (state,boolean) {
+            state.modalCon.isMaskShow = boolean;
+        },
+        ISSHOW_MODAL_CARD (state,boolean) {
+            state.modalCon.isCardShow = boolean;
         },
         SET_GLOBALCONFIG (state,config) {
             state.logintoken = config.isLogin
@@ -285,13 +319,36 @@ const tmp = new Vuex.Store({
         },
     },
     actions: {
-        CALL_MSGR ({ commit,state },config) {
-            commit('SET_MSGRCON',config);
-            commit('ISSHOW_MSGR',true);
-            window.setTimeout(function() {
+        CALL_MSGR ({ dispatch,commit,state },config) {
+            if (state.msgrCon.isShow === true) {
                 commit('ISSHOW_MSGR',false);
-            },1000)
-        }
+                setTimeout(() => {
+                    dispatch('CALL_MSGR',config);                    
+                }, 300);
+            } else {
+                commit('SET_MSGRCON',config);
+                commit('ISSHOW_MSGR',true);
+                window.setTimeout(function() {
+                    commit('ISSHOW_MSGR',false);
+                },config.time)
+            }
+        },
+        CALL_MODAL ({ commit,state },config) {
+            if (state.modalCon.isMaskShow === false) {
+                commit('ISSHOW_MODAL_MASK',true);
+                window.setTimeout(() => {
+                    commit('ISSHOW_MODAL_CARD',true)
+                }, 300);
+            } else {
+                commit('ISSHOW_MODAL_CARD',false);
+                window.setTimeout(() => {
+                    commit('ISSHOW_MODAL_MASK',false)
+                }, 300);
+            }
+        },
+    },
+    modules: {
+        userState: UserTmp,
     }
 });
 
@@ -299,9 +356,11 @@ var storeMap = {
     store: tmp,
     computed: Vuex.mapState({
         msgrCon: 'msgrCon',
+        modalCon: 'modalCon',
         globalConfig: 'globalConfig',
         logintoken: 'logintoken',
         isLoading: 'isLoading',
+        userCon: state => state.userState.userCon,
     }),
 }
 
@@ -318,7 +377,7 @@ var storeAuth = {
             if (this.globalConfig.captchaProvider === 'geetest') {
                 this.$nextTick(function(){
 
-                _get('/auth/login_getCaptcha')
+                _get('/auth/login_getCaptcha','include')
                     .then((r) => {
                         let GeConfig = {
                             gt: r.GtSdk.gt,
@@ -531,6 +590,7 @@ const Login = {
             let callConfig = {
                 msg: '',
                 icon: '',
+                time: 1000,
             };
 
             if (this.globalConfig.enableLoginCaptcha !== 'false') {
@@ -550,7 +610,7 @@ const Login = {
                 }
             }
 
-            _post('/auth/login', JSON.stringify(ajaxCon)).then((r) => {
+            _post('/auth/login', JSON.stringify(ajaxCon),'include').then((r) => {
                 if (r.ret === 1) {
                     callConfig.msg += '登录成功Kira~';
                     callConfig.icon += 'fa-check-square-o';
@@ -594,18 +654,19 @@ const Login = {
             let callConfig = {
                 msg: '',
                 icon: '',
+                time: 1000,
             };
             _post('/auth/qrcode_check', JSON.stringify({
                 token: this.globalConfig.login_token,
                 number: this.globalConfig.login_number,
-            })).then((r) => {
+            }),'include').then((r) => {
                 if(r.ret > 0) {
                     clearTimeout(tid);
                     
                     _post('/auth/qrcode_login',JSON.stringify({
                         token: this.globalConfig.login_token,
                         number: this.globalConfig.login_number,
-                    })).then(r=>{
+                    }),'include').then(r=>{
                         if (r.ret) {
                             callConfig.msg += '登录成功Kira~';
                             callConfig.icon += 'fa-check-square-o';
@@ -742,6 +803,7 @@ const Register = {
             let callConfig = {
                 msg: '',
                 icon: '',
+                time: 1000,
             };
 
             if (this.globalConfig.isEmailVeryify === 'true') {
@@ -772,7 +834,7 @@ const Register = {
                 }
             }
 
-            _post('/auth/register', JSON.stringify(ajaxCon)).then((r)=>{
+            _post('/auth/register', JSON.stringify(ajaxCon),'omit').then((r)=>{
                 if (r.ret == 1) {
                     callConfig.msg += '注册成功meow~';
                     callConfig.icon += 'fa-check-square-o';
@@ -846,17 +908,19 @@ const Register = {
                     email: this.email,
                 }
 
-            _post('auth/send', JSON.stringify(ajaxCon)).then((r)=>{
+            _post('auth/send', JSON.stringify(ajaxCon),'omit').then((r)=>{
                 if (r.ret) {
                     let callConfig = {
                             msg: 'biu~邮件发送成功',
                             icon: 'fa-check-square-o',
+                            time: 1000,
                         };
                     tmp.dispatch('CALL_MSGR',callConfig);
                 } else {
                     let callConfig = {
                             msg: 'emm……邮件发送失败',
                             icon: 'fa-times-circle-o',
+                            time: 1000,
                         };
                     tmp.dispatch('CALL_MSGR',callConfig);
                 }
@@ -933,11 +997,12 @@ const Reset = {
             let callConfig = {
                 msg: '',
                 icon: '',
+                time: 1000,
             };
 
             _post('/password/reset', JSON.stringify({
                 email: this.email,
-            })).then(r => {
+            }),'omit').then(r => {
                 if (r.ret == 1) {
                     callConfig.msg += '邮件发送成功kira~';
                     callConfig.icon += 'fa-check-square-o';
@@ -969,11 +1034,23 @@ const User = {
 };
 
 const userMixin = {
-    props: ['annC','thisuser','baseURL'],
+    delimiters: ['$[',']$'],
+    props: ['annC','baseURL'],
+    methods: {
+        resetCredit() {
+            _get('/getcredit','include').then((r)=>{
+                console.log(r.arr);
+                this.updateCredit(r.arr.credit);
+            });
+        },
+        updateCredit(credit) {
+            tmp.commit('SET_USERMONEY',credit);
+        },
+    }
 }
 
 const UserAnnouncement = {
-    mixins: [userMixin],
+    mixins: [userMixin,storeMap],
     template: `
     <div>
         <div class="card-title">公告栏</div>
@@ -985,19 +1062,18 @@ const UserAnnouncement = {
 };
 
 const UserInvite = {
-    delimiters: ['$[',']$'],
-    mixins: [userMixin],
+    mixins: [userMixin,storeMap],
     template: /*html*/ `
     <div>
         <div class="card-title">邀请链接</div>
         <div class="card-body">
             <div class="user-invite">
-                <div v-if="thisuser.class !== 0">
+                <div v-if="userCon.class !== 0">
                     <input type="button" class="tips tips-blue" :value="inviteLink">
-                    <h5>邀请链接剩余次数： <span class="invite-number tips tips-gold">$[thisuser.invite_num]$次</span></h5>       
+                    <h5>邀请链接剩余次数： <span class="invite-number tips tips-gold">$[userCon.invite_num]$次</span></h5>       
                 </div>
                 <div v-else>
-                    <h3>$[thisuser.user_name]$，您不是VIP暂时无法使用邀请链接，<slot name='inviteToShop'></slot></h3>
+                    <h3>$[userCon.user_name]$，您不是VIP暂时无法使用邀请链接，<slot name='inviteToShop'></slot></h3>
                 </div>
             </div>
         </div>
@@ -1014,28 +1090,182 @@ const UserInvite = {
         }
     },
     mounted() {
-        _get('getuserinviteinfo').then((r)=>{
+        _get('getuserinviteinfo','include').then((r)=>{
             console.log(r);
             this.code = r.inviteInfo.code.code;
-            console.log(this.thisuser);
-        })
+            console.log(this.userCon);
+        });
     }
 };
 
 const UserShop = {
-    mixins: [userMixin],
+    mixins: [userMixin,storeMap],
     template: /*html*/ `
-    <div >
-        <div class="card-title">套餐购买</div>
-        <div class="card-body">
-            <div class="shop"></div>
+    <div>
+        <div class="pure-g">
+            <div class="pure-u-20-24 flex align-center">
+                <div class="card-title">套餐购买</div>
+                <transition name="fade" mode="out-in">
+                <label v-if="isCheckerShow" class="relative" for="">
+                    <input class="coupon-checker tips tips-blue" v-model="coupon" type="text" placeholder="优惠码">
+                    <button @click="couponCheck" class="btn-forinput" name="check"><span class="fa fa-arrow-up"></span></button>                       
+                    <button @click="hideChecker" class="btn-forinput" name="reset"><span class="fa fa-refresh"></span></button>                       
+                </label>
+                </transition>
+            </div>
         </div>
+        <div class="card-body">
+            <div class="user-shop">
+                <div v-for="shop in shops" class="list-shop pure-g" :key="shop.id">
+                    <div class="pure-u-20-24">
+                        <span>$[shop.name]$</span>
+                        <span class="tips tips-gold">VIP $[shop.details.class]$</span>
+                        <span class="tips tips-green">￥$[shop.price]$</span>
+                        <span class="tips tips-cyan">$[shop.details.bandwidth]$G<span v-if="shop.details.reset">+$[shop.details.reset_value]$G/($[shop.details.reset]$天/$[shop.details.reset_exp]$天)</span></span>
+                        <span class="tips tips-blue">$[shop.details.class_expire]$天</span>
+                    </div>
+                    <div class="pure-u-4-24 text-right"><button :disabled="isDisabled" class="buy-submit" @click="buy(shop)">购买</button></div>
+                </div>
+            </div>
+        </div>
+
+        <transition name="fade" mode="out-in">
+        <uim-modal v-on:closeModal="callOrderChecker" v-on:callOrderChecker="orderCheck" :bindMask="isMaskShow" :bindCard="isCardShow" v-if="isMaskShow">
+            <h3 slot="uim-modal-title">$[modalCon.title]$</h3>
+            <div class="flex align-center justify-center wrap" slot="uim-modal-body">
+                <div class="order-checker-content">商品名称：<span>$[orderCheckerContent.name]$</span></div>
+                <div class="order-checker-content">优惠额度：<span>$[orderCheckerContent.credit]$</span></div>
+                <div class="order-checker-content">总金额：<span>$[orderCheckerContent.total]$</span></div>
+            </div>
+            <div class="flex align-center" slot="uim-modal-footer"><uim-switch @click.native="test" v-model="orderCheckerContent.disableothers"></uim-switch> <span class="switch-text">关闭旧套餐自动续费</span></div>
+        </uim-modal>
+        </transition>
+
     </div>
     `,
+    data: function() {
+        return {
+            shops: '',
+            isDisabled: false,
+            coupon: '',
+            isCheckerShow: false,
+            ajaxBody: {
+                shop: '',
+                autorenew: '',
+            },
+            isMaskShow: false,
+            isCardShow: false,
+            orderCheckerContent: {
+                name: '',
+                credit: '',
+                total: '',
+                disableothers: true,
+            },
+        }
+    },
+    methods: {
+        buy(shop) {
+            this.isDisabled = true;
+            this.isCheckerShow = true;
+            let callConfig = {
+                msg: '请输入优惠码，如没有请直接确认',
+                icon: 'fa-bell',
+                time: 1500,
+            };
+            tmp.dispatch('CALL_MSGR',callConfig);
+            let id = (shop.id).toString();
+            Vue.set(this.ajaxBody,'shop',id);
+            Vue.set(this.ajaxBody,'autorenew',shop.autoRenew);
+        },
+        callOrderChecker() {
+            if (this.isMaskShow === false) {
+                this.isMaskShow = true;
+                setTimeout(() => {
+                    this.isCardShow = true
+                }, 300);
+            } else {
+                this.isCardShow = false;
+                setTimeout(() => {
+                    this.isMaskShow = false
+                    this.hideChecker();
+                }, 300);
+            }
+        },
+        couponCheck() {
+            let ajaxCon = {
+                coupon: this.coupon,
+                shop: this.ajaxBody.shop,
+            };
+            _post('/user/coupon_check',JSON.stringify(ajaxCon),'include').then((r)=>{
+                if (r.ret) {
+                    this.isCheckerShow = false;
+                    this.orderCheckerContent.name = r.name;
+                    this.orderCheckerContent.credit = r.credit;
+                    this.orderCheckerContent.total = r.total;
+                    this.callOrderChecker();
+                } else {
+                    let callConfig = {
+                        msg: r.msg,
+                        icon: 'fa-times-circle-o',
+                        time: 1000,
+                    };
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                }
+            });
+        },
+        orderCheck() {
+            let ajaxCon = {
+                coupon: this.coupon,
+                shop: this.ajaxBody.shop,
+                autorenew: this.ajaxBody.autorenew,
+                disableothers: this.disableothers,
+            };
+            _post('/user/buy',JSON.stringify(ajaxCon),'include').then((r)=>{
+                if (r.ret) {
+                    console.log(r);
+                    this.callOrderChecker();
+                    this.resetCredit();
+                } else {
+                    console.log(r);
+                    let self = this;
+                    let animation = new Promise(function(resolve) {
+                        self.callOrderChecker();
+                        setTimeout(() => {
+                            resolve('done');                            
+                        }, 600);
+                    });
+                    let message = r.msg
+                    let subPosition = message.indexOf('</br>');
+                    let callConfig = {
+                        msg: message.substr(0,subPosition),
+                        html: message.substr(subPosition),
+                        icon: 'fa-times-circle-o',
+                        time: 6000,
+                    };
+                    animation.then((r)=>{
+                        tmp.dispatch('CALL_MSGR',callConfig);                        
+                    })
+                }
+            });
+        },
+        hideChecker() {
+            this.isCheckerShow = false;
+            this.isDisabled = false;
+        },
+    },
+    mounted() {
+        _get('/getusershops','include').then((r)=>{
+            this.shops = r.arr.shops;
+            this.shops.forEach((el,index)=>{
+                Vue.set(this.shops[index],'details',JSON.parse(el.content))
+            });
+            console.log(this.shops);
+        });
+    },
 };
 
 const UserGuide = {
-    mixins: [userMixin],
+    mixins: [userMixin,storeMap],
     template: /*html*/ `
     <div>
         <div class="card-title">配置指南</div>
@@ -1171,7 +1401,7 @@ const Panel = {
                         </div>
                     </div>
                     <transition name="fade" mode="out-in">
-                    <component :is="currentCardComponent" :baseURL="baseUrl" :thisuser="userCon" :annC="ann" class="card margin-nobottom">
+                    <component :is="currentCardComponent" :baseURL="baseUrl" :annC="ann" class="card margin-nobottom">
                         <button @click="componentChange" class="btn-inline" :data-component="menuOptions[3].id" slot="inviteToShop">成为VIP请点击这里</button>
                     </component>
                     </transition>
@@ -1201,7 +1431,6 @@ const Panel = {
     data: function() {
         return {
             userLoadState: 'beforeload',
-            userCon: '',
             ann: {
                 content: '',
                 date: '',
@@ -1433,8 +1662,9 @@ const Panel = {
             let callConfig = {
                 msg: '',
                 icon: '',
+                time: 1000,
             };
-            _get('/logout').then((r)=>{
+            _get('/logout','include').then((r)=>{
                 if (r.ret === 1) {
                     callConfig.msg += '账户成功登出Kira~';
                     callConfig.icon += 'fa-check-square-o';
@@ -1460,7 +1690,8 @@ const Panel = {
          _get('/getuserinfo','include').then((r) => {
             if (r.ret === 1) {
                 console.log(r.info);
-                this.userCon = r.info.user;
+                tmp.commit('SET_USERCON',r.info.user);
+                console.log(this.userCon);
                 if (r.info.ann) {
                     this.ann = r.info.ann;
                 }
@@ -1474,7 +1705,6 @@ const Panel = {
                 this.tipsLink[3].content = this.userCon.protocol;
                 this.tipsLink[4].content = this.userCon.obfs;
                 this.tipsLink[5].content = this.userCon.obfs_param;
-                console.log(this.userCon);
             }
         }).then((r)=>{
             setTimeout(()=>{
@@ -1569,7 +1799,7 @@ const Router = new VueRouter({
 
 Router.beforeEach((to,from,next)=>{
     if (!globalConfig) {
-        _get('/globalconfig').then((r)=>{
+        _get('/globalconfig','include').then((r)=>{
             if (r.ret == 1) {
                     globalConfig = r.globalConfig;
                     if (globalConfig.geetest_html && globalConfig.geetest_html.success) {
@@ -1608,7 +1838,7 @@ Vue.component('uim-messager',{
     delimiters: ['$[',']$'],
     template: /*html*/ `
     <div class="uim-messager">
-        <div><slot name="icon"></slot><slot name="msg"></slot></div>
+        <div><slot name="icon"></slot><slot name="msg"></slot><slot name="html"></slot></div>
     </div>
     `,
 })
@@ -1679,6 +1909,58 @@ Vue.component('uim-dropdown',{
             this.hide();
         })
     }
+})
+
+Vue.component('uim-modal',{
+    delimiters: ['$[',']$'],
+    mixins: [storeMap],
+    template:/*html*/ `
+    <div class="uim-modal">
+        <transition name="fade" mode="out-in">
+        <div v-show="bindMask" class="uim-modal-mask"></div>
+        </transition>
+        <transition name="slide-fade" mode="out-in">
+        <div v-show="bindCard" class="uim-modal-card">
+            <div @click="$emit('closeModal')" class="uim-modal-close"><span class="fa fa-close"></span></div>
+            <div class="uim-modal-title"><slot name="uim-modal-title"></slot></div>
+            <div class="uim-modal-body"><slot name="uim-modal-body"></slot></div>
+            <div class="uim-modal-footer">
+                <div><slot name="uim-modal-footer"></slot></div>
+                <div><button @click="$emit('callOrderChecker')" class="uim-modal-confirm">确认</button></div>
+            </div>
+        </div>
+        </transition>
+    </div>
+    `,
+    props: ['bindMask','bindCard'],
+})
+
+Vue.component('uim-switch',{
+    delimiters: ['$[',']$'],
+    model: {
+        prop: 'isBtnActive',
+        event: 'change',
+    },
+    props: ['isBtnActive'],
+    template:/*html*/ `
+    <span @click="btnSwitch" :class="{ 'uim-switch-body-active':switchStatus }" class="uim-switch-body">
+        <input :checked="isBtnActive" v-on:change="$emit('change',$event.target.checked)" type="checkbox">
+    </span>
+    `,
+    data: function() {
+        return {
+            switchStatus: this.isBtnActive,
+        }
+    },
+    methods: {
+        btnSwitch() {
+            if (this.switchStatus === false) {
+                this.switchStatus = true;
+            } else {
+                this.switchStatus = false;
+            }
+        },
+    },
 })
 
 const indexPage = new Vue({
