@@ -105,25 +105,33 @@
                     <uim-messager v-show="msgrCon.isShow">
                         <i slot="icon" :class="msgrCon.icon"></i>
                         <span slot="msg">$[msgrCon.msg]$</span>
+                        <div v-if="msgrCon.html !== ''" slot="html" v-html="msgrCon.html"></div>
                     </uim-messager>
                 </transition>
+
             </div>
         </transition>
     </div>
-
+       
     {if $recaptcha_sitekey != null}
     <script src="https://recaptcha.net/recaptcha/api.js?render=explicit" async defer></script>
     {/if}
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuex@3.0.1/dist/vuex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-router@3.0.2"></script>
-
     {if isset($geetest_html)}
 	<script src="//static.geetest.com/static/tools/gt.js"></script>
     {/if}
     {if $config['enable_telegram'] == 'true'}
     <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs@gh-pages/qrcode.min.js"></script>
     {/if}
+    <script>
+        ;(function(){
+            if (!window.Vuex) {
+                window.location = '/indexold';
+            }
+        })();      
+    </script> 
 </body>
 
 </html>
@@ -141,13 +149,14 @@
  * @param {string} method
  * @returns {function} - A Promise Object
  */*}
-const _request = (url, body, method) =>
+const _request = (url, body, method,credentials) => 
     fetch(url, {
         method: method,
         body: body,
         headers: {
             'content-type': 'application/json'
-        }
+        },
+        credentials: credentials,
     }).then(resp => {
         return Promise.all([resp.ok, resp.status, resp.json()]);
     }).then(([ok, status, json]) => {
@@ -160,6 +169,8 @@ const _request = (url, body, method) =>
         throw error;
     });
 
+    
+
 {*/**
  * A Wrapper of Fetch GET Method
  * @function _get
@@ -168,7 +179,7 @@ const _request = (url, body, method) =>
  * @example
  * get('https://example.com').then(resp => { console.log(resp) })
  */*}
-const _get = (url,credentials) =>
+const _get = (url,credentials) => 
     fetch(url, {
         method: 'GET',
         credentials,
@@ -182,9 +193,11 @@ const _get = (url,credentials) =>
             throw new Error(JSON.stringify(json.error));
         }
     }).catch(error => {
+        console.log(error);
         throw error;
     });
 
+    
 {*/**
  * A Wrapper of Fetch POST Method
  * @function _post
@@ -195,11 +208,28 @@ const _get = (url,credentials) =>
  * _post('https://example.com', JSON.stringify(data)).then(resp => { console.log(resp) })
  */*}
 
-const _post = (url, body) => _request(url, body, 'POST');
+const _post = (url, body, credentials) => _request(url, body, 'POST', credentials);
 
 let validate,captcha;
 
 let globalConfig;
+
+const UserTmp = {
+    state: {
+        userCon: '',
+    },
+    mutations: {
+        SET_USERCON (state,config) {
+            state.userCon = config;
+        },
+        SET_USERMONEY (state,number) {
+            state.userCon.money = number;
+        }
+    },
+    actions: {
+
+    },
+}
 
 const tmp = new Vuex.Store({
     state: {
@@ -208,8 +238,15 @@ const tmp = new Vuex.Store({
         logintoken: false,
         msgrCon: {
             msg: '操作成功',
+            html: '',
             icon: ['fa','fa-check-square-o'],
             isShow: false,
+        },
+        modalCon: {
+            isMaskShow: false,
+            isCardShow: false,
+            title: '订单确认',
+            bodyContent: '',
         },
         globalConfig: {
             captchaProvider: '',
@@ -242,11 +279,21 @@ const tmp = new Vuex.Store({
             state.logintoken = n;
         },
         SET_MSGRCON (state,config) {
+            if (state.msgrCon.html !== '') {
+                state.msgrCon.html = '';
+            }
             state.msgrCon.msg = config.msg;
             state.msgrCon.icon[1] = config.icon;
+            state.msgrCon.html = config.html;
         },
         ISSHOW_MSGR (state,boolean) {
             state.msgrCon.isShow = boolean;
+        },
+        ISSHOW_MODAL_MASK (state,boolean) {
+            state.modalCon.isMaskShow = boolean;
+        },
+        ISSHOW_MODAL_CARD (state,boolean) {
+            state.modalCon.isCardShow = boolean;
         },
         SET_GLOBALCONFIG (state,config) {
             state.logintoken = config.isLogin
@@ -275,13 +322,36 @@ const tmp = new Vuex.Store({
         },
     },
     actions: {
-        CALL_MSGR ({ commit,state },config) {
-            commit('SET_MSGRCON',config);
-            commit('ISSHOW_MSGR',true);
-            window.setTimeout(function() {
+        CALL_MSGR ({ dispatch,commit,state },config) {
+            if (state.msgrCon.isShow === true) {
                 commit('ISSHOW_MSGR',false);
-            },1000)
-        }
+                setTimeout(() => {
+                    dispatch('CALL_MSGR',config);                    
+                }, 300);
+            } else {
+                commit('SET_MSGRCON',config);
+                commit('ISSHOW_MSGR',true);
+                window.setTimeout(function() {
+                    commit('ISSHOW_MSGR',false);
+                },config.time)
+            }
+        },
+        CALL_MODAL ({ commit,state },config) {
+            if (state.modalCon.isMaskShow === false) {
+                commit('ISSHOW_MODAL_MASK',true);
+                window.setTimeout(() => {
+                    commit('ISSHOW_MODAL_CARD',true)
+                }, 300);
+            } else {
+                commit('ISSHOW_MODAL_CARD',false);
+                window.setTimeout(() => {
+                    commit('ISSHOW_MODAL_MASK',false)
+                }, 300);
+            }
+        },
+    },
+    modules: {
+        userState: UserTmp,
     }
 });
 
@@ -289,9 +359,11 @@ var storeMap = {
     store: tmp,
     computed: Vuex.mapState({
         msgrCon: 'msgrCon',
+        modalCon: 'modalCon',
         globalConfig: 'globalConfig',
         logintoken: 'logintoken',
         isLoading: 'isLoading',
+        userCon: state => state.userState.userCon,
     }),
 }
 
@@ -308,7 +380,7 @@ var storeAuth = {
             if (this.globalConfig.captchaProvider === 'geetest') {
                 this.$nextTick(function(){
 
-                _get('/auth/login_getCaptcha')
+                _get('/auth/login_getCaptcha','include')
                     .then((r) => {
                         let GeConfig = {
                             gt: r.GtSdk.gt,
@@ -521,6 +593,7 @@ const Login = {
             let callConfig = {
                 msg: '',
                 icon: '',
+                time: 1000,
             };
 
             if (this.globalConfig.enableLoginCaptcha !== 'false') {
@@ -540,7 +613,7 @@ const Login = {
                 }
             }
 
-            _post('/auth/login', JSON.stringify(ajaxCon)).then((r) => {
+            _post('/auth/login', JSON.stringify(ajaxCon),'include').then((r) => {
                 if (r.ret === 1) {
                     callConfig.msg += '登录成功Kira~';
                     callConfig.icon += 'fa-check-square-o';
@@ -584,18 +657,19 @@ const Login = {
             let callConfig = {
                 msg: '',
                 icon: '',
+                time: 1000,
             };
             _post('/auth/qrcode_check', JSON.stringify({
                 token: this.globalConfig.login_token,
                 number: this.globalConfig.login_number,
-            })).then((r) => {
+            }),'include').then((r) => {
                 if(r.ret > 0) {
                     clearTimeout(tid);
                     
                     _post('/auth/qrcode_login',JSON.stringify({
                         token: this.globalConfig.login_token,
                         number: this.globalConfig.login_number,
-                    })).then(r=>{
+                    }),'include').then(r=>{
                         if (r.ret) {
                             callConfig.msg += '登录成功Kira~';
                             callConfig.icon += 'fa-check-square-o';
@@ -613,14 +687,15 @@ const Login = {
             tid = setTimeout(()=>{
                 this.tgAuthTrigger(tid);
             }, 2500);
-        }
-    },
-    mounted() {
-        document.addEventListener('keyup',(e)=>{
-            if (e.keyCode == 13) {
+        },
+        loginBindEnter(e) {
+            if (this.$route.path === '/auth/login' && e.keyCode == 13) {
                 this.login();
             }
-        });
+        },
+    },
+    mounted() {
+        document.addEventListener('keyup',this.loginBindEnter,false);
 
         if (this.globalConfig.enable_telegram === 'true') {
             this.telegramRender();
@@ -634,6 +709,10 @@ const Login = {
         }
         this.loadCaptcha('g-recaptcha-login');
         this.loadGT('#embed-captcha-login');
+    },
+    beforeRouteLeave(to, from , next) {
+        document.removeEventListener('keyup',this.loginBindEnter,false);
+        next();
     },
 };
 
@@ -732,6 +811,7 @@ const Register = {
             let callConfig = {
                 msg: '',
                 icon: '',
+                time: 1000,
             };
 
             if (this.globalConfig.isEmailVeryify === 'true') {
@@ -762,7 +842,7 @@ const Register = {
                 }
             }
 
-            _post('/auth/register', JSON.stringify(ajaxCon)).then((r)=>{
+            _post('/auth/register', JSON.stringify(ajaxCon),'omit').then((r)=>{
                 if (r.ret == 1) {
                     callConfig.msg += '注册成功meow~';
                     callConfig.icon += 'fa-check-square-o';
@@ -836,21 +916,28 @@ const Register = {
                     email: this.email,
                 }
 
-            _post('auth/send', JSON.stringify(ajaxCon)).then((r)=>{
+            _post('auth/send', JSON.stringify(ajaxCon),'omit').then((r)=>{
                 if (r.ret) {
                     let callConfig = {
                             msg: 'biu~邮件发送成功',
                             icon: 'fa-check-square-o',
+                            time: 1000,
                         };
                     tmp.dispatch('CALL_MSGR',callConfig);
                 } else {
                     let callConfig = {
                             msg: 'emm……邮件发送失败',
                             icon: 'fa-times-circle-o',
+                            time: 1000,
                         };
                     tmp.dispatch('CALL_MSGR',callConfig);
                 }
             });
+        },
+        registerBindEnter(e) {
+            if (this.$route.path === '/auth/register' && e.keyCode == 13) {
+                this.register();
+            }
         },
     },
     mounted() {
@@ -866,11 +953,7 @@ const Register = {
             }
         }
         
-        document.addEventListener('keyup', (e) => {
-            if (e.keyCode == 13) {
-                this.register();
-            }
-        });
+        document.addEventListener('keyup',this.registerBindEnter,false);
 
         //验证加载
         if (this.globalConfig.enableRegCaptcha === 'false') {
@@ -878,6 +961,10 @@ const Register = {
         }
         this.loadCaptcha('g-recaptcha-reg');
         this.loadGT('#embed-captcha-reg');    
+    },
+    beforeRouteLeave(to, from , next) {
+        document.removeEventListener('keyup',this.registerBindEnter,false);
+        next();
     }
 };
 
@@ -923,11 +1010,12 @@ const Reset = {
             let callConfig = {
                 msg: '',
                 icon: '',
+                time: 1000,
             };
 
             _post('/password/reset', JSON.stringify({
                 email: this.email,
-            })).then(r => {
+            }),'omit').then(r => {
                 if (r.ret == 1) {
                     callConfig.msg += '邮件发送成功kira~';
                     callConfig.icon += 'fa-check-square-o';
@@ -958,7 +1046,24 @@ const User = {
     props: ['routermsg'],
 };
 
+const userMixin = {
+    delimiters: ['$[',']$'],
+    props: ['annC','baseURL'],
+    methods: {
+        resetCredit() {
+            _get('/getcredit','include').then((r)=>{
+                console.log(r.arr);
+                this.updateCredit(r.arr.credit);
+            });
+        },
+        updateCredit(credit) {
+            tmp.commit('SET_USERMONEY',credit);
+        },
+    }
+}
+
 const UserAnnouncement = {
+    mixins: [userMixin,storeMap],
     template: `
     <div>
         <div class="card-title">公告栏</div>
@@ -967,26 +1072,218 @@ const UserAnnouncement = {
         </div>
     </div>
     `,
-    props: ['annC'],
 };
 
 const UserInvite = {
+    mixins: [userMixin,storeMap],
     template: /*html*/ `
     <div>
         <div class="card-title">邀请链接</div>
         <div class="card-body">
-            <div class="invite"></div>
+            <div class="user-invite">
+                <div v-if="userCon.class !== 0">
+                    <input type="button" class="tips tips-blue" :value="inviteLink">
+                    <h5>邀请链接剩余次数： <span class="invite-number tips tips-gold">$[userCon.invite_num]$次</span></h5>       
+                </div>
+                <div v-else>
+                    <h3>$[userCon.user_name]$，您不是VIP暂时无法使用邀请链接，<slot name='inviteToShop'></slot></h3>
+                </div>
+            </div>
         </div>
     </div>
     `,
-}
+    computed: {
+        inviteLink: function() {
+            return this.baseURL + '/#/auth/register?code=' + this.code;
+        }
+    },
+    data: function() {
+        return {
+            code: '',
+        }
+    },
+    mounted() {
+        _get('getuserinviteinfo','include').then((r)=>{
+            console.log(r);
+            this.code = r.inviteInfo.code.code;
+            console.log(this.userCon);
+        });
+    }
+};
 
 const UserShop = {
-    template: `
-    <div >
-        <div class="card-title">套餐购买</div>
+    mixins: [userMixin,storeMap],
+    template: /*html*/ `
+    <div>
+        <div class="pure-g">
+            <div class="pure-u-20-24 flex align-center">
+                <div class="card-title">套餐购买</div>
+                <transition name="fade" mode="out-in">
+                <label v-if="isCheckerShow" class="relative" for="">
+                    <input @keyup.13="couponCheck" class="coupon-checker tips tips-blue" v-model="coupon" type="text" placeholder="优惠码">
+                    <button @click="couponCheck" class="btn-forinput" name="check"><span class="fa fa-arrow-up"></span></button>                       
+                    <button @click="hideChecker" class="btn-forinput" name="reset"><span class="fa fa-refresh"></span></button>                       
+                </label>
+                </transition>
+            </div>
+        </div>
         <div class="card-body">
-            <div class="shop"></div>
+            <div class="user-shop">
+                <div v-for="shop in shops" class="list-shop pure-g" :key="shop.id">
+                    <div class="pure-u-20-24">
+                        <span>$[shop.name]$</span>
+                        <span class="tips tips-gold">VIP $[shop.details.class]$</span>
+                        <span class="tips tips-green">￥$[shop.price]$</span>
+                        <span class="tips tips-cyan">$[shop.details.bandwidth]$G<span v-if="shop.details.reset">+$[shop.details.reset_value]$G/($[shop.details.reset]$天/$[shop.details.reset_exp]$天)</span></span>
+                        <span class="tips tips-blue">$[shop.details.class_expire]$天</span>
+                    </div>
+                    <div class="pure-u-4-24 text-right"><button :disabled="isDisabled" class="buy-submit" @click="buy(shop)">购买</button></div>
+                </div>
+            </div>
+        </div>
+
+        <transition name="fade" mode="out-in">
+        <uim-modal v-on:closeModal="callOrderChecker" v-on:callOrderChecker="orderCheck" :bindMask="isMaskShow" :bindCard="isCardShow" v-if="isMaskShow">
+            <h3 slot="uim-modal-title">$[modalCon.title]$</h3>
+            <div class="flex align-center justify-center wrap" slot="uim-modal-body">
+                <div class="order-checker-content">商品名称：<span>$[orderCheckerContent.name]$</span></div>
+                <div class="order-checker-content">优惠额度：<span>$[orderCheckerContent.credit]$</span></div>
+                <div class="order-checker-content">总金额：<span>$[orderCheckerContent.total]$</span></div>
+            </div>
+            <div class="flex align-center" slot="uim-modal-footer"><uim-switch @click.native="test" v-model="orderCheckerContent.disableothers"></uim-switch> <span class="switch-text">关闭旧套餐自动续费</span></div>
+        </uim-modal>
+        </transition>
+
+    </div>
+    `,
+    data: function() {
+        return {
+            shops: '',
+            isDisabled: false,
+            coupon: '',
+            isCheckerShow: false,
+            ajaxBody: {
+                shop: '',
+                autorenew: '',
+            },
+            isMaskShow: false,
+            isCardShow: false,
+            orderCheckerContent: {
+                name: '',
+                credit: '',
+                total: '',
+                disableothers: true,
+            },
+        }
+    },
+    methods: {
+        buy(shop) {
+            this.isDisabled = true;
+            this.isCheckerShow = true;
+            let callConfig = {
+                msg: '请输入优惠码，如没有请直接确认',
+                icon: 'fa-bell',
+                time: 1500,
+            };
+            tmp.dispatch('CALL_MSGR',callConfig);
+            let id = (shop.id).toString();
+            Vue.set(this.ajaxBody,'shop',id);
+            Vue.set(this.ajaxBody,'autorenew',shop.autoRenew);
+        },
+        callOrderChecker() {
+            if (this.isMaskShow === false) {
+                this.isMaskShow = true;
+                setTimeout(() => {
+                    this.isCardShow = true
+                }, 300);
+            } else {
+                this.isCardShow = false;
+                setTimeout(() => {
+                    this.isMaskShow = false
+                    this.hideChecker();
+                }, 300);
+            }
+        },
+        couponCheck() {
+            let ajaxCon = {
+                coupon: this.coupon,
+                shop: this.ajaxBody.shop,
+            };
+            _post('/user/coupon_check',JSON.stringify(ajaxCon),'include').then((r)=>{
+                if (r.ret) {
+                    this.isCheckerShow = false;
+                    this.orderCheckerContent.name = r.name;
+                    this.orderCheckerContent.credit = r.credit;
+                    this.orderCheckerContent.total = r.total;
+                    this.callOrderChecker();
+                } else {
+                    let callConfig = {
+                        msg: r.msg,
+                        icon: 'fa-times-circle-o',
+                        time: 1000,
+                    };
+                    tmp.dispatch('CALL_MSGR',callConfig);
+                }
+            });
+        },
+        orderCheck() {
+            let ajaxCon = {
+                coupon: this.coupon,
+                shop: this.ajaxBody.shop,
+                autorenew: this.ajaxBody.autorenew,
+                disableothers: this.disableothers,
+            };
+            _post('/user/buy',JSON.stringify(ajaxCon),'include').then((r)=>{
+                if (r.ret) {
+                    console.log(r);
+                    this.callOrderChecker();
+                    this.resetCredit();
+                } else {
+                    console.log(r);
+                    let self = this;
+                    let animation = new Promise(function(resolve) {
+                        self.callOrderChecker();
+                        setTimeout(() => {
+                            resolve('done');                            
+                        }, 600);
+                    });
+                    let message = r.msg
+                    let subPosition = message.indexOf('</br>');
+                    let callConfig = {
+                        msg: message.substr(0,subPosition),
+                        html: message.substr(subPosition),
+                        icon: 'fa-times-circle-o',
+                        time: 6000,
+                    };
+                    animation.then((r)=>{
+                        tmp.dispatch('CALL_MSGR',callConfig);                        
+                    })
+                }
+            });
+        },
+        hideChecker() {
+            this.isCheckerShow = false;
+            this.isDisabled = false;
+        },
+    },
+    mounted() {
+        _get('/getusershops','include').then((r)=>{
+            this.shops = r.arr.shops;
+            this.shops.forEach((el,index)=>{
+                Vue.set(this.shops[index],'details',JSON.parse(el.content))
+            });
+            console.log(this.shops);
+        });
+    },
+};
+
+const UserGuide = {
+    mixins: [userMixin,storeMap],
+    template: /*html*/ `
+    <div>
+        <div class="card-title">配置指南</div>
+        <div class="card-body">
+            <div class="user-guide"></div>
         </div>
     </div>
     `,
@@ -999,6 +1296,7 @@ const Panel = {
         'user-announcement': UserAnnouncement,
         'user-invite': UserInvite,
         'user-shop': UserShop,
+        'user-guide': UserGuide,
     },
     template: /*html*/ `
     <div class="page-user pure-u-1">
@@ -1034,9 +1332,109 @@ const Panel = {
                             </div>
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="card-title">导航菜单</div>
-                        <div class="card-body"></div>
+                    <div class="card margin-nobottom">
+                        <div class="card-title">快速配置</div>
+                        <div class="card-body">
+                            <div class="pure-g">
+                                <button @click="changeAgentType" v-for="dl in downloads" :data-type="dl.type" :class="{ 'index-btn-active':currentDlType === dl.type }" class="pure-u-1-3 btn-user dl-type" :key="dl.type">
+                                    $[dl.type]$
+                                </button>
+                                <h5 class="pure-u-1">平台选择/客户端下载</h5>
+                                <transition name="rotate-fade" mode="out-in">
+                                <div v-if="currentDlType === 'SSR'" class="dl-link" key="ssr">
+                                    <uim-dropdown v-for="(value,key) in downloads[0].agent" class="pure-u-1-3 btn-user" :key="key">
+                                        <span slot="dpbtn-content">$[key]$</span>
+                                        <ul slot="dp-menu">
+                                            <li v-for="agent in value" :key="agent.id"><a :href="agent.href">$[agent.agentName]$</a></li>
+                                        </ul>
+                                    </uim-dropdown>                                
+                                </div>
+                                <div v-else-if="currentDlType === 'SS/SSD'" class="dl-link" key="ss">
+                                    <uim-dropdown v-for="(value,key) in downloads[1].agent" class="pure-u-1-3 btn-user" :key="key">
+                                        <span slot="dpbtn-content">$[key]$</span>
+                                        <ul slot="dp-menu">
+                                            <li v-for="agent in value" :key="agent.id"><a :href="agent.href">$[agent.agentName]$</a></li>
+                                        </ul>
+                                    </uim-dropdown>                                
+                                </div>
+                                <div v-else-if="currentDlType === 'V2RAY'" class="dl-link" key="v2ray">
+                                    <uim-dropdown v-for="(value,key) in downloads[2].agent" class="pure-u-1-3 btn-user" :key="key">
+                                        <span slot="dpbtn-content">$[key]$</span>
+                                        <ul slot="dp-menu">
+                                            <li v-for="agent in value" :key="agent.id"><a :href="agent.href">$[agent.agentName]$</a></li>
+                                        </ul>
+                                    </uim-dropdown>                                
+                                </div>
+                                </transition>
+                                <h5 class="pure-u-1 flex space-between">
+                                    <span>订阅链接</span>
+                                    <span class="link-reset relative flex justify-center text-center">
+                                        <button @click="showToolTip('resetConfirm')" class="tips tips-red"><span class="fa fa-refresh"> 重置链接</button>
+                                        <transition name="fade" mode="out-in">
+                                        <uim-tooltip v-show="toolTips.resetConfirm" class="uim-tooltip-top flex justify-center">
+                                            <div slot="tooltip-inner">
+                                                <span>确定要重置订阅链接？</span>
+                                                <div>
+                                                    <button @click="resetSubscribLink" class="tips tips-green"><span class="fa fa-fw fa-check"></span></button>
+                                                    <button @click="hideToolTip('resetConfirm')" class="tips tips-red"><span class="fa fa-fw fa-remove"></span></button>
+                                                </div>
+                                            </div>
+                                        </uim-tooltip>
+                                        </transition>
+                                    </span>
+                                </h5>
+                                <transition name="rotate-fade" mode="out-in">
+                                <div class="input-copy" v-if="currentDlType === 'SSR'" key="ssrsub">
+                                    <div class="pure-g align-center relative">
+                                        <span class="pure-u-6-24">普通端口:</span>
+                                        <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
+                                            <input @mouseenter="showToolTip('mu0')" @mouseleave="hideToolTip('mu0')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu0" readonly>
+                                            <transition name="fade" mode="out-in">
+                                            <uim-tooltip v-show="toolTips.mu0" class="uim-tooltip-top flex justify-center">
+                                                <div class="sublink" slot="tooltip-inner">
+                                                    <span>$[suburlMu0]$</span>
+                                                </div>
+                                            </uim-tooltip>
+                                            </transition>
+                                        </span>
+                                    </div>
+                                    <div v-if="mergeSub !== 'true'" class="pure-g align-center relative">
+                                        <span class="pure-u-6-24">单端口:</span>
+                                        <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
+                                            <input @mouseenter="showToolTip('mu1')" @mouseleave="hideToolTip('mu1')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu1" readonly>
+                                            <transition name="fade" mode="out-in">
+                                            <uim-tooltip v-show="toolTips.mu1" class="uim-tooltip-top flex justify-center">
+                                                <div class="sublink" slot="tooltip-inner">
+                                                    <span>$[suburlMu1]$</span>
+                                                </div>
+                                            </uim-tooltip>
+                                            </transition> 
+                                        </span>                                                      
+                                    </div>
+                                </div>
+                                <div class="pure-g input-copy relative flex justify-center text-center" v-else-if="currentDlType === 'V2RAY'" key="sssub">
+                                    <input @mouseenter="showToolTip('mu2')" @mouseleave="hideToolTip('mu2')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu2" readonly>
+                                    <transition name="fade" mode="out-in">
+                                        <uim-tooltip v-show="toolTips.mu2" class="pure-u-1 uim-tooltip-top flex justify-center">
+                                        <div class="sublink" slot="tooltip-inner">
+                                            <span>$[suburlMu2]$</span>
+                                        </div>
+                                    </uim-tooltip>
+                                    </transition>
+                                </div>
+                                <div class="pure-g input-copy relative flex justify-center text-center" v-else-if="currentDlType === 'SS/SSD'" key="v2sub">
+                                    <input @mouseenter="showToolTip('mu3')" @mouseleave="hideToolTip('mu3')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu3" readonly>
+                                    <transition name="fade" mode="out-in">
+                                    <uim-tooltip v-show="toolTips.mu3" class="pure-u-1 uim-tooltip-top flex justify-center">
+                                        <div class="sublink" slot="tooltip-inner">
+                                            <span>$[suburlMu3]$</span>
+                                        </div>
+                                    </uim-tooltip>
+                                    </transition>
+                                </div>
+                                </transition>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="pure-u-1 pure-u-sm-17-24">
@@ -1054,7 +1452,7 @@ const Panel = {
                     <div class="user-btngroup pure-g">
                         <div class="pure-u-16-24">
                             <uim-dropdown>
-                                <span slot="dpbtn-content">栏目选择</span>
+                                <span slot="dpbtn-content">栏目导航</span>
                                 <ul slot="dp-menu">
                                     <li @click="componentChange" v-for="menu in menuOptions" :data-component="menu.id" :key="menu.id">$[menu.name]$</li>
                                 </ul>
@@ -1066,7 +1464,9 @@ const Panel = {
                         </div>
                     </div>
                     <transition name="fade" mode="out-in">
-                    <component :is="currentCardComponent" :annC="ann" class="card margin-nobottom"></component>
+                    <component :is="currentCardComponent" :baseURL="baseUrl" :annC="ann" class="card margin-nobottom">
+                        <button @click="componentChange" class="btn-inline" :data-component="menuOptions[3].id" slot="inviteToShop">成为VIP请点击这里</button>
+                    </component>
                     </transition>
                 </div>
             </div>
@@ -1074,16 +1474,44 @@ const Panel = {
     </div>
     `,
     props: ['routermsg'],
+    computed: {
+        suburlBase: function() {
+            return this.subUrl + this.ssrSubToken;
+        },
+        suburlMu0: function() {
+            return this.suburlBase + '?mu=0';
+        },
+        suburlMu1: function() {
+            return this.suburlBase + '?mu=1';
+        },
+        suburlMu3: function() {
+            return this.suburlBase + '?mu=3';
+        },
+        suburlMu2: function() {
+            return this.suburlBase + '?mu=2';
+        },
+    },
     data: function() {
         return {
             userLoadState: 'beforeload',
-            userCon: '',
             ann: {
                 content: '',
                 date: '',
                 id: '',
                 markdown: '',
             },
+            baseUrl: '',
+            subUrl: '',
+            ssrSubToken: '',
+            mergeSub: 'false',
+            toolTips: {
+                mu0: false,
+                mu1: false,
+                mu2: false,
+                mu3: false,
+                resetConfirm: false,
+            },
+            subLinkTrans: false,
             tipsLink: [
                 {
                     name: '端口',
@@ -1116,6 +1544,10 @@ const Panel = {
                     id: 'user-announcement',
                 },
                 {
+                    name: '配置指南',
+                    id: 'user-guide',
+                },
+                {
                     name: '邀请链接',
                     id: 'user-invite',
                 },
@@ -1125,6 +1557,175 @@ const Panel = {
                 },
             ],
             currentCardComponent: 'user-announcement',
+            downloads: [
+                {
+                    type: 'SSR',
+                    agent: {
+                        Windows: [
+                            {
+                                agentName: 'SSR',
+                                href: '/ssr-download/ssr-win.7z',
+                                id: 'AGENT_1_1_1',
+                            },
+                            {
+                                agentName: 'SSTAP',
+                                href: '/ssr-download/SSTap.7z',
+                                id: 'AGENT_1_1_2',
+                            },
+                        ],
+                        Macos: [
+                            {
+                                agentName: 'SSX',
+                                href: '/ssr-download/ssr-mac.dmg',
+                                id: 'AGENT_1_2_1',
+                            },
+                        ],
+                        Linux: [
+                            {
+                                agentName: 'SS-qt5',
+                                href: '#',
+                                id: 'AGENT_1_3_1',
+                            },
+                        ],
+                        Ios: [
+                            {
+                                agentName: 'Potatso Lite',
+                                href: '#',
+                                id: 'AGENT_1_4_1',
+                            },
+                            {
+                                agentName: 'Shadowrocket',
+                                href: '#',
+                                id: 'AGENT_1_4_2',
+                            },
+                        ],
+                        Android: [
+                            {
+                                agentName: 'SSR',
+                                href: '/ssr-download/ssr-android.apk',
+                                id: 'AGENT_1_5_1',
+                            },
+                            {
+                                agentName: 'SSRR',
+                                href: '/ssr-download/ssrr-android.apk',
+                                id: 'AGENT_1_5_2',
+                            },
+                        ],
+                        Router: [
+                            {
+                                agentName: 'FancySS',
+                                href: 'https://github.com/hq450/fancyss_history_package',
+                                id: 'AGENT_1_6_1',
+                            },
+                        ],
+                    },
+                },
+                {
+                    type: 'SS/SSD',
+                    agent: {
+                        Windows: [
+                            {
+                                agentName: 'SSD',
+                                href: '/ssr-download/ssd-win.7z',
+                                id: 'AGENT_2_1_1',
+                            },
+                        ],
+                        Macos: [
+                            {
+                                agentName: 'SSXG',
+                                href: '/ssr-download/ss-mac.zip',
+                                id: 'AGENT_2_2_1',
+                            },
+                        ],
+                        Linux: [
+                            {
+                                agentName: '/',
+                                href: '#',
+                                id: 'AGENT_2_3_1',
+                            },
+                        ],
+                        Ios: [
+                            {
+                                agentName: 'Potatso Lite',
+                                href: '#',
+                                id: 'AGENT_2_4_1',
+                            },
+                            {
+                                agentName: 'Shadowrocket',
+                                href: '#',
+                                id: 'AGENT_2_4_2',
+                            },
+                        ],
+                        Android: [
+                            {
+                                agentName: 'SSD',
+                                href: '/ssr-download/ssd-android.apk',
+                                id: 'AGENT_2_5_1',
+                            },
+                            {
+                                agentName: '混淆插件',
+                                href: '/ssr-download/ss-android-obfs.apk',
+                                id: 'AGENT_2_5_2',
+                            },
+                        ],
+                        Router: [
+                            {
+                                agentName: 'FancySS',
+                                href: 'https://github.com/hq450/fancyss_history_package',
+                                id: 'AGENT_2_6_1',
+                            },
+                        ],
+                    },
+                },
+                {
+                    type: 'V2RAY',
+                    agent: {
+                        Windows: [
+                            {
+                                agentName: 'V2RayN',
+                                href: '/ssr-download/v2rayn.zip',
+                                id: 'AGENT_3_1_1',
+                            },
+                        ],
+                        Macos: [
+                            {
+                                agentName: '/',
+                                href: '#',
+                                id: 'AGENT_3_2_1',
+                            },
+                        ],
+                        Linux: [
+                            {
+                                agentName: '/',
+                                href: '#',
+                                id: 'AGENT_3_3_1',
+                            },
+                        ],
+                        Ios: [
+                            {
+                                agentName: 'Shadowrocket',
+                                href: '#',
+                                id: 'AGENT_3_4_1',
+                            },
+                        ],
+                        Android: [
+                            {
+                                agentName: 'V2RayN',
+                                href: '/ssr-download/v2rayng.apk',
+                                id: 'AGENT_3_5_1',
+                            },
+                        ],
+                        Router: [
+                            {
+                                agentName: 'FancySS',
+                                href: 'https://github.com/hq450/fancyss_history_package',
+                                id: 'AGENT_3_6_1',
+                            },
+                        ],
+                    },
+                },
+            ],
+            currentDlType: 'SSR',
         }
     },
     methods: {
@@ -1132,8 +1733,9 @@ const Panel = {
             let callConfig = {
                 msg: '',
                 icon: '',
+                time: 1000,
             };
-            _get('/logout').then((r)=>{
+            _get('/logout','include').then((r)=>{
                 if (r.ret === 1) {
                     callConfig.msg += '账户成功登出Kira~';
                     callConfig.icon += 'fa-check-square-o';
@@ -1147,27 +1749,60 @@ const Panel = {
         },
         componentChange(e) {
             this.currentCardComponent = e.target.dataset.component;
-        }
+        },
+        changeAgentType(e) {
+            this.currentDlType = e.target.dataset.type;
+        },
+        showToolTip(id) {
+            this.toolTips[id] = true;
+        },
+        hideToolTip(id) {
+            this.toolTips[id] = false;
+        },
+        subLinkResetTrans() {
+            this.subLinkTrans = true;
+            setTimeout(() => {
+                this.subLinkTrans = false;
+            }, 300);
+        },
+        resetSubscribLink() {
+            _get('/getnewsubtoken','include').then((r)=>{
+                this.ssrSubToken = r.arr.ssr_sub_token;
+                this.hideToolTip('resetConfirm');
+                this.subLinkResetTrans();
+                let callConfig = {
+                    msg: '已重置您的订阅链接，请变更或添加您的订阅链接！',
+                    icon: 'fa-bell',
+                    time: 1500,
+                }
+                tmp.dispatch('CALL_MSGR',callConfig);
+            });
+        },
     },
     mounted() {
         let self = this;
-        this.userLoadState = 'loading';                        
-         _get('/user/getuserinfo').then((r) => {
+        this.userLoadState = 'loading';
+   
+         _get('/getuserinfo','include').then((r) => {
             if (r.ret === 1) {
                 console.log(r.info);
-                this.userCon = r.info.user;
+                tmp.commit('SET_USERCON',r.info.user);
+                console.log(this.userCon);
                 if (r.info.ann) {
                     this.ann = r.info.ann;
                 }
+                this.baseUrl = r.info.baseUrl;
+                this.subUrl = r.info.subUrl;
+                this.ssrSubToken = r.info.ssrSubToken;
+                this.mergeSub = r.info.mergeSub;
                 this.tipsLink[0].content = this.userCon.port;
                 this.tipsLink[1].content = this.userCon.passwd;
                 this.tipsLink[2].content = this.userCon.method;
                 this.tipsLink[3].content = this.userCon.protocol;
                 this.tipsLink[4].content = this.userCon.obfs;
                 this.tipsLink[5].content = this.userCon.obfs_param;
-                console.log(this.userCon);
             }
-        }).then(r=>{
+        }).then((r)=>{
             setTimeout(()=>{
                 self.userLoadState = 'loaded';
             },1000)
@@ -1260,7 +1895,7 @@ const Router = new VueRouter({
 
 Router.beforeEach((to,from,next)=>{
     if (!globalConfig) {
-        _get('/globalconfig').then((r)=>{
+        _get('/globalconfig','include').then((r)=>{
             if (r.ret == 1) {
                     globalConfig = r.globalConfig;
                     if (globalConfig.geetest_html && globalConfig.geetest_html.success) {
@@ -1299,7 +1934,7 @@ Vue.component('uim-messager',{
     delimiters: ['$[',']$'],
     template: /*html*/ `
     <div class="uim-messager">
-        <div><slot name="icon"></slot><slot name="msg"></slot></div>
+        <div><slot name="icon"></slot><slot name="msg"></slot><slot name="html"></slot></div>
     </div>
     `,
 })
@@ -1370,6 +2005,67 @@ Vue.component('uim-dropdown',{
             this.hide();
         })
     }
+})
+
+Vue.component('uim-modal',{
+    delimiters: ['$[',']$'],
+    mixins: [storeMap],
+    template:/*html*/ `
+    <div class="uim-modal">
+        <transition name="fade" mode="out-in">
+        <div v-show="bindMask" class="uim-modal-mask"></div>
+        </transition>
+        <transition name="slide-fade" mode="out-in">
+        <div v-show="bindCard" class="uim-modal-card">
+            <div @click="$emit('closeModal')" class="uim-modal-close"><span class="fa fa-close"></span></div>
+            <div class="uim-modal-title"><slot name="uim-modal-title"></slot></div>
+            <div class="uim-modal-body"><slot name="uim-modal-body"></slot></div>
+            <div class="uim-modal-footer">
+                <div><slot name="uim-modal-footer"></slot></div>
+                <div><button @click="$emit('callOrderChecker')" class="uim-modal-confirm">确认</button></div>
+            </div>
+        </div>
+        </transition>
+    </div>
+    `,
+    props: ['bindMask','bindCard'],
+})
+
+Vue.component('uim-switch',{
+    delimiters: ['$[',']$'],
+    model: {
+        prop: 'isBtnActive',
+        event: 'change',
+    },
+    props: ['isBtnActive'],
+    template:/*html*/ `
+    <span @click="btnSwitch" :class="{ 'uim-switch-body-active':switchStatus }" class="uim-switch-body">
+        <input :checked="isBtnActive" v-on:change="$emit('change',$event.target.checked)" type="checkbox">
+    </span>
+    `,
+    data: function() {
+        return {
+            switchStatus: this.isBtnActive,
+        }
+    },
+    methods: {
+        btnSwitch() {
+            if (this.switchStatus === false) {
+                this.switchStatus = true;
+            } else {
+                this.switchStatus = false;
+            }
+        },
+    },
+})
+
+Vue.component('uim-tooltip',{
+    delimiters: ['$[',']$'],
+    template:/*html*/ `
+    <div class="uim-tooltip">
+        <slot name="tooltip-inner"></slot>
+    </div>
+    `
 })
 
 const indexPage = new Vue({
