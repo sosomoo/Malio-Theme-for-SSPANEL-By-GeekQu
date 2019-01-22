@@ -25,6 +25,8 @@ use App\Utils\Geetest;
 
 use voku\helper\AntiXSS;
 
+use App\Utils\URL;
+
 class VueController extends BaseController {
 
     private $user;
@@ -160,6 +162,7 @@ class VueController extends BaseController {
             "paybacks" => $paybacks,
             "paybacks_sum" => $paybacks_sum,
             "invitePrice" => Config::get('invite_price'),
+            "customPrice" => Config::get('custom_invite_price'),
         );
 
         $res['ret'] = 1;
@@ -188,6 +191,40 @@ class VueController extends BaseController {
         );
         $res['ret'] = 1;
 
+        return $response->getBody()->write(json_encode($res));
+    }
+
+    public function getNewSubToken($request, $response, $args)
+    {
+        $user = $this->user;
+        $user->clean_link();
+        $ssr_sub_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
+
+        $res['arr'] = array(
+            'ssr_sub_token' => $ssr_sub_token,
+        );
+
+        $res['ret'] = 1;
+        
+        return $response->getBody()->write(json_encode($res));
+    }
+
+    public function getNewInviteCode($request, $response, $args)
+    {
+        $user = $this->user;
+        $user->clear_inviteCodes();
+        $code = InviteCode::where('user_id', $this->user->id)->first();
+        if ($code == null) {
+            $this->user->addInviteCode();
+			$code = InviteCode::where('user_id', $this->user->id)->first();
+        }
+
+        $res['arr'] = array(
+            "code" => $code,
+        );
+
+        $res['ret'] = 1;
+        
         return $response->getBody()->write(json_encode($res));
     }
 

@@ -376,6 +376,8 @@ $app->get('/getuserinfo', 'App\Controllers\VueController:getUserInfo');
 $app->get('/getuserinviteinfo', 'App\Controllers\VueController:getUserInviteInfo');
 $app->get('/getusershops', 'App\Controllers\VueController:getUserShops');
 $app->get('/getcredit', 'App\Controllers\VueController:getCredit');
+$app->get('/getnewsubtoken', 'App\Controllers\VueController:getNewSubToken');
+$app->get('/getnewinvotecode', 'App\Controllers\VueController:getNewInviteCode');
 
 /**
  * chenPay

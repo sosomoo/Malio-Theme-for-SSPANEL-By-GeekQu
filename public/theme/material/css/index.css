@@ -45,8 +45,16 @@ a {
     text-align: left;
 }
 
+.text-center {
+    text-align: center;
+}
+
 .text-right {
     text-align: right;
+}
+
+.text-red {
+    color: #D1335B;
 }
 
 .margin-nobottom {
@@ -226,7 +234,8 @@ button.btn-user.index-btn-active {
 input.checkbox,
 .buy-submit,
 .font-light,
-.list-shop {
+.list-shop,
+.user-config {
     transition: all .3s;
 }
 
@@ -263,21 +272,31 @@ input.checkbox,
     width: unset;
     margin: 0;
     font-size: 16px;
-    padding: .15rem .5rem;
+    padding: .05rem .5rem .2rem .5rem;
     width: 48%;
+    background: rgba(255, 255, 255, 0);
+    border: 1px solid #D1335B;
+}
+
+.buy-submit:hover,
+.buy-submit:focus {
+    background-color: #D1335B;
+    color: white;
 }
 
 .auth-submit:hover,
 .auth-submit:focus,
-.buy-submit:hover,
-.buy-submit:focus {
+    {
     background-color: #d6d6d6;
     border-color: #d6d6d6;
 }
 
-.buy-submit:disabled {
+.buy-submit:disabled,
+button.tips:disabled {
     color: #858585;
+    border-color: #858585;
     cursor: not-allowed;
+    background-color: transparent;
 }
 
 .auth,
@@ -523,6 +542,11 @@ select {
     border-color: #faad14;
 }
 
+.tips-gold-trans.tips-gold {
+    color: white;
+    background-color: #faad14;
+}
+
 .tips-green {
     color: #52c41a;
     border-color: #52c41a;
@@ -533,10 +557,24 @@ select {
     border-color: #13c2c2;
 }
 
+.tips-red {
+    color: #D1335B;
+    border-color: #D1335B;
+}
+
+.font-red-trans {
+    color: #D1335B;
+}
+
+button.tips {
+    background-color: transparent;
+}
+
 .tips-blue:hover,
 .tips-gold:hover,
 .tips-green:hover,
-.tips-cyan:hover {
+.tips-cyan:hover,
+.tips-red:hover {
     color: white;
 }
 
@@ -554,6 +592,10 @@ select {
 
 .tips-cyan:hover {
     background-color: #13c2c2;
+}
+
+.tips-red:hover {
+    background-color: #D1335B;
 }
 
 .ann {
@@ -608,16 +650,51 @@ select {
     font-size: 14px;
 }
 
+.invite-tools {
+    position: relative;
+    margin-left: .75rem;
+}
+
+.invite-tools .tips.tips-red {
+    position: relative;
+    top: 1px;
+}
+
+.invite-tools.tips-green {
+    padding: 3.5px .7rem;
+    bottom: 1px;
+    margin-left: .55rem;
+}
+
+.invite-link {
+    width: 100%;
+}
+
+.user-invite-title .uim-tooltip {
+    width: 100%;
+}
+
+.user-invite-title .uim-tooltip button {
+    border: 0;
+}
+
+.user-invite-title .tips {
+    position: relative;
+}
+
 .list-shop {
     padding: .5rem;
     font-size: 1.2rem;
     border: 1px solid #434857;
     margin-bottom: .7rem;
     width: 95%;
+    backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 .list-shop:hover {
-    transform: translateX(1rem);
+    transform: translate3D(1rem, 0, 0);
 }
 
 .coupon-checker {
@@ -657,6 +734,33 @@ button[name=reset] {
 
 .order-checker-content {
     margin: .5rem 0
+}
+
+.link-reset button {
+    background-color: rgba(255, 255, 255, 0);
+    outline: none;
+}
+
+.link-reset .uim-tooltip-top {
+    width: 100%;
+    background-color: white;
+    color: #434857;
+}
+
+.link-reset .uim-tooltip-top button {
+    border: 0;
+}
+
+.sublink {
+    font-size: 14px;
+    padding: 0 1rem;
+    word-break: break-all;
+}
+
+.sublink-reset.tips-blue,
+.invite-reset.tips-blue {
+    background-color: #1997c6;
+    color: white;
 }
 
 @media screen and (min-width:35.5em) {
@@ -726,6 +830,19 @@ button[name=reset] {
     .user-shop {
         max-height: 385px;
         overflow: auto;
+    }
+
+    .link-reset .uim-tooltip-top {
+        width: 230px;
+    }
+
+    .invite-link {
+        width: 450px;
+    }
+
+    .user-invite-title .tips {
+        margin-bottom: .5rem;
+        margin-left: .75rem;
     }
 }
 
@@ -816,6 +933,10 @@ button[name=reset] {
 
 .uim-messager span {
     margin-left: .6rem;
+}
+
+.uim-messager a {
+    color: #D1335B;
 }
 
 /* checkbox */
@@ -1009,7 +1130,7 @@ button.uim-modal-confirm {
 
 /* switch */
 
-.uim-switch-body { 
+.uim-switch-body {
     background-color: #ccc;
     border-radius: 25px;
     cursor: pointer;
@@ -1054,6 +1175,34 @@ button.uim-modal-confirm {
 
 .switch-text {
     font-size: 14px;
+}
+
+/* tooltip */
+
+.uim-tooltip {
+    position: absolute;
+    z-index: 2;
+    box-shadow: 0 0 5px 1px gray;
+    border-radius: 4px;
+    background: white;
+    color: #434857;
+}
+
+.uim-tooltip-top {
+    bottom: 125%;
+    padding: .3rem;
+}
+
+.uim-tooltip.uim-tooltip-top:after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    bottom: -7px;
+    width: 15px;
+    height: 15px;
+    background-color: white;
+    transform: rotateZ(45deg);
+    z-index: -1;
 }
 
 /* loading 动画 */
