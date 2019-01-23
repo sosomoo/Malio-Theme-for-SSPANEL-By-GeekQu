@@ -62,6 +62,7 @@
 </style>
 
 <body>
+    {*<script src="/assets/js/fuck.js"></script>*}
     <div id="index" >
         <transition name="loading-fade" mode="out-in">
             <div class="loading flex align-center" v-if="isLoading === 'loading'" key="loading">
@@ -217,6 +218,62 @@ let globalConfig;
 const UserTmp = {
     state: {
         userCon: '',
+        userSettings: {
+            pages: [
+                {
+                    id: 'user-resourse',
+                },
+                {
+                    id: 'user-settings',
+                },
+            ],
+            currentPage: 'user-resourse',
+            currentPageIndex: 0,
+            resourse: [
+                {
+                    name: '等级有效期',
+                    content: '',
+                },
+                {
+                    name: '账号有效期',
+                    content: '',
+                },
+                {
+                    name: '在线设备数',
+                    content: '',
+                },
+                {
+                    name: '端口速率',
+                    content: '',
+                },
+            ],
+            tipsLink: [
+                {
+                    name: '端口',
+                    content: '',
+                },
+                {
+                    name: '密码',
+                    content: '',
+                },
+                {
+                    name: '加密',
+                    content: '',
+                },
+                {
+                    name: '协议',
+                    content: '',
+                },
+                {
+                    name: '混淆',
+                    content: '',
+                },
+                {
+                    name: '混淆参数',
+                    content: '',
+                },
+            ],
+        },
     },
     mutations: {
         SET_USERCON (state,config) {
@@ -228,6 +285,21 @@ const UserTmp = {
         SET_INVITE_NUM (state,number) {
             state.userCon.invite_num = number;
         },
+        SET_USERSETTINGS (state,config) {
+            state.userSettings.resourse[0].content = config.class_expire;
+            state.userSettings.resourse[1].content = config.expire_in;
+            state.userSettings.resourse[2].content = config.online_ip_count;
+            state.userSettings.resourse[3].content = config.node_speedlimit;
+            state.userSettings.tipsLink[0].content = config.port;
+            state.userSettings.tipsLink[1].content = config.passwd;
+            state.userSettings.tipsLink[2].content = config.method;
+            state.userSettings.tipsLink[3].content = config.protocol;
+            state.userSettings.tipsLink[4].content = config.obfs;
+            state.userSettings.tipsLink[5].content = config.obfs_param;
+        },
+        SET_RESOURSE (state,config) {
+            state.userSettings.resourse[config.index].content = config.content;
+        }
     },
     actions: {
 
@@ -358,8 +430,24 @@ const tmp = new Vuex.Store({
     }
 });
 
+var mutationMap = {
+    methods: Vuex.mapMutations({
+        setGlobalConfig: 'SET_GLOBALCONFIG',
+        setHitokoto: 'SET_HITOKOTO',
+        setJinRiShiCi: 'SET_JINRISHICI',
+        setLoadState: 'SET_LOADSTATE',
+        setLoginToken: 'SET_LOGINTOKEN',
+        setUserMoney: 'SET_USERMONEY',
+        setInviteNum: 'SET_INVITE_NUM',
+        setReasourse: 'SET_RESOURSE',
+        setUserCon: 'SET_USERCON',
+        setUserSettings: 'SET_USERSETTINGS',
+    }),
+}
+
 var storeMap = {
     store: tmp,
+    mixins: [mutationMap],
     computed: Vuex.mapState({
         msgrCon: 'msgrCon',
         modalCon: 'modalCon',
@@ -367,7 +455,13 @@ var storeMap = {
         logintoken: 'logintoken',
         isLoading: 'isLoading',
         userCon: state => state.userState.userCon,
+        userSettings: state => state.userState.userSettings,
     }),
+    methods: Vuex.mapActions({
+        callMsgr: 'CALL_MSGR',
+        callModal: 'CALL_MODAL',
+    }),
+    
 }
 
 var storeAuth = {
@@ -620,15 +714,15 @@ const Login = {
                 if (r.ret === 1) {
                     callConfig.msg += '登录成功Kira~';
                     callConfig.icon += 'fa-check-square-o';
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                     window.setTimeout(() => {
-                        tmp.commit('SET_LOGINTOKEN',1);
+                        this.setLoginToken(1);
                         this.$router.replace('/user/panel');
                     }, this.globalConfig.jumpDelay);
                 } else {
                     callConfig.msg += '登录失败Boommm';
                     callConfig.icon += 'fa-times-circle-o';
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                     window.setTimeout(()=>{
                         this.isDisabled = false;
                     }, 3000)
@@ -676,9 +770,9 @@ const Login = {
                         if (r.ret) {
                             callConfig.msg += '登录成功Kira~';
                             callConfig.icon += 'fa-check-square-o';
-                            tmp.dispatch('CALL_MSGR',callConfig);
+                            this.callMsgr(callConfig);
                             window.setTimeout(()=>{
-                                tmp.commit('SET_LOGINTOKEN',1);
+                                this.setLoginToken(1);
                                 this.$router.replace('/user/panel');
                             }, this.globalConfig.jumpDelay);
                         }
@@ -849,14 +943,14 @@ const Register = {
                 if (r.ret == 1) {
                     callConfig.msg += '注册成功meow~';
                     callConfig.icon += 'fa-check-square-o';
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                     window.setTimeout(()=>{
                         this.$router.replace('/auth/login');
                     }, this.globalConfig.jumpDelay);
                 } else {
                     callConfig.msg += 'WTF……注册失败';
                     callConfig.icon += 'fa-times-circle-o';
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                     window.setTimeout(()=>{
                         this.isDisabled = false;
                     },3000)
@@ -926,14 +1020,14 @@ const Register = {
                             icon: 'fa-check-square-o',
                             time: 1000,
                         };
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                 } else {
                     let callConfig = {
                             msg: 'emm……邮件发送失败',
                             icon: 'fa-times-circle-o',
                             time: 1000,
                         };
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                 }
             });
         },
@@ -1022,14 +1116,14 @@ const Reset = {
                 if (r.ret == 1) {
                     callConfig.msg += '邮件发送成功kira~';
                     callConfig.icon += 'fa-check-square-o';
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                     window.setTimeout(() => {
                         this.$router.push('/auth/login');
                     }, this.globalConfig.jumpDelay);
                 } else {
                     callConfig.msg += 'WTF……邮件发送失败，请检查邮箱地址';
                     callConfig.icon += 'fa-times-circle-o';
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                     window.setTimeout(()=>{
                         this.isDisabled = false;
                     }, 3000)
@@ -1060,7 +1154,7 @@ const userMixin = {
             });
         },
         updateCredit(credit) {
-            tmp.commit('SET_USERMONEY',credit);
+            this.setUserMoney(credit);
         },
     }
 }
@@ -1091,7 +1185,6 @@ const UserInvite = {
                     <button @click="hideToolInput" class="btn-forinput" name="reset"><span class="fa fa-refresh"></span></button>                       
                 </label>
                 </transition>
-                <transition name="fade" mode="out-in">
                 <uim-tooltip v-show="showOrderCheck" class="uim-tooltip-top flex justify-center">
                     <div slot="tooltip-inner">
                         <span v-if="toolInputType === 'buy'"><div>确认购买 <span class="text-red">$[toolInputContent]$</span> 个吗？总价为 <span class="text-red">￥$[totalPrice]$</span></div></span>
@@ -1102,7 +1195,6 @@ const UserInvite = {
                         </div>
                     </div>
                 </uim-tooltip>
-                </transition>
             </div>
             <transition name="fade" mode="out-in">
             <div v-show="showToolInput">
@@ -1123,7 +1215,7 @@ const UserInvite = {
                         <input type="input" :class="{ 'invite-reset':inviteLinkTrans }" class="invite-link tips tips-blue" :value="inviteLink" disabled>
                         <span class="invite-tools link-reset relative flex justify-center text-center">
                             <button @click="showInviteReset" class="tips tips-red"><span class="fa fa-refresh"> 重置</button>
-                            <transition name="fade" mode="out-in">
+                            
                             <uim-tooltip v-show="inviteResetConfirm" class="uim-tooltip-top flex justify-center">
                                 <div slot="tooltip-inner">
                                     <span>确定要重置邀请链接？</span>
@@ -1133,7 +1225,7 @@ const UserInvite = {
                                     </div>
                                 </div>
                             </uim-tooltip>
-                            </transition>
+                           
                         </span>
                         <span v-if="customPrice >= 0" class="invite-tools relative flex justify-center text-center">
                             <button @click="showCustomToolInput" :disabled="isToolDisabled" class="tips tips-cyan"><span class="fa fa-pencil"> 定制</button>
@@ -1217,10 +1309,13 @@ const UserInvite = {
                     icon: 'fa-bell',
                     time: 1500,
                 }
-                tmp.dispatch('CALL_MSGR',callConfig);
+                this.callMsgr(callConfig);
             });
         },
-        hideToolInput() {
+        hideToolInput(token) {
+            if (token !== 1 || !token) {
+                this.code = this.oldCode;
+            }
             this.showToolInput = false;
             this.isToolDisabled = false;
             this.hideOrderCheck();
@@ -1240,6 +1335,8 @@ const UserInvite = {
             }
         },
         showBuyToolInput() {
+            this.destoryWatch();
+            this.code = this.oldCode;
             this.showToolInput = true;
             this.isToolDisabled = true;
             this.placeholder = '输入购买数量';
@@ -1252,7 +1349,6 @@ const UserInvite = {
             this.toolInputType = 'custom';
             let unwatchCustom = this.$watch('toolInputContent',function(newVal, oldVal) {
                 this.code = newVal;
-                this.oldCode = oldVal;
             });
             this.theUnWatch = unwatchCustom;
         },
@@ -1266,7 +1362,7 @@ const UserInvite = {
                     icon: 'fa-times-circle-o',
                     time: 1500,
                 }
-                tmp.dispatch('CALL_MSGR',callConfig); 
+                this.callMsgr(callConfig);
             } else {
                 this.showOrderCheck = true;
             }
@@ -1278,7 +1374,7 @@ const UserInvite = {
                     icon: 'fa-times-circle-o',
                     time: 1500,
                 }
-                tmp.dispatch('CALL_MSGR',callConfig);
+                this.callMsgr(callConfig);
             } else {
                 this.showOrderCheck = true;
             }
@@ -1302,25 +1398,25 @@ const UserInvite = {
                 if(r.ret) {
                     this.resetCredit();
                     this.showInviteTimeTrans();
-                    tmp.commit('SET_INVITE_NUM',r.invite_num);
+                    this.setInviteNum(r.invite_num);
                     let callConfig = {
                         msg: r.msg,
                         icon: 'fa-check-square-o',
                         time: 1000,
                     };
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                 } else {
                     let callConfig = {
                         msg: r.msg,
                         icon: 'fa-times-circle-o',
                         time: 1000,
                     };
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                 }
             });
         },
         customInvite() {
-            this.hideToolInput();
+            this.hideToolInput(1);
             let ajaxBody = {
                 customcode: this.toolInputContent,
             };
@@ -1329,36 +1425,38 @@ const UserInvite = {
                     console.log(r);
                     this.resetCredit();
                     this.showLinkTrans();
-                    this.code = this.toolInputContent;
+                    this.code = this.oldCode = this.toolInputContent;
                     let callConfig = {
                         msg: r.msg,
                         icon: 'fa-check-square-o',
                         time: 1000,
                     };
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                 } else {
+                    this.showLinkTrans();
+                    this.code = this.oldCode;
                     let callConfig = {
                         msg: r.msg,
                         icon: 'fa-times-circle-o',
                         time: 1000,
                     };
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                 }
             });
         },
     },
-    watch: {
-        toolInputType: 'destoryWatch',
-    },
     mounted() {
         _get('getuserinviteinfo','include').then((r)=>{
             console.log(r);
-            this.code = r.inviteInfo.code.code;
+            this.code = this.oldCode = r.inviteInfo.code.code;
             this.invitePrice = r.inviteInfo.invitePrice;
             this.customPrice = r.inviteInfo.customPrice;
             console.log(this.userCon);
         });
-    }
+    },
+    beforeDestroy() {
+        this.hideToolInput();
+    },
 };
 
 const UserShop = {
@@ -1435,7 +1533,7 @@ const UserShop = {
                 icon: 'fa-bell',
                 time: 1500,
             };
-            tmp.dispatch('CALL_MSGR',callConfig);
+            this.callMsgr(callConfig);
             let id = (shop.id).toString();
             Vue.set(this.ajaxBody,'shop',id);
             Vue.set(this.ajaxBody,'autorenew',shop.autoRenew);
@@ -1472,7 +1570,7 @@ const UserShop = {
                         icon: 'fa-times-circle-o',
                         time: 1000,
                     };
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                 }
             });
         },
@@ -1506,7 +1604,7 @@ const UserShop = {
                         time: 6000,
                     };
                     animation.then((r)=>{
-                        tmp.dispatch('CALL_MSGR',callConfig);                        
+                        this.callMsgr(callConfig);
                     })
                 }
             });
@@ -1537,7 +1635,108 @@ const UserGuide = {
         </div>
     </div>
     `,
+};
+
+const userSetMixin = {
+    methods: {
+        wheelChange(e) {
+            this.$emit('turnPageByWheel',e.deltaY);
+        },
+    },
 }
+
+const UserResourse = {
+    mixins: [userMixin,storeMap,userSetMixin],
+    template: /*html*/ `
+    <div @mousewheel="wheelChange" class="user-resourse">
+        <div class="card-title">可用资源</div>
+        <div class="card-body">
+            <div class="pure-g wrap">
+                <div v-for="tip in calcResourse" class="pure-u-1-3 pure-u-lg-4-24" :key="tip.name">
+                    <p class="tips tips-blue">$[tip.name]$</p>
+                    <p class="font-light">$[tip.content]$</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    `,
+    computed: {
+        calcResourse: function() {
+            let resourse = this.userSettings.resourse;
+            for (let i=0;i<resourse.length;i++) {
+                switch (resourse[i].name) {
+                    case '在线设备数':
+                        if (this.userCon.node_connector!==0) {
+                            this.setReasourse({ index:i,content:resourse[i].content + ' / ' + this.userCon.node_connector });
+                        } else {
+                            this.setReasourse({ index:i,content:resourse[i].content + ' / 无限制' });
+                        }
+                        break;
+                    case '端口速率':
+                        if (resourse[i].content!==0) {
+                            this.setReasourse({ index:i,content:resourse[i].content + ' Mbps' });
+                        } else {
+                            this.setReasourse({ index:i,content:'无限制' });
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return resourse;
+        },
+    },
+    methods: {
+        DateParse(str_date) {
+            let str_date_splited = str_date.split(/[^0-9]/);
+            return new Date (str_date_splited[0], str_date_splited[1] - 1, str_date_splited[2], str_date_splited[3], str_date_splited[4], str_date_splited[5]);
+        },
+        calcExpireDays(classExpire,userExpireIn) {
+            let levelExpire = this.DateParse(classExpire);
+            let accountExpire = this.DateParse(userExpireIn);
+            let nowDate = new Date();
+            let a = nowDate.getTime();
+            let b = levelExpire - a;
+            let c = accountExpire - a;
+            let levelExpireDays = Math.floor(b/(24*3600*1000));
+            let accountExpireDays = Math.floor(c/(24*3600*1000));
+            if (levelExpireDays < 0 || levelExpireDays > 315360000000) {
+                this.setReasourse({ index:0,content:'无限期' });
+            } else {
+                this.setReasourse({ index:0,content:levelExpireDays });
+            }
+            if (accountExpireDays < 0 || accountExpireDays > 315360000000) {
+                this.setReasourse({ index:1,content:'无限期' });
+            } else {
+                this.setReasourse({ index:1,content:accountExpireDays });
+            }
+        },
+    },
+    created() {
+    
+    },
+    mounted() {
+        let resourse = this.userSettings.resourse;
+        this.calcExpireDays(resourse[0].content,resourse[1].content);
+    }
+};
+
+const UserSettings = {
+    mixins: [userMixin,storeMap,userSetMixin],
+    template: /*html*/ `
+    <div @mousewheel="wheelChange" class="user-settings">
+        <div class="card-title">连接信息</div>
+        <div class="card-body">
+            <div class="pure-g wrap">
+                <div v-for="tip in userSettings.tipsLink" class="pure-u-1-3 pure-u-lg-4-24" :key="tip.name">
+                    <p class="tips tips-blue">$[tip.name]$</p>
+                    <p class="font-light">$[tip.content]$</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    `,
+};
 
 const Panel = {
     delimiters: ['$[',']$'],
@@ -1547,6 +1746,8 @@ const Panel = {
         'user-invite': UserInvite,
         'user-shop': UserShop,
         'user-guide': UserGuide,
+        'user-resourse': UserResourse,
+        'user-settings': UserSettings
     },
     template: /*html*/ `
     <div class="page-user pure-u-1">
@@ -1564,7 +1765,9 @@ const Panel = {
             <div class="usrcenter text-left pure-g space-between" v-else-if="userLoadState === 'loaded'">
                 <div class="pure-u-1 pure-u-sm-6-24">
                     <div class="card account-base">
-                        <div class="card-title">账户明细</div>
+                        <div class="flex space-between">
+                            <div class="card-title">账号明细</div>
+                        </div>
                         <div class="card-body">
                             <div class="pure-g">
                                 <div class="pure-u-1-2">
@@ -1620,7 +1823,6 @@ const Panel = {
                                     <span>订阅链接</span>
                                     <span class="link-reset relative flex justify-center text-center">
                                         <button @click="showToolTip('resetConfirm')" class="tips tips-red"><span class="fa fa-refresh"> 重置链接</button>
-                                        <transition name="fade" mode="out-in">
                                         <uim-tooltip v-show="toolTips.resetConfirm" class="uim-tooltip-top flex justify-center">
                                             <div slot="tooltip-inner">
                                                 <span>确定要重置订阅链接？</span>
@@ -1630,7 +1832,6 @@ const Panel = {
                                                 </div>
                                             </div>
                                         </uim-tooltip>
-                                        </transition>
                                     </span>
                                 </h5>
                                 <transition name="rotate-fade" mode="out-in">
@@ -1639,48 +1840,40 @@ const Panel = {
                                         <span class="pure-u-6-24">普通端口:</span>
                                         <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
                                             <input @mouseenter="showToolTip('mu0')" @mouseleave="hideToolTip('mu0')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu0" readonly>
-                                            <transition name="fade" mode="out-in">
                                             <uim-tooltip v-show="toolTips.mu0" class="uim-tooltip-top flex justify-center">
                                                 <div class="sublink" slot="tooltip-inner">
                                                     <span>$[suburlMu0]$</span>
                                                 </div>
                                             </uim-tooltip>
-                                            </transition>
                                         </span>
                                     </div>
                                     <div v-if="mergeSub !== 'true'" class="pure-g align-center relative">
                                         <span class="pure-u-6-24">单端口:</span>
                                         <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
                                             <input @mouseenter="showToolTip('mu1')" @mouseleave="hideToolTip('mu1')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu1" readonly>
-                                            <transition name="fade" mode="out-in">
                                             <uim-tooltip v-show="toolTips.mu1" class="uim-tooltip-top flex justify-center">
                                                 <div class="sublink" slot="tooltip-inner">
                                                     <span>$[suburlMu1]$</span>
                                                 </div>
                                             </uim-tooltip>
-                                            </transition> 
                                         </span>                                                      
                                     </div>
                                 </div>
                                 <div class="pure-g input-copy relative flex justify-center text-center" v-else-if="currentDlType === 'V2RAY'" key="sssub">
                                     <input @mouseenter="showToolTip('mu2')" @mouseleave="hideToolTip('mu2')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu2" readonly>
-                                    <transition name="fade" mode="out-in">
-                                        <uim-tooltip v-show="toolTips.mu2" class="pure-u-1 uim-tooltip-top flex justify-center">
+                                    <uim-tooltip v-show="toolTips.mu2" class="pure-u-1 uim-tooltip-top flex justify-center">
                                         <div class="sublink" slot="tooltip-inner">
                                             <span>$[suburlMu2]$</span>
                                         </div>
                                     </uim-tooltip>
-                                    </transition>
                                 </div>
                                 <div class="pure-g input-copy relative flex justify-center text-center" v-else-if="currentDlType === 'SS/SSD'" key="v2sub">
                                     <input @mouseenter="showToolTip('mu3')" @mouseleave="hideToolTip('mu3')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu3" readonly>
-                                    <transition name="fade" mode="out-in">
                                     <uim-tooltip v-show="toolTips.mu3" class="pure-u-1 uim-tooltip-top flex justify-center">
                                         <div class="sublink" slot="tooltip-inner">
                                             <span>$[suburlMu3]$</span>
                                         </div>
                                     </uim-tooltip>
-                                    </transition>
                                 </div>
                                 </transition>
                             </div>
@@ -1688,16 +1881,17 @@ const Panel = {
                     </div>
                 </div>
                 <div class="pure-u-1 pure-u-sm-17-24">
-                    <div class="card">
-                        <div class="card-title">连接信息</div>
-                        <div class="card-body">
-                            <div class="pure-g">
-                                <div v-for="tip in tipsLink" class="pure-u-lg-4-24" :key="tip.name">
-                                    <p class="tips tips-blue">$[tip.name]$</p>
-                                    <p class="font-light">$[tip.content]$</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="card relative">
+                        <uim-anchor>
+                            <ul slot="uim-anchor-inner">
+                                <li v-for="(page,index) in userSettings.pages" @click="changeUserSetPage(index)" :class="{ 'uim-anchor-active':userSettings.currentPage === page.id }" :data-page="page.id" :key="page.id"></li>
+                            </ul>
+                        </uim-anchor>
+                        <transition name="fade" mode="out-in">
+                        <keep-alive>
+                        <component v-on:turnPageByWheel="scrollPage" :is="userSettings.currentPage" :initialSet="userSettings" class="card margin-nobottom"></component>
+                        </keep-alive>
+                        </transition>
                     </div>
                     <div class="user-btngroup pure-g">
                         <div class="pure-u-16-24">
@@ -1715,7 +1909,7 @@ const Panel = {
                     </div>
                     <transition name="fade" mode="out-in">
                     <component :is="currentCardComponent" :baseURL="baseUrl" :annC="ann" class="card margin-nobottom">
-                        <button @click="componentChange" class="btn-inline" :data-component="menuOptions[3].id" slot="inviteToShop">成为VIP请点击这里</button>
+                        <button @click="componentChange" class="btn-inline text-red" :data-component="menuOptions[3].id" slot="inviteToShop">成为VIP请点击这里</button>
                     </component>
                     </transition>
                 </div>
@@ -1763,32 +1957,6 @@ const Panel = {
             },
             subLinkTrans: false,
             userCreditTrans: false,
-            tipsLink: [
-                {
-                    name: '端口',
-                    content: '',
-                },
-                {
-                    name: '密码',
-                    content: '',
-                },
-                {
-                    name: '加密',
-                    content: '',
-                },
-                {
-                    name: '协议',
-                    content: '',
-                },
-                {
-                    name: '混淆',
-                    content: '',
-                },
-                {
-                    name: '混淆参数',
-                    content: '',
-                },
-            ],
             menuOptions: [
                 {
                     name: '公告栏',
@@ -1993,19 +2161,39 @@ const Panel = {
                 if (r.ret === 1) {
                     callConfig.msg += '账户成功登出Kira~';
                     callConfig.icon += 'fa-check-square-o';
-                    tmp.dispatch('CALL_MSGR',callConfig);
+                    this.callMsgr(callConfig);
                     window.setTimeout(() => {
-                        tmp.commit('SET_LOGINTOKEN',0);
+                        this.setLoginToken(0);
                         this.$router.replace('/');
                     }, this.globalConfig.jumpDelay);
                 }
             });
+        },
+        indexPlus(index,arrlength) {
+            if (index === arrlength - 1) {
+                this.userSettings.currentPageIndex = index;
+            } else {
+                this.userSettings.currentPageIndex += 1;
+            }
+            return this.userSettings.currentPageIndex;
+        },
+        indexMinus(index) {
+            if (index === 0) {
+                this.userSettings.currentPageIndex = index;
+            } else {
+                this.userSettings.currentPageIndex -= 1;
+            }
+            return this.userSettings.currentPageIndex;
         },
         componentChange(e) {
             this.currentCardComponent = e.target.dataset.component;
         },
         changeAgentType(e) {
             this.currentDlType = e.target.dataset.type;
+        },
+        changeUserSetPage(index) {
+            this.userSettings.currentPage = this.userSettings.pages[index].id;
+            this.userSettings.currentPageIndex = index;
         },
         showToolTip(id) {
             this.toolTips[id] = true;
@@ -2029,7 +2217,7 @@ const Panel = {
                     icon: 'fa-bell',
                     time: 1500,
                 }
-                tmp.dispatch('CALL_MSGR',callConfig);
+                this.callMsgr(callConfig);
             });
         },
         showCreditTrans() {
@@ -2037,6 +2225,15 @@ const Panel = {
             setTimeout(() => {
                 this.userCreditTrans = false;
             }, 300);
+        },
+        scrollPage(token) {
+            if (token > 0) {
+                let index = this.indexPlus(this.userSettings.currentPageIndex,this.userSettings.pages.length);
+                this.changeUserSetPage(index);
+            } else {
+                let index = this.indexMinus(this.userSettings.currentPageIndex);
+                this.changeUserSetPage(index);
+            }
         },
     },
     mounted() {
@@ -2046,7 +2243,8 @@ const Panel = {
          _get('/getuserinfo','include').then((r) => {
             if (r.ret === 1) {
                 console.log(r.info);
-                tmp.commit('SET_USERCON',r.info.user);
+                this.setUserCon(r.info.user);
+                this.setUserSettings(this.userCon);
                 console.log(this.userCon);
                 if (r.info.ann) {
                     this.ann = r.info.ann;
@@ -2055,12 +2253,6 @@ const Panel = {
                 this.subUrl = r.info.subUrl;
                 this.ssrSubToken = r.info.ssrSubToken;
                 this.mergeSub = r.info.mergeSub;
-                this.tipsLink[0].content = this.userCon.port;
-                this.tipsLink[1].content = this.userCon.passwd;
-                this.tipsLink[2].content = this.userCon.method;
-                this.tipsLink[3].content = this.userCon.protocol;
-                this.tipsLink[4].content = this.userCon.obfs;
-                this.tipsLink[5].content = this.userCon.obfs_param;
             }
         }).then((r)=>{
             setTimeout(()=>{
@@ -2322,8 +2514,19 @@ Vue.component('uim-switch',{
 Vue.component('uim-tooltip',{
     delimiters: ['$[',']$'],
     template:/*html*/ `
+    <transition name="fade" mode="out-in">
     <div class="uim-tooltip">
         <slot name="tooltip-inner"></slot>
+    </div>
+    </transition>
+    `
+})
+
+Vue.component('uim-anchor',{
+    delimiters: ['$[',']$'],
+    template:/*html*/ `
+    <div class="uim-anchor">
+        <slot class="uim-anchor-inner" name="uim-anchor-inner"></slot>
     </div>
     `
 })
@@ -2366,16 +2569,16 @@ const indexPage = new Vue({
         fetch('https://api.lwl12.com/hitokoto/v1').then((r)=>{
             return r.text();
         }).then((r)=>{
-            tmp.commit('SET_HITOKOTO',r);            
+            this.setHitokoto(r);            
         })
         _get('https://v2.jinrishici.com/one.json','include').then((r) => {
-            tmp.commit('SET_JINRISHICI',r.data.content);
+            this.setJinRiShiCi(r.data.content);
         })
     },
     mounted() {
         this.routeJudge();
         setTimeout(()=>{
-            tmp.commit('SET_LOADSTATE');
+            this.setLoadState();
         },1000);
     },
     
