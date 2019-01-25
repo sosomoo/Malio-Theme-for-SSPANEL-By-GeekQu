@@ -92,7 +92,7 @@ class XCat
 			    return Update::update($this);
             case ("sendDailyUsageByTG"):
                 return $this->sendDailyUsageByTG();
-            case ("test"):
+            case ("iptest"):
                 return $this->iptest();
 			default:
                 return $this->defaultAction();
