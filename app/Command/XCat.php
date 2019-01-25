@@ -295,7 +295,10 @@ class XCat
     public function iptest()
     {
         $nodes = Node::all();
+
         foreach ($nodes as $node)  {
+            $ip ="";
+            $server="";
             if ($node->sort == 11) {
                 $server_list = explode(";", $node->server);
                 $server = $server_list[0];
@@ -308,7 +311,10 @@ class XCat
                     $ip = gethostbyname($server);
                 }
             }
-            echo "Server: ".$server." ip address: ".$ip."\n";
+            if ($server!="" and $ip !=""){
+
+                echo "Server: ".$server." ip address: ".$ip."\n";
+            }
         }
     }
 }
