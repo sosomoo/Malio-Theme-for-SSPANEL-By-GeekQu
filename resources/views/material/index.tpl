@@ -436,6 +436,42 @@ const tmp = new Vuex.Store({
     }
 });
 
+Vue.directive('uimclip',{
+    inserted: function(el, binding) {
+        el.addEventListener('click',(e)=>{
+            let copy = new Promise((resolve,reject)=>{
+                let input = document.createElement('input');
+                let body = document.getElementsByTagName('body')[0];
+                let value = el.dataset.uimclip;
+                input.setAttribute('type','text');
+                input.setAttribute('value',value);
+                body.appendChild(input);
+                input.focus();
+                input.setSelectionRange(0, value.length);
+                document.execCommand('copy',true);
+                resolve(input);
+            })
+            copy.then((r)=>{
+                r.remove();
+                binding.value.onSuccess();
+            })
+        })
+    },
+})
+
+var methodsMixin = {
+    methods: {
+        successCopied() {
+            let callConfig = {
+                msg: '复制成功！,已将链接复制到剪贴板',
+                icon: 'fa-check-square-o',
+                time: '1500',
+            }
+            this.callMsgr(callConfig);
+        },
+    }
+}
+
 var mutationMap = {
     methods: Vuex.mapMutations({
         setGlobalConfig: 'SET_GLOBALCONFIG',
@@ -455,7 +491,7 @@ var mutationMap = {
 
 var storeMap = {
     store: tmp,
-    mixins: [mutationMap],
+    mixins: [mutationMap,methodsMixin],
     computed: Vuex.mapState({
         msgrCon: 'msgrCon',
         modalCon: 'modalCon',
@@ -1220,7 +1256,7 @@ const UserInvite = {
             <div class="user-invite">
                 <div v-if="userCon.class !== 0">
                     <div class="flex align-center wrap">
-                        <input type="input" :class="{ 'invite-reset':inviteLinkTrans }" class="invite-link tips tips-blue" :value="inviteLink" disabled>
+                        <input type="text" v-uimclip="{ onSuccess:successCopied }" :data-uimclip="inviteLink" :class="{ 'invite-reset':inviteLinkTrans }" class="invite-link tips tips-blue" :value="inviteLink" readonly>
                         <span class="invite-tools link-reset relative flex justify-center text-center">
                             <button @click="showInviteReset" class="tips tips-red"><span class="fa fa-refresh"> 重置</button>
                             
@@ -1678,16 +1714,29 @@ const UserResourse = {
     mixins: [userMixin,storeMap,userSetMixin],
     template: /*html*/ `
     <div @mousewheel="wheelChange" class="user-resourse">
-        <div class="card-title">可用资源</div>
+        <div class="flex align-baseline">
+            <div class="card-title">可用资源</div>
+            <span><button @click="dataRefresh" class="tips tips-green"><span class="fa fa-refresh"></span>刷新</button></span>
+        </div>
         <div class="card-body">
             <div class="pure-g wrap">
                 <div v-for="tip in calcResourse" class="pure-u-1-2 pure-u-lg-4-24" :key="tip.name">
-                    <p class="tips tips-blue">$[tip.name]$</p>
-                    <p class="font-light" :class="{ 'font-gold-trans':resourseTrans }"> <span class="user-config"></span> $[tip.content]$</p>
+                    <p class="tips tips-blue"> $[tip.name]$</p>
+                    <p class="font-light user-config" :class="{ 'font-gold-trans':resourseTrans,'font-green-trans':isDataRefreshed }"> <span class="user-config"></span> $[tip.content]$</p>
                 </div>
                 <div class="pure-u-1 pure-u-lg-8-24">
+                    <uim-progressbar class="uim-progressbar-sub">
+                        <span slot="uim-progressbar-label">已用流量/今日已用</span>
+                        <div slot="progress" class="uim-progressbar-gold uim-progressbar-progress" :style="{ width:transferObj.usedtotal + '%' }"></div>
+                        <div slot="progress-fold" class="uim-progressbar-red uim-progressbar-progress uim-progressbar-fold" :style="{ width:transferObj.usedtoday + '%' }"></div>
+                        <span class="user-config" :class="{ 'font-green-trans':isDataRefreshed }" slot="progress-text">$[userCon.lastUsedTraffic + '/' + userCon.todayUsedTraffic]$</span>
+                        <span slot="progress-sign" class="user-config" :class="{ 'font-green-trans':isDataRefreshed }">$[transferObj.usedtoday.toFixed(1) + '%']$</span>
+                    </uim-progressbar>
                     <uim-progressbar>
+                        <span slot="uim-progressbar-label">可用流量</span>
                         <div slot="progress" class="uim-progressbar-blue uim-progressbar-progress" :style="{ width:transferObj.remain + '%' }"></div>
+                        <span :class="{ 'font-green-trans':isDataRefreshed }" slot="progress-text">$[userCon.unUsedTraffic]$</span>
+                        <span slot="progress-sign" class="user-config" :class="{ 'font-green-trans':isDataRefreshed }">$[transferObj.remain.toFixed(1) + '%']$</span>
                     </uim-progressbar>
                 </div>
             </div>
@@ -1726,11 +1775,16 @@ const UserResourse = {
             let lastdayTransfer = this.userCon.last_day_t;
             let obj = {
                 remain: enable === 0 ? 0 : (enable - upload - download)/enable*100,
-                usedtoday: enable === 0 ? 0 : (upload + download - lastdayTransfer)/enable*100,
+                usedtoday: enable === 0 ? 0 : (upload + download)/enable*100,
                 usedtotal: enable === 0 ? 0 : lastdayTransfer/enable*100,
             };
             return obj;
         },
+    },
+    data: function() {
+        return {
+            isDataRefreshed: false,
+        }
     },
     methods: {
         DateParse(str_date) {
@@ -1761,14 +1815,28 @@ const UserResourse = {
                 this.setReasourse({ index:1,content:this.userCon.accountExpireDays + ' 天' });
             }
         },
+        dataRefresh() {
+            _get('/gettransfer','include').then((r)=>{
+                this.addNewUserCon(r.arr);
+                this.reConfigResourse();
+                this.showTransition('isDataRefreshed');
+            });
+        },
+        showTransition(key) {
+            this[key] = true;
+            setTimeout(() => {
+                this[key] = false;
+            }, 500);
+        },
     },
     created() {
         let resourse = this.userSettings.resourse;
         this.calcExpireDays(this.userCon.class_expire,this.userCon.expire_in);
+        _get('/gettransfer','include').then((r)=>{
+            this.addNewUserCon(r.arr);
+            console.log(this.userCon);
+        });
     },
-    mounted() {
-        
-    }
 };
 
 const UserSettings = {
@@ -1889,7 +1957,7 @@ const Panel = {
                                     <div class="pure-g align-center relative">
                                         <span class="pure-u-6-24">普通端口:</span>
                                         <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
-                                            <input @mouseenter="showToolTip('mu0')" @mouseleave="hideToolTip('mu0')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu0" readonly>
+                                            <input v-uimclip="{ onSuccess:successCopied }" :data-uimclip="suburlMu0" @mouseenter="showToolTip('mu0')" @mouseleave="hideToolTip('mu0')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu0" readonly>
                                             <uim-tooltip v-show="toolTips.mu0" class="uim-tooltip-top flex justify-center">
                                                 <div class="sublink" slot="tooltip-inner">
                                                     <span>$[suburlMu0]$</span>
@@ -1900,7 +1968,7 @@ const Panel = {
                                     <div v-if="mergeSub !== 'true'" class="pure-g align-center relative">
                                         <span class="pure-u-6-24">单端口:</span>
                                         <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
-                                            <input @mouseenter="showToolTip('mu1')" @mouseleave="hideToolTip('mu1')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu1" readonly>
+                                            <input v-uimclip="{ onSuccess:successCopied }" :data-uimclip="suburlMu1" @mouseenter="showToolTip('mu1')" @mouseleave="hideToolTip('mu1')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu1" readonly>
                                             <uim-tooltip v-show="toolTips.mu1" class="uim-tooltip-top flex justify-center">
                                                 <div class="sublink" slot="tooltip-inner">
                                                     <span>$[suburlMu1]$</span>
@@ -1910,7 +1978,7 @@ const Panel = {
                                     </div>
                                 </div>
                                 <div class="pure-g input-copy relative flex justify-center text-center" v-else-if="currentDlType === 'V2RAY'" key="sssub">
-                                    <input @mouseenter="showToolTip('mu2')" @mouseleave="hideToolTip('mu2')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu2" readonly>
+                                    <input v-uimclip="{ onSuccess:successCopied }" :data-uimclip="suburlMu2" @mouseenter="showToolTip('mu2')" @mouseleave="hideToolTip('mu2')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu2" readonly>
                                     <uim-tooltip v-show="toolTips.mu2" class="pure-u-1 uim-tooltip-top flex justify-center">
                                         <div class="sublink" slot="tooltip-inner">
                                             <span>$[suburlMu2]$</span>
@@ -1918,7 +1986,7 @@ const Panel = {
                                     </uim-tooltip>
                                 </div>
                                 <div class="pure-g input-copy relative flex justify-center text-center" v-else-if="currentDlType === 'SS/SSD'" key="v2sub">
-                                    <input @mouseenter="showToolTip('mu3')" @mouseleave="hideToolTip('mu3')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu3" readonly>
+                                    <input v-uimclip="{ onSuccess:successCopied }" :data-uimclip="suburlMu3" @mouseenter="showToolTip('mu3')" @mouseleave="hideToolTip('mu3')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu3" readonly>
                                     <uim-tooltip v-show="toolTips.mu3" class="pure-u-1 uim-tooltip-top flex justify-center">
                                         <div class="sublink" slot="tooltip-inner">
                                             <span>$[suburlMu3]$</span>
@@ -1939,7 +2007,7 @@ const Panel = {
                         </uim-anchor>
                         <transition name="fade" mode="out-in">
                         <keep-alive>
-                        <component v-on:turnPageByWheel="scrollPage" :resourseTrans="userResourseTrans" :is="userSettings.currentPage" :initialSet="userSettings" class="card margin-nobottom"></component>
+                        <component v-on:turnPageByWheel="scrollPage" :resourseTrans="userResourseTrans" :is="userSettings.currentPage" :initialSet="userSettings" class="settiings-toolbar card margin-nobottom"></component>
                         </keep-alive>
                         </transition>
                     </div>
@@ -2582,10 +2650,14 @@ Vue.component('uim-anchor',{
 Vue.component('uim-progressbar',{
     delimiters: ['$[',']$'],
     template:/*html*/ `
-    <div class="uim-progressbar">
+    <div class="uim-progressbar" >
+        <div class="uim-progressbar-label"><slot name="uim-progressbar-label"></slot></div>
         <div class="uim-progressbar-inner">
             <slot name="progress"></slot>
+            <slot name="progress-fold"></slot>
+            <div class="uim-progress-text"><slot name="progress-text"></slot></div>
         </div>
+        <span class="uim-progress-sign"><slot name="progress-sign"></slot></span>
     </div>
     `
 })
