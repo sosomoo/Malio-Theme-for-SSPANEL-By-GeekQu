@@ -16,6 +16,7 @@ use App\Services\Config;
 
 use App\Utils\GA;
 use App\Utils\QRcode;
+use App\Models\Node;
 
 class XCat
 {
@@ -91,6 +92,8 @@ class XCat
 			    return Update::update($this);
             case ("sendDailyUsageByTG"):
                 return $this->sendDailyUsageByTG();
+            case ("test"):
+                return $this->iptest();
 			default:
                 return $this->defaultAction();
         }
@@ -287,6 +290,20 @@ class XCat
             } catch (\TelegramBot\Api\HttpException $e){
                 echo 'Message: 用户: '.$user->get_user_attributes("user_name")." 删除了账号或者屏蔽了宝宝";
             }
+        }
+    }
+    public function iptest()
+    {
+        $nodes = Node::all();
+        foreach ($nodes as $node) {
+            $rule = preg_match("/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/",$node->server);
+            if (!$rule && (!$node->sort || $node->sort == 10)) {
+                $ip=gethostbyname($node->server);
+                if ($ip=="127.0.0.1"){
+                    echo "FIND ".$node->server." ip address: ".$ip."\n";
+                }
+                echo $node->server." ip address: ".$ip."\n";
+            };
         }
     }
 }
