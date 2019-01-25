@@ -295,15 +295,20 @@ class XCat
     public function iptest()
     {
         $nodes = Node::all();
-        foreach ($nodes as $node) {
-            $rule = preg_match("/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/",$node->server);
-            if (!$rule && (!$node->sort || $node->sort == 10)) {
-                $ip=gethostbyname($node->server);
-                if ($ip=="127.0.0.1"){
-                    echo "FIND ".$node->server." ip address: ".$ip."\n";
+        foreach ($nodes as $node)  {
+            if ($node->sort == 11) {
+                $server_list = explode(";", $node->server);
+                $server = $server_list[0];
+                if(!Tools::is_ip($server_list[0])){
+                    $ip = gethostbyname($server);
                 }
-                echo $node->server." ip address: ".$ip."\n";
-            };
+            } else if($node->sort == 0 || $node->sort == 1 || $node->sort == 10){
+                $server = $node->server;
+                if(!Tools::is_ip($node->server)){
+                    $ip = gethostbyname($server);
+                }
+            }
+            echo "Server: ".$server." ip address: ".$ip."\n";
         }
     }
 }
