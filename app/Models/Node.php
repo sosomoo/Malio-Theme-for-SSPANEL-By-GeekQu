@@ -7,7 +7,7 @@ namespace App\Models;
  */
 
 use App\Utils\Tools;
-
+use App\Utils\DNSoverHTTPS;
 class Node extends Model
 {
     protected $connection = "default";
@@ -150,6 +150,9 @@ class Node extends Model
     public function changeNodeIp($server_name)
     {
         $ip = gethostbyname($server_name);
+        if ($ip=="127.0.0.1"){
+            $ip = DNSoverHTTPS::gethostbyName($server_name);
+        }
         $node_id = $this->attributes['id'];
 
         if ($ip == "") {
