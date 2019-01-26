@@ -11,6 +11,7 @@ use App\Utils\CloudflareDriver;
 use App\Services\Config;
 use Ozdemir\Datatables\Datatables;
 use App\Utils\DatatablesHelper;
+use App\Utils\DNSoverHTTPS;
 
 class NodeController extends AdminController
 {
@@ -63,12 +64,18 @@ class NodeController extends AdminController
             $server_list = explode(";", $node->server);
 			if(!Tools::is_ip($server_list[0])){
 				$node->node_ip = gethostbyname($server_list[0]);
+				if ($node->node_ip=="127.0.0.1"){
+                    $node->node_ip = DNSoverHTTPS::gethostbyName($server_list[0]);
+                }
 			}else{
 				$node->node_ip = $req_node_ip;
 			}
         } else if ($node->sort == 0 || $node->sort == 1 || $node->sort == 10){
 			if(!Tools::is_ip($node->server)){
 				$node->node_ip = gethostbyname($node->server);
+                if ($node->node_ip=="127.0.0.1"){
+                    $node->node_ip = DNSoverHTTPS::gethostbyName($node->server);
+                }
 			}else{
 				$node->node_ip = $req_node_ip;
 			}                        
@@ -163,11 +170,19 @@ class NodeController extends AdminController
             $SS_Node=Node::where('sort', '=', 0)->where('server', '=', $request->getParam('server'))->first();
             if ($SS_Node!=null) {
                 if (time()-$SS_Node->node_heartbeat<300||$SS_Node->node_heartbeat==0) {
-                    Radius::AddNas(gethostbyname($request->getParam('server')), $request->getParam('server'));
+                    $ip = gethostbyname($request->getParam('server'));
+                    if ($ip=="127.0.0.1"){
+                        $ip = DNSoverHTTPS::gethostbyName($request->getParam('server'));
+                    }
+                    Radius::AddNas($ip, $request->getParam('server'));
                 }
             } 
 			else {
-                Radius::AddNas(gethostbyname($request->getParam('server')), $request->getParam('server'));
+                $ip = gethostbyname($request->getParam('server'));
+                if ($ip=="127.0.0.1"){
+                    $ip = DNSoverHTTPS::gethostbyName($request->getParam('server'));
+                }
+                Radius::AddNas($ip, $request->getParam('server'));
             }
         }
 
