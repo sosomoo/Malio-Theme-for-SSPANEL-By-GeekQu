@@ -17,7 +17,8 @@ use App\Services\Config;
 use App\Utils\GA;
 use App\Utils\QRcode;
 use App\Models\Node;
-
+use RemotelyLiving\PHPDNS\Resolvers\GoogleDNS;
+use App\Utils\DNSoverHTTPS;
 class XCat
 {
     public $argv;
@@ -293,8 +294,7 @@ class XCat
         }
     }
     public function iptest()
-    {
-        $nodes = Node::all();
+    {   $nodes = Node::all();
 
         foreach ($nodes as $node)  {
             $ip ="";
@@ -303,12 +303,13 @@ class XCat
                 $server_list = explode(";", $node->server);
                 $server = $server_list[0];
                 if(!Tools::is_ip($server_list[0])){
-                    $ip = gethostbyname($server);
+
+                    $ip = DNSoverHTTPS::gethostbyName($server); // returns a collection of DNS A Records
                 }
             } else if($node->sort == 0 || $node->sort == 1 || $node->sort == 10){
                 $server = $node->server;
                 if(!Tools::is_ip($node->server)){
-                    $ip = gethostbyname($server);
+                    $ip = DNSoverHTTPS::gethostbyName($server);
                 }
             }
             if ($server!="" and $ip !=""){
