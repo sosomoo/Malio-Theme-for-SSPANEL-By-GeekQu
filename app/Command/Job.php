@@ -19,6 +19,7 @@ use App\Models\BlockIp;
 use App\Models\TelegramSession;
 use App\Models\EmailVerify;
 use App\Services\Config;
+use App\Utils\DNSoverHTTPS;
 use App\Utils\Radius;
 use App\Utils\Tools;
 use App\Services\Mail;
@@ -105,6 +106,9 @@ class Job
             $rule = preg_match("/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/",$node->server);
             if (!$rule && (!$node->sort || $node->sort == 10)) {
                 $ip=gethostbyname($node->server);
+                if ($ip == "127.0.0.1"){
+                    $ip = DNSoverHTTPS::gethostbyName($node->server);
+                }
                 $node->node_ip=$ip;
                 $node->save();
 
