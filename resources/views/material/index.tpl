@@ -117,9 +117,9 @@
     {if $recaptcha_sitekey != null}
     <script src="https://recaptcha.net/recaptcha/api.js?render=explicit" async defer></script>
     {/if}
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vuex@3.0.1/dist/vuex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue-router@3.0.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.22/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuex@3.1.0/dist/vuex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-router@3.0.2/dist/vue-router.min.js"></script>
     {if isset($geetest_html)}
 	<script src="//static.geetest.com/static/tools/gt.js"></script>
     {/if}
@@ -286,10 +286,6 @@ const UserTmp = {
             state.userCon.invite_num = number;
         },
         SET_USERSETTINGS (state,config) {
-            state.userSettings.resourse[0].content = config.class_expire;
-            state.userSettings.resourse[1].content = config.expire_in;
-            state.userSettings.resourse[2].content = config.online_ip_count;
-            state.userSettings.resourse[3].content = config.node_speedlimit;
             state.userSettings.tipsLink[0].content = config.port;
             state.userSettings.tipsLink[1].content = config.passwd;
             state.userSettings.tipsLink[2].content = config.method;
@@ -297,12 +293,22 @@ const UserTmp = {
             state.userSettings.tipsLink[4].content = config.obfs;
             state.userSettings.tipsLink[5].content = config.obfs_param;
         },
+        ADD_NEWUSERCON (state,config) {
+            for (let key in config) {
+                Vue.set(state.userCon,key,config[key]);
+            }
+        },
         SET_RESOURSE (state,config) {
             state.userSettings.resourse[config.index].content = config.content;
+        },
+        SET_ALLURESOURSE (state,config) {
+            for (let key in config) {
+                state.userCon[key] = config[key];
+            }
         }
     },
     actions: {
-
+        
     },
 }
 
@@ -430,6 +436,42 @@ const tmp = new Vuex.Store({
     }
 });
 
+Vue.directive('uimclip',{
+    inserted: function(el, binding) {
+        el.addEventListener('click',(e)=>{
+            let copy = new Promise((resolve,reject)=>{
+                let input = document.createElement('input');
+                let body = document.getElementsByTagName('body')[0];
+                let value = el.dataset.uimclip;
+                input.setAttribute('type','text');
+                input.setAttribute('value',value);
+                body.appendChild(input);
+                input.focus();
+                input.setSelectionRange(0, value.length);
+                document.execCommand('copy',true);
+                resolve(input);
+            })
+            copy.then((r)=>{
+                r.remove();
+                binding.value.onSuccess();
+            })
+        })
+    },
+})
+
+var methodsMixin = {
+    methods: {
+        successCopied() {
+            let callConfig = {
+                msg: '复制成功！,已将链接复制到剪贴板',
+                icon: 'fa-check-square-o',
+                time: '1500',
+            }
+            this.callMsgr(callConfig);
+        },
+    }
+}
+
 var mutationMap = {
     methods: Vuex.mapMutations({
         setGlobalConfig: 'SET_GLOBALCONFIG',
@@ -442,12 +484,14 @@ var mutationMap = {
         setReasourse: 'SET_RESOURSE',
         setUserCon: 'SET_USERCON',
         setUserSettings: 'SET_USERSETTINGS',
+        addNewUserCon: 'ADD_NEWUSERCON',
+        setAllResourse: 'SET_ALLURESOURSE',
     }),
 }
 
 var storeMap = {
     store: tmp,
-    mixins: [mutationMap],
+    mixins: [mutationMap,methodsMixin],
     computed: Vuex.mapState({
         msgrCon: 'msgrCon',
         modalCon: 'modalCon',
@@ -720,7 +764,7 @@ const Login = {
                         this.$router.replace('/user/panel');
                     }, this.globalConfig.jumpDelay);
                 } else {
-                    callConfig.msg += '登录失败Boommm';
+                    callConfig.msg = `登录失败Boommm,${ r.msg }`;
                     callConfig.icon += 'fa-times-circle-o';
                     this.callMsgr(callConfig);
                     window.setTimeout(()=>{
@@ -939,16 +983,16 @@ const Register = {
                 }
             }
 
-            _post('/auth/register', JSON.stringify(ajaxCon),'omit').then((r)=>{
+            _post('/auth/register', JSON.stringify(ajaxCon),'include').then((r)=>{
                 if (r.ret == 1) {
-                    callConfig.msg += '注册成功meow~';
-                    callConfig.icon += 'fa-check-square-o';
+                    callConfig.msg = '注册成功meow~';
+                    callConfig.icon = 'fa-check-square-o';
                     this.callMsgr(callConfig);
                     window.setTimeout(()=>{
                         this.$router.replace('/auth/login');
                     }, this.globalConfig.jumpDelay);
                 } else {
-                    callConfig.msg += 'WTF……注册失败';
+                    callConfig.msg = `WTF……注册失败,${ r.msg }`;
                     callConfig.icon += 'fa-times-circle-o';
                     this.callMsgr(callConfig);
                     window.setTimeout(()=>{
@@ -1147,14 +1191,14 @@ const userMixin = {
     delimiters: ['$[',']$'],
     props: ['annC','baseURL'],
     methods: {
-        resetCredit() {
-            _get('/getcredit','include').then((r)=>{
-                console.log(r.arr);
-                this.updateCredit(r.arr.credit);
+        reConfigResourse() {
+            _get('/getallresourse','include').then((r)=>{
+                console.log(r);
+                this.updateUserSet(r.resourse);
             });
         },
-        updateCredit(credit) {
-            this.setUserMoney(credit);
+        updateUserSet(resourse) {
+            this.setAllResourse(resourse);
         },
     }
 }
@@ -1212,7 +1256,7 @@ const UserInvite = {
             <div class="user-invite">
                 <div v-if="userCon.class !== 0">
                     <div class="flex align-center wrap">
-                        <input type="input" :class="{ 'invite-reset':inviteLinkTrans }" class="invite-link tips tips-blue" :value="inviteLink" disabled>
+                        <input type="text" v-uimclip="{ onSuccess:successCopied }" :data-uimclip="inviteLink" :class="{ 'invite-reset':inviteLinkTrans }" class="invite-link tips tips-blue" :value="inviteLink" readonly>
                         <span class="invite-tools link-reset relative flex justify-center text-center">
                             <button @click="showInviteReset" class="tips tips-red"><span class="fa fa-refresh"> 重置</button>
                             
@@ -1396,7 +1440,7 @@ const UserInvite = {
             _post('/user/buy_invite',JSON.stringify(ajaxBody),'include').then((r)=>{
                 this.hideToolInput();
                 if(r.ret) {
-                    this.resetCredit();
+                    this.reConfigResourse();
                     this.showInviteTimeTrans();
                     this.setInviteNum(r.invite_num);
                     let callConfig = {
@@ -1423,7 +1467,7 @@ const UserInvite = {
             _post('/user/custom_invite',JSON.stringify(ajaxBody),'include').then((r)=>{
                 if (r.ret) {
                     console.log(r);
-                    this.resetCredit();
+                    this.reConfigResourse();
                     this.showLinkTrans();
                     this.code = this.oldCode = this.toolInputContent;
                     let callConfig = {
@@ -1582,13 +1626,28 @@ const UserShop = {
                 disableothers: this.disableothers,
             };
             _post('/user/buy',JSON.stringify(ajaxCon),'include').then((r)=>{
+                let self = this;
                 if (r.ret) {
                     console.log(r);
                     this.callOrderChecker();
-                    this.resetCredit();
+                    this.reConfigResourse();
+                    this.$emit('resourseTransTrigger');
+                    let callConfig = {
+                        msg: r.msg,
+                        icon: 'fa-check-square-o',
+                        time: 1500,
+                    };
+                    let animation = new Promise(function(resolve) {
+                        self.callOrderChecker();
+                        setTimeout(() => {
+                            resolve('done');                            
+                        }, 600);
+                    });
+                    animation.then((r)=>{
+                        this.callMsgr(callConfig);
+                    })
                 } else {
                     console.log(r);
-                    let self = this;
                     let animation = new Promise(function(resolve) {
                         self.callOrderChecker();
                         setTimeout(() => {
@@ -1597,9 +1656,14 @@ const UserShop = {
                     });
                     let message = r.msg
                     let subPosition = message.indexOf('</br>');
+                    let html;
+                    if (subPosition !== -1) {
+                        message = message.substr(0,subPosition);
+                        html = message.substr(subPosition);
+                    }
                     let callConfig = {
-                        msg: message.substr(0,subPosition),
-                        html: message.substr(subPosition),
+                        msg: message,
+                        html: html,
                         icon: 'fa-times-circle-o',
                         time: 6000,
                     };
@@ -1638,6 +1702,7 @@ const UserGuide = {
 };
 
 const userSetMixin = {
+    props: ['resourseTrans'],
     methods: {
         wheelChange(e) {
             this.$emit('turnPageByWheel',e.deltaY);
@@ -1649,12 +1714,30 @@ const UserResourse = {
     mixins: [userMixin,storeMap,userSetMixin],
     template: /*html*/ `
     <div @mousewheel="wheelChange" class="user-resourse">
-        <div class="card-title">可用资源</div>
+        <div class="flex align-baseline">
+            <div class="card-title">可用资源</div>
+            <span><button @click="dataRefresh" class="tips tips-green"><span class="fa fa-refresh"></span>刷新</button></span>
+        </div>
         <div class="card-body">
             <div class="pure-g wrap">
-                <div v-for="tip in calcResourse" class="pure-u-1-3 pure-u-lg-4-24" :key="tip.name">
-                    <p class="tips tips-blue">$[tip.name]$</p>
-                    <p class="font-light">$[tip.content]$</p>
+                <div v-for="tip in calcResourse" class="pure-u-1-2 pure-u-lg-4-24" :key="tip.name">
+                    <p class="tips tips-blue"> $[tip.name]$</p>
+                    <p class="font-light user-config" :class="{ 'font-gold-trans':resourseTrans,'font-green-trans':isDataRefreshed }"> <span class="user-config"></span> $[tip.content]$</p>
+                </div>
+                <div class="pure-u-1 pure-u-lg-8-24">
+                    <uim-progressbar class="uim-progressbar-sub">
+                        <span slot="uim-progressbar-label">已用流量/今日已用</span>
+                        <div slot="progress" class="uim-progressbar-gold uim-progressbar-progress" :style="{ width:transferObj.usedtotal + '%' }"></div>
+                        <div slot="progress-fold" class="uim-progressbar-red uim-progressbar-progress uim-progressbar-fold" :style="{ width:transferObj.usedtoday + '%' }"></div>
+                        <span class="user-config" :class="{ 'font-green-trans':isDataRefreshed }" slot="progress-text">$[userCon.lastUsedTraffic + '/' + userCon.todayUsedTraffic]$</span>
+                        <span slot="progress-sign" class="user-config" :class="{ 'font-green-trans':isDataRefreshed }">$[transferObj.usedtoday.toFixed(1) + '%']$</span>
+                    </uim-progressbar>
+                    <uim-progressbar>
+                        <span slot="uim-progressbar-label">可用流量</span>
+                        <div slot="progress" class="uim-progressbar-blue uim-progressbar-progress" :style="{ width:transferObj.remain + '%' }"></div>
+                        <span :class="{ 'font-green-trans':isDataRefreshed }" slot="progress-text">$[userCon.unUsedTraffic]$</span>
+                        <span slot="progress-sign" class="user-config" :class="{ 'font-green-trans':isDataRefreshed }">$[transferObj.remain.toFixed(1) + '%']$</span>
+                    </uim-progressbar>
                 </div>
             </div>
         </div>
@@ -1666,15 +1749,15 @@ const UserResourse = {
             for (let i=0;i<resourse.length;i++) {
                 switch (resourse[i].name) {
                     case '在线设备数':
-                        if (this.userCon.node_connector!==0) {
-                            this.setReasourse({ index:i,content:resourse[i].content + ' / ' + this.userCon.node_connector });
+                        if (this.userCon.node_connector !== 0) {
+                            this.setReasourse({ index:i,content:this.userCon.online_ip_count + ' / ' + this.userCon.node_connector });
                         } else {
-                            this.setReasourse({ index:i,content:resourse[i].content + ' / 无限制' });
+                            this.setReasourse({ index:i,content:this.userCon.online_ip_count + ' / 无限制' });
                         }
                         break;
                     case '端口速率':
-                        if (resourse[i].content!==0) {
-                            this.setReasourse({ index:i,content:resourse[i].content + ' Mbps' });
+                        if (this.userCon.node_speedlimit !== 0) {
+                            this.setReasourse({ index:i,content:this.userCon.node_speedlimit + ' Mbps' });
                         } else {
                             this.setReasourse({ index:i,content:'无限制' });
                         }
@@ -1685,6 +1768,23 @@ const UserResourse = {
             }
             return resourse;
         },
+        transferObj: function() {
+            let enable = this.userCon.transfer_enable;
+            let upload = this.userCon.u;
+            let download = this.userCon.d;
+            let lastdayTransfer = this.userCon.last_day_t;
+            let obj = {
+                remain: enable === 0 ? 0 : (enable - upload - download)/enable*100,
+                usedtoday: enable === 0 ? 0 : (upload + download)/enable*100,
+                usedtotal: enable === 0 ? 0 : lastdayTransfer/enable*100,
+            };
+            return obj;
+        },
+    },
+    data: function() {
+        return {
+            isDataRefreshed: false,
+        }
     },
     methods: {
         DateParse(str_date) {
@@ -1701,24 +1801,42 @@ const UserResourse = {
             let levelExpireDays = Math.floor(b/(24*3600*1000));
             let accountExpireDays = Math.floor(c/(24*3600*1000));
             if (levelExpireDays < 0 || levelExpireDays > 315360000000) {
-                this.setReasourse({ index:0,content:'无限期' });
+                this.addNewUserCon({ 'levelExpireDays':'无限期' });
+                this.setReasourse({ index:0,content:this.userCon.levelExpireDays });
             } else {
-                this.setReasourse({ index:0,content:levelExpireDays });
+                this.addNewUserCon({ 'levelExpireDays':levelExpireDays });
+                this.setReasourse({ index:0,content:this.userCon.levelExpireDays + ' 天' });
             }
             if (accountExpireDays < 0 || accountExpireDays > 315360000000) {
-                this.setReasourse({ index:1,content:'无限期' });
+                this.addNewUserCon({ 'accountExpireDays':'无限期' });
+                this.setReasourse({ index:1,content:this.userCon.accountExpireDays });
             } else {
-                this.setReasourse({ index:1,content:accountExpireDays });
+                this.addNewUserCon({ 'accountExpireDays':accountExpireDays });
+                this.setReasourse({ index:1,content:this.userCon.accountExpireDays + ' 天' });
             }
+        },
+        dataRefresh() {
+            _get('/gettransfer','include').then((r)=>{
+                this.addNewUserCon(r.arr);
+                this.reConfigResourse();
+                this.showTransition('isDataRefreshed');
+            });
+        },
+        showTransition(key) {
+            this[key] = true;
+            setTimeout(() => {
+                this[key] = false;
+            }, 500);
         },
     },
     created() {
-    
-    },
-    mounted() {
         let resourse = this.userSettings.resourse;
-        this.calcExpireDays(resourse[0].content,resourse[1].content);
-    }
+        this.calcExpireDays(this.userCon.class_expire,this.userCon.expire_in);
+        _get('/gettransfer','include').then((r)=>{
+            this.addNewUserCon(r.arr);
+            console.log(this.userCon);
+        });
+    },
 };
 
 const UserSettings = {
@@ -1728,7 +1846,7 @@ const UserSettings = {
         <div class="card-title">连接信息</div>
         <div class="card-body">
             <div class="pure-g wrap">
-                <div v-for="tip in userSettings.tipsLink" class="pure-u-1-3 pure-u-lg-4-24" :key="tip.name">
+                <div v-for="tip in userSettings.tipsLink" class="pure-u-1-2 pure-u-lg-4-24" :key="tip.name">
                     <p class="tips tips-blue">$[tip.name]$</p>
                     <p class="font-light">$[tip.content]$</p>
                 </div>
@@ -1778,14 +1896,14 @@ const Panel = {
                                 </div>
                                 <div class="pure-u-1-2">
                                     <p class="tips tips-blue">VIP等级</p>
-                                    <p class="font-light">Lv. $[userCon.class]$</p>
+                                    <p class="font-light"><span class="user-config" :class="{ 'font-gold-trans':userResourseTrans }">Lv. $[userCon.class]$</span></p>
                                     <p class="tips tips-blue">余额</p>
                                     <p class="font-light"><span class="user-config" :class="{ 'font-red-trans':userCreditTrans }">$[userCon.money]$</span></p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card margin-nobottom">
+                    <div class="card quickset margin-nobottom-sm">
                         <div class="card-title">快速配置</div>
                         <div class="card-body">
                             <div class="pure-g">
@@ -1839,7 +1957,7 @@ const Panel = {
                                     <div class="pure-g align-center relative">
                                         <span class="pure-u-6-24">普通端口:</span>
                                         <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
-                                            <input @mouseenter="showToolTip('mu0')" @mouseleave="hideToolTip('mu0')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu0" readonly>
+                                            <input v-uimclip="{ onSuccess:successCopied }" :data-uimclip="suburlMu0" @mouseenter="showToolTip('mu0')" @mouseleave="hideToolTip('mu0')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu0" readonly>
                                             <uim-tooltip v-show="toolTips.mu0" class="uim-tooltip-top flex justify-center">
                                                 <div class="sublink" slot="tooltip-inner">
                                                     <span>$[suburlMu0]$</span>
@@ -1850,7 +1968,7 @@ const Panel = {
                                     <div v-if="mergeSub !== 'true'" class="pure-g align-center relative">
                                         <span class="pure-u-6-24">单端口:</span>
                                         <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
-                                            <input @mouseenter="showToolTip('mu1')" @mouseleave="hideToolTip('mu1')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu1" readonly>
+                                            <input v-uimclip="{ onSuccess:successCopied }" :data-uimclip="suburlMu1" @mouseenter="showToolTip('mu1')" @mouseleave="hideToolTip('mu1')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue pure-u-1" type="text" name="" id="" :value="suburlMu1" readonly>
                                             <uim-tooltip v-show="toolTips.mu1" class="uim-tooltip-top flex justify-center">
                                                 <div class="sublink" slot="tooltip-inner">
                                                     <span>$[suburlMu1]$</span>
@@ -1860,7 +1978,7 @@ const Panel = {
                                     </div>
                                 </div>
                                 <div class="pure-g input-copy relative flex justify-center text-center" v-else-if="currentDlType === 'V2RAY'" key="sssub">
-                                    <input @mouseenter="showToolTip('mu2')" @mouseleave="hideToolTip('mu2')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu2" readonly>
+                                    <input v-uimclip="{ onSuccess:successCopied }" :data-uimclip="suburlMu2" @mouseenter="showToolTip('mu2')" @mouseleave="hideToolTip('mu2')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu2" readonly>
                                     <uim-tooltip v-show="toolTips.mu2" class="pure-u-1 uim-tooltip-top flex justify-center">
                                         <div class="sublink" slot="tooltip-inner">
                                             <span>$[suburlMu2]$</span>
@@ -1868,7 +1986,7 @@ const Panel = {
                                     </uim-tooltip>
                                 </div>
                                 <div class="pure-g input-copy relative flex justify-center text-center" v-else-if="currentDlType === 'SS/SSD'" key="v2sub">
-                                    <input @mouseenter="showToolTip('mu3')" @mouseleave="hideToolTip('mu3')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu3" readonly>
+                                    <input v-uimclip="{ onSuccess:successCopied }" :data-uimclip="suburlMu3" @mouseenter="showToolTip('mu3')" @mouseleave="hideToolTip('mu3')" :class="{ 'sublink-reset':subLinkTrans }" class="tips tips-blue" type="text" name="" id="" :value="suburlMu3" readonly>
                                     <uim-tooltip v-show="toolTips.mu3" class="pure-u-1 uim-tooltip-top flex justify-center">
                                         <div class="sublink" slot="tooltip-inner">
                                             <span>$[suburlMu3]$</span>
@@ -1889,26 +2007,27 @@ const Panel = {
                         </uim-anchor>
                         <transition name="fade" mode="out-in">
                         <keep-alive>
-                        <component v-on:turnPageByWheel="scrollPage" :is="userSettings.currentPage" :initialSet="userSettings" class="card margin-nobottom"></component>
+                        <component v-on:turnPageByWheel="scrollPage" :resourseTrans="userResourseTrans" :is="userSettings.currentPage" :initialSet="userSettings" class="settiings-toolbar card margin-nobottom"></component>
                         </keep-alive>
                         </transition>
                     </div>
                     <div class="user-btngroup pure-g">
-                        <div class="pure-u-16-24">
+                        <div class="pure-u-1-2 pure-u-sm-16-24">
                             <uim-dropdown>
                                 <span slot="dpbtn-content">栏目导航</span>
                                 <ul slot="dp-menu">
                                     <li @click="componentChange" v-for="menu in menuOptions" :data-component="menu.id" :key="menu.id">$[menu.name]$</li>
                                 </ul>
                             </uim-dropdown>
+                            <a v-if="userCon.is_admin === true" class="btn-user" href="/admin">运营中心</a>
                         </div>
-                        <div class="pure-u-8-24 text-right">
-                            <a href="/user" class="btn-user">进入管理面板</a>
-                            <button @click="logout" class="btn-user">登出</button>                            
+                        <div class="pure-u-1-2 pure-u-sm-8-24 text-right">
+                            <a href="/user" class="btn-user">管理面板</a>
+                            <button @click="logout" class="btn-user">账号登出</button>                            
                         </div>
                     </div>
                     <transition name="fade" mode="out-in">
-                    <component :is="currentCardComponent" :baseURL="baseUrl" :annC="ann" class="card margin-nobottom">
+                    <component :is="currentCardComponent" v-on:resourseTransTrigger="showTransition('userResourseTrans')" :baseURL="baseUrl" :annC="ann" class="card margin-nobottom">
                         <button @click="componentChange" class="btn-inline text-red" :data-component="menuOptions[3].id" slot="inviteToShop">成为VIP请点击这里</button>
                     </component>
                     </transition>
@@ -1957,6 +2076,7 @@ const Panel = {
             },
             subLinkTrans: false,
             userCreditTrans: false,
+            userResourseTrans: false,
             menuOptions: [
                 {
                     name: '公告栏',
@@ -2148,7 +2268,9 @@ const Panel = {
         }
     },
     watch: {
-        'userCon.money': 'showCreditTrans',
+        'userCon.money' (to,from) {
+            this.showTransition('userCreditTrans');
+        },
     },
     methods: {
         logout() {
@@ -2185,6 +2307,12 @@ const Panel = {
             }
             return this.userSettings.currentPageIndex;
         },
+        showTransition(key) {
+            this[key] = true;
+            setTimeout(() => {
+                this[key] = false;
+            }, 500);
+        },
         componentChange(e) {
             this.currentCardComponent = e.target.dataset.component;
         },
@@ -2201,17 +2329,11 @@ const Panel = {
         hideToolTip(id) {
             this.toolTips[id] = false;
         },
-        subLinkResetTrans() {
-            this.subLinkTrans = true;
-            setTimeout(() => {
-                this.subLinkTrans = false;
-            }, 300);
-        },
         resetSubscribLink() {
             _get('/getnewsubtoken','include').then((r)=>{
                 this.ssrSubToken = r.arr.ssr_sub_token;
                 this.hideToolTip('resetConfirm');
-                this.subLinkResetTrans();
+                this.showTransition('subLinkTrans');
                 let callConfig = {
                     msg: '已重置您的订阅链接，请变更或添加您的订阅链接！',
                     icon: 'fa-bell',
@@ -2219,12 +2341,6 @@ const Panel = {
                 }
                 this.callMsgr(callConfig);
             });
-        },
-        showCreditTrans() {
-            this.userCreditTrans = true;
-            setTimeout(() => {
-                this.userCreditTrans = false;
-            }, 300);
         },
         scrollPage(token) {
             if (token > 0) {
@@ -2527,6 +2643,21 @@ Vue.component('uim-anchor',{
     template:/*html*/ `
     <div class="uim-anchor">
         <slot class="uim-anchor-inner" name="uim-anchor-inner"></slot>
+    </div>
+    `
+})
+
+Vue.component('uim-progressbar',{
+    delimiters: ['$[',']$'],
+    template:/*html*/ `
+    <div class="uim-progressbar" >
+        <div class="uim-progressbar-label"><slot name="uim-progressbar-label"></slot></div>
+        <div class="uim-progressbar-inner">
+            <slot name="progress"></slot>
+            <slot name="progress-fold"></slot>
+            <div class="uim-progress-text"><slot name="progress-text"></slot></div>
+        </div>
+        <span class="uim-progress-sign"><slot name="progress-sign"></slot></span>
     </div>
     `
 })
