@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 export default {
     state: {
         userCon: '',
@@ -54,6 +56,8 @@ export default {
                 },
             ],
         },
+        currentDlType: 'SSR',
+        currentAgentType: 'WINDOWS',
     },
     mutations: {
         SET_USERCON(state, config) {
@@ -85,7 +89,13 @@ export default {
             for (let key in config) {
                 state.userCon[key] = config[key];
             }
-        }
+        },
+        SET_CURRENT_DL_TYPE (state, content) {
+            state.currentDlType = content;
+        },
+        SET_CURRENT_AGENT_TYPE (state, content) {
+            state.currentDlType = content;
+        },
     },
     actions: {
 

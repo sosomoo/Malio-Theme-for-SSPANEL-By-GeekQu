@@ -42,7 +42,7 @@
           <input v-model="email_code" type="text" name="email_code">
         </div>
 
-        <button class="auth-submit" @click="sendVerifyMail" :disabled="isVmDisabled">$[vmText]$</button>
+        <button class="auth-submit" @click="sendVerifyMail" :disabled="isVmDisabled">{{vmText}}</button>
       </div>
       <div class="input-control wrap flex align-center">
         <div v-if="globalConfig.captchaProvider === 'geetest'" id="embed-captcha-reg"></div>
@@ -69,8 +69,14 @@
 </template>
 
 <script>
+import storeMap from '@/mixins/storeMap'
+import storeAuth from '@/mixins/storeAuth'
+
+import { _post } from '../js/fetch'
+
+import tmp from '../store.js'
+
 export default {
-  delimiters: ["$[", "]$"],
   mixins: [storeMap, storeAuth],
   data: function() {
     return {
@@ -89,6 +95,7 @@ export default {
   },
   methods: {
     register() {
+
       this.isDisabled = true;
 
       let ajaxCon = {
@@ -124,10 +131,10 @@ export default {
             ajaxCon.recaptcha = grecaptcha.getResponse();
             break;
           case "geetest":
-            if (validate) {
-              ajaxCon.geetest_challenge = validate.geetest_challenge;
-              ajaxCon.geetest_validate = validate.geetest_validate;
-              ajaxCon.geetest_seccode = validate.geetest_seccode;
+            if (this.validate !== '') {
+              ajaxCon.geetest_challenge = this.validate.geetest_challenge;
+              ajaxCon.geetest_validate = this.validate.geetest_validate;
+              ajaxCon.geetest_seccode = this.validate.geetest_seccode;
             } else {
               callConfig.msg += "请滑动验证码来完成验证。";
             }

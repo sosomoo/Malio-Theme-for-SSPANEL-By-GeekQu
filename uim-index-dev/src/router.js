@@ -9,9 +9,12 @@ import Reset from './views/Reset.vue'
 import User from './views/User.vue'
 import Panel from './views/Panel.vue'
 
+import { _get } from './js/fetch'
+import tmp from './store'
+
 Vue.use(Router)
 
-export default router;
+let globalConfig;
 
 const router = new Router({
   routes: [{
@@ -96,7 +99,7 @@ router.beforeEach((to, from, next) => {
       navGuardsForEach();
     });
   } else {
-    navGuardsForEach()
+    navGuardsForEach();
   }
 
   function navGuardsForEach() {
@@ -115,3 +118,5 @@ router.beforeEach((to, from, next) => {
   }
 
 })
+
+export default router;

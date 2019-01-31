@@ -11,33 +11,18 @@
             <a href="/indexold" class="flex align-center">
               <img class="logo" src="/images/logo_white.png" alt="logo">
               <div class="info">
-                <div class="name">$[globalConfig.indexMsg.appname]$</div>
-                <div class="sign">$[globalConfig.indexMsg.jinrishici]$</div>
+                <div class="name">{{globalConfig.indexMsg.appname}}</div>
+                <div class="sign">{{globalConfig.indexMsg.jinrishici}}</div>
               </div>
             </a>
           </div>
           <div class="pure-u-1-2 auth-sm flex align-center">
             <transition name="fade" mode="out-in">
-              <router-link v-if="routerN === 'index'" class="button-index" to="/" key="index">
-                <span key="toindex">
-                  <i class="fa fa-home"></i>
-                  <span class="hide-sm">回到首页</span>
+              <router-link class="button-index" :to="globalGuide.href" :key="routerN">
+                <span>
+                  <i class="fa" :class="globalGuide.icon"></i>
+                  <span class="hide-sm"> {{globalGuide.content}}</span>
                 </span>
-              </router-link>
-              <router-link
-                v-else-if="routerN === 'auth'"
-                class="button-index"
-                to="/auth/login"
-                key="auth"
-              >
-                <span key="toindex">
-                  <i class="fa fa-key"></i>
-                  <span class="hide-sm">登录/注册</span>
-                </span>
-              </router-link>
-              <router-link v-else to="/user/panel" class="button-index" key="user">
-                <i class="fa fa-user"></i>
-                <span class="hide-sm">用户中心</span>
               </router-link>
             </transition>
           </div>
@@ -55,13 +40,13 @@
           <div
             class="pure-u-1 pure-u-sm-1-2 time"
             :class="{ enableCrisp:globalConfig.crisp === 'true' }"
-          >&copy;$[globalConfig.indexMsg.date]$ $[globalConfig.indexMsg.appname]$</div>
+          >&copy;{{globalConfig.indexMsg.date}} {{globalConfig.indexMsg.appname}}</div>
         </div>
 
         <transition name="slide-fade" mode="out-in">
           <uim-messager v-show="msgrCon.isShow">
             <i slot="icon" :class="msgrCon.icon"></i>
-            <span slot="msg">$[msgrCon.msg]$</span>
+            <span slot="msg">{{msgrCon.msg}}</span>
             <div v-if="msgrCon.html !== ''" slot="html" v-html="msgrCon.html"></div>
           </uim-messager>
         </transition>
@@ -71,82 +56,95 @@
 </template>
 
 <script>
-/**
- * A wrapper of window.Fetch API
- * @author Sukka (https://skk.moe)
+import Router from "./router";
+import storeMap from "@/mixins/storeMap";
+import Messager from "./components/messager.vue";
 
-/**
- * A Request Helper of Fetch
- * @function _request
- * @param {string} url
- * @param {string} body
- * @param {string} method
- * @returns {function} - A Promise Object
- */
-const _request = (url, body, method,credentials) => 
-    fetch(url, {
-        method: method,
-        body: body,
-        headers: {
-            'content-type': 'application/json'
-        },
-        credentials: credentials,
-    }).then(resp => {
-        return Promise.all([resp.ok, resp.status, resp.json()]);
-    }).then(([ok, status, json]) => {
-        if (ok) {
-            return json;
-        } else {
-            throw new Error(JSON.stringify(json.error));
-        }
-    }).catch(error => {
-        throw error;
+import { _get } from "./js/fetch";
+
+export default {
+  router: Router,
+  mixins: [storeMap],
+  components: {
+    "uim-messager": Messager
+  },
+  computed: {
+    globalGuide: function() {
+      switch (this.routerN) {
+        case "index":
+          return {
+            icon: "fa-home",
+            content: "回到首页",
+            href: "/"
+          };
+          break;
+        case "auth":
+          return {
+            icon: "fa-key",
+            content: "登录/注册",
+            href: "/auth/login"
+          };
+          break;
+        case "user":
+          return {
+            icon: "fa-user",
+            content: "用户中心",
+            href: "/user/panel"
+          };
+          break;
+      }
+    }
+  },
+  data: function() {
+    return {
+      routerN: "auth",
+      transType: "slide-fade"
+    };
+  },
+  methods: {
+    routeJudge() {
+      switch (this.$route.path) {
+        case "/":
+          if (this.logintoken == false) {
+            this.routerN = "auth";
+          } else {
+            this.routerN = "user";
+          }
+          break;
+        default:
+          this.routerN = "index";
+      }
+    }
+  },
+  watch: {
+    $route(to, from) {
+      this.routeJudge();
+      if (to.path === "/password/reset" || from.path === "/password/reset") {
+        this.transType = "rotate-fade";
+      } else {
+        this.transType = "slide-fade";
+      }
+    }
+  },
+  beforeMount() {
+    fetch("https://api.lwl12.com/hitokoto/v1")
+      .then(r => {
+        return r.text();
+      })
+      .then(r => {
+        this.setHitokoto(r);
+      });
+    _get("https://v2.jinrishici.com/one.json", "include").then(r => {
+      this.setJinRiShiCi(r.data.content);
     });
-
-    
-
-/**
- * A Wrapper of Fetch GET Method
- * @function _get
- * @param {string} url
- * @returns {function} - A Promise Object
- * @example
- * get('https://example.com').then(resp => { console.log(resp) })
- */
-const _get = (url,credentials) => 
-    fetch(url, {
-        method: 'GET',
-        credentials,
-    }).then(resp => {
-        return Promise.all([resp.ok, resp.status, resp.json(), resp.headers])
-    })
-    .then(([ok, status, json, headers]) => {
-        if (ok) {
-            return json;
-        } else {
-            throw new Error(JSON.stringify(json.error));
-        }
-    }).catch(error => {
-        console.log(error);
-        throw error; 
-    });
-
-    
-/**
- * A Wrapper of Fetch POST Method
- * @function _post
- * @param {string} url
- * @param {string} json - The POST Body in JSON Format
- * @returns {function} - A Promise Object
- * @example
- * _post('https://example.com', JSON.stringify(data)).then(resp => { console.log(resp) })
- */
-
-const _post = (url, body, credentials) => _request(url, body, 'POST', credentials);
-
-let validate,captcha;
-
-let globalConfig;
+  },
+  mounted() {
+    this.routeJudge();
+    setTimeout(() => {
+      this.setLoadState();
+    }, 1000);
+  }
+};
 </script>
 
 
@@ -155,14 +153,16 @@ let globalConfig;
 .fade-enter-active,
 .loading-fade-enter-active,
 .rotate-fade-enter-active,
-.loading-fadex-enter-active {
+.loading-fadex-enter-active,
+.slide-fadex-enter-active {
   transition: all 0.3s ease;
 }
 .slide-fade-leave-active,
 .fade-leave-active,
 .loading-fade-leave-active,
 .rotate-fade-leave-active,
-.loading-fadex-leave-active {
+.loading-fadex-leave-active,
+.slide-fadex-leave-active {
   transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
 }
 .loading-fade-enter {
@@ -177,6 +177,14 @@ let globalConfig;
   transform: translateY(-20px);
   opacity: 0;
 }
+.slide-fadex-enter {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+.slide-fadex-enter-to {
+  transform: translateX(0px);
+  opacity: 1;
+}
 .rotate-fade-enter {
   transform: rotateY(90deg);
   -webkit-transform: rotateY(90deg);
@@ -184,6 +192,10 @@ let globalConfig;
 }
 .slide-fade-leave-to {
   transform: translateY(20px);
+  opacity: 0;
+}
+.slide-fadex-leave-to {
+  transform: translateX(20px);
   opacity: 0;
 }
 .rotate-fade-leave-to {

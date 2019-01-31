@@ -21,9 +21,9 @@
               <div class="pure-g">
                 <div class="pure-u-1-2">
                   <p class="tips tips-blue">用户名</p>
-                  <p class="font-light">$[userCon.user_name]$</p>
+                  <p class="font-light">{{userCon.user_name}}</p>
                   <p class="tips tips-blue">邮箱</p>
-                  <p class="font-light">$[userCon.email]$</p>
+                  <p class="font-light">{{userCon.email}}</p>
                 </div>
                 <div class="pure-u-1-2">
                   <p class="tips tips-blue">VIP等级</p>
@@ -31,14 +31,14 @@
                     <span
                       class="user-config"
                       :class="{ 'font-gold-trans':userResourseTrans }"
-                    >Lv. $[userCon.class]$</span>
+                    >Lv. {{userCon.class}}</span>
                   </p>
                   <p class="tips tips-blue">余额</p>
                   <p class="font-light">
                     <span
                       class="user-config"
                       :class="{ 'font-red-trans':userCreditTrans }"
-                    >$[userCon.money]$</span>
+                    >{{userCon.money}}</span>
                   </p>
                 </div>
               </div>
@@ -55,47 +55,19 @@
                   :class="{ 'index-btn-active':currentDlType === dl.type }"
                   class="pure-u-1-3 btn-user dl-type"
                   :key="dl.type"
-                >$[dl.type]$</button>
+                >{{dl.type}}</button>
                 <h5 class="pure-u-1">平台选择/客户端下载</h5>
                 <transition name="rotate-fade" mode="out-in">
-                  <div v-if="currentDlType === 'SSR'" class="dl-link" key="ssr">
+                  <div class="dl-link" :key="typeToken.tagkey">
                     <uim-dropdown
-                      v-for="(value,key) in downloads[0].agent"
+                      v-for="(value,key) in downloads[typeToken.arrIndex].agent"
                       class="pure-u-1-3 btn-user"
                       :key="key"
                     >
-                      <span slot="dpbtn-content">$[key]$</span>
+                      <span slot="dpbtn-content">{{key}}</span>
                       <ul slot="dp-menu">
                         <li v-for="agent in value" :key="agent.id">
-                          <a :href="agent.href">$[agent.agentName]$</a>
-                        </li>
-                      </ul>
-                    </uim-dropdown>
-                  </div>
-                  <div v-else-if="currentDlType === 'SS/SSD'" class="dl-link" key="ss">
-                    <uim-dropdown
-                      v-for="(value,key) in downloads[1].agent"
-                      class="pure-u-1-3 btn-user"
-                      :key="key"
-                    >
-                      <span slot="dpbtn-content">$[key]$</span>
-                      <ul slot="dp-menu">
-                        <li v-for="agent in value" :key="agent.id">
-                          <a :href="agent.href">$[agent.agentName]$</a>
-                        </li>
-                      </ul>
-                    </uim-dropdown>
-                  </div>
-                  <div v-else-if="currentDlType === 'V2RAY'" class="dl-link" key="v2ray">
-                    <uim-dropdown
-                      v-for="(value,key) in downloads[2].agent"
-                      class="pure-u-1-3 btn-user"
-                      :key="key"
-                    >
-                      <span slot="dpbtn-content">$[key]$</span>
-                      <ul slot="dp-menu">
-                        <li v-for="agent in value" :key="agent.id">
-                          <a :href="agent.href">$[agent.agentName]$</a>
+                          <a :href="agent.href">{{agent.agentName}}</a>
                         </li>
                       </ul>
                     </uim-dropdown>
@@ -104,13 +76,13 @@
                 <h5 class="pure-u-1 flex align-center space-between">
                   <span>订阅链接</span>
                   <span class="link-reset relative flex justify-center text-center">
+                    <button @click="showToolTip('resetConfirm')" class="tips tips-red">
+                      <span class="fa fa-refresh"></span> 重置链接
+                    </button>
                     <uim-tooltip
                       v-show="toolTips.resetConfirm"
                       class="uim-tooltip-top flex justify-center"
                     >
-                      <button @click="showToolTip('resetConfirm')" class="tips tips-red">
-                        <span class="fa fa-refresh"></span> 重置链接
-                      </button>
                       <div slot="tooltip-inner">
                         <span>确定要重置订阅链接？</span>
                         <div>
@@ -126,34 +98,34 @@
                   </span>
                 </h5>
                 <transition name="rotate-fade" mode="out-in">
-                  <div class="input-copy" v-if="currentDlType === 'SSR'" key="ssrsub">
+                  <div class="input-copy" :key="typeToken.subKey">
                     <div class="pure-g align-center relative">
-                      <span class="pure-u-6-24">普通端口:</span>
+                      <span class="pure-u-6-24">{{currentDlType === 'SSR' ? '普通端口:' : '订阅链接:'}}</span>
                       <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
                         <input
                           v-uimclip="{ onSuccess:successCopied }"
-                          :data-uimclip="suburlMu0"
-                          @mouseenter="showToolTip('mu0')"
-                          @mouseleave="hideToolTip('mu0')"
+                          :data-uimclip="typeToken.subUrl"
+                          @mouseenter="showToolTip(typeToken.muType)"
+                          @mouseleave="hideToolTip(typeToken.muType)"
                           :class="{ 'sublink-reset':subLinkTrans }"
                           class="tips tips-blue pure-u-1"
                           type="text"
                           name
                           id
-                          :value="suburlMu0"
+                          :value="typeToken.subUrl"
                           readonly
                         >
                         <uim-tooltip
-                          v-show="toolTips.mu0"
+                          v-show="toolTips[typeToken.muType]"
                           class="uim-tooltip-top flex justify-center"
                         >
                           <div class="sublink" slot="tooltip-inner">
-                            <span>$[suburlMu0]$</span>
+                            <span>{{typeToken.subUrl}}</span>
                           </div>
                         </uim-tooltip>
                       </span>
                     </div>
-                    <div v-if="mergeSub !== 'true'" class="pure-g align-center relative">
+                    <div v-if="currentDlType === 'SSR' && mergeSub !== 'true'" class="pure-g align-center relative">
                       <span class="pure-u-6-24">单端口:</span>
                       <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
                         <input
@@ -174,65 +146,11 @@
                           class="uim-tooltip-top flex justify-center"
                         >
                           <div class="sublink" slot="tooltip-inner">
-                            <span>$[suburlMu1]$</span>
+                            <span>{{suburlMu1}}</span>
                           </div>
                         </uim-tooltip>
                       </span>
                     </div>
-                  </div>
-                  <div
-                    class="pure-g input-copy relative flex justify-center text-center"
-                    v-else-if="currentDlType === 'V2RAY'"
-                    key="sssub"
-                  >
-                    <input
-                      v-uimclip="{ onSuccess:successCopied }"
-                      :data-uimclip="suburlMu2"
-                      @mouseenter="showToolTip('mu2')"
-                      @mouseleave="hideToolTip('mu2')"
-                      :class="{ 'sublink-reset':subLinkTrans }"
-                      class="tips tips-blue"
-                      type="text"
-                      name
-                      id
-                      :value="suburlMu2"
-                      readonly
-                    >
-                    <uim-tooltip
-                      v-show="toolTips.mu2"
-                      class="pure-u-1 uim-tooltip-top flex justify-center"
-                    >
-                      <div class="sublink" slot="tooltip-inner">
-                        <span>$[suburlMu2]$</span>
-                      </div>
-                    </uim-tooltip>
-                  </div>
-                  <div
-                    class="pure-g input-copy relative flex justify-center text-center"
-                    v-else-if="currentDlType === 'SS/SSD'"
-                    key="v2sub"
-                  >
-                    <input
-                      v-uimclip="{ onSuccess:successCopied }"
-                      :data-uimclip="suburlMu3"
-                      @mouseenter="showToolTip('mu3')"
-                      @mouseleave="hideToolTip('mu3')"
-                      :class="{ 'sublink-reset':subLinkTrans }"
-                      class="tips tips-blue"
-                      type="text"
-                      name
-                      id
-                      :value="suburlMu3"
-                      readonly
-                    >
-                    <uim-tooltip
-                      v-show="toolTips.mu3"
-                      class="pure-u-1 uim-tooltip-top flex justify-center"
-                    >
-                      <div class="sublink" slot="tooltip-inner">
-                        <span>$[suburlMu3]$</span>
-                      </div>
-                    </uim-tooltip>
                   </div>
                 </transition>
               </div>
@@ -265,21 +183,25 @@
             </transition>
           </div>
           <div class="user-btngroup pure-g">
-            <div class="pure-u-1-2 pure-u-sm-16-24">
+            <div class="pure-u-1-2 pure-u-sm-16-24 btngroup-left">
               <uim-dropdown>
-                <span slot="dpbtn-content">栏目导航</span>
+                <span slot="dpbtn-content">
+                  <transition name="fade" mode="out-in">
+                    <div :key="currentCardComponent">{{menuOptions[currentCardComponentIndex].name}}</div>
+                  </transition>
+                </span>
                 <ul slot="dp-menu">
                   <li
                     @click="componentChange"
                     v-for="menu in menuOptions"
                     :data-component="menu.id"
                     :key="menu.id"
-                  >$[menu.name]$</li>
+                  >{{menu.name}}</li>
                 </ul>
               </uim-dropdown>
               <a v-if="userCon.is_admin === true" class="btn-user" href="/admin">运营中心</a>
             </div>
-            <div class="pure-u-1-2 pure-u-sm-8-24 text-right">
+            <div class="pure-u-1-2 pure-u-sm-8-24 text-right btngroup-right">
               <a href="/user" class="btn-user">管理面板</a>
               <button @click="logout" class="btn-user">账号登出</button>
             </div>
@@ -307,19 +229,83 @@
 </template>
 
 <script>
+import storeMap from "@/mixins/storeMap";
+import agentMixin from "@/mixins/agentMixin";
+import UserAnnouncement from "@/components/panel/UserAnnouncement.vue";
+import UserInvite from "@/components/panel/UserInvite.vue";
+import UserShop from "@/components/panel/UserShop.vue";
+import UserGuide from "@/components/panel/UserGuide.vue";
+import UserResourse from "@/components/panel/UserResourse.vue";
+import UserSettings from "@/components/panel/UserSettings.vue";
+
+import Dropdown from "@/components/dropdown.vue";
+import Tooltip from "@/components/tooltip.vue";
+import Anchor from "@/components/anchor.vue";
+
+import { _get } from "../js/fetch";
+
 export default {
-  delimiters: ["$[", "]$"],
-  mixins: [storeMap],
+  mixins: [storeMap, agentMixin],
   components: {
     "user-announcement": UserAnnouncement,
     "user-invite": UserInvite,
     "user-shop": UserShop,
     "user-guide": UserGuide,
     "user-resourse": UserResourse,
-    "user-settings": UserSettings
+    "user-settings": UserSettings,
+    "uim-dropdown": Dropdown,
+    "uim-tooltip": Tooltip,
+    "uim-anchor": Anchor
   },
   props: ["routermsg"],
   computed: {
+    typeToken: function() {
+      switch (this.currentDlType) {
+        case "SSR":
+          return {
+            tagkey: "dl-ssr",
+            subKey: 'sub-ssr',
+            arrIndex: 0,
+            muType: 'mu0',
+            subUrl: this.suburlMu0,
+          };
+          break;
+        case "SS/SSD":
+          return {
+            tagkey: "dl-ss",
+            subKey: 'sub-ss',
+            arrIndex: 1,
+            muType: 'mu3',
+            subUrl: this.suburlMu3,
+          };
+          break;
+        case "V2RAY":
+          return {
+            tagkey: "dl-v2",
+            subKey: 'sub-v2',
+            arrIndex: 2,
+            muType: 'mu2',
+            subUrl: this.suburlMu2,
+          };
+          break;
+      }
+    },
+    currentCardComponentIndex: function() {
+      switch(this.currentCardComponent) {
+        case 'user-announcement':
+          return 0;
+          break;
+        case 'user-guide':
+          return 1;
+          break;
+        case 'user-invite':
+          return 2;
+          break;
+        case 'user-shop':
+          return 3;
+          break;
+      }
+    },
     suburlBase: function() {
       return this.subUrl + this.ssrSubToken;
     },
@@ -377,176 +363,7 @@ export default {
           id: "user-shop"
         }
       ],
-      currentCardComponent: "user-announcement",
-      downloads: [
-        {
-          type: "SSR",
-          agent: {
-            Windows: [
-              {
-                agentName: "SSR",
-                href: "/ssr-download/ssr-win.7z",
-                id: "AGENT_1_1_1"
-              },
-              {
-                agentName: "SSTAP",
-                href: "/ssr-download/SSTap.7z",
-                id: "AGENT_1_1_2"
-              }
-            ],
-            Macos: [
-              {
-                agentName: "SSX",
-                href: "/ssr-download/ssr-mac.dmg",
-                id: "AGENT_1_2_1"
-              }
-            ],
-            Linux: [
-              {
-                agentName: "SS-qt5",
-                href: "#",
-                id: "AGENT_1_3_1"
-              }
-            ],
-            Ios: [
-              {
-                agentName: "Potatso Lite",
-                href: "#",
-                id: "AGENT_1_4_1"
-              },
-              {
-                agentName: "Shadowrocket",
-                href: "#",
-                id: "AGENT_1_4_2"
-              }
-            ],
-            Android: [
-              {
-                agentName: "SSR",
-                href: "/ssr-download/ssr-android.apk",
-                id: "AGENT_1_5_1"
-              },
-              {
-                agentName: "SSRR",
-                href: "/ssr-download/ssrr-android.apk",
-                id: "AGENT_1_5_2"
-              }
-            ],
-            Router: [
-              {
-                agentName: "FancySS",
-                href: "https://github.com/hq450/fancyss_history_package",
-                id: "AGENT_1_6_1"
-              }
-            ]
-          }
-        },
-        {
-          type: "SS/SSD",
-          agent: {
-            Windows: [
-              {
-                agentName: "SSD",
-                href: "/ssr-download/ssd-win.7z",
-                id: "AGENT_2_1_1"
-              }
-            ],
-            Macos: [
-              {
-                agentName: "SSXG",
-                href: "/ssr-download/ss-mac.zip",
-                id: "AGENT_2_2_1"
-              }
-            ],
-            Linux: [
-              {
-                agentName: "/",
-                href: "#",
-                id: "AGENT_2_3_1"
-              }
-            ],
-            Ios: [
-              {
-                agentName: "Potatso Lite",
-                href: "#",
-                id: "AGENT_2_4_1"
-              },
-              {
-                agentName: "Shadowrocket",
-                href: "#",
-                id: "AGENT_2_4_2"
-              }
-            ],
-            Android: [
-              {
-                agentName: "SSD",
-                href: "/ssr-download/ssd-android.apk",
-                id: "AGENT_2_5_1"
-              },
-              {
-                agentName: "混淆插件",
-                href: "/ssr-download/ss-android-obfs.apk",
-                id: "AGENT_2_5_2"
-              }
-            ],
-            Router: [
-              {
-                agentName: "FancySS",
-                href: "https://github.com/hq450/fancyss_history_package",
-                id: "AGENT_2_6_1"
-              }
-            ]
-          }
-        },
-        {
-          type: "V2RAY",
-          agent: {
-            Windows: [
-              {
-                agentName: "V2RayN",
-                href: "/ssr-download/v2rayn.zip",
-                id: "AGENT_3_1_1"
-              }
-            ],
-            Macos: [
-              {
-                agentName: "/",
-                href: "#",
-                id: "AGENT_3_2_1"
-              }
-            ],
-            Linux: [
-              {
-                agentName: "/",
-                href: "#",
-                id: "AGENT_3_3_1"
-              }
-            ],
-            Ios: [
-              {
-                agentName: "Shadowrocket",
-                href: "#",
-                id: "AGENT_3_4_1"
-              }
-            ],
-            Android: [
-              {
-                agentName: "V2RayN",
-                href: "/ssr-download/v2rayng.apk",
-                id: "AGENT_3_5_1"
-              }
-            ],
-            Router: [
-              {
-                agentName: "FancySS",
-                href: "https://github.com/hq450/fancyss_history_package",
-                id: "AGENT_3_6_1"
-              }
-            ]
-          }
-        }
-      ],
-      currentDlType: "SSR"
+      currentCardComponent: "user-announcement"
     };
   },
   watch: {
@@ -597,9 +414,6 @@ export default {
     },
     componentChange(e) {
       this.currentCardComponent = e.target.dataset.component;
-    },
-    changeAgentType(e) {
-      this.currentDlType = e.target.dataset.type;
     },
     changeUserSetPage(index) {
       this.userSettings.currentPage = this.userSettings.pages[index].id;

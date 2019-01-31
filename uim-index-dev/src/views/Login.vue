@@ -48,7 +48,7 @@
       <p id="telegram-alert">正在载入 Telegram，如果长时间未显示请刷新页面或检查代理</p>
       <div class="text-center" id="telegram-login-box"></div>
       <p>或者添加机器人账号
-        <a :href="telegramHref">@$[globalConfig.telegram_bot]$</a>，发送下面的数字/二维码验证码给它
+        <a :href="telegramHref">@{{globalConfig.telegram_bot}}</a>，发送下面的数字/二维码验证码给它
       </p>
       <transition name="fade" mode="out-in">
         <div v-if="!isTgtimeout" class="pure-g pure-u-20-24" key="notTimeout">
@@ -56,7 +56,7 @@
             <div id="telegram-qr" class="flex space-around"></div>
           </div>
           <div class="pure-u-11-24">
-            <div class="auth-submit" id="code_number">$[globalConfig.login_number]$</div>
+            <div class="auth-submit" id="code_number">{{globalConfig.login_number}}</div>
           </div>
         </div>
         <div v-else class="pure-g space-around" key="timeout">
@@ -68,10 +68,21 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
+import storeMap from '@/mixins/storeMap'
+import storeAuth from '@/mixins/storeAuth'
+
+import Checkbox from '@/components/checkbox.vue'
+
+import { _post } from '../js/fetch'
+
 export default {
-  delimiters: ["$[", "]$"],
   mixins: [storeMap, storeAuth],
-  computed: Vuex.mapState({
+  components: {
+    "uim-checkbox": Checkbox,
+  },
+  computed: mapState({
     telegramHref: function() {
       return "https://t.me/" + this.globalConfig.telegram_bot;
     },
@@ -90,6 +101,7 @@ export default {
   },
   methods: {
     login() {
+
       this.isDisabled = true;
 
       let ajaxCon = {
@@ -110,10 +122,10 @@ export default {
             ajaxCon.recaptcha = grecaptcha.getResponse();
             break;
           case "geetest":
-            if (validate) {
-              ajaxCon.geetest_challenge = validate.geetest_challenge;
-              ajaxCon.geetest_validate = validate.geetest_validate;
-              ajaxCon.geetest_seccode = validate.geetest_seccode;
+            if (this.validate !== '') {
+              ajaxCon.geetest_challenge = this.validate.geetest_challenge;
+              ajaxCon.geetest_validate = this.validate.geetest_validate;
+              ajaxCon.geetest_seccode = this.validate.geetest_seccode;
             } else {
               callConfig.msg += "请滑动验证码来完成验证。";
             }
@@ -164,6 +176,7 @@ export default {
       if (this.logintoken === 1) {
         return;
       }
+
       let callConfig = {
         msg: "",
         icon: "",
@@ -179,7 +192,6 @@ export default {
       ).then(r => {
         if (r.ret > 0) {
           clearTimeout(tid);
-
           _post(
             "/auth/qrcode_login",
             JSON.stringify({
@@ -201,6 +213,9 @@ export default {
         } else if (r.ret == -1) {
           this.isTgtimeout = true;
         }
+      }).catch((r)=>{
+        clearTimeout(tid)
+        throw r
       });
       tid = setTimeout(() => {
         this.tgAuthTrigger(tid);
