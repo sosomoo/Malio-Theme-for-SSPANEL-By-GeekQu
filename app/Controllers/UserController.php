@@ -1395,6 +1395,27 @@ class UserController extends BaseController
         return $this->echoJson($response, $res);
     }
 
+    public function switchType($request, $response, $args)
+    {
+        $user = $this->user;
+        if ($user->method != "chacha20-ietf-poly1305") {
+            $method = "chacha20-ietf-poly1305";
+        } else {
+            $method = "chacha20-ietf";
+        }
+        $protocol = "origin";
+        $obfs = "plain";
+        $obfs_param = "";
+
+        $user->method = $method;
+        $user->protocol = $protocol;
+        $user->obfs = $obfs;
+        $user->obfs_param = $obfs_param;
+        $user->save();
+        
+        $newResponse = $response->withStatus(302)->withHeader('Location', '/user/edit');
+        return $newResponse;
+    }
 
     public function updateSSR($request, $response, $args)
     {
