@@ -156,6 +156,7 @@ class LinkController extends BaseController
         }
         $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0);
         $return_info = [
+            "link" => $userapiUrl,
             // sub
             "ss" => $userapiUrl . "?sub=2",
             "ssr" => $userapiUrl . "?sub=1",
@@ -180,11 +181,12 @@ class LinkController extends BaseController
 
     public static function GetSurge($user, $mu = 0, $surge = 0)
     {
-        $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0) . "?surge=" . $surge;
+        $subInfo = LinkController::GetSubinfo($user, $surge);
+        $userapiUrl = $subInfo['surge'];
         $proxy_name = "";
         $proxy_group = "";
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
-        foreach($items as $item) {
+        foreach ($items as $item) {
             if (in_array($surge, array(1, 3))) {
                 $proxy_group .= $item['remark'] . " = ss, " . $item['address'] . ", " . $item['port'] . ", encrypt-method=" . $item['method'] . ", password=" . $item['passwd'] . URL::getSurgeObfs($item) . ", tfo=true, udp-relay=true\n";
             }
@@ -209,11 +211,12 @@ class LinkController extends BaseController
     
     public static function GetQuantumult($user, $mu = 0, $quantumult = 0)
     {
+        $subInfo = LinkController::GetSubinfo($user, 0);
         $proxys = [];
         $groups = [];
         $subUrl = "";
         if ($quantumult == 2) {
-            $subUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0);
+            $subUrl = $subInfo['link'];
         }
         else {
             $v2ray_group = "";
@@ -293,7 +296,8 @@ class LinkController extends BaseController
 
     public static function GetSurfboard($user, $mu = 0)
     {
-        $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0) . "?surfboard=1";
+        $subInfo = LinkController::GetSubinfo($user, 0);
+        $userapiUrl = $subInfo['surfboard'];
         $ss_name = "";
         $ss_group = "";
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
@@ -311,7 +315,8 @@ class LinkController extends BaseController
 
     public static function GetClash($user, $mu = 0)
     {
-        $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0) . "?clash=1";
+        $subInfo = LinkController::GetSubinfo($user, 0);
+        $userapiUrl = $subInfo['clash'];
         $confs = [];
         // ss
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));

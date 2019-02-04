@@ -80,8 +80,8 @@ class UserController extends BaseController
 
         $Ann = Ann::orderBy('date', 'desc')->first();
 
-
         return $this->view()
+            ->assign('subInfo', LinkController::GetSubinfo($user, 0))
             ->assign('ssr_sub_token', $ssr_sub_token)
             ->assign('display_ios_class',Config::get('display_ios_class'))
             ->assign('ios_account',Config::get('ios_account'))
@@ -1412,7 +1412,7 @@ class UserController extends BaseController
         $user->obfs = $obfs;
         $user->obfs_param = $obfs_param;
         $user->save();
-        
+
         $newResponse = $response->withStatus(302)->withHeader('Location', '/user/edit');
         return $newResponse;
     }
