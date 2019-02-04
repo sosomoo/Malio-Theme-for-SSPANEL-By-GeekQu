@@ -248,11 +248,11 @@
 												{/foreach}
 											</ul>
 										</div>
-								        </div>
-							        </div>
-						        </div> 
-                            </div>
-				        </div>  *}
+								    </div>
+							    </div>
+						    </div> 
+                        </div> *}
+				    </div>
 
 
 					<div class="col-xx-12 col-sm-6">
