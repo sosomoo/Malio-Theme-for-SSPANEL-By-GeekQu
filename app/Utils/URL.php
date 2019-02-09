@@ -109,111 +109,6 @@ class URL
         }
     }
 
-    public static function getClashInfo($user) {
-        $result = [];
-        if ($user->is_admin){
-            $v2ray_nodes = $nodes=Node::where(
-                function ($query) {
-                    $query->where('sort', 11);
-                }
-            )->where("type", "1")->orderBy("name")->get();
-        }else{
-
-            $v2ray_nodes = $nodes=Node::where(
-                function ($query) {
-                    $query->where('sort', 11);
-                }
-            )->where(
-                function ($query) use ($user){
-                    $query->where("node_group", "=", $user->node_group)
-                        ->orWhere("node_group", "=", 0);
-                }
-            )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
-        }
-
-        foreach ($v2ray_nodes as $v2ray_node) {
-            $node_explode = explode(';', $v2ray_node->server);
-            $docs = [
-                "name" => $v2ray_node->name,
-                "type" => "vmess",
-                "server" => $node_explode[0],
-                "port" => $node_explode[1],
-                "uuid" => $user->getUuid(),
-                "alterId" => $node_explode[2],
-                "cipher" => "auto",
-            ];
-
-            if (count($node_explode) >= 4) {
-                if ($node_explode[3] == 'ws') {
-                    $docs['network'] = 'ws';
-                } else if ($node_explode[3] == 'tls') {
-                    $docs['tls'] = true;
-                }
-            }
-
-            if (count($node_explode) >= 5) {
-                if ($node_explode[4] == "ws") {
-                    $docs['network'] = 'ws';
-                    $docs['ws-path'] = "/";
-                }
-            }
-
-            if (count($node_explode) >= 6) {
-                $temp_docs = URL::parse_args($node_explode[5]);
-
-                if (array_key_exists('path', $temp_docs)) {
-                    $docs['ws-path'] = $temp_docs['path'];
-                    unset($docs['path']);
-                }
-                if (array_key_exists("server",$temp_docs)){
-                    $docs['server']=$temp_docs['server'];
-                }
-
-            }
-            $result[] = $docs;
-        }
-
-        if (self::SSCanConnect($user, 0)) {
-            if ($user->is_admin){
-
-                $shadowsocks_nodes = Node::where(
-                    function ($query) {
-                        $query->where('sort', 0)
-                            ->orwhere('sort', 10);
-                    }
-                )->where("type", "1")->orderBy("name")->get();
-
-            }else{
-                $shadowsocks_nodes = Node::where(
-                    function ($query) {
-                        $query->where('sort', 0)
-                            ->orwhere('sort', 10);
-                    }
-                )->where(
-                    function ($query) use ($user){
-                        $query->where("node_group", "=", $user->node_group)
-                            ->orWhere("node_group", "=", 0);
-                    }
-                )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
-            }
-
-
-            foreach ($shadowsocks_nodes as $node) {
-                $result[] = [
-                    "name" => $node->name,
-                    "type" => "ss",
-                    "server" => $node->server,
-                    "port" => $user->port,
-                    // TODO: method mapper
-                    "cipher" => $user->method,
-                    "password" => $user->passwd,
-                ];
-            }
-        }
-
-        return $result;
-    }
-
     public static function getSSConnectInfo($user) {
         $new_user = clone $user;
         if(URL::CanObfsConnect($new_user->obfs) == 5) {
@@ -337,10 +232,13 @@ class URL
         }
         return $return_array;
     }
-    public static function getAllUrl($user, $is_mu, $is_ss = 0) {
+
+    public static function getAllUrl($user, $is_mu, $is_ss = 0, $extend = 0) {
         $return_url = '';
-        $return_url .= URL::getUserTraffic($user, $is_mu,$is_ss).($enter == 0 ? ' ' : "\n");
-        $return_url .= URL::getUserClassExpiration($user, $is_mu,$is_ss).($enter == 0 ? ' ' : "\n");
+        if ($extend == 1) {
+            $return_url .= URL::getUserTraffic($user, $is_mu, $is_ss).PHP_EOL;
+            $return_url .= URL::getUserClassExpiration($user, $is_mu, $is_ss).PHP_EOL;    
+        }
         if(strtotime($user->expire_in)<time()){
 			return $return_url;
 		}
@@ -388,7 +286,8 @@ class URL
             return $ssurl;
         }
     }
-    public static function getV2Url($user, $node){
+
+    public static function getV2Url($user, $node, $arrout = 0){
         $node_explode = explode(';', $node->server);
         $item = [
             'v'=>'2',
@@ -413,101 +312,29 @@ class URL
         }
         if (count($node_explode) >= 5 ) {
             if (in_array($item['net'], array("kcp", "http"))){
-
                 $item['type'] = $node_explode[4];
-            } else if ($node_explode[4]=='ws'){
+            } else if ($node_explode[4] == 'ws'){
                 $item['net'] = 'ws';
             }
         }
-
         if (count($node_explode) >= 6) {
             $item = array_merge($item, URL::parse_args($node_explode[5]));
-
             if (array_key_exists("server",$item)){
-                $item['add']=$item['server'];
+                $item['add'] = $item['server'];
                 unset($item['server']);
             }
         }
-
-        return "vmess://".base64_encode((json_encode($item, JSON_UNESCAPED_UNICODE)));
-    }
-
-    public static function getAllVMessUrl($user) {
-        if ($user->is_admin) {
-
-            $nodes = Node::where('sort', 11)->where("type", "1")->orderBy("name")->get();
-
+        if ($arrout == 0) {
+            return "vmess://".base64_encode((json_encode($item, JSON_UNESCAPED_UNICODE)));
         } else {
-
-            $nodes = Node::where('sort', 11)->where(
-                function ($query) use ($user){
-                    $query->where("node_group", "=", $user->node_group)
-                        ->orWhere("node_group", "=", 0);
-                }
-            )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
-
+            return $item;
         }
-
-        $result = "";
-
-        foreach ($nodes as $node) {
-            $result .= (URL::getV2Url($user, $node) . "\n");
-        }
-
-        return $result;
     }
 
-    public static function getV2ray($user, $node){
-        $node_explode = explode(';', $node->server);
-        $item = [
-            'v'=>'2',
-            'host'=>'',
-            'path'=>'',
-            'tls'=>''
-        ];
-        $item['ps'] = $node->name;
-        $item['add'] = $node_explode[0];
-        $item['port'] = $node_explode[1];
-        $item['id'] = $user->getUuid();
-        $item['aid'] = $node_explode[2];
-        $item['net'] = "tcp";
-        $item['type'] = "none";
-        if (count($node_explode) >= 4) {
-            $item['net'] = $node_explode[3];
-            if ($item['net'] == 'ws') {
-                $item['path'] = '/';
-            } else if ($item['net'] == 'tls') {
-                $item['tls'] = 'tls';
-            }
-        }
-        if (count($node_explode) >= 5 ) {
-            if (in_array($item['net'], array("kcp", "http"))){
-
-                $item['type'] = $node_explode[4];
-            } else if ($node_explode[4]=='ws'){
-                $item['net'] = 'ws';
-            }
-        }
-
-        if (count($node_explode) >= 6) {
-            $item = array_merge($item, URL::parse_args($node_explode[5]));
-
-            if (array_key_exists("server",$item)){
-                $item['add']=$item['server'];
-                unset($item['server']);
-            }
-        }
-
-        return $item;
-    }
-
-    public static function getAllV2ray($user) {
-        if ($user->is_admin){
-
+    public static function getAllVMessUrl($user, $arrout = 0) {
+        if ($user->is_admin) {
             $nodes = Node::where('sort', 11)->where("type", "1")->orderBy("name")->get();
-
-        }else{
-
+        } else {
             $nodes = Node::where('sort', 11)->where(
                 function ($query) use ($user){
                     $query->where("node_group", "=", $user->node_group)
@@ -515,14 +342,19 @@ class URL
                 }
             )->where("type", "1")->where("node_class", "<=", $user->class)->orderBy("name")->get();
         }
-
-        $return_array = array();
-
-        foreach ($nodes as $node) {
-            array_push($return_array, URL::getV2ray($user, $node));
+        if ($arrout == 0) {
+            $result = "";
+            foreach ($nodes as $node) {
+                $result .= (URL::getV2Url($user, $node, $arrout) . "\n");
+            }
+            return $result;
+        } else {
+            $result = [];
+            foreach ($nodes as $node) {
+                array_push($result, URL::getV2Url($user, $node, $arrout));
+            }
+            return $result;
         }
-
-        return $return_array;
     }
 
 	public static function getAllSSDUrl($user){
@@ -649,21 +481,22 @@ class URL
         }
         return $plugin;
     }
+
     public static function getSurgeObfs($item) {
         $ss_obfs_list = Config::getSupportParam('ss_obfs');
         $plugin = "";
         if(in_array($item['obfs'], $ss_obfs_list)) {
             if(strpos($item['obfs'], 'http') !== FALSE) {
-                $plugin .= "obfs=http";
+                $plugin .= ", obfs=http";
             }
 			else {
-                $plugin .= "obfs=tls";
+                $plugin .= ", obfs=tls";
             }
             if($item['obfs_param'] != '') {
-                $plugin .= ",obfs-host=".$item['obfs_param'];
+                $plugin .= ", obfs-host=".$item['obfs_param'];
             }
 			else {
-				$plugin .= ",obfs-host=wns.windows.com";
+				$plugin .= ", obfs-host=wns.windows.com";
 			}
 
         }
@@ -730,62 +563,78 @@ class URL
         }
         return $return_array;
     }
+
     public static function cloneUser($user) {
         $new_user = clone $user;
         return $new_user;
     }
 
-	public static function getUserTraffic($user, $is_mu = 0, $is_ss=0){
+	public static function getUserTraffic($user, $is_mu = 0, $is_ss = 0){
+
         $group_name = Config::get('appName');
 		if(Config::get('mergeSub')!='true' and $is_mu == 1){
 			$group_name .= ' - 单端口';
 		}
-		if (!$is_ss){
+
+        if (!$is_ss) {
+
             if(strtotime($user->expire_in)>time()){
-                $ssurl = "www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("剩余流量：".number_format(($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100,2)."% ".$user->unusedTraffic())."&group=".Tools::base64_url_encode($group_name);
+                if($user->transfer_enable==0){
+                    $percent='0.00%';
+                }
+                else{
+                    $percent=number_format(($user->transfer_enable-$user->u-$user->d)/$user->transfer_enable*100,2).'%';
+                }
+                $ssurl = "www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode('剩余流量：'.$percent.' '.$user->unusedTraffic())."&group=".Tools::base64_url_encode($group_name);                
             }else{
                 $ssurl = "www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("账户已过期，请续费后使用")."&group=".Tools::base64_url_encode($group_name);
             }
-            return "ssr://" . Tools::base64_url_encode($ssurl);
-        }else{
 
-            $personal_info = "chacha20:YnJlYWt3YWxs@www.google.com:1";
-            $ssurl = "ss://".Tools::base64_url_encode($personal_info);
+            return "ssr://".Tools::base64_url_encode($ssurl);
 
+        } else {
+    
             if(strtotime($user->expire_in)>time()){
                 $remark = "剩余流量：".number_format(($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100,2)."% ".$user->unusedTraffic();
-            }else{
+            }
+            else{
                 $remark = "账户已过期，请续费后使用";
             }
-            $ssurl .= "#".rawurlencode(Config::get('appName')." - ".$remark);
+            $ssurl = "ss://" . Tools::base64_url_encode("chacha20:YnJlYWt3YWxs@www.google.com:1") . "#" . rawurlencode($remark);
+
             return $ssurl;
         }
+
 	}
 
-    public static function getUserClassExpiration($user, $is_mu = 0,$is_ss=0){
+    public static function getUserClassExpiration($user, $is_mu = 0, $is_ss = 0){
         $group_name = Config::get('appName');
 		if(Config::get('mergeSub')!='true' and $is_mu == 1){
 			$group_name .= ' - 单端口';
 		}
-		if (!$is_ss){
+
+        if (!$is_ss) {
+
             if(strtotime($user->expire_in)>time()){
                 $ssurl = "www.google.com:2:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("过期时间：".$user->class_expire)."&group=".Tools::base64_url_encode($group_name);
-            }else{
+            } else {
                 $ssurl = "www.google.com:2:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("账户已过期，请续费后使用")."&group=".Tools::base64_url_encode($group_name);
             }
-            return "ssr://" . Tools::base64_url_encode($ssurl);
-        }else{
 
-            $personal_info = "chacha20:YnJlYWt3YWxs@www.google.com:1";
-            $ssurl = "ss://".Tools::base64_url_encode($personal_info);
+            return "ssr://".Tools::base64_url_encode($ssurl);
 
+        } else {
+    
             if(strtotime($user->expire_in)>time()){
                 $remark= "过期时间：".$user->class_expire;
             }else{
                 $remark= "账户已过期，请续费后使用";
             }
-            $ssurl .= "#".rawurlencode(Config::get('appName')." - ".$remark);
+
+            $ssurl = "ss://".Tools::base64_url_encode("chacha20:YnJlYWt3YWxs@www.google.com:1") . "#" . rawurlencode($remark);
+
             return $ssurl;
         }
-  }
+    }
+
 }

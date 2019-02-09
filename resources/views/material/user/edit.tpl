@@ -1,6 +1,5 @@
 
 
-
 {include file='user/main.tpl'}
 
 	<main class="content">
@@ -12,7 +11,6 @@
 		<div class="container">
 			<section class="content-inner margin-top-no">
              
-
 
 					<div class="col-xx-12 col-sm-6">
 						<div class="card margin-bottom-no">
@@ -62,11 +60,43 @@
 							</div>
 						</div>
                       
-                    
-                      
+
+						<div class="card margin-bottom-no">
+							<div class="card-main">
+								<div class="card-inner">
+									<div class="card-inner">
+										<div class="cardbtn-edit">
+												<div class="card-heading">切换 SS/SSR</div>
+												<div class="reset-flex">
+													<a class="switch-type btn btn-brand-accent btn-flat"><span class="icon">check</span>&nbsp;</a>
+												</div>
+										</div>
+										<p>您当前为 {if URL::CanMethodConnect($user->method) == 2}SS/SSD 模式{else}SS/SSD/SSR 兼容模式{/if}</p>
+                                        <p>点击会在 SS/SSR 中切换，请注意客户端的使用。</p>
+									</div>
+								</div>
+							</div>
+						</div>
 
 
 						<div class="card margin-bottom-no">
+							<div class="card-main">
+								<div class="card-inner">
+									<div class="card-inner">
+										<div class="cardbtn-edit">
+												<div class="card-heading">重置订阅链接</div>
+												<div class="reset-flex">
+													<a class="reset-link btn btn-brand-accent btn-flat" ><i class="icon">autorenew</i>&nbsp;</a>
+												</div>
+										</div>
+                                        <p>点击会重置您的订阅链接，此操作不可逆，请谨慎。</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+						{* <div class="card margin-bottom-no">
 							<div class="card-main">
 								<div class="card-inner">
 									<div class="card-inner">
@@ -89,7 +119,7 @@
 									</div>
 								</div>
 							</div>
-						</div>  
+						</div>  *}
 
 						<div class="card margin-bottom-no">
 							<div class="card-main">
@@ -144,8 +174,7 @@
 						</div>
 
 
-
-						<div class="card margin-bottom-no">
+						{* <div class="card margin-bottom-no">
 							<div class="card-main">
 								<div class="card-inner">
 									<div class="card-inner">
@@ -196,15 +225,10 @@
 
 								</div>
 							</div>
-						</div>  
+						</div>  *}
 
 
-
-
-
-
-
-						<div class="card margin-bottom-no">
+						{* <div class="card margin-bottom-no">
 							<div class="card-main">
 								<div class="card-inner">
 									<div class="card-inner">
@@ -224,11 +248,13 @@
 												{/foreach}
 											</ul>
 										</div>
-								        </div>
-							        </div>
-						        </div> 
-                            </div>
-				        </div>  
+								    </div>
+							    </div>
+						    </div> 
+						</div> *}
+						
+						
+				    </div>
 
 
 					<div class="col-xx-12 col-sm-6">
@@ -392,16 +418,11 @@
 
 
 
-
 					{include file='dialog.tpl'}
 
 			</section>
 		</div>
 	</main>
-
-
-
-
 
 
 
@@ -416,8 +437,6 @@ $(".copy-text").click(function () {
 	$("#result").modal();
 	$("#msg").html("已复制到您的剪贴板。");
 });
-
-
 </script>
 
 <script>
@@ -449,6 +468,7 @@ $(".copy-text").click(function () {
         })
     })
 </script>
+
 <script>
     $(document).ready(function () {
         $("#portspecify").click(function () {
@@ -477,6 +497,7 @@ $(".copy-text").click(function () {
         })
     })
 </script>
+
 <script>
     $(document).ready(function () {
         $("#setpac").click(function () {
@@ -555,7 +576,6 @@ $(".copy-text").click(function () {
 	{/if}
 </script>
 
-
 <script>
     $(document).ready(function () {
         $("#wechat-update").click(function () {
@@ -619,7 +639,6 @@ $(".copy-text").click(function () {
     })
 </script>
 
-
 <script>
     $(document).ready(function () {
         $("#relay-update").click(function () {
@@ -677,7 +696,6 @@ $(".copy-text").click(function () {
     })
 </script>
 
-
 <script>
     $(document).ready(function () {
         $("#ga-test").click(function () {
@@ -705,7 +723,6 @@ $(".copy-text").click(function () {
         })
     })
 </script>
-
 
 <script>
     $(document).ready(function () {
@@ -735,7 +752,6 @@ $(".copy-text").click(function () {
     })
 </script>
 
-
 <script>
     $(document).ready(function () {
         $("#ss-pwd-update").click(function () {
@@ -764,7 +780,6 @@ $(".copy-text").click(function () {
         })
     })
 </script>
-
 
 <script>
     $(document).ready(function () {
@@ -824,8 +839,6 @@ $(".copy-text").click(function () {
     })
 </script>
 
-
-
 <script>
     $(document).ready(function () {
         $("#method-update").click(function () {
@@ -853,5 +866,29 @@ $(".copy-text").click(function () {
             })
         })
     })
+</script>
+
+<script>
+	$(function(){
+		new Clipboard('.reset-link');
+	});
+	
+	$(".reset-link").click(function () {
+		$("#result").modal();
+		$("#msg").html("已重置您的订阅链接，请变更或添加您的订阅链接！");
+		window.setTimeout("location.href='/user/url_reset'", {$config['jump_delay']});
+	});
+</script>
+
+<script>
+	$(function(){
+		new Clipboard('.switch-type');
+	});
+	
+	$(".switch-type").click(function () {
+		$("#result").modal();
+		$("#msg").html("切换成功！");
+		window.setTimeout("location.href='/user/switchtype'", {$config['jump_delay']});
+	});
 </script>
 
