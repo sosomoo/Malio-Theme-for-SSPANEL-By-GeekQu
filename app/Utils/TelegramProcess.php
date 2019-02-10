@@ -29,7 +29,7 @@ class TelegramProcess
         $user = User::where('telegram_id', $message->getFrom()->getId())->first();
         if ($user != null) {
             switch (true){
-                case $command=="?mu=0&quantumult=2":
+                case $command=="?quantumult=3":
                     $ssr_sub_token = LinkController::GenerateSSRSubCode($user->id, 0);
                     $baseUrl =Config::get('baseUrl');
                     $keyboard = new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
@@ -48,7 +48,7 @@ class TelegramProcess
                     $bot->sendDocument($user->get_user_attributes("telegram_id"), new \CURLFile($filepath,'','quantumult_'.$ssr_sub_token.'.conf'));
                     unlink($filepath);
                     break;
-                case (strpos($command,"mu")):
+                case (strpos($command,"sub") or strpos($command,"surge") or strpos($command,"clash") or strpos($command,"surfboard")) :
                     $ssr_sub_token = LinkController::GenerateSSRSubCode($user->id, 0);
                     $subUrl = Config::get('subUrl');
                     $reply_message = self::$all_rss[$command].": ".$subUrl.$ssr_sub_token.$command.PHP_EOL;
