@@ -142,4 +142,112 @@ class HomeController extends BaseController
         }
         return $response->getBody()->write(json_encode(['res' => AliPay::setOrder($sn, $url)]));
     }
+
+    public function docCenter()
+    {
+        return $this->view()->display('doc/index.tpl');
+    }
+
+    public function sublinkOut($request, $response, $args)
+    {
+        $user = Auth::getUser();
+        if (!$user->isLogin) {
+            $msg = "₍₍ ◝(・ω・)◟ ⁾⁾ 您没有登录噢，登录之后再刷新就阔以了啦";
+        } else {
+            $subUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0);
+            switch ($request->getParam('type')) {
+                case 'ss':
+                    $msg =  "```
+个人端口：" . $subUrl . "?sub=2&mu=0
+公共端口：" . $subUrl . "?sub=2&mu=1
+```";
+                    break;
+                case 'ssr':
+                    $msg =  "```
+个人端口：" . $subUrl . "?sub=1&mu=0
+公共端口：" . $subUrl . "?sub=1&mu=1
+```";
+                    break;
+                case 'v2ray':
+                    // v2rayN 格式
+                    $msg =  "```
+公共端口：" . $subUrl . "?sub=3
+```";
+                    break;
+                    // APPs~
+                case 'ssd':
+                    $msg =  "```
+个人端口：" . $subUrl . "?ssd=1&mu=0
+公共端口：" . $subUrl . "?ssd=1&mu=1
+```";
+                    break;
+                case 'clash':
+                    $msg =  "```
+个人端口：" . $subUrl . "?clash=1&mu=0
+公共端口：" . $subUrl . "?clash=1&mu=1
+```";
+                    break;
+                case 'surge':
+                    $msg =  "```
+// Surge Version 2.x 
+个人端口：" . $subUrl . "?surge=2&mu=0
+公共端口：" . $subUrl . "?surge=2&mu=1
+// Surge Version 3.x 
+个人端口：" . $subUrl . "?surge=3&mu=0
+公共端口：" . $subUrl . "?surge=3&mu=1
+```";
+                    break;
+                case 'kitsunebi':
+                    $msg =  "```
+// 合并订阅，包含 ss、v2ray
+个人端口：" . $subUrl . "?sub=4&mu=0
+公共端口：" . $subUrl . "?sub=4&mu=1
+// v2ray 订阅
+公共端口：" . $subUrl . "?sub=3
+```";
+                    break;
+                    case 'surfboard':
+                    $msg =  "```
+个人端口：" . $subUrl . "?surfboard=1&mu=0
+公共端口：" . $subUrl . "?surfboard=1&mu=1
+```";
+                    break;
+                case 'quantumult_sub':
+                    // Quantumult V2ray 专属格式
+                    $msg =  "```
+// ssr 订阅
+个人端口：" . $subUrl . "?sub=1&mu=0
+公共端口：" . $subUrl . "?sub=1&mu=1
+// V2ray 订阅
+公共端口：" . $subUrl . "?quantumult=1
+```";
+                    break;
+                case 'quantumult_conf':
+                    $msg =  "```
+// 导入 ss、ssr、v2ray 以及分流规则的配置
+个人端口[全部订阅]：" . $subUrl . "?quantumult=2&mu=0
+公共端口[全部订阅]：" . $subUrl . "?quantumult=2&mu=1
+// 使用自定义策略组的配置，类似 Surge
+个人端口[全部订阅]：" . $subUrl . "?quantumult=3&mu=0
+公共端口[全部订阅]：" . $subUrl . "?quantumult=3&mu=1
+```";
+                    break;
+                case 'shadowrocket':
+                    $msg =  "```
+// ssr 订阅
+个人端口：" . $subUrl . "?sub=1&mu=0
+公共端口：" . $subUrl . "?sub=1&mu=1
+// 合并订阅，包含 ss、ssr、v2ray
+个人端口：" . $subUrl . "?sub=5&mu=0
+公共端口：" . $subUrl . "?sub=5&mu=1
+```";
+                    break;
+                default:
+                    $msg = '获取失败了呢...，请联系管理员。';
+                    break;
+            }
+        }
+        return $msg;
+    }
+
 }
