@@ -10,17 +10,18 @@ class TelegramProcess
 {
     private static $all_rss = [
         "clean_link"=>"重置订阅",
-        "?mu=0" => "SSR普通订阅" ,
-        "?mu=1" => "SSR单端口订阅",
-        "?mu=3" => "SS/SSD订阅",
-        "?mu=2" => "V2ray订阅",
-        "?mu=4" => "Clash订阅",
-        "?mu=0&app=1" => "Shadowrocket(普通订阅)",
-        "?mu=1&app=1" => "Shadowrocket(单端口)",
-        "?mu=0&app=2" => "Kitsunebi(普通订阅)",
-        "?mu=1&app=2" => "Kitsunebi(单端口节点订阅)",
-        "?mu=0&quantumult=1" => "Quantumult(Vmess订阅)",
-        "?mu=0&quantumult=2" => "Quantumult(完整配置)"];
+        "?sub=2" => "SS订阅" ,
+        "?sub=1" => "SSR订阅",
+        "?sub=3" => "V2ray订阅",
+        "?sub=5" => "Shadowrocket",
+        "?sub=4" => "Kitsunebi or v2rayNG",
+        "?surge=2" => "Surge 2.x",
+        "?surge=3" => "Surge 3.x",
+        "?ssd=1" => "SSD",
+        "?clash=1" => "Clash",
+        "?surfboard=1" => "surfboard",
+        "?quantumult=3" => "Quantumult(完整配置)"
+        ];
 
     private static function callback_bind_method($bot,$message,$command){
 
