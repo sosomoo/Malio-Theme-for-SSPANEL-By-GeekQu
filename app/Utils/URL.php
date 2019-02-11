@@ -323,6 +323,10 @@ class URL
                 $item['add'] = $item['server'];
                 unset($item['server']);
             }
+            if (array_key_exists("outside_port",$item)){
+                $item['port'] = $item['outside_port'];
+                unset($item['outside_port']);
+            }
         }
         if ($arrout == 0) {
             return "vmess://".base64_encode((json_encode($item, JSON_UNESCAPED_UNICODE)));
