@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba8af682f82200c06a230962f3695d64",
+    "content-hash": "ada9d6cddc9f83d82a66d4c4f306e8d1",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -207,7 +207,7 @@
             ],
             "description": "CloudXNS SDK FILES",
             "homepage": "https://www.cloudxns.net/",
-            "time": "2016-01-27T02:39:42+00:00"
+            "time": "2016-01-27 02:39:42"
         },
         {
             "name": "clue/stream-filter",
@@ -357,7 +357,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2018-06-15T19:03:38+00:00"
+            "time": "2018-06-15 19:03:38"
         },
         {
             "name": "esdeathlove/datatables",
@@ -615,7 +615,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2018-10-08T11:42:37+00:00"
+            "time": "2018-10-08 11:42:37"
         },
         {
             "name": "guzzlehttp/promises",
@@ -666,7 +666,7 @@
             "keywords": [
                 "promise"
             ],
-            "time": "2018-03-25T01:26:01+00:00"
+            "time": "2018-03-25 01:26:01"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -732,7 +732,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2018-07-29T08:09:46+00:00"
+            "time": "2018-07-29 08:09:46"
         },
         {
             "name": "illuminate/container",
@@ -775,7 +775,7 @@
             ],
             "description": "The Illuminate Container package.",
             "homepage": "http://laravel.com",
-            "time": "2016-08-01T13:49:14+00:00"
+            "time": "2016-08-01 13:49:14"
         },
         {
             "name": "illuminate/contracts",
@@ -817,7 +817,7 @@
             ],
             "description": "The Illuminate Contracts package.",
             "homepage": "http://laravel.com",
-            "time": "2017-08-12T11:45:44+00:00"
+            "time": "2017-08-12 11:45:44"
         },
         {
             "name": "illuminate/database",
@@ -877,7 +877,7 @@
                 "orm",
                 "sql"
             ],
-            "time": "2018-05-08T19:43:26+00:00"
+            "time": "2018-05-08 19:43:26"
         },
         {
             "name": "illuminate/pagination",
@@ -921,7 +921,7 @@
             ],
             "description": "The Illuminate Pagination package.",
             "homepage": "http://laravel.com",
-            "time": "2016-08-01T13:49:14+00:00"
+            "time": "2016-08-01 13:49:14"
         },
         {
             "name": "illuminate/support",
@@ -980,7 +980,7 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "http://laravel.com",
-            "time": "2016-12-03T18:52:25+00:00"
+            "time": "2016-12-03 18:52:25"
         },
         {
             "name": "ircmaxell/password-compat",
@@ -1022,7 +1022,7 @@
                 "hashing",
                 "password"
             ],
-            "time": "2014-11-20T19:18:42+00:00"
+            "time": "2014-11-20 19:18:42"
         },
         {
             "name": "league/omnipay",
@@ -1123,7 +1123,7 @@
                 "payment",
                 "purchase"
             ],
-            "time": "2018-05-24T04:47:38+00:00"
+            "time": "2018-05-24 04:47:38"
         },
         {
             "name": "mailgun/mailgun-php",
@@ -1411,7 +1411,7 @@
                 "router",
                 "routing"
             ],
-            "time": "2018-08-19T11:46:04+00:00"
+            "time": "2018-08-19 11:46:04"
         },
         {
             "name": "omnipay/common",
@@ -1493,7 +1493,7 @@
                 "payment",
                 "purchase"
             ],
-            "time": "2018-07-11T13:18:24+00:00"
+            "time": "2018-07-11 13:18:24"
         },
         {
             "name": "paragonie/random_compat",
@@ -1541,7 +1541,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2018-04-04T21:56:13+00:00"
+            "time": "2018-04-04 21:56:13"
         },
         {
             "name": "paymentwall/paymentwall-php",
@@ -1655,7 +1655,7 @@
                 "http",
                 "httplug"
             ],
-            "time": "2018-10-15T06:31:11+00:00"
+            "time": "2018-10-15 06:31:11"
         },
         {
             "name": "php-http/discovery",
@@ -1720,7 +1720,7 @@
                 "message",
                 "psr7"
             ],
-            "time": "2018-09-21T23:32:35+00:00"
+            "time": "2018-09-21 23:32:35"
         },
         {
             "name": "php-http/guzzle6-adapter",
@@ -1780,7 +1780,7 @@
                 "Guzzle",
                 "http"
             ],
-            "time": "2018-09-09T15:23:13+00:00"
+            "time": "2018-09-09 15:23:13"
         },
         {
             "name": "php-http/httplug",
@@ -1836,7 +1836,7 @@
                 "client",
                 "http"
             ],
-            "time": "2018-10-18T10:18:22+00:00"
+            "time": "2018-10-18 10:18:22"
         },
         {
             "name": "php-http/message",
@@ -1958,7 +1958,7 @@
                 "stream",
                 "uri"
             ],
-            "time": "2018-01-04T12:23:13+00:00"
+            "time": "2018-01-04 12:23:13"
         },
         {
             "name": "php-http/multipart-stream-builder",
@@ -2015,7 +2015,7 @@
                 "multipart stream",
                 "stream"
             ],
-            "time": "2017-11-22T21:56:04+00:00"
+            "time": "2017-11-22 21:56:04"
         },
         {
             "name": "php-http/promise",
@@ -2065,7 +2065,7 @@
             "keywords": [
                 "promise"
             ],
-            "time": "2017-11-22T21:24:54+00:00"
+            "time": "2017-11-22 21:24:54"
         },
         {
             "name": "phpmailer/phpmailer",
@@ -2192,7 +2192,7 @@
                 "container",
                 "dependency injection"
             ],
-            "time": "2018-04-20T06:17:25+00:00"
+            "time": "2018-04-20 06:17:25"
         },
         {
             "name": "predis/predis",
@@ -2242,7 +2242,53 @@
                 "predis",
                 "redis"
             ],
-            "time": "2017-07-12T14:39:17+00:00"
+            "time": "2017-07-12 14:39:17"
+        },
+        {
+            "name": "psr/cache",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/cache.git",
+                "reference": "78c5a01ddbf11cf731f1338a4f5aba23b14d5b47"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/cache/zipball/78c5a01ddbf11cf731f1338a4f5aba23b14d5b47",
+                "reference": "78c5a01ddbf11cf731f1338a4f5aba23b14d5b47",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Cache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for caching libraries",
+            "keywords": [
+                "cache",
+                "psr",
+                "psr-6"
+            ],
+            "time": "2016-10-13 14:48:10"
         },
         {
             "name": "psr/container",
@@ -2291,7 +2337,7 @@
                 "container-interop",
                 "psr"
             ],
-            "time": "2017-06-28T15:35:32+00:00"
+            "time": "2017-06-28 15:35:32"
         },
         {
             "name": "psr/http-message",
@@ -2341,7 +2387,7 @@
                 "request",
                 "response"
             ],
-            "time": "2016-08-06T14:39:51+00:00"
+            "time": "2016-08-06 14:39:51"
         },
         {
             "name": "psr/log",
@@ -2388,7 +2434,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2018-04-03T15:59:15+00:00"
+            "time": "2018-04-03 15:59:15"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -2511,7 +2557,61 @@
                 "identifier",
                 "uuid"
             ],
-            "time": "2018-08-12T15:49:01+00:00"
+            "time": "2018-08-12 15:49:01"
+        },
+        {
+            "name": "remotelyliving/php-dns",
+            "version": "3.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/remotelyliving/php-dns.git",
+                "reference": "dbdbaf4ccdcb9c44c2cf50d47d6fe67ea8ca2a06"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/remotelyliving/php-dns/zipball/dbdbaf4ccdcb9c44c2cf50d47d6fe67ea8ca2a06",
+                "reference": "dbdbaf4ccdcb9c44c2cf50d47d6fe67ea8ca2a06",
+                "shasum": ""
+            },
+            "require": {
+                "ext-filter": "*",
+                "ext-intl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "guzzlehttp/guzzle": "^6.3",
+                "guzzlehttp/promises": "^1.3",
+                "php": ">=7.1",
+                "psr/cache": "^1.0",
+                "psr/log": "^1.0",
+                "symfony/event-dispatcher": "~4.0 || ~3.0"
+            },
+            "require-dev": {
+                "maglnet/composer-require-checker": "^1.1",
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpstan/phpstan": "^0.10.5",
+                "phpunit/phpunit": "^7.4",
+                "psy/psysh": "^0.9.9",
+                "squizlabs/php_codesniffer": "^3.3",
+                "symfony/cache": "^4.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RemotelyLiving\\PHPDNS\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "chthomas",
+                    "email": "christian.h.thomas@me.com"
+                }
+            ],
+            "description": "A php library for abstracting DNS querying",
+            "time": "2019-01-17T23:05:31+00:00"
         },
         {
             "name": "sendgrid/php-http-client",
@@ -2659,7 +2759,7 @@
                 "middleware",
                 "slim"
             ],
-            "time": "2018-08-22T16:12:18+00:00"
+            "time": "2018-08-22 16:12:18"
         },
         {
             "name": "slim/slim",
@@ -2730,7 +2830,7 @@
                 "micro",
                 "router"
             ],
-            "time": "2018-09-16T10:56:51+00:00"
+            "time": "2018-09-16 10:56:51"
         },
         {
             "name": "slim/twig-view",
@@ -2834,7 +2934,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2018-10-14T02:18:45+00:00"
+            "time": "2018-10-14 02:18:45"
         },
         {
             "name": "symfony/contracts",
@@ -2902,7 +3002,71 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2018-10-10T09:20:36+00:00"
+            "time": "2018-10-10 09:20:36"
+        },
+        {
+            "name": "symfony/event-dispatcher",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/event-dispatcher.git",
+                "reference": "63dd1cfa74bff0c8ae596fb90a3a4511bd5cb84b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/63dd1cfa74bff0c8ae596fb90a3a4511bd5cb84b",
+                "reference": "63dd1cfa74bff0c8ae596fb90a3a4511bd5cb84b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1.3",
+                "symfony/contracts": "^1.0"
+            },
+            "conflict": {
+                "symfony/dependency-injection": "<3.4"
+            },
+            "require-dev": {
+                "psr/log": "~1.0",
+                "symfony/config": "~3.4|~4.0",
+                "symfony/dependency-injection": "~3.4|~4.0",
+                "symfony/expression-language": "~3.4|~4.0",
+                "symfony/stopwatch": "~3.4|~4.0"
+            },
+            "suggest": {
+                "symfony/dependency-injection": "",
+                "symfony/http-kernel": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\EventDispatcher\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony EventDispatcher Component",
+            "homepage": "https://symfony.com",
+            "time": "2019-01-16 21:53:45"
         },
         {
             "name": "symfony/finder",
@@ -2951,7 +3115,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2018-10-10T13:30:17+00:00"
+            "time": "2018-10-10 13:30:17"
         },
         {
             "name": "symfony/http-foundation",
@@ -3005,7 +3169,7 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
-            "time": "2018-10-22T16:12:06+00:00"
+            "time": "2018-10-22 16:12:06"
         },
         {
             "name": "symfony/intl",
@@ -3080,7 +3244,7 @@
                 "l10n",
                 "localization"
             ],
-            "time": "2018-10-12T16:01:53+00:00"
+            "time": "2018-10-12 16:01:53"
         },
         {
             "name": "symfony/options-resolver",
@@ -3134,7 +3298,7 @@
                 "configuration",
                 "options"
             ],
-            "time": "2018-10-24T12:06:04+00:00"
+            "time": "2018-10-24 12:06:04"
         },
         {
             "name": "symfony/polyfill",
@@ -3236,7 +3400,7 @@
                 "polyfill",
                 "shim"
             ],
-            "time": "2018-10-19T07:00:57+00:00"
+            "time": "2018-10-19 07:00:57"
         },
         {
             "name": "symfony/translation",
@@ -3309,7 +3473,7 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-            "time": "2018-10-10T19:30:04+00:00"
+            "time": "2018-10-10 19:30:04"
         },
         {
             "name": "telegram-bot/api",
@@ -3430,7 +3594,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2018-10-12T14:15:08+00:00"
+            "time": "2018-10-12 14:15:08"
         },
         {
             "name": "voku/anti-xss",
@@ -3607,7 +3771,7 @@
                 "check",
                 "validate"
             ],
-            "time": "2018-05-29T14:25:02+00:00"
+            "time": "2018-05-29 14:25:02"
         },
         {
             "name": "zeuxisoo/slim-whoops",
@@ -3710,7 +3874,7 @@
                 "qr",
                 "zxing"
             ],
-            "time": "2018-04-26T11:41:33+00:00"
+            "time": "2018-04-26 11:41:33"
         }
     ],
     "aliases": [],

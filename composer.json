@@ -24,7 +24,8 @@
     "cloudflare/sdk": "1.1.1",
     "chen-see/chen-pay": "^1.0@dev",
     "league/omnipay": "^3",
-    "lokielse/omnipay-alipay": "*"
+    "lokielse/omnipay-alipay": "*",
+    "remotelyliving/php-dns": "3.0.6"
   },
   "autoload": {
     "classmap": [

@@ -16,7 +16,9 @@ use App\Services\Config;
 
 use App\Utils\GA;
 use App\Utils\QRcode;
-
+use App\Models\Node;
+use RemotelyLiving\PHPDNS\Resolvers\GoogleDNS;
+use App\Utils\DNSoverHTTPS;
 class XCat
 {
     public $argv;
@@ -91,6 +93,8 @@ class XCat
 			    return Update::update($this);
             case ("sendDailyUsageByTG"):
                 return $this->sendDailyUsageByTG();
+            case ("iptest"):
+                return $this->iptest();
 			default:
                 return $this->defaultAction();
         }
@@ -286,6 +290,31 @@ class XCat
 
             } catch (\TelegramBot\Api\HttpException $e){
                 echo 'Message: 用户: '.$user->get_user_attributes("user_name")." 删除了账号或者屏蔽了宝宝";
+            }
+        }
+    }
+    public function iptest()
+    {   $nodes = Node::all();
+
+        foreach ($nodes as $node)  {
+            $ip ="";
+            $server="";
+            if ($node->sort == 11) {
+                $server_list = explode(";", $node->server);
+                $server = $server_list[0];
+                if(!Tools::is_ip($server_list[0])){
+
+                    $ip = DNSoverHTTPS::gethostbyName($server); // returns a collection of DNS A Records
+                }
+            } else if($node->sort == 0 || $node->sort == 1 || $node->sort == 10){
+                $server = $node->server;
+                if(!Tools::is_ip($node->server)){
+                    $ip = DNSoverHTTPS::gethostbyName($server);
+                }
+            }
+            if ($server!="" and $ip !=""){
+
+                echo "Server: ".$server." ip address: ".$ip."\n";
             }
         }
     }
