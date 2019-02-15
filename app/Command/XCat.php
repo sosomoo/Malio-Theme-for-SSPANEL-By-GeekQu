@@ -78,7 +78,9 @@ class XCat
             case("userga"):
                 return Job::UserGa();
             case("backup"):
-                return Job::backup();
+                return Job::backup(false);
+			case("backupfull"):
+				return Job::backup(true);
             case("initdownload"):
                 return $this->initdownload();
             case("updatedownload"):
@@ -91,10 +93,12 @@ class XCat
                 return $this->resetAllPort();
 			case("update"):
 			    return Update::update($this);
-            case ("sendDailyUsageByTG"):
+            case("sendDailyUsageByTG"):
                 return $this->sendDailyUsageByTG();
-            case ("iptest"):
+            case("iptest"):
                 return $this->iptest();
+			case('npmbuild'):
+				return $this->npmbuild();
 			default:
                 return $this->defaultAction();
         }
@@ -242,7 +246,6 @@ class XCat
         return "reset traffic successful";
     }
 
-
     public function setTelegram()
     {
         $bot = new \TelegramBot\Api\BotApi(Config::get('telegram_token'));
@@ -275,6 +278,7 @@ class XCat
             echo("finish....");
         }
     }
+
     public function sendDailyUsageByTG()
     {
         $bot = new \TelegramBot\Api\BotApi(Config::get('telegram_token'));
@@ -293,6 +297,7 @@ class XCat
             }
         }
     }
+
     public function iptest()
     {   $nodes = Node::all();
 
@@ -318,4 +323,11 @@ class XCat
             }
         }
     }
+
+	public function npmbuild(){
+		chdir(BASE_PATH.'/uim-index-dev');
+		system('npm install');
+		system('npm run build');
+		system('cp -u ../public/vuedist/index.html ../resources/views/material/index.tpl');
+	}
 }

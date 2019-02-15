@@ -72,6 +72,7 @@ class VueController extends BaseController {
             "telegram_bot" => Config::get('telegram_bot'),
             "enable_logincaptcha" => Config::get('enable_login_captcha'),
             "enable_regcaptcha" => Config::get('enable_reg_captcha'),
+            "enable_checkin_captcha" => Config::get('enable_checkin_captcha'),
             "base_url" => Config::get('baseUrl'),
             "recaptcha_sitekey" => $recaptcha_sitekey,
             "captcha_provider" => Config::get('captcha_provider'),
@@ -82,7 +83,7 @@ class VueController extends BaseController {
             "dateY" => date("Y"),
             "isLogin" => $user->isLogin,
             "enable_telegram" => Config::get('enable_telegram'),
-            "enable_crisp" => Config::get('enable_crisp'),
+            "enable_mylivechat" => Config::get('enable_mylivechat'),
         );
 
         $res['ret'] = 1;
@@ -105,6 +106,7 @@ class VueController extends BaseController {
         $user->ss_url_all = URL::getAllUrl($pre_user, 0, 2);
         $ssinfo = URL::getSSConnectInfo($pre_user);
         $user->ssd_url_all = URL::getAllSSDUrl($ssinfo);
+        $user->isAbleToCheckin = $user->isAbleToCheckin();
         $ssr_sub_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
         $GtSdk = null;
         $recaptcha_sitekey = null;
@@ -156,10 +158,8 @@ class VueController extends BaseController {
 			$code = InviteCode::where('user_id', $this->user->id)->first();
         }
 
-        $pageNum = 1;
-        if (isset($request->getQueryParams()["page"])) {
-            $pageNum = $request->getQueryParams()["page"];
-        }
+        $pageNum = $request->getParam('current');
+        
         $paybacks = Payback::where("ref_by", $this->user->id)->orderBy("id", "desc")->paginate(15, ['*'], 'page', $pageNum);
         if (!$paybacks_sum = Payback::where("ref_by", $this->user->id)->sum('ref_get')) {
             $paybacks_sum = 0;
@@ -172,6 +172,9 @@ class VueController extends BaseController {
             "paybacks_sum" => $paybacks_sum,
             "invitePrice" => Config::get('invite_price'),
             "customPrice" => Config::get('custom_invite_price'),
+            "invite_gift" => Config::get('invite_gift'),
+            "invite_get_money" => Config::get('invite_get_money'),
+            "code_payback" => Config::get('code_payback'),
         );
 
         $res['ret'] = 1;
@@ -255,6 +258,28 @@ class VueController extends BaseController {
 
         $res['ret'] = 1;
         
+        return $response->getBody()->write(json_encode($res));
+    }
+
+    public function getCaptcha($request, $response, $args) {
+        $GtSdk = null;
+        $recaptcha_sitekey = null;
+        if (Config::get('captcha_provider') != ''){
+            switch(Config::get('captcha_provider'))
+            {
+                case 'recaptcha':
+                    $recaptcha_sitekey = Config::get('recaptcha_sitekey');
+                    $res['recaptchaKey'] = $recaptcha_sitekey;
+                    break;
+                case 'geetest':
+                    $uid = time().rand(1, 10000) ;
+                    $GtSdk = Geetest::get($uid);
+                    $res['GtSdk'] = $GtSdk;
+                    break;
+            }
+        }
+
+        $res['respon'] = 1;
         return $response->getBody()->write(json_encode($res));
     }
 }

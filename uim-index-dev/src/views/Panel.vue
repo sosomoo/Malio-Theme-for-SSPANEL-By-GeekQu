@@ -64,12 +64,12 @@
                       class="pure-u-1-3 btn-user"
                       :key="key"
                     >
-                      <span slot="dpbtn-content">{{key}}</span>
-                      <ul slot="dp-menu">
+                      <template #dpbtn-content>{{key}}</template>
+                      <template #dp-menu>
                         <li v-for="agent in value" :key="agent.id">
                           <a :href="agent.href">{{agent.agentName}}</a>
                         </li>
-                      </ul>
+                      </template>
                     </uim-dropdown>
                   </div>
                 </transition>
@@ -83,7 +83,7 @@
                       v-show="toolTips.resetConfirm"
                       class="uim-tooltip-top flex justify-center"
                     >
-                      <div slot="tooltip-inner">
+                      <template #tooltip-inner>
                         <span>确定要重置订阅链接？</span>
                         <div>
                           <button @click="resetSubscribLink" class="tips tips-green">
@@ -93,7 +93,7 @@
                             <span class="fa fa-fw fa-remove"></span>
                           </button>
                         </div>
-                      </div>
+                      </template>
                     </uim-tooltip>
                   </span>
                 </h5>
@@ -119,9 +119,9 @@
                           v-show="toolTips[typeToken.muType]"
                           class="uim-tooltip-top flex justify-center"
                         >
-                          <div class="sublink" slot="tooltip-inner">
+                          <template #tooltip-inner>
                             <span>{{typeToken.subUrl}}</span>
-                          </div>
+                          </template>
                         </uim-tooltip>
                       </span>
                     </div>
@@ -148,9 +148,9 @@
                           v-show="toolTips.mu1"
                           class="uim-tooltip-top flex justify-center"
                         >
-                          <div class="sublink" slot="tooltip-inner">
+                          <template #tooltip-inner>
                             <span>{{suburlMu1}}</span>
-                          </div>
+                          </template>
                         </uim-tooltip>
                       </span>
                     </div>
@@ -163,7 +163,7 @@
         <div class="pure-u-1 pure-u-sm-17-24">
           <div class="card relative">
             <uim-anchor>
-              <ul slot="uim-anchor-inner">
+              <template #uim-anchor-inner>
                 <li
                   v-for="(page,index) in userSettings.pages"
                   @click="changeUserSetPage(index)"
@@ -171,7 +171,7 @@
                   :data-page="page.id"
                   :key="page.id"
                 ></li>
-              </ul>
+              </template>
             </uim-anchor>
             <transition name="fade" mode="out-in">
               <keep-alive>
@@ -188,19 +188,19 @@
           <div class="user-btngroup pure-g">
             <div class="pure-u-1-2 pure-u-sm-16-24 btngroup-left">
               <uim-dropdown>
-                <span slot="dpbtn-content">
+                <template #dpbtn-content>
                   <transition name="fade" mode="out-in">
                     <div :key="currentCardComponent">{{menuOptions[currentCardComponentIndex].name}}</div>
                   </transition>
-                </span>
-                <ul slot="dp-menu">
+                </template>
+                <template #dp-menu>
                   <li
                     @click="componentChange"
                     v-for="menu in menuOptions"
                     :data-component="menu.id"
                     :key="menu.id"
                   >{{menu.name}}</li>
-                </ul>
+                </template>
               </uim-dropdown>
               <a v-if="userCon.is_admin === true" class="btn-user" href="/admin">运营中心</a>
             </div>
@@ -273,7 +273,6 @@ export default {
             muType: "mu0",
             subUrl: this.suburlMu0
           };
-          break;
         case "SS/SSD":
           return {
             tagkey: "dl-ss",
@@ -282,7 +281,6 @@ export default {
             muType: "mu3",
             subUrl: this.suburlMu3
           };
-          break;
         case "V2RAY":
           return {
             tagkey: "dl-v2",
@@ -291,23 +289,18 @@ export default {
             muType: "mu2",
             subUrl: this.suburlMu2
           };
-          break;
       }
     },
     currentCardComponentIndex: function() {
       switch (this.currentCardComponent) {
         case "user-announcement":
           return 0;
-          break;
         case "user-guide":
           return 1;
-          break;
         case "user-invite":
           return 2;
-          break;
         case "user-shop":
           return 3;
-          break;
       }
     }
   },
@@ -371,7 +364,7 @@ export default {
           callConfig.icon += "fa-check-square-o";
           this.callMsgr(callConfig);
           window.setTimeout(() => {
-            this.setLoginToken(0);
+            this.setLoginToken(false);
             this.$router.replace("/");
           }, this.globalConfig.jumpDelay);
         }
@@ -436,6 +429,18 @@ export default {
         let index = this.indexMinus(this.userSettings.currentPageIndex);
         this.changeUserSetPage(index);
       }
+    },
+    showSigner() {
+      let promise = new Promise((resolve, reject) => {
+        this.setSignSet({ transition: true });
+        resolve();
+      });
+      promise.then(r => {
+        window.console.log(r);
+        setTimeout(() => {
+          this.setSignSet({ isSignShow: true });
+        }, 500);
+      });
     }
   },
   mounted() {
@@ -445,10 +450,10 @@ export default {
     _get("/getuserinfo", "include")
       .then(r => {
         if (r.ret === 1) {
-          console.log(r.info);
+          window.console.log(r.info);
           this.setUserCon(r.info.user);
           this.setUserSettings(this.userCon);
-          console.log(this.userCon);
+          window.console.log(this.userCon);
           if (r.info.ann) {
             this.ann = r.info.ann;
           }
@@ -466,6 +471,7 @@ export default {
       .then(r => {
         setTimeout(() => {
           self.userLoadState = "loaded";
+          this.showSigner();
         }, 1000);
       });
   },
@@ -477,7 +483,11 @@ export default {
     ) {
       next(false);
     } else {
-      next();
+      this.setSignSet({ isSignShow: false });
+      setTimeout(() => {
+        this.setSignSet({ transition: false });
+        next();
+      }, 200);
     }
   }
 };
