@@ -318,6 +318,8 @@ class LinkController extends BaseController
         $subInfo = LinkController::GetSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
         $confs = [];
+        $proxy_confs = [];
+        $back_china_confs=[];
         // ss
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach ($items as $item) {
@@ -340,6 +342,11 @@ class LinkController extends BaseController
                 } else {
                     $sss['obfs-host'] = "wns.windows.com";
                 }
+            }
+            if (strpos($sss['name'],"回国") or strpos($sss['name'],"China")){
+                $back_china_confs[] = $sss;
+            }else{
+                $proxy_confs[] = $sss;
             }
             $confs[] = $sss;
         }
@@ -364,15 +371,24 @@ class LinkController extends BaseController
             } elseif ($item['net'] == "tls") {
                 $v2rays['tls'] = true;
             }
+            if (strpos($v2rays['name'],"回国") or strpos($v2rays['name'],"China")){
+                $back_china_confs[] = $v2rays;
+            }else{
+                $proxy_confs[] = $v2rays;
+            }
             $confs[] = $v2rays;
         }
+
         $render = ConfRender::getTemplateRender();
         $render->assign('user', $user)
         ->assign('userapiUrl', $userapiUrl)
         ->assign('confs', $confs)
         ->assign('proxies', array_map(function ($conf) {
                 return $conf['name'];
-            }, $confs));
+            }, $proxy_confs))
+        ->assign('back_china_proxies',array_map(function ($conf) {
+            return $conf['name'];
+        }, $back_china_confs));
         return $render->fetch('clash.tpl');
     }
 
