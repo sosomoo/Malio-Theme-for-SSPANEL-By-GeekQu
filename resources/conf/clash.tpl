@@ -55,7 +55,9 @@ Proxy:
 
 Proxy Group:
   - { name: "Auto", type: url-test, proxies: {$proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
+  - { name: "Load-Balance", type: load-balance, proxies: {$proxies|json_encode} }
 {append var='proxies' value='Auto'}
+{append var='proxies' value="Load-Balance"}
   - { name: "Proxy", type: select, proxies: {$proxies|json_encode} }
   - { name: "Domestic", type: select, proxies: ["DIRECT","Proxy"] }
   - { name: "China_media", type: select, proxies: ["Domestic","Proxy"]}
