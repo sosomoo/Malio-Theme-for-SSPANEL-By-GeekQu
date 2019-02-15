@@ -219,11 +219,17 @@ class LinkController extends BaseController
             $subUrl = $subInfo['link'];
         }
         else {
+            $back_china_name = "";
             $v2ray_group = "";
             $v2ray_name = "";
             $v2rays = URL::getAllVMessUrl($user, 1);
             foreach($v2rays as $v2ray) {
-                $v2ray_name .= "\n" . $v2ray['ps'];
+                if (strpos($v2ray['ps'],"回国") or strpos($v2ray['ps'],"China")){
+                   $back_china_name .="\n". $v2ray['ps'];
+                }else{
+
+                    $v2ray_name .= "\n" . $v2ray['ps'];
+                }
                 $v2ray_tls = ", over-tls=false, certificate=1";
                 if ($v2ray['tls'] == "tls"){
                     $v2ray_tls = ", over-tls=true, tls-host=" . $v2ray['add'] . ", certificate=1";
@@ -251,18 +257,27 @@ class LinkController extends BaseController
                 $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
                 foreach($items as $item) {
                     $ss_group .= $item['remark'] . " = shadowsocks, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", upstream-proxy=false, upstream-proxy-auth=false" . URL::getSurgeObfs($item) . ", group=" . Config::get('appName') . "\n";
-                    $ss_name .= "\n" . $item['remark'];
+
+                    if (strpos($item['remark'],"回国") or strpos($item['remark'],"China")){
+                        $back_china_name .="\n". $item['remark'];
+                    }else{
+                        $ss_name .= "\n" . $item['remark'];
+                    }
                 }
                 $ssr_group = "";
                 $ssr_name = "";
                 $ssrs = array_merge(URL::getAllItems($user, 0, 0), URL::getAllItems($user, 1, 0));
                 foreach($ssrs as $item) {
                     $ssr_group .= $item['remark'] . " = shadowsocksr, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", protocol=" . $item['protocol'] . ", protocol_param=" . $item['protocol_param'] . ", obfs=" . $item['obfs'] . ", obfs_param=\"" . $item['obfs_param'] . "\", group=" . Config::get('appName') . "\n";
-                    $ssr_name .= "\n" . $item['remark'];
+                    if (strpos($item['remark'],"回国") or strpos($item['remark'],"China")){
+                        $back_china_name .="\n". $item['remark'];
+                    }else{
+                        $ssr_name .= "\n" . $item['remark'];
+                    }
                 }
                 $quan_proxy_group = base64_encode("🍃 Proxy  :  static, 🏃 Auto\n🏃 Auto\n🚀 Direct\n" . $ss_name . $ssr_name . $v2ray_name);
                 $quan_auto_group = base64_encode("🏃 Auto  :  auto\n" . $ss_name . $ssr_name . $v2ray_name);
-                $quan_domestic_group = base64_encode("🍂 Domestic  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
+                $quan_domestic_group = base64_encode("🍂 Domestic  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy\n".$back_china_name);
                 $quan_others_group = base64_encode("☁️ Others  :   static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
                 $quan_apple_group = base64_encode("🍎 Only  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
                 $quan_direct_group = base64_encode("🚀 Direct : static, DIRECT\nDIRECT");
