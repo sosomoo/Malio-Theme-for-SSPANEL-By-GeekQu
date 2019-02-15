@@ -386,14 +386,12 @@ class LinkController extends BaseController
         $return_url = '';
         // SSR
         if ($sub == 1) {
-            $return_url .= URL::getAllUrl($user, 0, 0, $extend) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 1, 0, $extend) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, $mu, 0, $extend).PHP_EOL;
             return Tools::base64_url_encode($return_url);
         }
         // SS
         elseif ($sub == 2) {
-            $return_url .= URL::getAllUrl($user, 0, 1, $extend) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 1, 1, $extend) . PHP_EOL;
+            $return_url .= URL::getAllUrl($user, $mu, 1, $extend).PHP_EOL;
             return Tools::base64_url_encode($return_url);
         }
         // V2
@@ -402,18 +400,15 @@ class LinkController extends BaseController
         }
         // V2 + SS
         elseif ($sub == 4) {
-            $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 1, $extend) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 1, 1, $extend) . PHP_EOL;
+            $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
+            $return_url .= URL::getAllUrl($user, $mu, 1, $extend).PHP_EOL;
             return Tools::base64_url_encode($return_url);
         }
         // V2 + SS + SSR
         elseif ($sub == 5) {
-            $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 0, $extend) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 1, 0, $extend) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 1, $extend) . PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 1, 1, $extend) . PHP_EOL;
+            $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
+            $return_url .= URL::getAllUrl($user, $mu, 0, $extend).PHP_EOL;
+            $return_url .= URL::getAllUrl($user, $mu, 1, $extend).PHP_EOL;
             return Tools::base64_url_encode($return_url);
         }
     }
