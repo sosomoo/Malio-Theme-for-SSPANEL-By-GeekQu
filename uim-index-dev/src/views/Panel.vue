@@ -100,7 +100,7 @@
                 <transition name="rotate-fade" mode="out-in">
                   <div class="input-copy" :key="typeToken.subKey">
                     <div class="pure-g align-center relative">
-                      <span class="pure-u-6-24">{{currentDlType === 'SSR' ? '普通端口:' : '订阅链接:'}}</span>
+                      <span class="pure-u-6-24">订阅链接</span>
                       <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
                         <input
                           v-uimclip="{ onSuccess:successCopied }"
@@ -121,35 +121,6 @@
                         >
                           <template #tooltip-inner>
                             <span>{{typeToken.subUrl}}</span>
-                          </template>
-                        </uim-tooltip>
-                      </span>
-                    </div>
-                    <div
-                      v-if="currentDlType === 'SSR' && mergeSub !== 'true'"
-                      class="pure-g align-center relative"
-                    >
-                      <span class="pure-u-6-24">单端口:</span>
-                      <span class="pure-u-18-24 pure-g relative flex justify-center text-center">
-                        <input
-                          v-uimclip="{ onSuccess:successCopied }"
-                          :data-uimclip="suburlMu1"
-                          @mouseenter="showToolTip('mu1')"
-                          @mouseleave="hideToolTip('mu1')"
-                          :class="{ 'sublink-reset':subLinkTrans }"
-                          class="tips tips-blue pure-u-1"
-                          type="text"
-                          name
-                          id
-                          :value="suburlMu1"
-                          readonly
-                        >
-                        <uim-tooltip
-                          v-show="toolTips.mu1"
-                          class="uim-tooltip-top flex justify-center"
-                        >
-                          <template #tooltip-inner>
-                            <span>{{suburlMu1}}</span>
                           </template>
                         </uim-tooltip>
                       </span>
