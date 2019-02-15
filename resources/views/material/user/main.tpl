@@ -136,7 +136,7 @@
 							</li>
 
 							<li>
-								<a href="/user/tutorial">
+								<a href="/doc/">
 									<i class="icon icon-lg">start</i>&nbsp;使用教程
 								</a>
 							</li>
