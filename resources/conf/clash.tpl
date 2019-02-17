@@ -54,15 +54,13 @@ Proxy:
 {/foreach}
 
 Proxy Group:
-  - { name: "Auto", type: url-test, proxies: {$proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
-  - { name: "Load-Balance", type: load-balance, proxies: {$proxies|json_encode} }
-  {append var='proxies' value='Auto'}
-  {append var='proxies' value="Load-Balance"}
+  - { name: "Auto", type: fallback, proxies: {$proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
 
-  - { name: "Back_China_Auto", type: url-test, proxies: {$back_china_proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
-  - { name: "Back_China_Load-Balance", type: load-balance, proxies: {$back_china_proxies|json_encode} }
+  {append var='proxies' value='Auto'}
+
+  - { name: "Back_China_Auto", type: fallback, proxies: {$back_china_proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
+
   {append var='back_china_proxies' value='Back_China_Auto'}
-  {append var='back_china_proxies' value="Back_China_Load-Balance"}
 
   - { name: "Proxy", type: select, proxies: {$proxies|json_encode} }
   - { name: "Back_China_Proxy", type: select, proxies: {$back_china_proxies|json_encode} }
