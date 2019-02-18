@@ -1,11 +1,15 @@
 <template>
   <div class="uim-dropdown">
     <button @click.stop="show" class="uim-dropdown-btn">
-      <slot name="dpbtn-content"></slot>
+      <span>
+        <slot name="dpbtn-content"></slot>
+      </span>
     </button>
     <transition name="dropdown-fade" mode="out-in">
       <div v-show="isDropdown" @click.stop="hide" class="uim-dropdown-menu">
-        <slot name="dp-menu"></slot>
+        <ul>
+          <slot name="dp-menu"></slot>
+        </ul>
       </div>
     </transition>
   </div>
@@ -43,7 +47,7 @@ export default {
 <style>
 .uim-dropdown-btn {
   font-size: 1rem;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 0.5rem;
   display: inline-block;
   border: 1px solid #434857;
   min-width: 80px;
@@ -119,5 +123,10 @@ export default {
 .dl-link .uim-dropdown-menu {
   min-width: unset;
   width: 100%;
+}
+@media screen and (min-width: 35.5em) {
+  .uim-dropdown-btn {
+    padding: 0.5rem 1.5rem;
+  }
 }
 </style>

@@ -13,7 +13,9 @@
       </div>
       <div class="input-control flex wrap">
         <uim-checkbox v-model="remember_me">
-          <span slot="content">记住我</span>
+          <template #content>
+            <span>记住我</span>
+          </template>
         </uim-checkbox>
       </div>
       <div class="input-control flex wrap">
@@ -47,7 +49,8 @@
       </div>
       <p id="telegram-alert">正在载入 Telegram，如果长时间未显示请刷新页面或检查代理</p>
       <div class="text-center" id="telegram-login-box"></div>
-      <p>或者添加机器人账号
+      <p>
+        或者添加机器人账号
         <a :href="telegramHref">@{{globalConfig.telegram_bot}}</a>，发送下面的数字/二维码验证码给它
       </p>
       <transition name="fade" mode="out-in">
@@ -68,19 +71,19 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
-import storeMap from '@/mixins/storeMap'
-import storeAuth from '@/mixins/storeAuth'
+import storeMap from "@/mixins/storeMap";
+import storeAuth from "@/mixins/storeAuth";
 
-import Checkbox from '@/components/checkbox.vue'
+import Checkbox from "@/components/checkbox.vue";
 
-import { _post } from '../js/fetch'
+import { _post } from "../js/fetch";
 
 export default {
   mixins: [storeMap, storeAuth],
   components: {
-    "uim-checkbox": Checkbox,
+    "uim-checkbox": Checkbox
   },
   computed: mapState({
     telegramHref: function() {
@@ -101,7 +104,6 @@ export default {
   },
   methods: {
     login() {
-
       this.isDisabled = true;
 
       let ajaxCon = {
@@ -119,10 +121,10 @@ export default {
       if (this.globalConfig.enableLoginCaptcha !== "false") {
         switch (this.globalConfig.captchaProvider) {
           case "recaptcha":
-            ajaxCon.recaptcha = grecaptcha.getResponse();
+            ajaxCon.recaptcha = window.grecaptcha.getResponse();
             break;
           case "geetest":
-            if (this.validate !== '') {
+            if (this.validate !== "") {
               ajaxCon.geetest_challenge = this.validate.geetest_challenge;
               ajaxCon.geetest_validate = this.validate.geetest_validate;
               ajaxCon.geetest_seccode = this.validate.geetest_seccode;
@@ -139,7 +141,7 @@ export default {
           callConfig.icon += "fa-check-square-o";
           this.callMsgr(callConfig);
           window.setTimeout(() => {
-            this.setLoginToken(1);
+            this.setLoginToken(true);
             this.$router.replace("/user/panel");
           }, this.globalConfig.jumpDelay);
         } else {
@@ -168,7 +170,7 @@ export default {
       el.setAttribute("data-request-access", "write");
 
       let telegram_qrcode = "mod://login/" + this.globalConfig.login_token;
-      let qrcode = new QRCode(document.getElementById("telegram-qr"));
+      let qrcode = new window.QRCode(document.getElementById("telegram-qr"));
       qrcode.clear();
       qrcode.makeCode(telegram_qrcode);
     },
@@ -189,40 +191,42 @@ export default {
           number: this.globalConfig.login_number
         }),
         "include"
-      ).then(r => {
-        if (r.ret > 0) {
+      )
+        .then(r => {
+          if (r.ret > 0) {
+            clearTimeout(tid);
+            _post(
+              "/auth/qrcode_login",
+              JSON.stringify({
+                token: this.globalConfig.login_token,
+                number: this.globalConfig.login_number
+              }),
+              "include"
+            ).then(r => {
+              if (r.ret) {
+                callConfig.msg += "登录成功Kira~";
+                callConfig.icon += "fa-check-square-o";
+                this.callMsgr(callConfig);
+                window.setTimeout(() => {
+                  this.setLoginToken(true);
+                  this.$router.replace("/user/panel");
+                }, this.globalConfig.jumpDelay);
+              }
+            });
+          } else if (r.ret === -1) {
+            this.isTgtimeout = true;
+          }
+        })
+        .catch(r => {
           clearTimeout(tid);
-          _post(
-            "/auth/qrcode_login",
-            JSON.stringify({
-              token: this.globalConfig.login_token,
-              number: this.globalConfig.login_number
-            }),
-            "include"
-          ).then(r => {
-            if (r.ret) {
-              callConfig.msg += "登录成功Kira~";
-              callConfig.icon += "fa-check-square-o";
-              this.callMsgr(callConfig);
-              window.setTimeout(() => {
-                this.setLoginToken(1);
-                this.$router.replace("/user/panel");
-              }, this.globalConfig.jumpDelay);
-            }
-          });
-        } else if (r.ret == -1) {
-          this.isTgtimeout = true;
-        }
-      }).catch((r)=>{
-        clearTimeout(tid)
-        throw r
-      });
+          throw r;
+        });
       tid = setTimeout(() => {
         this.tgAuthTrigger(tid);
       }, 2500);
     },
     loginBindEnter(e) {
-      if (this.$route.path === "/auth/login" && e.keyCode == 13) {
+      if (this.$route.path === "/auth/login" && e.keyCode === 13) {
         this.login();
       }
     }
@@ -249,4 +253,3 @@ export default {
   }
 };
 </script>
-

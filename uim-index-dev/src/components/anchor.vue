@@ -1,6 +1,8 @@
 <template>
   <div class="uim-anchor">
-    <slot class="uim-anchor-inner" name="uim-anchor-inner"></slot>
+    <ul class="uim-anchor-inner">
+      <slot name="uim-anchor-inner"></slot>
+    </ul>
   </div>
 </template>
 
@@ -32,6 +34,7 @@ export default {
   transition: all 0.3s;
   cursor: pointer;
   z-index: 1;
+  outline: none;
 }
 
 .uim-anchor li:hover {
