@@ -64,11 +64,14 @@ Proxy:
 {/foreach}
 
 Proxy Group:
-  - { name: "Auto", type: url-test, proxies: {$proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
-{append var='proxies' value='Auto'}
+  - { name: "Auto", type: fallback, proxies: {$proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
+  {append var='proxies' value='Auto'}
+  - { name: "Back_China_Auto", type: fallback, proxies: {$back_china_proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
+  {append var='back_china_proxies' value='Back_China_Auto'}
   - { name: "Proxy", type: select, proxies: {$proxies|json_encode} }
+  - { name: "Back_China_Proxy", type: select, proxies: {$back_china_proxies|json_encode} }
   - { name: "Domestic", type: select, proxies: ["DIRECT","Proxy"] }
-  - { name: "China_media", type: select, proxies: ["Domestic","Proxy"]}
+  - { name: "China_media", type: select, proxies: ["Domestic","Proxy","Back_China_Proxy"]}
   - { name: "Global_media", type: select, proxies: ["Proxy"]}
   - { name: "Others", type: select, proxies: ["Proxy","Domestic"]}
 
