@@ -15,13 +15,13 @@ udp-replay = true
 {$ss_group}
 
 [Proxy Group]
+🍈 Select = select{$ss_name}
+
 🍃 Proxy = select, 🍈 Select, 🚀 Direct
 
 🍂 Domestic = select, 🚀 Direct, 🍃 Proxy
 
 ☁️ Others = select, 🍃 Proxy, 🚀 Direct
-
-🍈 Select = select{$ss_name}
 
 [Rule]
 {include file='rule/PROXY.conf'}
