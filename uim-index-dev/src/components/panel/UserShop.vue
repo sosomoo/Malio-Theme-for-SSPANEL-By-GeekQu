@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="pure-g">
-      <div class="pure-u-20-24 flex align-center">
+      <div class="pure-u-1 wrap flex align-center">
         <div class="card-title">套餐购买</div>
         <transition name="fade" mode="out-in">
           <label v-if="isCheckerShow" class="relative" for>
@@ -25,18 +25,19 @@
     <div class="card-body">
       <div class="user-shop">
         <div v-for="shop in shops" class="list-shop pure-g" :key="shop.id">
-          <div class="pure-u-20-24">
-            <span>{{shop.name}}</span>
+          <div class="pure-u-1 pure-u-sm-20-24">
+            <span class="user-shop-name">{{shop.name}}</span>
             <span class="tips tips-gold">VIP {{shop.details.class}}</span>
             <span class="tips tips-green">￥{{shop.price}}</span>
-            <span class="tips tips-cyan">{{shop.details.bandwidth}}G
+            <span class="tips tips-cyan">
+              {{shop.details.bandwidth}}G
               <span
                 v-if="shop.details.reset"
               >+{{shop.details.reset_value}}G/({{shop.details.reset}}天/{{shop.details.reset_exp}}天)</span>
             </span>
-            <span class="tips tips-blue">{{shop.details.class_expire}}天</span>
+            <span v-if="shop.details.class_expire !== '0'" class="tips tips-blue">{{shop.details.class_expire}}天</span>
           </div>
-          <div class="pure-u-4-24 text-right">
+          <div class="pure-u-1 pure-u-sm-4-24 list-shop-footer">
             <button :disabled="isDisabled" class="buy-submit" @click="buy(shop)">购买</button>
           </div>
         </div>
@@ -53,13 +54,16 @@
       >
         <h3 slot="uim-modal-title">{{modalCon.title}}</h3>
         <div class="flex align-center justify-center wrap" slot="uim-modal-body">
-          <div class="order-checker-content">商品名称：
+          <div class="order-checker-content">
+            商品名称：
             <span>{{orderCheckerContent.name}}</span>
           </div>
-          <div class="order-checker-content">优惠额度：
+          <div class="order-checker-content">
+            优惠额度：
             <span>{{orderCheckerContent.credit}}</span>
           </div>
-          <div class="order-checker-content">总金额：
+          <div class="order-checker-content">
+            总金额：
             <span>{{orderCheckerContent.total}}</span>
           </div>
         </div>
@@ -73,20 +77,19 @@
 </template>
 
 <script>
-import storeMap from '@/mixins/storeMap'
-import userMixin from '@/mixins/userMixin'
+import storeMap from "@/mixins/storeMap";
+import userMixin from "@/mixins/userMixin";
 
-import Shopmodal from '@/components/shopmodal.vue'
-import Switch from '@/components/switch.vue'
+import Shopmodal from "@/components/modal.vue";
+import Switch from "@/components/switch.vue";
 
-import { _get } from '../../js/fetch'
-import { _post } from '../../js/fetch'
+import { _get, _post } from "../../js/fetch";
 
 export default {
   mixins: [userMixin, storeMap],
   components: {
-    'uim-modal': Shopmodal,
-    'uim-switch': Switch,
+    "uim-modal": Shopmodal,
+    "uim-switch": Switch
   },
   data: function() {
     return {
@@ -170,7 +173,7 @@ export default {
       _post("/user/buy", JSON.stringify(ajaxCon), "include").then(r => {
         let self = this;
         if (r.ret) {
-          console.log(r);
+          window.console.log(r);
           this.callOrderChecker();
           this.reConfigResourse();
           this.$emit("resourseTransTrigger");
@@ -179,7 +182,7 @@ export default {
             icon: "fa-check-square-o",
             time: 1500
           };
-          let animation = new Promise(function(resolve) {
+          let animation = new Promise(function (resolve) {
             self.callOrderChecker();
             setTimeout(() => {
               resolve("done");
@@ -189,8 +192,8 @@ export default {
             this.callMsgr(callConfig);
           });
         } else {
-          console.log(r);
-          let animation = new Promise(function(resolve) {
+          window.console.log(r);
+          let animation = new Promise(function (resolve) {
             self.callOrderChecker();
             setTimeout(() => {
               resolve("done");
@@ -215,20 +218,55 @@ export default {
         }
       });
     },
-    hideChecker() {
+    hideChecker () {
       this.isCheckerShow = false;
       this.isDisabled = false;
     }
   },
-  mounted() {
+  mounted () {
     _get("/getusershops", "include").then(r => {
       this.shops = r.arr.shops;
       this.shops.forEach((el, index) => {
         this.$set(this.shops[index], "details", JSON.parse(el.content));
       });
-      console.log(this.shops);
+      window.console.log(this.shops);
     });
   }
 };
 </script>
 
+<style>
+.user-shop-name {
+  display: block;
+  text-align: center;
+}
+.list-shop .tips {
+  margin-top: 0.5rem;
+}
+.list-shop-footer {
+  margin-top: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #434857;
+  text-align: right;
+}
+.list-shop:hover {
+  transform: translate3D(0.5rem, 0, 0);
+}
+@media screen and (min-width: 35.5em) {
+  .user-shop-name {
+    display: inline-block;
+    text-align: left;
+  }
+  .list-shop .tips {
+    margin-top: 0;
+  }
+  .list-shop-footer {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .list-shop:hover {
+    transform: translate3D(1rem, 0, 0);
+  }
+}
+</style>

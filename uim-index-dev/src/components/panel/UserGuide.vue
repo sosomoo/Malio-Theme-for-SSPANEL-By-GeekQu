@@ -1,28 +1,53 @@
 <template>
-  <div>
+  <div class="relative" style="overflow-x:hidden">
+    <div
+      @click.stop
+      class="userguide-bookmark-container pure-u-1-2 pure-u-sm-4-24 flex align-center absolute"
+      :class="{ 'userguide-bookmark-active':isBookmarkShow }"
+    >
+      <button @click="bookmarkTrigger" class="userguide-bookmark-drawer absolute">
+        <div>
+          <span class="fa fa-chevron-left"></span>
+        </div>
+        <div>平</div>
+        <div>台</div>
+        <div>选</div>
+        <div>择</div>
+      </button>
+      <div class="userguide-bookmark flex align-center wrap" :key="agentToken.markKey">
+        <button
+          v-for="mark in agentToken.tips"
+          @click="setCurrentPlantformType(mark.type)"
+          :key="mark.id"
+        >
+          <span class="btn-anchor"></span>
+          {{mark.type}}
+        </button>
+      </div>
+    </div>
     <div class="flex space-between align-center">
       <div class="card-title">配置指南</div>
       <div class="card-title-right">
         <uim-dropdown>
-          <span slot="dpbtn-content">
+          <template #dpbtn-content>
             <transition name="fade" mode="out-in">
               <div :key="agentToken.menuKey">{{currentDlType}}</div>
             </transition>
-          </span>
-          <ul slot="dp-menu">
+          </template>
+          <template #dp-menu>
             <li
               @click="changeAgentType"
               v-for="dl in downloads"
               :data-type="dl.type"
               :key="dl.type"
             >{{dl.type}}</li>
-          </ul>
+          </template>
         </uim-dropdown>
       </div>
     </div>
     <div class="card-body">
       <div class="user-guide pure-g relative">
-        <div class="pure-u-20-24 relative">
+        <div class="pure-u-19-24 relative">
           <transition name="slide-fadex">
             <div class="absolute guide-area" :key="currentDlType">
               <transition-group name="list" class="relative guide-area">
@@ -94,6 +119,7 @@
                           name="iosAccount"
                           readonly="readonly"
                           class="tips tips-blue"
+                          :value="iosAccount"
                         >
                         <label for="iosPass">公共IOS密码</label>
                         <input
@@ -103,6 +129,7 @@
                           name="iosPass"
                           readonly="readonly"
                           class="tips tips-blue"
+                          :value="iosPassword"
                         >
                       </span>
                       <span v-else>
@@ -120,22 +147,97 @@
             </div>
           </transition>
         </div>
-        <div class="pure-u-4-24 flex align-center">
-          <div class="userguide-bookmark flex align-center wrap" :key="agentToken.markKey">
-            <button
-              v-for="mark in agentToken.tips"
-              @click="setCurrentPlantformType(mark.type)"
-              :key="mark.id"
-            >
-              <span class="btn-anchor"></span>
-              {{mark.type}}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </template>
+
+<style>
+.userguide-bookmark-container {
+  z-index: 1;
+  top: 20%;
+  padding: 0 0.5rem 1rem 0.5rem;
+  right: -50%;
+}
+.userguide-bookmark-container,
+.userguide-bookmark-container > button span {
+  transition: all 0.4s;
+}
+.userguide-bookmark-active {
+  right: 0;
+  background: white;
+  box-shadow: 0 0 5px 0 #b4b4b4;
+}
+.userguide-bookmark-active > button {
+  background: white;
+  color: black;
+  border-color: white;
+}
+.userguide-bookmark-active > button span {
+  transform: rotateZ(180deg);
+}
+.userguide-bookmark-active .userguide-bookmark button {
+  border: 1px solid;
+  background: #4a4a4a;
+}
+.userguide-bookmark {
+  justify-content: flex-end;
+}
+.guide-area p {
+  margin-top: 0;
+}
+.guide-area > p:last-of-type {
+  margin-bottom: 1rem;
+}
+.guide-area {
+  padding-right: 1rem;
+  width: 100%;
+}
+.userguide-bookmark button {
+  background-color: #c8c8c81f;
+  border: none;
+  padding: 0.6rem 0;
+  outline: none;
+  display: block;
+  margin-top: 1rem;
+  font-size: 12px;
+  text-align: left;
+  padding-left: 1rem;
+  width: 100%;
+  border-radius: 20px;
+}
+.userguide-bookmark > div {
+  width: 100%;
+}
+.userguide-bookmark-drawer,
+.userguide-bookmark-container {
+  border: 1px solid;
+  border-right: 0;
+  border-radius: 5px 0 0 5px;
+}
+.userguide-bookmark-drawer {
+  right: 100%;
+  width: 30px;
+  text-align: center;
+  padding: 0.3rem;
+  font-size: 13px;
+  background: transparent;
+  outline: none;
+}
+@media screen and (min-width: 35.5em) {
+  .userguide-bookmark-container {
+    right: 5%;
+    padding: 0;
+    border: 0;
+  }
+  .userguide-bookmark {
+    justify-content: unset;
+  }
+  .userguide-bookmark-drawer {
+    display: none;
+  }
+}
+</style>
 
 <script>
 import storeMap from "@/mixins/storeMap";
@@ -159,7 +261,6 @@ export default {
             markKey: "guide-mark-ssr",
             tips: this.agentContent["SSR"]
           };
-          break;
         case "SS/SSD":
           return {
             menuKey: "guide-nemu-ss",
@@ -167,7 +268,6 @@ export default {
             markKey: "guide-mark-ss",
             tips: this.agentContent["SS/SSD"]
           };
-          break;
         case "V2RAY":
           return {
             menuKey: "guide-nemu-v2",
@@ -175,7 +275,6 @@ export default {
             markKey: "guide-mark-v2",
             tips: this.agentContent["V2RAY"]
           };
-          break;
       }
     },
     currentSteps: function() {
@@ -183,22 +282,16 @@ export default {
       switch (this.currentPlantformType) {
         case "WINDOWS":
           return arr[0].steps;
-          break;
         case "MACOS":
           return arr[1].steps;
-          break;
         case "LINUX":
           return arr[2].steps;
-          break;
         case "IOS":
           return arr[3].steps;
-          break;
         case "ANDROID":
           return arr[4].steps;
-          break;
         case "ROUTER":
           return arr[5].steps;
-          break;
       }
     }
   },
@@ -208,10 +301,29 @@ export default {
       urlStr = urlStr.substring(0, urlStr.length);
       let newUrl = "sub://" + urlStr + "#";
       window.location.href = newUrl;
+    },
+    bookmarkTrigger() {
+      if (this.isBookmarkShow === false) {
+        this.isBookmarkShow = true;
+      } else {
+        this.isBookmarkShow = false;
+      }
+    },
+    hideBookmark() {
+      this.isBookmarkShow = false;
     }
+  },
+  mounted() {
+    let app = document.getElementById("app");
+    app.addEventListener("click", this.hideBookmark, false);
+  },
+  beforeDestroy() {
+    let app = document.getElementById("app");
+    app.removeEventListener("click", this.hideBookmark, false);
   },
   data: function() {
     return {
+      isBookmarkShow: false,
       agentContent: {
         SSR: [
           {
@@ -244,34 +356,31 @@ export default {
               },
               {
                 num: "SSTAP游戏端",
-                content:
-                  "",
-                id: "GT_W_0_5",
+                content: "",
+                id: "GT_W_0_5"
               },
               {
                 num: 1,
                 content:
                   "下载SSTap，并安装，期间会安装虚拟网卡，请点击允许或确认",
-                id: "GT_W_0_6",
+                id: "GT_W_0_6"
               },
               {
                 num: 2,
-                content:
-                  "打开桌面程序SSTAP",
-                id: "GT_W_0_7",
+                content: "打开桌面程序SSTAP",
+                id: "GT_W_0_7"
               },
               {
                 num: 3,
-                content:
-                  "齿轮图标-SSR订阅-SSR订阅管理添加以下订阅链接即可",
-                id: "GT_W_0_8",
+                content: "齿轮图标-SSR订阅-SSR订阅管理添加以下订阅链接即可",
+                id: "GT_W_0_8"
               },
               {
                 num: 4,
                 content:
                   "更新后选择其中一个节点闪电图标测试节点-测试UDP转发...通过!（UDP通过即可连接并开始游戏）",
-                id: "GT_W_0_9",
-              },
+                id: "GT_W_0_9"
+              }
             ]
           },
           {
@@ -681,12 +790,11 @@ export default {
                 id: "GT_I_2_2"
               },
               {
-                num: '备用',
-                content:
-                  "使用shadowrocket一键订阅",
+                num: "备用",
+                content: "使用shadowrocket一键订阅",
                 id: "GT_I_2_3",
-                extra: true,
-              },
+                extra: true
+              }
             ]
           },
           {
