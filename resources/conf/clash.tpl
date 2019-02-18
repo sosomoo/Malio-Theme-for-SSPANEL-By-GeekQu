@@ -29,7 +29,7 @@ external-controller: '0.0.0.0:8233'
 # RESTful API 的口令
 secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}MixsChina{/if}'
 
-# 您可以将静态网页资源（如 clash-dashboard）放置在一个目录中，clash 将会服务于 `${API}/ui`
+# 您可以将静态网页资源（如 clash-dashboard）放置在一个目录中，clash 将会服务于 `RESTful API/ui`
 # 参数应填写配置目录的相对路径或绝对路径。
 # external-ui: folder
 
