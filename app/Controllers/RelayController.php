@@ -129,7 +129,7 @@ class RelayController extends UserController
         )->where('type', 1)->where(
             function ($query) {
                 $query->Where('sort', 0)
-                    ->orWhere('sort', 10)->orWhere('sort',12);
+                    ->orWhere('sort', 10)->orWhere('sort',12)->orWhere('sort',11);
             }
         )->where("node_class", "<=", $user->class)->orderBy('name')->get();
 
@@ -145,6 +145,14 @@ class RelayController extends UserController
             $mu_user = User::where('port', $port_raw->server)->first();
             if ($mu_user->is_multi_user == 1) {
                 array_push($ports, $port_raw->server);
+            }
+        }
+
+        foreach ($dist_nodes as $node){
+            if ($node->sort==11 or $node->sort==12){
+                $node_explode = explode(';', $node->server);
+                array_push($ports, $node_explode[1]);
+                $node->name = $node->name." V2ray 端口请选择: ".$node_explode[1];
             }
         }
 

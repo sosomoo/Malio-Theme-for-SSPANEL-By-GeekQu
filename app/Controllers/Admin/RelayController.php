@@ -35,9 +35,16 @@ class RelayController extends AdminController
         $dist_nodes = Node::where(
             function ($query) {
                 $query->Where('sort', 0)
-                    ->orWhere('sort', 10)->orWhere('sort',12);
+                    ->orWhere('sort', 10)->orWhere('sort',12)->orWhere('sort',11);
             }
         )->orderBy('name')->get();
+
+        foreach ($dist_nodes as $node){
+            if ($node->sort==11 or $node->sort==12){
+                $node_explode = explode(';', $node->server);
+                $node->name = $node->name." V2ray 端口请设置成: ".$node_explode[1];
+            }
+        }
 
 
         return $this->view()->assign('source_nodes', $source_nodes)->assign('dist_nodes', $dist_nodes)->display('admin/relay/add.tpl');
@@ -118,9 +125,16 @@ class RelayController extends AdminController
         $dist_nodes = Node::where(
             function ($query) {
                 $query->Where('sort', 0)
-                    ->orWhere('sort', 10)->orWhere('sort',12);
+                    ->orWhere('sort', 10)->orWhere('sort',12)->orWhere('sort',11);
             }
         )->orderBy('name')->get();
+
+        foreach ($dist_nodes as $node){
+            if ($node->sort==11 or $node->sort==12){
+                $node_explode = explode(';', $node->server);
+                $node->name = $node->name." V2ray 端口请设置成: ".$node_explode[1];
+            }
+        }
 
         return $this->view()->assign('rule', $rule)->assign('source_nodes', $source_nodes)->assign('dist_nodes', $dist_nodes)->display('admin/relay/edit.tpl');
     }
