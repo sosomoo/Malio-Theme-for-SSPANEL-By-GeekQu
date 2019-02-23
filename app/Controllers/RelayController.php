@@ -31,7 +31,7 @@ class RelayController extends UserController
                 $query->Where("node_group", "=", $user->node_group)
                       ->orWhere("node_group", "=", 0);
             }
-        )->where('type', 1)->where("sort", "=", 10)->where("node_class", "<=", $user->class)->orderBy('name')->get();
+        )->where('type', 1)->where("sort", "=", 10)->orwhere("sort","=",12)->where("node_class", "<=", $user->class)->orderBy('name')->get();
 
         $pathset = new \ArrayObject();
 
@@ -119,7 +119,7 @@ class RelayController extends UserController
                 $query->Where("node_group", "=", $user->node_group)
                     ->orWhere("node_group", "=", 0);
             }
-        )->where('type', 1)->where('sort', 10)->where("node_class", "<=", $user->class)->orderBy('name')->get();
+        )->where('type', 1)->where('sort', 10)->orwhere('sort',12)->where("node_class", "<=", $user->class)->orderBy('name')->get();
 
         $dist_nodes = Node::where(
             function ($query) use ($user) {
@@ -129,7 +129,7 @@ class RelayController extends UserController
         )->where('type', 1)->where(
             function ($query) {
                 $query->Where('sort', 0)
-                    ->orWhere('sort', 10);
+                    ->orWhere('sort', 10)->orWhere('sort',12);
             }
         )->where("node_class", "<=", $user->class)->orderBy('name')->get();
 
@@ -167,7 +167,7 @@ class RelayController extends UserController
                 $query->Where("node_group", "=", $user->node_group)
                     ->orWhere("node_group", "=", 0);
             }
-        )->where('type', 1)->where('sort', 10)->where("node_class", "<=", $user->class)->first();
+        )->where('type', 1)->where('sort', 10)->orwhere('sort',12)->where("node_class", "<=", $user->class)->first();
         if ($source_node == null) {
             $rs['ret'] = 0;
             $rs['msg'] = "起源节点错误";
@@ -182,7 +182,7 @@ class RelayController extends UserController
         )->where('type', 1)->where(
             function ($query) {
                 $query->Where('sort', 0)
-                    ->orWhere('sort', 10);
+                    ->orWhere('sort', 10)->orWhere('sort',12);
             }
         )->where("node_class", "<=", $user->class)->first();
 
@@ -267,7 +267,7 @@ class RelayController extends UserController
                 $query->Where("node_group", "=", $user->node_group)
                     ->orWhere("node_group", "=", 0);
             }
-        )->where('type', 1)->where('sort', 10)->where("node_class", "<=", $user->class)->orderBy('name')->get();
+        )->where('type', 1)->where('sort', 10)->orwhere("sort",12)->where("node_class", "<=", $user->class)->orderBy('name')->get();
 
         $dist_nodes = Node::where(
             function ($query) use ($user) {
@@ -277,7 +277,7 @@ class RelayController extends UserController
         )->where('type', 1)->where(
             function ($query) {
                 $query->Where('sort', 0)
-                    ->orWhere('sort', 10);
+                    ->orWhere('sort', 10)->orWhere('sort',12);
             }
         )->where("node_class", "<=", $user->class)->orderBy('name')->get();
 
@@ -321,7 +321,7 @@ class RelayController extends UserController
                 $query->Where("node_group", "=", $user->node_group)
                     ->orWhere("node_group", "=", 0);
             }
-        )->where('type', 1)->where('sort', 10)->where("node_class", "<=", $user->class)->first();
+        )->where('type', 1)->where('sort', 10)->orwhere("sort",12)->where("node_class", "<=", $user->class)->first();
         if ($source_node == null) {
             $rs['ret'] = 0;
             $rs['msg'] = "起源节点错误";
@@ -336,7 +336,7 @@ class RelayController extends UserController
         )->where('type', 1)->where(
             function ($query) {
                 $query->Where('sort', 0)
-                    ->orWhere('sort', 10);
+                    ->orWhere('sort', 10)->orWhere('sort',12);
             }
         )->where("node_class", "<=", $user->class)->first();
 
