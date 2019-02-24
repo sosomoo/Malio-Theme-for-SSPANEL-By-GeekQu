@@ -55,26 +55,34 @@ class FuncController extends BaseController
 
         }
         $rules = Relay::Where('source_node_id', $node_id)->get();
-        if ($rules[0]['dist_node_id'] == -1) {
-            $server= null;
-        }
-        foreach ($rules as $rule){
-            $dis = $this->get_dis_node_info($rule['dist_node_id']);
-            if ($dis!=null){
-                $rule['source_node_sort'] = $node->sort;
-                $rule["dist_node_sort"]= $dis->sort;
-                $rule['dist_node_server'] = $dis->server;
-            }else{
-                $rule['source_node_sort'] =$node->sort;
-                $rule["dist_node_sort"]= null;
-                $rule['dist_node_server'] = null;
+		if (count($rules)>0){
+            if ($rules[0]['dist_node_id'] == -1) {
+                $server= null;
             }
+            foreach ($rules as $rule){
+                $dis = $this->get_dis_node_info($rule['dist_node_id']);
+                if ($dis!=null){
+                    $rule['source_node_sort'] = $node->sort;
+                    $rule["dist_node_sort"]= $dis->sort;
+                    $rule['dist_node_server'] = $dis->server;
+                }else{
+                    $rule['source_node_sort'] =$node->sort;
+                    $rule["dist_node_sort"]= null;
+                    $rule['dist_node_server'] = null;
+                }
 
+            }
+            $res = [
+                "ret" => 1,
+                "data" => $rules,
+            ];
+        }else{
+            $res = [
+                "ret" => 1,
+                "data" => array(),
+            ];
         }
-        $res = [
-            "ret" => 1,
-            "data" => $rules,
-        ];
+
         return $this->echoJson($response, $res);
     }
 

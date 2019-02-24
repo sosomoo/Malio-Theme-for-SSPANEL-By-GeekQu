@@ -31,7 +31,11 @@ class RelayController extends AdminController
     {
         $user = Auth::getUser();
         $source_nodes = Node::where('sort', 10)->orwhere("sort",12)->orderBy('name')->get();
-
+        foreach($source_nodes as $node){
+            if ($node->sort==12){
+                $node->name = $node->name." 正在使用V2ray后端 ";
+            }
+        }
         $dist_nodes = Node::where(
             function ($query) {
                 $query->Where('sort', 0)
@@ -42,7 +46,9 @@ class RelayController extends AdminController
         foreach ($dist_nodes as $node){
             if ($node->sort==11 or $node->sort==12){
                 $node_explode = explode(';', $node->server);
-                $node->name = $node->name." V2ray 端口请设置成: ".$node_explode[1];
+                $node->name = $node->name." 如果是V2ray后端 请设置成 ".$node_explode[1];
+            }else {
+                $node->name = $node->name." 如果是V2ray后端 请设置成 ".$user->port;
             }
         }
 
@@ -65,6 +71,14 @@ class RelayController extends AdminController
             return $response->getBody()->write(json_encode($rs));
         }
 
+        if ($source_node->sort==12){
+            $rules = Relay::Where('source_node_id', $source_node_id)->get();
+            if (count($rules)>0){
+                $rs['ret'] = 0;
+                $rs['msg'] = "v2ray中转一个起点一个rule";
+                return $response->getBody()->write(json_encode($rs));
+            }
+        }
         $dist_node = Node::where('id', $dist_node_id)->first();
         if ($dist_node == null) {
             $rs['ret'] = 0;
@@ -121,6 +135,11 @@ class RelayController extends AdminController
         }
 
         $source_nodes = Node::where('sort', 10)->orwhere('sort',12)->orderBy('name')->get();
+        foreach($source_nodes as $node){
+            if ($node->sort==12){
+                $node->name = $node->name." 正在使用V2ray后端 ";
+            }
+        }
 
         $dist_nodes = Node::where(
             function ($query) {
@@ -132,7 +151,9 @@ class RelayController extends AdminController
         foreach ($dist_nodes as $node){
             if ($node->sort==11 or $node->sort==12){
                 $node_explode = explode(';', $node->server);
-                $node->name = $node->name." V2ray 端口请设置成: ".$node_explode[1];
+                $node->name = $node->name." 如果是V2ray后端 请设置成".$node_explode[1];
+            }else {
+                $node->name = $node->name." 如果是V2ray后端 请设置成 ".$user->port;
             }
         }
 
@@ -159,6 +180,15 @@ class RelayController extends AdminController
             $rs['ret'] = 0;
             $rs['msg'] = "起源节点 ID 错误。";
             return $response->getBody()->write(json_encode($rs));
+        }
+
+        if ($source_node->sort==12){
+            $rules = Relay::Where('source_node_id', $source_node_id)->get();
+            if (count($rules)>0){
+                $rs['ret'] = 0;
+                $rs['msg'] = "v2ray中转一个起点一个rule";
+                return $response->getBody()->write(json_encode($rs));
+            }
         }
 
         $dist_node = Node::where('id', $dist_node_id)->first();
