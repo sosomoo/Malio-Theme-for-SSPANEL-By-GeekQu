@@ -193,10 +193,10 @@ class HomeController extends BaseController
                     break;
                 case 'kitsunebi':
                     $msg =  "```
-// 合并订阅，包含 ss、v2ray
-订阅链接：" . $subInfo['v2ray_ss'] . "
 // v2ray 订阅
 订阅链接：" . $subInfo['v2ray'] . "
+// 合并订阅，包含 ss、v2ray
+订阅链接：" . $subInfo['v2ray_ss'] . "
 ```";
                     break;
                     case 'surfboard':

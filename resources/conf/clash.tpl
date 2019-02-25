@@ -5,13 +5,13 @@
 #---------------------------------------------------#
 
 # HTTP 代理端口
-port: 8234
+port: {if array_key_exists("port",$opts)}{$opts['port']}{else}8234{/if}
 
 # SOCKS5 代理端口
-socks-port: 8235
+socks-port: {if array_key_exists("socks-port",$opts)}{$opts['socks-port']}{else}8235{/if}
 
 # Linux 和 macOS 的 redir 代理端口
-redir-port: 8236
+redir-port: {if array_key_exists("redir-port",$opts)}{$opts['redir-port']}{else}8236{/if}
 
 # 允许局域网的连接
 allow-lan: true
@@ -33,7 +33,7 @@ secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}MixsChina{/
 # 参数应填写配置目录的相对路径或绝对路径。
 # external-ui: folder
 
-{if $opts['dns']==1}
+{if array_key_exists("dns",$opts) && $opts['dns']==1}
 dns:
   enable: true
   ipv6: false

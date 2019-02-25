@@ -88,7 +88,7 @@ class LinkController extends BaseController
 
         // apps
         $opts = [];
-        
+
         $ssd = 0;
         if (isset($request->getQueryParams()["ssd"])) {
             $ssd = (int)$request->getQueryParams()["ssd"];
@@ -97,16 +97,7 @@ class LinkController extends BaseController
         $clash = 0;
         if (isset($request->getQueryParams()["clash"])) {
             $clash = (int)$request->getQueryParams()["clash"];
-            $opts['dns'] = "0";
-            if (isset($request->getQueryParams()["dns"])) {
-                $opts['dns'] = (int)$request->getQueryParams()["dns"];
-            }
-            if (isset($request->getQueryParams()["secret"])) {
-                $opts['secret'] = urldecode($request->getQueryParams()["secret"]);
-            }
-            if (isset($request->getQueryParams()["log-level"])) {
-                $opts['log-level'] = urldecode($request->getQueryParams()["log-level"]);
-            }
+            $opts = $request->getQueryParams();
         }
 
         $surge = 0;
