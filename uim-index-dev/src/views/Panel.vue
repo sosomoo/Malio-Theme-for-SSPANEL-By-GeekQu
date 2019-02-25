@@ -11,21 +11,21 @@
         </div>
       </div>
 
-      <div class="usrcenter text-left pure-g space-between" v-else-if="userLoadState === 'loaded'">
-        <div class="pure-u-1 pure-u-sm-6-24">
-          <div class="card account-base">
+      <div class="usrcenter text-left pure-g space-around" v-else-if="userLoadState === 'loaded'">
+        <div class="pure-u-1 pure-u-xl-6-24 pure-g usrcenter-left">
+          <div class="pure-u-1 pure-u-sm-8-24 pure-u-xl-1 card account-base">
             <div class="flex space-between">
               <div class="card-title">账号明细</div>
             </div>
             <div class="card-body">
               <div class="pure-g">
-                <div class="pure-u-1-2">
+                <div class="pure-u-1-2 pure-u-sm-1 pure-u-xl-1-2">
                   <p class="tips tips-blue">用户名</p>
                   <p class="font-light">{{userCon.user_name}}</p>
                   <p class="tips tips-blue">邮箱</p>
                   <p class="font-light">{{userCon.email}}</p>
                 </div>
-                <div class="pure-u-1-2">
+                <div class="pure-u-1-2 pure-u-sm-1 pure-u-xl-1-2">
                   <p class="tips tips-blue">VIP等级</p>
                   <p class="font-light">
                     <span
@@ -44,7 +44,7 @@
               </div>
             </div>
           </div>
-          <div class="card quickset margin-nobottom-sm">
+          <div class="pure-u-1 pure-u-sm-15-24 pure-u-xl-1 card quickset margin-nobottom-xl">
             <div class="card-title">快速配置</div>
             <div class="card-body">
               <div class="pure-g">
@@ -58,7 +58,7 @@
                 >{{dl.type}}</button>
                 <h5 class="pure-u-1">平台选择/客户端下载</h5>
                 <transition name="rotate-fade" mode="out-in">
-                  <div class="dl-link" :key="typeToken.tagkey">
+                  <div class="pure-g dl-link" :key="typeToken.tagkey">
                     <uim-dropdown
                       v-for="(value,key) in downloads[typeToken.arrIndex].agent"
                       class="pure-u-1-3 btn-user"
@@ -77,7 +77,7 @@
                   <span>订阅链接</span>
                   <span class="link-reset relative flex justify-center text-center">
                     <button @click="showToolTip('resetConfirm')" class="tips tips-red">
-                      <span class="fa fa-refresh"></span> 重置链接
+                      <font-awesome-icon icon="sync-alt" />&nbsp;重置链接
                     </button>
                     <uim-tooltip
                       v-show="toolTips.resetConfirm"
@@ -87,10 +87,10 @@
                         <span>确定要重置订阅链接？</span>
                         <div>
                           <button @click="resetSubscribLink" class="tips tips-green">
-                            <span class="fa fa-fw fa-check"></span>
+                            <font-awesome-icon icon="check" fixed-width />
                           </button>
                           <button @click="hideToolTip('resetConfirm')" class="tips tips-red">
-                            <span class="fa fa-fw fa-remove"></span>
+                            <font-awesome-icon icon="times" fixed-width />
                           </button>
                         </div>
                       </template>
@@ -131,7 +131,7 @@
             </div>
           </div>
         </div>
-        <div class="pure-u-1 pure-u-sm-17-24">
+        <div class="pure-u-1 pure-u-xl-17-24">
           <div class="card relative">
             <uim-anchor>
               <template #uim-anchor-inner>
@@ -157,7 +157,7 @@
             </transition>
           </div>
           <div class="user-btngroup pure-g">
-            <div class="pure-u-1-2 pure-u-sm-16-24 btngroup-left">
+            <div class="pure-u-1-2 btngroup-left">
               <uim-dropdown>
                 <template #dpbtn-content>
                   <transition name="fade" mode="out-in">
@@ -175,7 +175,7 @@
               </uim-dropdown>
               <a v-if="userCon.is_admin === true" class="btn-user" href="/admin">运营中心</a>
             </div>
-            <div class="pure-u-1-2 pure-u-sm-8-24 text-right btngroup-right">
+            <div class="pure-u-1-2 text-right btngroup-right">
               <a href="/user" class="btn-user">管理面板</a>
               <button @click="logout" class="btn-user">账号登出</button>
             </div>
@@ -212,6 +212,7 @@ import UserShop from "@/components/panel/UserShop.vue";
 import UserGuide from "@/components/panel/UserGuide.vue";
 import UserResourse from "@/components/panel/UserResourse.vue";
 import UserSettings from "@/components/panel/UserSettings.vue";
+import UserCharge from "@/components/panel/UserCharge.vue";
 
 import Dropdown from "@/components/dropdown.vue";
 import Tooltip from "@/components/tooltip.vue";
@@ -228,6 +229,7 @@ export default {
     "user-guide": UserGuide,
     "user-resourse": UserResourse,
     "user-settings": UserSettings,
+    "user-charge": UserCharge,
     "uim-dropdown": Dropdown,
     "uim-tooltip": Tooltip,
     "uim-anchor": Anchor
@@ -270,8 +272,10 @@ export default {
           return 1;
         case "user-invite":
           return 2;
-        case "user-shop":
+        case "user-charge":
           return 3;
+        case "user-shop":
+          return 4;
       }
     }
   },
@@ -310,6 +314,10 @@ export default {
           id: "user-invite"
         },
         {
+          name: "充值中心",
+          id: "user-charge",
+        },
+        {
           name: "套餐购买",
           id: "user-shop"
         }
@@ -332,7 +340,7 @@ export default {
       _get("/logout", "include").then(r => {
         if (r.ret === 1) {
           callConfig.msg += "账户成功登出Kira~";
-          callConfig.icon += "fa-check-square-o";
+          callConfig.icon += "check-circle";
           this.callMsgr(callConfig);
           window.setTimeout(() => {
             this.setLoginToken(false);
@@ -383,7 +391,7 @@ export default {
         this.showTransition("subLinkTrans");
         let callConfig = {
           msg: "已重置您的订阅链接，请变更或添加您的订阅链接！",
-          icon: "fa-bell",
+          icon: "bell",
           time: 1500
         };
         this.callMsgr(callConfig);
@@ -463,3 +471,15 @@ export default {
   }
 };
 </script>
+
+<style>
+.pure-g.usrcenter-left {
+  justify-content: space-around;
+  display: flex;
+}
+@media screen and (min-width: 80em) {
+  .pure-g.usrcenter-left {
+    display: inline-block;
+  }
+}
+</style>

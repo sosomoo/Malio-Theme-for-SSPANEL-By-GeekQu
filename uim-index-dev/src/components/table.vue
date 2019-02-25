@@ -4,7 +4,7 @@
       <slot name="uim-th"></slot>
     </tr>
     <transition-group name="list-fade" class="relative" tag="tbody">
-      <slot name="uim-tr"></slot>
+      <slot name="uim-tbd"></slot>
     </transition-group>
   </table>
 </template>
@@ -33,5 +33,8 @@ export default {}
   padding: 0.3rem 0;
   color: #cfd2da;
   font-size: 14px;
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 </style>

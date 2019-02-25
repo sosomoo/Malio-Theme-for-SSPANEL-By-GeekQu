@@ -66,8 +66,10 @@ class TrimePay extends AbstractPayment
             $this->gatewayUri .= "pay/go";
         } else if ($type == "refund") {
             $this->gatewayUri .= "refund/go";
-        } else {
+        } else if ($type == "pre"){
             $this->gatewayUri .= "pay/pre";
+        } else {
+            $this->gatewayUri .= "query/go";
         }
 
         $curl = curl_init();
@@ -122,6 +124,15 @@ class TrimePay extends AbstractPayment
         }
     }
 
+    public function query($tradeNo){
+        $data['appId'] = Config::get('trimepay_appid');
+        $data['merchantTradeNo'] = $tradeNo;
+        $params = self::prepareSign($data);
+        $data['sign'] = self::sign($params);
+        $result = json_decode(self::post($data, $type = "query"), TRUE);
+        return $result;
+    }
+
     public function notify($request, $response, $args)
     {
         $data = array();
@@ -168,13 +179,29 @@ class TrimePay extends AbstractPayment
         if ($p->status == 1){
             $success = 1;
         } else {
-            $success = 0;
+            $data = array();
+            $data['payStatus']=$request->getParam('payStatus');
+            $data['payFee']=$request->getParam('payFee');
+            $data['callbackTradeNo']=$request->getParam('callbackTradeNo');
+            $data['payType']=$request->getParam('payType');
+            $data['merchantTradeNo']=$request->getParam('merchantTradeNo');
+            // 准备待签名数据
+            $str_to_sign = self::prepareSign($data);
+            // 验证签名
+            $resultVerify = self::verify($str_to_sign, $request->getParam('sign'));
+            if ($resultVerify) {
+                self::postPayment($data['merchantTradeNo'], "TrimePay");
+                $success = 1;
+            } else {
+                $success = 0;
+            }
         }
         return View::getSmarty()->assign('money', $money)->assign('success', $success)->fetch('user/pay_success.tpl');
     }
 
     public function getStatus($request, $response, $args)
     {
+        $return = [];
         $p = Paylist::where("tradeno", $_POST['pid'])->first();
         $return['ret'] = 1;
         $return['result'] = $p->status;
