@@ -368,16 +368,6 @@ class RelayController extends UserController
             $rs['msg'] = "起源节点错误";
             return $response->getBody()->write(json_encode($rs));
         }
-        if ($source_node->sort==12){
-            $rules = Relay::Where('source_node_id', $source_node_id)->get();
-            foreach ($rules as $rule){
-                if ($rule['user_id']==0 || $rule['user_id']=$user->id){
-                    $rs['ret'] = 0;
-                    $rs['msg'] = "v2ray中转一个起点一个rule";
-                    return $response->getBody()->write(json_encode($rs));
-                }
-            }
-        }
 
         $dist_node = Node::where('id', $dist_node_id)->where(
             function ($query) use ($user) {
