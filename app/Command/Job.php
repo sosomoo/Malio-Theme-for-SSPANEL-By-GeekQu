@@ -461,7 +461,7 @@ class Job
                             echo $e->getMessage();
                         }
 
-                        if (Config::get('enable_cloudxns')=='true' && ($node->sort==0 || $node->sort==10)) {
+                        if (Config::get('enable_cloudxns')=='true' && ($node->sort==0 || $node->sort==10 ||$node->sort==12)) {
                             $api=new Api();
                             $api->setApiKey(Config::get("cloudxns_apikey"));//修改成自己API KEY
                             $api->setSecretKey(Config::get("cloudxns_apisecret"));//修改成自己的SECERET KEY
@@ -524,7 +524,7 @@ class Job
                         echo $e->getMessage();
                     }
 
-                    if (Config::get('enable_cloudxns')=='true'&& ($node->sort==0 || $node->sort==10)) {
+                    if (Config::get('enable_cloudxns')=='true'&& ($node->sort==0 || $node->sort==10||$node->sort==12)) {
                         $api=new Api();
                         $api->setApiKey(Config::get("cloudxns_apikey"));//修改成自己API KEY
                         $api->setSecretKey(Config::get("cloudxns_apisecret"));//修改成自己的SECERET KEY
@@ -841,7 +841,7 @@ class Job
 							catch (\Exception $e) {
 								echo $e->getMessage();
 							}
-							if (Config::get('enable_cloudxns')=='true' && ($node->sort==0 || $node->sort==10)) {
+							if (Config::get('enable_cloudxns')=='true' && ($node->sort==0 || $node->sort==10 ||$node->sort==12)) {
 								$api=new Api();
 								$api->setApiKey(Config::get("cloudxns_apikey"));
 								//修改成自己API KEY
@@ -896,7 +896,7 @@ class Job
 							catch (\Exception $e) {
 								echo $e->getMessage();
 							}
-							if (Config::get('enable_cloudxns')=='true'&& ($node->sort==0 || $node->sort==10)) {
+							if (Config::get('enable_cloudxns')=='true'&& ($node->sort==0 || $node->sort==10||$node->sort==12)) {
 								$api=new Api();
 								$api->setApiKey(Config::get("cloudxns_apikey"));
 								//修改成自己API KEY

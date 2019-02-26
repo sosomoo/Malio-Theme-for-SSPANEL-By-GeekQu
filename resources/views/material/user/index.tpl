@@ -9,7 +9,7 @@
 {$ssr_url_all_mu = URL::getAllUrl($pre_user, 1, 0)}
 
 {$user = URL::getSSConnectInfo($pre_user)}
-{$ss_url_all = URL::getAllUrl($pre_user, 0, 2)}														
+{$ss_url_all = URL::getAllUrl($pre_user, 0, 2)}
 {$ss_url_all_mu = URL::getAllUrl($pre_user, 1, 1)}
 
 {$ssd_url_all = URL::getAllSSDUrl($user)}

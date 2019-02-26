@@ -509,7 +509,7 @@ class UserController extends BaseController
 			}
 
 			if ($node->sort == 0 ||$node->sort == 7 || $node->sort == 8 ||
-				$node->sort == 10 || $node->sort == 11){
+				$node->sort == 10 || $node->sort == 11|| $node->sort ==12){
 				$array_node['online_user']=$node->getOnlineUserCount();
 			}
 			else{

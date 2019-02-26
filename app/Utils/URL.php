@@ -336,9 +336,9 @@ class URL
 
     public static function getAllVMessUrl($user, $arrout = 0) {
         if ($user->is_admin) {
-            $nodes = Node::where('sort', 11)->where("type", "1")->orderBy("name")->get();
+            $nodes = Node::where('sort', 11)->orwhere('sort',12)->where("type", "1")->orderBy("name")->get();
         } else {
-            $nodes = Node::where('sort', 11)->where(
+            $nodes = Node::where('sort', 11)->orwhere('sort',12)->where(
                 function ($query) use ($user){
                     $query->where("node_group", "=", $user->node_group)
                         ->orWhere("node_group", "=", 0);

@@ -95,10 +95,10 @@ class XCat
 			    return Update::update($this);
             case("sendDailyUsageByTG"):
                 return $this->sendDailyUsageByTG();
-            case("iptest"):
-                return $this->iptest();
 			case('npmbuild'):
 				return $this->npmbuild();
+            case ("iptest"):
+                return $this->iptest();
 			default:
                 return $this->defaultAction();
         }
@@ -287,6 +287,13 @@ class XCat
         }
     }
 
+	public function npmbuild(){
+		chdir(BASE_PATH.'/uim-index-dev');
+		system('npm install');
+		system('npm run build');
+		system('cp -u ../public/vuedist/index.html ../resources/views/material/index.tpl');
+    }
+    
     public function iptest()
     {   $nodes = Node::all();
 
@@ -312,11 +319,4 @@ class XCat
             }
         }
     }
-
-	public function npmbuild(){
-		chdir(BASE_PATH.'/uim-index-dev');
-		system('npm install');
-		system('npm run build');
-		system('cp -u ../public/vuedist/index.html ../resources/views/material/index.tpl');
-	}
 }
