@@ -343,15 +343,16 @@ class LinkController extends BaseController
                 "password" => $item['passwd'],
             ];
             if (in_array($item['obfs'], array("simple_obfs_tls", "simple_obfs_http"))) {
+                $sss['plugin'] = "obfs";
                 if (strpos($item['obfs'], 'http')) {
-                    $sss['obfs'] = "http";
+                    $sss['plugin-opts']['mode'] = "http";
                 } else {
-                    $sss['obfs'] = "tls";
+                    $sss['plugin-opts']['mode'] = "tls";
                 }
                 if ($item['obfs_param'] != '') {
-                    $sss['obfs-host'] = $item['obfs_param'];
+                    $sss['plugin-opts']['host'] = $item['obfs_param'];
                 } else {
-                    $sss['obfs-host'] = "wns.windows.com";
+                    $sss['plugin-opts']['host'] = "wns.windows.com";
                 }
             }
             if (strpos($sss['name'],"回国") or strpos($sss['name'],"China")){
@@ -378,6 +379,9 @@ class LinkController extends BaseController
                 $v2rays['ws-path'] = $item['path'];
                 if ($item['tls'] == 'tls') {
                     $v2rays['tls'] = true;
+                }
+                if ($item['host'] != '') {
+                    $v2rays['ws-headers']['Host'] = $item['host'];
                 }
             } elseif ($item['net'] == "tls") {
                 $v2rays['tls'] = true;
