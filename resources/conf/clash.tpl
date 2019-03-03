@@ -65,13 +65,17 @@ Proxy:
 
 Proxy Group:
   - { name: "Auto", type: fallback, proxies: {$proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
-  {append var='proxies' value='Auto'}
+{append var='proxies' value='Auto'}
+{if count($back_china_proxies)!=0}
   - { name: "Back_China_Auto", type: fallback, proxies: {$back_china_proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
-  {append var='back_china_proxies' value='Back_China_Auto'}
-  - { name: "Proxy", type: select, proxies: {$proxies|json_encode} }
+{append var='back_china_proxies' value='Back_China_Auto'}
   - { name: "Back_China_Proxy", type: select, proxies: {$back_china_proxies|json_encode} }
+{/if}
+  - { name: "Proxy", type: select, proxies: {$proxies|json_encode} }
   - { name: "Domestic", type: select, proxies: ["DIRECT","Proxy"] }
-  - { name: "China_media", type: select, proxies: ["Domestic","Proxy","Back_China_Proxy"]}
+{$China_media=["Domestic","Proxy"]}
+{if count($back_china_proxies)!=0}{append var='China_media' value='Back_China_Proxy'}{/if}
+  - { name: "China_media", type: select, proxies: {$China_media|json_encode} }
   - { name: "Global_media", type: select, proxies: ["Proxy"]}
   - { name: "Others", type: select, proxies: ["Proxy","Domestic"]}
 
