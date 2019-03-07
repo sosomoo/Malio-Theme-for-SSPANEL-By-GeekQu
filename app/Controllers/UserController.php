@@ -84,6 +84,7 @@ class UserController extends BaseController
             ->assign('subInfo', LinkController::GetSubinfo($user, 0))
             ->assign('ssr_sub_token', $ssr_sub_token)
             ->assign('display_ios_class',Config::get('display_ios_class'))
+            ->assign('display_ios_topup',Config::get('display_ios_topup'))
             ->assign('ios_account',Config::get('ios_account'))
             ->assign('ios_password',Config::get('ios_password'))
             ->assign('ann', $Ann)

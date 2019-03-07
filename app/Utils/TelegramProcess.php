@@ -10,16 +10,15 @@ class TelegramProcess
 {
     private static $all_rss = [
         "clean_link"=>"重置订阅",
-        "?sub=2" => "SS订阅" ,
         "?sub=1" => "SSR订阅",
         "?sub=3" => "V2ray订阅",
         "?sub=5" => "Shadowrocket",
-        "?sub=4" => "Kitsunebi or v2rayNG",
+        "?sub=4" => "Kitsunebi or V2rayNG or BifrostV",
         "?surge=2" => "Surge 2.x",
         "?surge=3" => "Surge 3.x",
         "?ssd=1" => "SSD",
         "?clash=1" => "Clash",
-        "?surfboard=1" => "surfboard",
+        "?surfboard=1" => "Surfboard",
         "?quantumult=3" => "Quantumult(完整配置)"
         ];
 
