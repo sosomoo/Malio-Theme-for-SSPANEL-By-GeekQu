@@ -246,13 +246,12 @@ class URL
         foreach($items as $item) {
             $return_url .= URL::getItemUrl($item, $is_ss).PHP_EOL;
         }
-        if(Config::get('mergeSub')=='true' and in_array($is_mu, array(0, 1))){
-            $is_mu = $is_mu==0?1:0;
-            $items = URL::getAllItems($user, $is_mu, $is_ss);
-            foreach($items as $item) {
-                $return_url .= URL::getItemUrl($item, $is_ss).PHP_EOL;
-            }
+        $is_mu = $is_mu==0?1:0;
+        $items = URL::getAllItems($user, $is_mu, $is_ss);
+        foreach($items as $item) {
+            $return_url .= URL::getItemUrl($item, $is_ss).PHP_EOL;
         }
+
         return $return_url;
     }
 
@@ -373,7 +372,7 @@ class URL
 		$array_all['traffic_used']=Tools::flowToGB($user->u+$user->d);
 		$array_all['traffic_total']=Tools::flowToGB($user->transfer_enable);
 		$array_all['expiry']=$user->class_expire;
-		$array_all['url']=Config::get('subUrl').LinkController::GenerateSSRSubCode($user->id, 0).'?mu=3';
+		$array_all['url']=Config::get('subUrl').LinkController::GenerateSSRSubCode($user->id, 0).'?ssd=1';
 		$plugin_options='';
 		if(strpos($user->obfs,'http')!=FALSE){
 			$plugin_options='obfs=http';
@@ -537,9 +536,7 @@ class URL
             $mu_user->obfs_param = $user->getMuMd5();
             $mu_user->protocol_param = $user->id.":".$user->passwd;
             $user = $mu_user;
-            if(Config::get('mergeSub')!='true'){
-                $node_name .= " - ".$mu_port." 单端口";
-            }
+            $node_name .= " - ".$mu_port." 单端口";
         }
         if($is_ss) {
             if(!URL::SSCanConnect($user)) {
@@ -562,9 +559,7 @@ class URL
         $return_array['obfs'] = $user->obfs;
         $return_array['obfs_param'] = $user->obfs_param;
         $return_array['group'] = Config::get('appName');
-        if($mu_port != 0 && Config::get('mergeSub')!='true') {
-            $return_array['group'] .= ' - 单端口';
-        }
+
         return $return_array;
     }
 
@@ -573,15 +568,9 @@ class URL
         return $new_user;
     }
 
-	public static function getUserTraffic($user, $is_mu = 0, $is_ss = 0){
-
+	public static function getUserTraffic($user, $is_mu = 0, $is_ss = 0) {
         $group_name = Config::get('appName');
-		if(Config::get('mergeSub')!='true' and $is_mu == 1){
-			$group_name .= ' - 单端口';
-		}
-
         if (!$is_ss) {
-
             if(strtotime($user->expire_in)>time()){
                 if($user->transfer_enable==0){
                     $percent='0.00%';
@@ -593,7 +582,6 @@ class URL
             }else{
                 $ssurl = "www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("账户已过期，请续费后使用")."&group=".Tools::base64_url_encode($group_name);
             }
-
             return "ssr://".Tools::base64_url_encode($ssurl);
 
         } else {
@@ -613,18 +601,12 @@ class URL
 
     public static function getUserClassExpiration($user, $is_mu = 0, $is_ss = 0){
         $group_name = Config::get('appName');
-		if(Config::get('mergeSub')!='true' and $is_mu == 1){
-			$group_name .= ' - 单端口';
-		}
-
         if (!$is_ss) {
-
             if(strtotime($user->expire_in)>time()){
                 $ssurl = "www.google.com:2:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("过期时间：".$user->class_expire)."&group=".Tools::base64_url_encode($group_name);
             } else {
                 $ssurl = "www.google.com:2:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=".Tools::base64_url_encode("账户已过期，请续费后使用")."&group=".Tools::base64_url_encode($group_name);
             }
-
             return "ssr://".Tools::base64_url_encode($ssurl);
 
         } else {
@@ -634,9 +616,7 @@ class URL
             }else{
                 $remark= "账户已过期，请续费后使用";
             }
-
             $ssurl = "ss://".Tools::base64_url_encode("chacha20:YnJlYWt3YWxs@www.google.com:1") . "#" . rawurlencode($remark);
-
             return $ssurl;
         }
     }
