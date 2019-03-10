@@ -386,12 +386,14 @@ class LinkController extends BaseController
             } elseif ($item['net'] == "tls") {
                 $v2rays['tls'] = true;
             }
-            if (strpos($v2rays['name'],"回国") or strpos($v2rays['name'],"China")){
-                $back_china_confs[] = $v2rays;
-            }else{
-                $proxy_confs[] = $v2rays;
+            if ($item['net'] != "kcp") {
+                if (strpos($v2rays['name'],"回国") or strpos($v2rays['name'],"China")){
+                    $back_china_confs[] = $v2rays;
+                }else{
+                    $proxy_confs[] = $v2rays;
+                }
+                $confs[] = $v2rays;
             }
-            $confs[] = $v2rays;
         }
 
         $render = ConfRender::getTemplateRender();
