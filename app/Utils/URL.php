@@ -296,7 +296,11 @@ class URL
         ];
         $item['ps'] = $node->name;
         $item['add'] = $node_explode[0];
-        $item['port'] = $node_explode[1];
+        if ($node_explode[1]=="0" or $node_explode[1]==""){
+            $item['port'] = "443";
+        }else{
+            $item['port'] = $node_explode[1];
+        }
         $item['id'] = $user->getUuid();
         $item['aid'] = $node_explode[2];
         $item['net'] = "tcp";
