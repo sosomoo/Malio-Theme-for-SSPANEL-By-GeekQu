@@ -59,9 +59,14 @@ class NodeController extends AdminController
 		if($req_node_ip==""){
 			$req_node_ip=$node->server;
 		}
-                  
+		                  
         if ($node->sort == 11 || $node->sort == 12) {
             $server_list = explode(";", $node->server);
+            if (count($server_list) <= 5) {
+            $rs['ret'] = 0;
+            $rs['msg'] = "您输入的节点地址格式有误！";
+            return $response->getBody()->write(json_encode($rs));
+            }
 			if(!Tools::is_ip($server_list[0])){
 				$node->node_ip = gethostbyname($server_list[0]);
 				if ($node->node_ip=="127.0.0.1"){
@@ -145,6 +150,11 @@ class NodeController extends AdminController
 		$success=true;
 		if ($node->sort == 11 || $node->sort == 12) {
             $server_list = explode(";", $node->server);
+            if (count($server_list) <= 5) {
+            $rs['ret'] = 0;
+            $rs['msg'] = "您输入的节点地址格式有误！";
+            return $response->getBody()->write(json_encode($rs));
+            }
 			if(!Tools::is_ip($server_list[0])){
 				$success=$node->changeNodeIp($server_list[0]);
 			}else{
