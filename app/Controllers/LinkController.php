@@ -115,6 +115,27 @@ class LinkController extends BaseController
             $surfboard = (int)$request->getQueryParams()["surfboard"];
         }
 
+        if (isset($request->getQueryParams()["mu"])) {
+            $mu = (int)$request->getQueryParams()["mu"];
+            switch($mu){
+                case 0:
+                    $sub = 1;
+                    break;
+                case 1:
+                    $sub = 1;
+                    break;
+                case 2:
+                    $sub = 3;
+                    break;
+                case 3:
+                    $ssd = 1;
+                    break;
+                case 4:
+                    $clash = 1;
+                break;
+            }
+        }
+
         if (in_array($quantumult, array(1, 2, 3))) {
             $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf');
             $newResponse->getBody()->write(LinkController::GetQuantumult($user, $quantumult));
