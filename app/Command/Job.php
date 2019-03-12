@@ -36,7 +36,7 @@ class Job
     {
         $nodes = Node::all();
         foreach ($nodes as $node) {
-            if ($node->sort == 11) {
+            if ($node->sort == 11 or $node->sort =12) {
 				$server_list = explode(";", $node->server);
 				if(!Tools::is_ip($server_list[0])){
 					if($node->changeNodeIp($server_list[0])){
@@ -132,7 +132,7 @@ class Job
     {
         $nodes = Node::all();
         foreach ($nodes as $node) {
-            if ($node->sort == 0 || $node->sort == 10 || $node->sort == 11) {
+            if ($node->sort == 0 || $node->sort == 10 || $node->sort == 11 ||$node->sort ==12 ) {
                 if (date("d")==$node->bandwidthlimit_resetday) {
                     $node->node_bandwidth=0;
                     $node->save();

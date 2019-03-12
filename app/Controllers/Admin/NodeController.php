@@ -57,7 +57,13 @@ class NodeController extends AdminController
 
 		$req_node_ip = trim($request->getParam('node_ip'));
 		if($req_node_ip==""){
-			$req_node_ip=$node->server;
+			if($node->sort==11){
+				$server_list = explode(";", $node->server);
+				$req_node_ip=$server_list[0];
+			}
+			else{
+				$req_node_ip=$node->server;
+			}			
 		}
                   
         if ($node->sort == 11 || $node->sort == 12) {
@@ -139,7 +145,13 @@ class NodeController extends AdminController
 
 		$req_node_ip=trim($request->getParam('node_ip'));
 		if($req_node_ip==""){
-			$req_node_ip=$node->server;
+			if($node->sort==11){
+				$server_list = explode(";", $node->server);
+				$req_node_ip=$server_list[0];
+			}
+			else{
+				$req_node_ip=$node->server;
+			}			
 		}
 
 		$success=true;

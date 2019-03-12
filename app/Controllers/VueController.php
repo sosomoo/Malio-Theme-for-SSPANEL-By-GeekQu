@@ -100,6 +100,12 @@ class VueController extends BaseController {
 
     public function getUserInfo($request, $response, $args) {
         $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+
         $pre_user = URL::cloneUser($user);
         $user->ssr_url_all = URL::getAllUrl($pre_user, 0, 0);
         $user->ssr_url_all_mu = URL::getAllUrl($pre_user, 1, 0);
@@ -152,16 +158,23 @@ class VueController extends BaseController {
 
     public function getUserInviteInfo($request, $response, $args)
     {
-        $code = InviteCode::where('user_id', $this->user->id)->first();
+        $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+
+        $code = InviteCode::where('user_id', $user->id)->first();
         if ($code == null) {
-            $this->user->addInviteCode();
-			$code = InviteCode::where('user_id', $this->user->id)->first();
+            $user->addInviteCode();
+			$code = InviteCode::where('user_id', $user->id)->first();
         }
 
         $pageNum = $request->getParam('current');
         
-        $paybacks = Payback::where("ref_by", $this->user->id)->orderBy("id", "desc")->paginate(15, ['*'], 'page', $pageNum);
-        if (!$paybacks_sum = Payback::where("ref_by", $this->user->id)->sum('ref_get')) {
+        $paybacks = Payback::where("ref_by", $user->id)->orderBy("id", "desc")->paginate(15, ['*'], 'page', $pageNum);
+        if (!$paybacks_sum = Payback::where("ref_by", $user->id)->sum('ref_get')) {
             $paybacks_sum = 0;
         }
         $paybacks->setPath('/#/user/panel');
@@ -184,6 +197,13 @@ class VueController extends BaseController {
 
     public function getUserShops($request, $response, $args)
     {
+        $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+        
         $shops = Shop::where("status", 1)->orderBy("name")->get();
         
         $res['arr'] = array(
@@ -197,6 +217,11 @@ class VueController extends BaseController {
     public function getAllResourse($request, $response, $args)
     {
         $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
         
         $res['resourse'] = array(
             "money" => $user->money,
@@ -215,6 +240,12 @@ class VueController extends BaseController {
     public function getNewSubToken($request, $response, $args)
     {
         $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+
         $user->clean_link();
         $ssr_sub_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
 
@@ -230,6 +261,12 @@ class VueController extends BaseController {
     public function getNewInviteCode($request, $response, $args)
     {
         $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+
         $user->clear_inviteCodes();
         $code = InviteCode::where('user_id', $this->user->id)->first();
         if ($code == null) {
@@ -249,6 +286,11 @@ class VueController extends BaseController {
     public function getTransfer($request, $response, $args)
     {
         $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
 
         $res['arr'] = array(
             "todayUsedTraffic" => $user->TodayusedTraffic(),
@@ -285,9 +327,16 @@ class VueController extends BaseController {
 
     public function getChargeLog($request, $response, $args)
     {
+        $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+
         $pageNum = $request->getParam('current');
       
-        $codes = Code::where('type', '<>', '-2')->where('userid', '=', $this->user->id)->orderBy('id', 'desc')->paginate(15, ['*'], 'page', $pageNum);
+        $codes = Code::where('type', '<>', '-2')->where('userid', '=', $user->id)->orderBy('id', 'desc')->paginate(15, ['*'], 'page', $pageNum);
         $codes->setPath('/#/user/code');
 
         $res['codes'] = $codes;
