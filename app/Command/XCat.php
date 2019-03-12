@@ -300,7 +300,7 @@ class XCat
         foreach ($nodes as $node)  {
             $ip ="";
             $server="";
-            if ($node->sort == 11) {
+            if ($node->sort == 11 || $node->sort == 12) {
                 $server_list = explode(";", $node->server);
                 $server = $server_list[0];
                 if(!Tools::is_ip($server_list[0])){
