@@ -36,7 +36,7 @@ class Job
     {
         $nodes = Node::all();
         foreach ($nodes as $node) {
-            if ($node->sort == 11 or $node->sort =12) {
+            if ($node->sort == 11 or $node->sort ==12) {
 				$server_list = explode(";", $node->server);
 				if(!Tools::is_ip($server_list[0])){
 					if($node->changeNodeIp($server_list[0])){
@@ -115,7 +115,7 @@ class Job
         $nodes = Node::all();
         foreach ($nodes as $node) {
             $rule = preg_match("/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/",$node->server);
-            if (!$rule && (!$node->sort || $node->sort == 10)) {
+            if (!$rule && (!$node->sort || $node->sort == 10||$node-sort==12)) {
                 $ip=gethostbyname($node->server);
                 if ($ip == "127.0.0.1"){
                     $ip = DNSoverHTTPS::gethostbyName($node->server);
