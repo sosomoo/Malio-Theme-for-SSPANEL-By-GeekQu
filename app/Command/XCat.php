@@ -19,6 +19,7 @@ use App\Utils\QRcode;
 use App\Models\Node;
 use RemotelyLiving\PHPDNS\Resolvers\GoogleDNS;
 use App\Utils\DNSoverHTTPS;
+
 class XCat
 {
     public $argv;
@@ -42,35 +43,35 @@ class XCat
             case("setTelegram"):
                 return $this->setTelegram();
             case("initQQWry"):
-                 return $this->initQQWry();
+                return $this->initQQWry();
             case("sendDiaryMail"):
                 return DailyMail::sendDailyMail();
-			case("sendFinanceMail_day"):
-			    return FinanceMail::sendFinanceMail_day();
-			case("sendFinanceMail_week"):
-			    return FinanceMail::sendFinanceMail_week();
-			case("sendFinanceMail_month"):
-			    return FinanceMail::sendFinanceMail_month();
+            case("sendFinanceMail_day"):
+                return FinanceMail::sendFinanceMail_day();
+            case("sendFinanceMail_week"):
+                return FinanceMail::sendFinanceMail_week();
+            case("sendFinanceMail_month"):
+                return FinanceMail::sendFinanceMail_month();
             case("reall"):
-                    return DailyMail::reall();
+                return DailyMail::reall();
             case("syncusers"):
-                    return SyncRadius::syncusers();
+                return SyncRadius::syncusers();
             case("synclogin"):
-                    return SyncRadius::synclogin();
+                return SyncRadius::synclogin();
             case("syncvpn"):
                 return SyncRadius::syncvpn();
             case("nousers"):
-                    return ExtMail::sendNoMail();
+                return ExtMail::sendNoMail();
             case("oldusers"):
-                    return ExtMail::sendOldMail();
+                return ExtMail::sendOldMail();
             case("syncnode"):
-                    return Job::syncnode();
+                return Job::syncnode();
             case("syncnasnode"):
-                    return Job::syncnasnode();
-			case("detectGFW"):
-				return Job::detectGFW();
+                return Job::syncnasnode();
+            case("detectGFW"):
+                return Job::detectGFW();
             case("syncnas"):
-                    return SyncRadius::syncnas();
+                return SyncRadius::syncnas();
             case("dailyjob"):
                 return Job::DailyJob();
             case("checkjob"):
@@ -79,8 +80,8 @@ class XCat
                 return Job::UserGa();
             case("backup"):
                 return Job::backup(false);
-			case("backupfull"):
-				return Job::backup(true);
+            case("backupfull"):
+                return Job::backup(true);
             case("initdownload"):
                 return $this->initdownload();
             case("updatedownload"):
@@ -89,17 +90,17 @@ class XCat
                 return $this->cleanRelayRule();
             case("resetPort"):
                 return $this->resetPort();
-	        case("resetAllPort"):
+            case("resetAllPort"):
                 return $this->resetAllPort();
-			case("update"):
-			    return Update::update($this);
+            case("update"):
+                return Update::update($this);
             case("sendDailyUsageByTG"):
                 return $this->sendDailyUsageByTG();
-			case('npmbuild'):
-				return $this->npmbuild();
-            case ("iptest"):
+            case('npmbuild'):
+                return $this->npmbuild();
+            case("iptest"):
                 return $this->iptest();
-			default:
+            default:
                 return $this->defaultAction();
         }
     }
@@ -107,21 +108,21 @@ class XCat
     public function defaultAction()
     {
         echo(PHP_EOL."用法： php xcat [选项]".PHP_EOL);
-		echo("常用选项:".PHP_EOL);
-		echo("  createAdmin - 创建管理员帐号".PHP_EOL);
-		echo("  setTelegram - 设置 Telegram 机器人".PHP_EOL);
-		echo("  cleanRelayRule - 清除所有中转规则".PHP_EOL);
-		echo("  resetPort - 重置单个用户端口".PHP_EOL);
-		echo("  resetAllPort - 重置所有用户端口".PHP_EOL);
-		echo("  initdownload - 下载 SSR 程序至服务器".PHP_EOL);
-		echo("  initQQWry - 下载 IP 解析库".PHP_EOL);
-		echo("  resetTraffic - 重置所有用户流量".PHP_EOL);
-		echo("  update - 更新并迁移配置".PHP_EOL);
+        echo("常用选项:".PHP_EOL);
+        echo("  createAdmin - 创建管理员帐号".PHP_EOL);
+        echo("  setTelegram - 设置 Telegram 机器人".PHP_EOL);
+        echo("  cleanRelayRule - 清除所有中转规则".PHP_EOL);
+        echo("  resetPort - 重置单个用户端口".PHP_EOL);
+        echo("  resetAllPort - 重置所有用户端口".PHP_EOL);
+        echo("  initdownload - 下载 SSR 程序至服务器".PHP_EOL);
+        echo("  initQQWry - 下载 IP 解析库".PHP_EOL);
+        echo("  resetTraffic - 重置所有用户流量".PHP_EOL);
+        echo("  update - 更新并迁移配置".PHP_EOL);
     }
 
-	public function resetPort()
+    public function resetPort()
     {
-		fwrite(STDOUT, "请输入用户id: ");
+        fwrite(STDOUT, "请输入用户id: ");
         $user=User::Where("id", "=", trim(fgets(STDIN)))->first();
         $origin_port = $user->port;
 
@@ -133,9 +134,9 @@ class XCat
             $rule->save();
         }
 
-		if ($user->save()) {
+        if ($user->save()) {
             echo "重置成功!\n";
-		}
+        }
     }
 
     public function resetAllPort()
@@ -271,50 +272,43 @@ class XCat
     public function sendDailyUsageByTG()
     {
         $bot = new \TelegramBot\Api\BotApi(Config::get('telegram_token'));
-        $users = User::where('telegram_id',">",0)->get();
-        foreach ($users as $user){
+        $users = User::where('telegram_id', ">", 0)->get();
+        foreach ($users as $user) {
             $reply_message ="您当前的流量状况：
 今日已使用 " . $user->TodayusedTraffic() . " " . number_format(($user->u + $user->d - $user->last_day_t) / $user->transfer_enable * 100, 2) . "%
 今日之前已使用 " . $user->LastusedTraffic() . " " . number_format($user->last_day_t / $user->transfer_enable * 100, 2) . "%
 未使用 " . $user->unusedTraffic() . " " . number_format(($user->transfer_enable - ($user->u + $user->d)) / $user->transfer_enable * 100, 2) . "%
 					                        ";
-            try{
-                $bot->sendMessage($user->get_user_attributes("telegram_id"), $reply_message , $parseMode = null, $disablePreview = false, $replyToMessageId = null);
-
-            } catch (\TelegramBot\Api\HttpException $e){
+            try {
+                $bot->sendMessage($user->get_user_attributes("telegram_id"), $reply_message, $parseMode = null, $disablePreview = false, $replyToMessageId = null);
+            } catch (\TelegramBot\Api\HttpException $e) {
                 echo 'Message: 用户: '.$user->get_user_attributes("user_name")." 删除了账号或者屏蔽了宝宝";
             }
         }
     }
 
-	public function npmbuild(){
-		chdir(BASE_PATH.'/uim-index-dev');
-		system('npm install');
-		system('npm run build');
-		system('cp -u ../public/vuedist/index.html ../resources/views/material/index.tpl');
+    public function npmbuild()
+    {
+        chdir(BASE_PATH.'/uim-index-dev');
+        system('npm install');
+        system('npm run build');
+        system('cp -u ../public/vuedist/index.html ../resources/views/material/index.tpl');
     }
     
     public function iptest()
-    {   $nodes = Node::all();
-
-        foreach ($nodes as $node)  {
-            $ip ="";
-            $server="";
-            if ($node->sort == 11) {
+    {
+        $nodes = Node::all();
+        foreach ($nodes as $node) {
+            $ip = "";
+            $server = "";
+            if (in_array($node->sort, array(0, 1, 10, 11, 12, 13))) {
                 $server_list = explode(";", $node->server);
                 $server = $server_list[0];
-                if(!Tools::is_ip($server_list[0])){
-
+                if (!Tools::is_ip($server)) {
                     $ip = DNSoverHTTPS::gethostbyName($server); // returns a collection of DNS A Records
                 }
-            } else if($node->sort == 0 || $node->sort == 1 || $node->sort == 10){
-                $server = $node->server;
-                if(!Tools::is_ip($node->server)){
-                    $ip = DNSoverHTTPS::gethostbyName($server);
-                }
             }
-            if ($server!="" and $ip !=""){
-
+            if ($server!="" and $ip !="") {
                 echo "Server: ".$server." ip address: ".$ip."\n";
             }
         }

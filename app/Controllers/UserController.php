@@ -59,15 +59,13 @@ class UserController extends BaseController
 
     public function index($request, $response, $args)
     {
-
         $user = $this->user;
         $ssr_sub_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
 
         $GtSdk = null;
         $recaptcha_sitekey = null;
-        if (Config::get('enable_checkin_captcha') == 'true'){
-            switch(Config::get('captcha_provider'))
-            {
+        if (Config::get('enable_checkin_captcha') == 'true') {
+            switch (Config::get('captcha_provider')) {
                 case 'recaptcha':
                     $recaptcha_sitekey = Config::get('recaptcha_sitekey');
                     break;
@@ -83,10 +81,10 @@ class UserController extends BaseController
         return $this->view()
             ->assign('subInfo', LinkController::GetSubinfo($user, 0))
             ->assign('ssr_sub_token', $ssr_sub_token)
-            ->assign('display_ios_class',Config::get('display_ios_class'))
-            ->assign('display_ios_topup',Config::get('display_ios_topup'))
-            ->assign('ios_account',Config::get('ios_account'))
-            ->assign('ios_password',Config::get('ios_password'))
+            ->assign('display_ios_class', Config::get('display_ios_class'))
+            ->assign('display_ios_topup', Config::get('display_ios_topup'))
+            ->assign('ios_account', Config::get('ios_account'))
+            ->assign('ios_password', Config::get('ios_password'))
             ->assign('ann', $Ann)
             ->assign('geetest_html', $GtSdk)
             ->assign('mergeSub', Config::get('mergeSub'))
@@ -141,23 +139,27 @@ class UserController extends BaseController
         return $this->view()->assign('codes', $codes)->assign('total_in', Code::where('isused', 1)->where('type', -1)->sum('number'))->assign('total_out', Code::where('isused', 1)->where('type', -2)->sum('number'))->display('user/donate.tpl');
     }
 
-    function isHTTPS()
+    public function isHTTPS()
     {
         define('HTTPS', false);
-        if (defined('HTTPS') && HTTPS) return true;
-        if (!isset($_SERVER)) return FALSE;
-        if (!isset($_SERVER['HTTPS'])) return FALSE;
-        if ($_SERVER['HTTPS'] === 1) {  //Apache
-            return TRUE;
-        } elseif ($_SERVER['HTTPS'] === 'on') { //IIS
-            return TRUE;
-        } elseif ($_SERVER['SERVER_PORT'] == 443) { //其他
-            return TRUE;
+        if (defined('HTTPS') && HTTPS) {
+            return true;
         }
-        return FALSE;
+        if (!isset($_SERVER)) {
+            return false;
+        }
+        if (!isset($_SERVER['HTTPS'])) {
+            return false;
+        }
+        if ($_SERVER['HTTPS'] === 1) {  //Apache
+            return true;
+        } elseif ($_SERVER['HTTPS'] === 'on') { //IIS
+            return true;
+        } elseif ($_SERVER['SERVER_PORT'] == 443) { //其他
+            return true;
+        }
+        return false;
     }
-
-
 
     public function code_check($request, $response, $args)
     {
@@ -309,12 +311,10 @@ class UserController extends BaseController
         }
     }
 
-
     public function GaCheck($request, $response, $args)
     {
         $code = $request->getParam('code');
         $user = $this->user;
-
 
         if ($code == "") {
             $res['ret'] = 0;
@@ -330,12 +330,10 @@ class UserController extends BaseController
             return $response->getBody()->write(json_encode($res));
         }
 
-
         $res['ret'] = 1;
         $res['msg'] = "测试成功";
         return $response->getBody()->write(json_encode($res));
     }
-
 
     public function GaSet($request, $response, $args)
     {
@@ -350,7 +348,6 @@ class UserController extends BaseController
 
         $user->ga_enable = $enable;
         $user->save();
-
 
         $res['ret'] = 1;
         $res['msg'] = "设置成功";
@@ -371,7 +368,6 @@ class UserController extends BaseController
         $origin_port = $user->port;
 
         $user->port = Tools::getAvPort();
-
 
         $relay_rules = Relay::where('user_id', $user->id)->where('port', $origin_port)->get();
         foreach ($relay_rules as $rule) {
@@ -445,7 +441,6 @@ class UserController extends BaseController
         return $newResponse;
     }
 
-
     public function nodeAjax($request, $response, $args)
     {
         $id = $args['id'];
@@ -454,96 +449,93 @@ class UserController extends BaseController
         return $this->view()->assign('point_node', $point_node)->assign('prefix', $prefix[0])->assign('id', $id)->display('user/nodeajax.tpl');
     }
 
-	public function node($request, $response, $args)
+    public function node($request, $response, $args)
     {
         $user = Auth::getUser();
         $nodes = Node::where('type', 1)->orderBy('node_class')->orderBy('name')->get();
         $relay_rules = Relay::where('user_id', $this->user->id)->orwhere('user_id', 0)->orderBy('id', 'asc')->get();
-		if (!Tools::is_protocol_relay($user)) {
+        if (!Tools::is_protocol_relay($user)) {
             $relay_rules = array();
         }
 
-		$array_nodes=array();
-		$nodes_muport = array();
+        $array_nodes = array();
+        $nodes_muport = array();
 
-		foreach($nodes as $node){
-			if($node->node_group!=$user->node_group && $node->node_group!=0 && !$user->isAdmin()){
-				continue;
-			}
-			if ($node->sort == 9) {
+        foreach ($nodes as $node) {
+            if ($node->node_group!=$user->node_group && $node->node_group!=0 && !$user->isAdmin()) {
+                continue;
+            }
+            if ($node->sort == 9) {
                 $mu_user = User::where('port', '=', $node->server)->first();
                 $mu_user->obfs_param = $this->user->getMuMd5();
                 array_push($nodes_muport, array('server' => $node, 'user' => $mu_user));
                 continue;
             }
-			$array_node=array();
+            $array_node=array();
 
-			$array_node['id']=$node->id;
-			$array_node['class']=$node->node_class;
-			$array_node['name']=$node->name;
-			$array_node['server']=$node->server;
-			$array_node['sort']=$node->sort;
-			$array_node['info']=$node->info;
-			$array_node['mu_only']=$node->mu_only;
-			$array_node['group']=$node->node_group;
+            $array_node['id']=$node->id;
+            $array_node['class']=$node->node_class;
+            $array_node['name']=$node->name;
+            if ($node->sort == 13) {
+                $server = explode(';', $node->server);
+                $array_node['server']=$server[1];
+            } else {
+                $array_node['server']=$node->server;
+            }
+            $array_node['sort']=$node->sort;
+            $array_node['info']=$node->info;
+            $array_node['mu_only']=$node->mu_only;
+            $array_node['group']=$node->node_group;
 
             $array_node['raw_node'] = $node;
-			$regex = Config::get('flag_regex');
+            $regex = Config::get('flag_regex');
             $matches = array();
             preg_match($regex, $node->name, $matches);
             if (isset($matches[0])) {
-				$array_node['flag'] = $matches[0].'.png';
-            }
-			else {
+                $array_node['flag'] = $matches[0].'.png';
+            } else {
                 $array_node['flag'] = 'unknown.png';
             }
 
-			$node_online=$node->isNodeOnline();
-			if($node_online===null){
-				$array_node['online']=0;
-			}
-			else if($node_online===true){
-				$array_node['online']=1;
-			}
-			else if($node_online===false){
-				$array_node['online']=-1;
-			}
+            $node_online=$node->isNodeOnline();
+            if ($node_online===null) {
+                $array_node['online']=0;
+            } elseif ($node_online===true) {
+                $array_node['online']=1;
+            } elseif ($node_online===false) {
+                $array_node['online']=-1;
+            }
 
-			if ($node->sort == 0 ||$node->sort == 7 || $node->sort == 8 ||
-				$node->sort == 10 || $node->sort == 11|| $node->sort ==12){
-				$array_node['online_user']=$node->getOnlineUserCount();
-			}
-			else{
-				$array_node['online_user']=-1;
-			}
+            if (in_array($node->sort, array(0, 10, 11, 12, 13))) {
+                $array_node['online_user']=$node->getOnlineUserCount();
+            } else {
+                $array_node['online_user']=-1;
+            }
 
-			$nodeLoad = $node->getNodeLoad();
+            $nodeLoad = $node->getNodeLoad();
             if (isset($nodeLoad[0]['load'])) {
                 $array_node['latest_load'] = ((explode(" ", $nodeLoad[0]['load']))[0]) * 100;
-            }
-			else {
+            } else {
                 $array_node['latest_load'] = -1;
             }
 
             $array_node['traffic_used'] = (int)Tools::flowToGB($node->node_bandwidth);
             $array_node['traffic_limit'] = (int)Tools::flowToGB($node->node_bandwidth_limit);
-			if($node->node_speedlimit==0.0){
-				$array_node['bandwidth']=0;
-			}
-			else if($node->node_speedlimit>=1024.00){
-				$array_node['bandwidth']=round($node->node_speedlimit/1024.00,1).'Gbps';
-			}
-			else{
-				$array_node['bandwidth']=$node->node_speedlimit.'Mbps';
-			}
+            if ($node->node_speedlimit==0.0) {
+                $array_node['bandwidth']=0;
+            } elseif ($node->node_speedlimit>=1024.00) {
+                $array_node['bandwidth']=round($node->node_speedlimit/1024.00, 1).'Gbps';
+            } else {
+                $array_node['bandwidth']=$node->node_speedlimit.'Mbps';
+            }
 
-			$array_node['traffic_rate']=$node->traffic_rate;
-			$array_node['status']=$node->status;
+            $array_node['traffic_rate']=$node->traffic_rate;
+            $array_node['status']=$node->status;
 
-			array_push($array_nodes,$array_node);
-		}
-		return $this->view()->assign('nodes', $array_nodes)->assign('nodes_muport', $nodes_muport)->assign('relay_rules', $relay_rules)->assign('tools', new Tools())->assign('user', $user)->registerClass("URL", "App\Utils\URL")->display('user/node.tpl');
-	}
+            array_push($array_nodes, $array_node);
+        }
+        return $this->view()->assign('nodes', $array_nodes)->assign('nodes_muport', $nodes_muport)->assign('relay_rules', $relay_rules)->assign('tools', new Tools())->assign('user', $user)->registerClass("URL", "App\Utils\URL")->display('user/node.tpl');
+    }
 
 
     public function node_old($request, $response, $args)
@@ -604,8 +596,7 @@ class UserController extends BaseController
                     $a++;
                 }
 
-
-                if ($node->sort == 0 || $node->sort == 7 || $node->sort == 8 || $node->sort == 10 || $node->sort == 11) {
+                if (in_array($node->sort, array(0, 10, 11, 12, 13))) {
                     $node_tempalive = $node->getOnlineUserCount();
                     $node_prealive[$node->id] = $node_tempalive;
                     if ($node->isNodeOnline() !== null) {
@@ -669,7 +660,6 @@ class UserController extends BaseController
         return $this->view()->assign('relay_rules', $relay_rules)->assign('node_class', $node_class)->assign('node_isv6', $node_isv6)->assign('tools', $tools)->assign('node_method', $node_method)->assign('node_muport', $node_muport)->assign('node_bandwidth', $node_bandwidth)->assign('node_heartbeat', $node_heartbeat)->assign('node_prefix', $node_prefix)->assign('node_flag_file', $node_flag_file)->assign('node_prealive', $node_prealive)->assign('node_order', $node_order)->assign('user', $user)->assign('node_alive', $node_alive)->assign('node_latestload', $node_latestload)->registerClass("URL", "App\Utils\URL")->display('user/node.tpl');
     }
 
-
     public function nodeInfo($request, $response, $args)
     {
         $user = Auth::getUser();
@@ -681,7 +671,6 @@ class UserController extends BaseController
         if ($node == null) {
             return null;
         }
-
 
         switch ($node->sort) {
             case 0:
@@ -722,38 +711,16 @@ class UserController extends BaseController
                     return $this->view()->assign('node', $node)->assign('user', $user)->assign('mu', $mu)->assign('relay_rule_id', $relay_rule_id)->registerClass("URL", "App\Utils\URL")->display('user/nodeinfo.tpl');
                 }
                 break;
+            case 13:
+                if ((($user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin) && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
+                    return $this->view()->assign('node', $node)->assign('user', $user)->assign('mu', $mu)->assign('relay_rule_id', $relay_rule_id)->registerClass("URL", "App\Utils\URL")->display('user/nodeinfo.tpl');
+                }
+                break;
             default:
                 echo "微笑";
 
         }
     }
-
-    public function GetIosConf($request, $response, $args)
-    {
-        $newResponse = $response->withHeader('Content-type', ' application/octet-stream')->withHeader('Content-Disposition', ' attachment; filename=allinone.conf');//->getBody()->write($builder->output());
-        if ($this->user->is_admin) {
-            $newResponse->getBody()->write(LinkController::GetIosConf(Node::where(
-                function ($query) {
-                    $query->where('sort', 0)
-                        ->orWhere('sort', 10);
-                }
-            )->where("type", "1")->get(), $this->user));
-        } else {
-            $newResponse->getBody()->write(LinkController::GetIosConf(Node::where(
-                function ($query) {
-                    $query->where('sort', 0)
-                        ->orWhere('sort', 10);
-                }
-            )->where("type", "1")->where(
-                function ($query) {
-                    $query->where("node_group", "=", $this->user->node_group)
-                        ->orWhere("node_group", "=", 0);
-                }
-            )->where("node_class", "<=", $this->user->class)->get(), $this->user));
-        }
-        return $newResponse;
-    }
-
 
     public function profile($request, $response, $args)
     {
@@ -794,7 +761,6 @@ class UserController extends BaseController
                     continue;
                 }
 
-
                 if (!isset($userip[$single->ip])) {
                     //$useripcount[$single->userid]=$useripcount[$single->userid]+1;
                     $location = $iplocation->getlocation($single->ip);
@@ -802,7 +768,6 @@ class UserController extends BaseController
                 }
             }
         }
-
 
         return $this->view()->assign("userip", $userip)->assign("userloginip", $userloginip)->assign("paybacks", $paybacks)->display('user/profile.tpl');
     }
@@ -820,7 +785,6 @@ class UserController extends BaseController
     {
         return $this->view()->display('user/tutorial.tpl');
     }
-
 
     public function edit($request, $response, $args)
     {
@@ -843,13 +807,12 @@ class UserController extends BaseController
             ->registerClass("URL", "App\Utils\URL")->display('user/edit.tpl');
     }
 
-
     public function invite($request, $response, $args)
     {
         $code = InviteCode::where('user_id', $this->user->id)->first();
         if ($code == null) {
             $this->user->addInviteCode();
-			$code = InviteCode::where('user_id', $this->user->id)->first();
+            $code = InviteCode::where('user_id', $this->user->id)->first();
         }
 
         $pageNum = 1;
@@ -910,7 +873,7 @@ class UserController extends BaseController
             $res['ret'] = 0;
             $res['msg'] = "此后缀名被抢注了";
             return $response->getBody()->write(json_encode($res));
-        } 
+        }
 
         $user = $this->user;
         if ($user->money < $price) {
@@ -1108,13 +1071,13 @@ class UserController extends BaseController
         $price = $shop->price * ((100 - $credit) / 100);
         $user = $this->user;
 
-        if (bccomp($user->money , $price,2)==-1) {
+        if (bccomp($user->money, $price, 2)==-1) {
             $res['ret'] = 0;
             $res['msg'] = '喵喵喵~ 当前余额不足，总价为' . $price . '元。</br><a href="/user/code">点击进入充值界面</a>';
             return $response->getBody()->write(json_encode($res));
         }
 
-        $user->money =bcsub($user->money , $price,2);
+        $user->money =bcsub($user->money, $price, 2);
         $user->save();
 
         if ($disableothers == 1) {
@@ -1136,7 +1099,6 @@ class UserController extends BaseController
         }
 
         $bought->coupon = $code;
-
 
         if (isset($onetime)) {
             $price = $shop->price;
@@ -1189,7 +1151,6 @@ class UserController extends BaseController
         return $response->getBody()->write(json_encode($rs));
     }
 
-
     public function ticket($request, $response, $args)
     {
         if (Config::get('enable_ticket') != 'true') {
@@ -1215,7 +1176,6 @@ class UserController extends BaseController
         $title = $request->getParam('title');
         $content = $request->getParam('content');
 
-
         if ($title == "" || $content == "") {
             $res['ret'] = 0;
             $res['msg'] = "非法输入";
@@ -1227,7 +1187,6 @@ class UserController extends BaseController
             $res['msg'] = "请求中有不当词语";
             return $this->echoJson($response, $res);
         }
-
 
         $ticket = new Ticket();
 
@@ -1277,7 +1236,6 @@ class UserController extends BaseController
             $res['msg'] = "请求中有不当词语";
             return $this->echoJson($response, $res);
         }
-
 
         $ticket_main = Ticket::where("id", "=", $id)->where("rootid", "=", 0)->first();
         if ($ticket_main->userid != $this->user->id) {
@@ -1330,7 +1288,6 @@ class UserController extends BaseController
         $ticket_main->save();
         $ticket->save();
 
-
         $res['ret'] = 1;
         $res['msg'] = "提交成功";
         return $this->echoJson($response, $res);
@@ -1350,14 +1307,12 @@ class UserController extends BaseController
             $pageNum = $request->getQueryParams()["page"];
         }
 
-
         $ticketset = Ticket::where("id", $id)->orWhere("rootid", "=", $id)->orderBy("datetime", "desc")->paginate(5, ['*'], 'page', $pageNum);
         $ticketset->setPath('/user/ticket/' . $id . "/view");
 
 
         return $this->view()->assign('ticketset', $ticketset)->assign("id", $id)->display('user/ticket_view.tpl');
     }
-
 
     public function updateWechat($request, $response, $args)
     {
@@ -1494,7 +1449,6 @@ class UserController extends BaseController
             return $response->getBody()->write(json_encode($res));
         }
 
-
         $user->theme = filter_var($theme, FILTER_SANITIZE_STRING);
         $user->save();
 
@@ -1502,7 +1456,6 @@ class UserController extends BaseController
         $res['msg'] = "设置成功";
         return $this->echoJson($response, $res);
     }
-
 
     public function updateMail($request, $response, $args)
     {
@@ -1515,7 +1468,6 @@ class UserController extends BaseController
             $res['msg'] = "非法输入";
             return $response->getBody()->write(json_encode($res));
         }
-
 
         $user->sendDailyMail = $mail;
         $user->save();
@@ -1537,7 +1489,6 @@ class UserController extends BaseController
             return $response->getBody()->write(json_encode($res));
         }
 
-
         $user->pac = $pac;
         $user->save();
 
@@ -1545,7 +1496,6 @@ class UserController extends BaseController
         $res['msg'] = "修改成功";
         return $this->echoJson($response, $res);
     }
-
 
     public function updateSsPwd($request, $response, $args)
     {
@@ -1568,9 +1518,7 @@ class UserController extends BaseController
         $user->updateSsPwd($pwd);
         $res['ret'] = 1;
 
-
         Radius::Add($user, $pwd);
-
 
         return $this->echoJson($response, $res);
     }
@@ -1636,13 +1584,12 @@ class UserController extends BaseController
     public function doCheckIn($request, $response, $args)
     {
         if (Config::get('enable_checkin_captcha') == 'true') {
-            switch(Config::get('captcha_provider'))
-            {
+            switch (Config::get('captcha_provider')) {
                 case 'recaptcha':
                     $recaptcha = $request->getParam('recaptcha');
-                    if ($recaptcha == ''){
+                    if ($recaptcha == '') {
                         $ret = false;
-                    }else{
+                    } else {
                         $json = file_get_contents("https://recaptcha.net/recaptcha/api/siteverify?secret=".Config::get('recaptcha_secret')."&response=".$recaptcha);
                         $ret = json_decode($json)->success;
                     }
@@ -1658,11 +1605,11 @@ class UserController extends BaseController
             }
         }
 
-		if(strtotime($this->user->expire_in) < time()){
+        if (strtotime($this->user->expire_in) < time()) {
             $res['ret'] = 0;
-		    $res['msg'] = "您的账户已过期，无法签到。";
+            $res['msg'] = "您的账户已过期，无法签到。";
             return $response->getBody()->write(json_encode($res));
-		}
+        }
 
         if (!$this->user->isAbleToCheckin()) {
             $res['ret'] = 0;
@@ -1710,8 +1657,7 @@ class UserController extends BaseController
             $user->kill_user();
             $res['ret'] = 1;
             $res['msg'] = "您的帐号已经从我们的系统中删除。欢迎下次光临!";
-        }
-		else {
+        } else {
             $res['ret'] = 0;
             $res['msg'] = "管理员不允许删除，如需删除请联系管理员。";
         }

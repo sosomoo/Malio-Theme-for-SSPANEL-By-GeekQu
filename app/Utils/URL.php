@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Utils;
 
 use App\Models\User;
@@ -151,14 +152,16 @@ class URL
             $nodes=Node::where(
                 function ($query) {
                     $query->where('sort', 0)
-                        ->orwhere('sort', 10);
+                        ->orwhere('sort', 10)
+                        ->orwhere('sort', 13);
                 }
             )->where("type", "1")->orderBy("name")->get();
         } else {
             $nodes=Node::where(
                 function ($query) {
                     $query->where('sort', 0)
-                        ->orwhere('sort', 10);
+                        ->orwhere('sort', 10)
+                        ->orwhere('sort', 13);
                 }
             )->where(
                 function ($query) use ($user) {
@@ -281,17 +284,19 @@ class URL
                 $personal_info = $item['method'].':'.$item['passwd'];
                 $ssurl = "ss://".Tools::base64_url_encode($personal_info)."@".$item['address'].":".$item['port'];
                 $plugin = '';
-                if (in_array($item['obfs'], $ss_obfs_list)) {
+                if (in_array($item['obfs'], $ss_obfs_list) && $item['obfs'] == "v2ray-plugin") {
                     if (strpos($item['obfs'], 'http') !== false) {
                         $plugin .= "obfs-local;obfs=http";
-                    } else {
+                    } elseif (strpos($item['obfs'], 'tls') !== false) {
                         $plugin .= "obfs-local;obfs=tls";
+                    } else {
+                        $plugin .= "v2ray-plugin;".$item['obfs_param'];
                     }
-                    if ($item['obfs_param'] != '') {
+                    if ($item['obfs_param'] != '' && $item['obfs'] != "v2ray-plugin") {
                         $plugin .= ";obfs-host=".$item['obfs_param'];
                     }
                     $ssurl .= "?plugin=".rawurlencode($plugin);
-                }
+                } 
                 $ssurl .= "#".rawurlencode(Config::get('appName')." - ".$item['remark']);
             }
             return $ssurl;
@@ -568,15 +573,30 @@ class URL
             }
             $user = URL::getSSRConnectInfo($user);
         }
-        $return_array['address'] = $node->server;
-        $return_array['port'] = $user->port;
+        if ($node->sort == 13) {
+            $server = explode(';', $node->server);
+            $return_array['address'] = $server[0];
+            $return_array['port'] = $server[1];
+            $return_array['protocol'] = "origin";
+            $return_array['protocol_param'] = "";
+            $return_array['path'] = $server[4];
+            $return_array['obfs'] = "v2ray-plugin";
+            if ($server[3] == "tls" && $server[2] == "ws") {
+                $return_array['obfs_param'] = "mode=ws;security=tls;path=".$server[4]."host=".$user->getMuMd5();        
+            } else {
+                $return_array['obfs_param'] = "mode=ws;security=none;host=".$user->getMuMd5();        
+            }
+        } else {
+            $return_array['address'] = $node->server;
+            $return_array['port'] = $user->port;
+            $return_array['protocol'] = $user->protocol;
+            $return_array['protocol_param'] = $user->protocol_param;
+            $return_array['obfs'] = $user->obfs;
+            $return_array['obfs_param'] = $user->obfs_param;        
+        }
         $return_array['passwd'] = $user->passwd;
         $return_array['method'] = $user->method;
         $return_array['remark'] = $node_name;
-        $return_array['protocol'] = $user->protocol;
-        $return_array['protocol_param'] = $user->protocol_param;
-        $return_array['obfs'] = $user->obfs;
-        $return_array['obfs_param'] = $user->obfs_param;
         $return_array['group'] = Config::get('appName');
 
         return $return_array;

@@ -59,10 +59,10 @@ class NodeController extends AdminController
         if ($req_node_ip == "") {
             $req_node_ip = $node->server;
         }
-                          
-        if ($node->sort == 11 || $node->sort == 12) {
+
+        if (in_array($node->sort, array(0, 1, 10, 11, 12, 13))) {
             $server_list = explode(";", $node->server);
-            if (count($server_list) <= 5) {
+            if (in_array($node->sort, array(11, 12)) && count($server_list) <= 5) {
                 $rs['ret'] = 0;
                 $rs['msg'] = "您输入的节点地址格式有误！";
                 return $response->getBody()->write(json_encode($rs));
@@ -75,31 +75,22 @@ class NodeController extends AdminController
             } else {
                 $node->node_ip = $req_node_ip;
             }
-        } elseif ($node->sort == 0 || $node->sort == 1 || $node->sort == 10) {
-            if (!Tools::is_ip($node->server)) {
-                $node->node_ip = gethostbyname($node->server);
-                if ($node->node_ip == "127.0.0.1") {
-                    $node->node_ip = DNSoverHTTPS::gethostbyName($node->server);
-                }
-            } else {
-                $node->node_ip = $req_node_ip;
+            if ($node->node_ip == "") {
+                $rs['ret'] = 0;
+                $rs['msg'] = "获取节点IP失败，请检查您输入的节点地址是否正确！";
+                return $response->getBody()->write(json_encode($rs));
             }
         } else {
             $node->node_ip = "";
         }
 
-        if ($node->node_ip == "" && ($node->sort == 11 || $node->sort == 12 || $node->sort == 0 || $node->sort == 1 || $node->sort == 10)) {
-            $rs['ret'] = 0;
-            $rs['msg'] = "获取节点IP失败，请检查您输入的节点地址是否正确！";
-            return $response->getBody()->write(json_encode($rs));
-        }
-
         if ($node->sort == 1) {
             Radius::AddNas($node->node_ip, $request->getParam('server'));
         }
-        $node->node_class=$request->getParam('class');
-        $node->node_bandwidth_limit=$request->getParam('node_bandwidth_limit')*1024*1024*1024;
-        $node->bandwidthlimit_resetday=$request->getParam('bandwidthlimit_resetday');
+
+        $node->node_class = $request->getParam('class');
+        $node->node_bandwidth_limit = $request->getParam('node_bandwidth_limit')*1024*1024*1024;
+        $node->bandwidthlimit_resetday = $request->getParam('bandwidthlimit_resetday');
 
         $node->save();
 
@@ -142,15 +133,15 @@ class NodeController extends AdminController
         $node->type = $request->getParam('type');
         $node->sort = $request->getParam('sort');
 
-        $req_node_ip=trim($request->getParam('node_ip'));
+        $req_node_ip = trim($request->getParam('node_ip'));
         if ($req_node_ip == "") {
             $req_node_ip = $node->server;
         }
 
-        $success=true;
-        if ($node->sort == 11 || $node->sort == 12) {
+        $success = true;
+        if (in_array($node->sort, array(0, 1, 10, 11, 12, 13))) {
             $server_list = explode(";", $node->server);
-            if (count($server_list) <= 5) {
+            if (in_array($node->sort, array(11, 12)) && count($server_list) <= 5) {
                 $rs['ret'] = 0;
                 $rs['msg'] = "您输入的节点地址格式有误！";
                 return $response->getBody()->write(json_encode($rs));
@@ -159,12 +150,6 @@ class NodeController extends AdminController
                 $success = $node->changeNodeIp($server_list[0]);
             } else {
                 $success = $node->changeNodeIp($req_node_ip);
-            }
-        } elseif ($node->sort == 0 || $node->sort == 1 || $node->sort == 10) {
-            if (!Tools::is_ip($node->server)) {
-                $success=$node->changeNodeIp($node->server);
-            } else {
-                $success=$node->changeNodeIp($req_node_ip);
             }
         } else {
             $node->node_ip = "";
@@ -175,13 +160,13 @@ class NodeController extends AdminController
             $rs['msg'] = "更新节点IP失败，请检查您输入的节点地址是否正确！";
             return $response->getBody()->write(json_encode($rs));
         }
-        
-        if ($node->sort == 0 || $node->sort == 10) {
+
+        if (in_array($node->sort, array(0, 10, 11, 12))) {
             Tools::updateRelayRuleIp($node);
         }
 
         if ($node->sort == 1) {
-            $SS_Node=Node::where('sort', '=', 0)->where('server', '=', $request->getParam('server'))->first();
+            $SS_Node = Node::where('sort', '=', 0)->where('server', '=', $request->getParam('server'))->first();
             if ($SS_Node != null) {
                 if (time()-$SS_Node->node_heartbeat<300 || $SS_Node->node_heartbeat == 0) {
                     $ip = gethostbyname($request->getParam('server'));
@@ -301,7 +286,10 @@ class NodeController extends AdminController
                   $sort = 'V2Ray 节点';
                   break;
                 case 12:
-                  $sort = 'V2ray - 中转';
+                  $sort = 'V2Ray - 中转';
+                  break;
+                case 13:
+                  $sort = 'Shadowsocks - V2Ray-Plugin';
                   break;
                 default:
                   $sort = '系统保留';

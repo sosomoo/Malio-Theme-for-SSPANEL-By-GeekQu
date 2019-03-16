@@ -353,19 +353,32 @@ class LinkController extends BaseController
                 "cipher" => $item['method'],
                 "password" => $item['passwd'],
             ];
-            if (in_array($item['obfs'], array("simple_obfs_tls", "simple_obfs_http"))) {
-                $sss['plugin'] = "obfs";
-                if (strpos($item['obfs'], 'http')) {
-                    $sss['plugin-opts']['mode'] = "http";
-                } else {
-                    $sss['plugin-opts']['mode'] = "tls";
-                }
-                if ($item['obfs_param'] != '') {
-                    $sss['plugin-opts']['host'] = $item['obfs_param'];
-                } else {
-                    $sss['plugin-opts']['host'] = "wns.windows.com";
+            if ($item['obfs'] != "plain") {
+                switch ($item['obfs']) {
+                    case "simple_obfs_http":
+                        $sss['plugin'] = "obfs";
+                        $sss['plugin-opts']['mode'] = "http";
+                        break;
+                    case "simple_obfs_tls":
+                        $sss['plugin'] = "obfs";
+                        $sss['plugin-opts']['mode'] = "tls";
+                        break;
+                    case "v2ray-plugin":
+                        $sss['plugin'] = "v2ray-plugin";
+                        $sss['plugin-opts']['mode'] = "websocket";
+                        if (strpos($item['obfs_param'], "security=tls")) {
+                            $sss['plugin-opts']['tls'] = true;
+                        }
+                        $sss['plugin-opts']['host'] = $user->getMuMd5();
+                        $sss['plugin-opts']['path'] = $item['path'];
+                        break;
                 }
             }
+            if ($item['obfs'] != "plain" && $item['obfs_param'] != '' && $item['obfs'] != "v2ray-plugin") {
+                $sss['plugin-opts']['host'] = $item['obfs_param'];
+            } else {
+                $sss['plugin-opts']['host'] = "wns.windows.com";
+            }            
             if (strpos($sss['name'], "回国") or strpos($sss['name'], "China")) {
                 $back_china_confs[] = $sss;
             } else {
