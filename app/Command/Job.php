@@ -109,11 +109,8 @@ class Job
         $nodes = Node::all();
         foreach ($nodes as $node) {
             $rule = preg_match("/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/",$node->server);
-            if (!$rule && (!$node->sort || $node->sort == 10)) {
+            if (!$rule && (!$node->sort || $node->sort == 10 || $node-sort == 12)) {
                 $ip = gethostbyname($node->server);
-                if ($ip == "127.0.0.1"){
-                    $ip = DNSoverHTTPS::gethostbyName($node->server);
-                }
                 $node->node_ip = $ip;
                 $node->save();
 
@@ -126,7 +123,7 @@ class Job
     {
         $nodes = Node::all();
         foreach ($nodes as $node) {
-            if ($node->sort == 0 || $node->sort == 10 || $node->sort == 11) {
+            if ($node->sort == 0 || $node->sort == 10 || $node->sort == 11 ||$node->sort ==12 ) {
                 if (date("d")==$node->bandwidthlimit_resetday) {
                     $node->node_bandwidth=0;
                     $node->save();

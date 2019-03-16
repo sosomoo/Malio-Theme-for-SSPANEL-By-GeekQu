@@ -843,6 +843,12 @@ class UserController extends BaseController
         $amount = $price * $num;
 
         $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+
         if ($user->money < $amount) {
             $res['ret'] = 0;
             $res['msg'] = "余额不足，总价为" . $amount . "元。";
@@ -876,6 +882,12 @@ class UserController extends BaseController
         }
 
         $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+
         if ($user->money < $price) {
             $res['ret'] = 0;
             $res['msg'] = "余额不足，总价为" . $price . "元。";
@@ -972,6 +984,13 @@ class UserController extends BaseController
         $coupon = $request->getParam('coupon');
         $coupon = trim($coupon);
 
+        $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+
         $shop = $request->getParam('shop');
 
         $shop = Shop::where("id", $shop)->where("status", 1)->first();
@@ -1006,7 +1025,6 @@ class UserController extends BaseController
 
         $use_limit = $coupon->onetime;
         if ($use_limit > 0) {
-            $user = $this->user;
             $use_count = Bought::where("userid", $user->id)->where("coupon", $coupon->code)->count();
             if ($use_count >= $use_limit) {
                 $res['ret'] = 0;
@@ -1071,7 +1089,12 @@ class UserController extends BaseController
         $price = $shop->price * ((100 - $credit) / 100);
         $user = $this->user;
 
-        if (bccomp($user->money, $price, 2)==-1) {
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+
+        if (bccomp($user->money , $price,2)==-1) {
             $res['ret'] = 0;
             $res['msg'] = '喵喵喵~ 当前余额不足，总价为' . $price . '元。</br><a href="/user/code">点击进入充值界面</a>';
             return $response->getBody()->write(json_encode($res));
