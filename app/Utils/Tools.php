@@ -73,16 +73,16 @@ class Tools
 
     //获取随机字符串
 		
-		public static function genRandomNum($length = 8)
-		{
-				// 来自Miku的 6位随机数 注册验证码 生成方案
-				$chars = '0123456789';
-				$char = '';
-				for ($i = 0; $i < $length; $i++) {
-						$char .= $chars[mt_rand(0, strlen($chars) - 1)];
-				}
-				return $char;
+	public static function genRandomNum($length = 8)
+	{
+		// 来自Miku的 6位随机数 注册验证码 生成方案
+		$chars = '0123456789';
+		$char = '';
+		for ($i = 0; $i < $length; $i++) {
+			$char .= $chars[mt_rand(0, strlen($chars) - 1)];
 		}
+		return $char;
+	}
 		
     public static function genRandomChar($length = 8)
     {
@@ -501,6 +501,46 @@ class Tools
         } else {
             return true;
         }
+    }
+
+    public static function ssv2Array($node)
+    {
+        $server = explode(';', $node);
+        $item = [
+            'host'=>'',
+            'path'=>'',
+            'net'=>'ws',
+            'tls'=>''
+        ];
+        $item['add'] = $server[0];
+        if ($server[1] == "0" or $server[1] == "") {
+            $item['port'] = "443";
+        } else {
+            $item['port'] = $server[1];
+        }
+        if (count($server) >= 4) {
+            $item['net'] = $server[3];
+            if ($item['net'] == 'ws') {
+                $item['path'] = '/';
+            } elseif ($item['net'] == 'tls') {
+                $item['tls'] = 'tls';
+            }
+        }
+        if (count($server) >= 5 && $server[4] == 'ws') {
+            $item['net'] = 'ws';
+        }
+        if (count($server) >= 6) {
+            $item = array_merge($item, URL::parse_args($server[5]));
+            if (array_key_exists("server", $item)) {
+                $item['add'] = $item['server'];
+                unset($item['server']);
+            }
+            if (array_key_exists("outside_port", $item)) {
+                $item['port'] = $item['outside_port'];
+                unset($item['outside_port']);
+            }
+        }
+        return $item;
     }
 
 }

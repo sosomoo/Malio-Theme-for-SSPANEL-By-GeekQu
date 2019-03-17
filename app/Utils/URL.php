@@ -377,7 +377,8 @@ class URL
         $nodes = Node::where('type', 1)->where('node_class', '<=', $user->class)
             ->where(function ($func) {
                 $func->where('sort', '=', 0)
-                    ->orwhere('sort', '=', 10);
+                    ->orwhere('sort', '=', 10)
+                    ->orwhere('sort', '=', 13);
             })
             ->where(function ($func) use ($user) {
                 $func->where('node_group', '=', $user->node_group)
@@ -386,6 +387,27 @@ class URL
         $server_index=1;
         foreach ($nodes as $node) {
             $server=array();
+            if ($node->sort==13) {
+                if (URL::CanMethodConnect($user->method)!=2) {
+                    continue;
+                }
+                $ssv2Array = Tools::ssv2Array($node->server);
+                $server['server']=$ssv2Array['add'];
+                $server['id']=$server_index;
+                $server['remarks']=$node->name.' - 单多'.$ssv2Array['port'].'端口';
+                $server['port']=$ssv2Array['port'];
+                $server['encryption']=$user->method;
+                $server['password']=$user->passwd;
+                $server['plugin']='v2ray';
+                if ($ssv2Array['tls'] == "tls" && $ssv2Array['net'] == "ws") {
+                    $server['plugin_options']="mode=ws;security=tls;path=".$ssv2Array['path'].";host=".$user->getMuMd5();        
+                } else {
+                    $server['plugin_options']="mode=ws;security=none;path=".$ssv2Array['path'].";host=".$user->getMuMd5();        
+                }
+                array_push($array_server, $server);
+                $server_index++;
+                continue;
+            }
             $server['id']=$server_index;
             $server['server']=$node->server;
             //判断是否是中转起源节点
@@ -408,13 +430,13 @@ class URL
 
             $server['ratio']=$node->traffic_rate;
             //包含普通
-            if ($node->mu_only==0||$node->mu_only==-1) {
+            if (($node->mu_only==0||$node->mu_only==-1)&&$node->sort!=13) {
                 $server['remarks']=$node->name;
                 array_push($array_server, $server);
                 $server_index++;
             }
             //包含单多
-            if ($node->mu_only==0||$node->mu_only==1) {
+            if (($node->mu_only==0||$node->mu_only==1)&&$node->sort!=13) {
                 $nodes_muport=Node::where('type', '1')->where('sort', '=', 9)
                     ->where(function ($query) use ($user) {
                         $query->Where('node_group', '=', $user->group)
@@ -432,7 +454,7 @@ class URL
                     $server['port']=$node_muport->server;
                     $server['encryption']=$muport_user->method;
                     $server['password']=$muport_user->passwd;
-                    $server['plugin']='simple-obfs';//目前只支持这个
+                    $server['plugin']='simple-obfs';
                     $plugin_options='';
                     if (strpos($muport_user->obfs, 'http')!=false) {
                         $plugin_options='obfs=http';
@@ -534,17 +556,17 @@ class URL
             $user = URL::getSSRConnectInfo($user);
         }
         if ($node->sort == 13) {
-            $server = explode(';', $node->server);
-            $return_array['address'] = $server[0];
-            $return_array['port'] = $server[1];
+            $server = Tools::ssv2Array($node->server);
+            $return_array['address'] = $server['add'];
+            $return_array['port'] = $server['port'];
             $return_array['protocol'] = "origin";
             $return_array['protocol_param'] = "";
-            $return_array['path'] = $server[4];
-            $return_array['obfs'] = "v2ray-plugin";
-            if ($server[3] == "tls" && $server[2] == "ws") {
-                $return_array['obfs_param'] = "mode=ws;security=tls;path=".$server[4]."host=".$user->getMuMd5();        
+            $return_array['path'] = $server['path'];
+            $return_array['obfs'] = "v2ray";
+            if ($server['tls'] == "tls" && $server['net'] == "ws") {
+                $return_array['obfs_param'] = "mode=ws;security=tls;path=".$server['path'].";host=".$user->getMuMd5();        
             } else {
-                $return_array['obfs_param'] = "mode=ws;security=none;host=".$user->getMuMd5();        
+                $return_array['obfs_param'] = "mode=ws;security=none;path=".$server['path'].";host=".$user->getMuMd5();        
             }
         } else {
             $return_array['address'] = $node->server;

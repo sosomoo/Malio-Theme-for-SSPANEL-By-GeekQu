@@ -81,7 +81,6 @@ class UserController extends BaseController
             if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
                 $user_raw = Tools::keyFilter($user_raw, $key_list);
                 $user_raw->uuid = $user_raw->getUuid();
-                $user_raw->mu_host = $user_raw->getMuMd5();
                 array_push($users, $user_raw);
             }
         }
