@@ -201,6 +201,9 @@ class LinkController extends BaseController
         $proxy_group = "";
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach ($items as $item) {
+            if ($item['obfs'] == "v2ray") {
+                continue;
+            }
             if (in_array($surge, array(1, 3))) {
                 $proxy_group .= $item['remark'] . " = ss, " . $item['address'] . ", " . $item['port'] . ", encrypt-method=" . $item['method'] . ", password=" . $item['passwd'] . URL::getSurgeObfs($item) . ", tfo=true, udp-relay=true\n";
             } else {
@@ -235,6 +238,9 @@ class LinkController extends BaseController
             $v2ray_name = "";
             $v2rays = URL::getAllVMessUrl($user, 1);
             foreach ($v2rays as $v2ray) {
+                if ($v2ray['net'] == "kcp") {
+                    continue;
+                }
                 if (strpos($v2ray['ps'], "回国") or strpos($v2ray['ps'], "China")) {
                     $back_china_name .= "\n" . $v2ray['ps'];
                 } else {
@@ -265,6 +271,9 @@ class LinkController extends BaseController
                 $ss_name = "";
                 $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
                 foreach ($items as $item) {
+                    if ($item['obfs'] == "v2ray") {
+                        continue;
+                    }
                     $ss_group .= $item['remark'] . " = shadowsocks, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", upstream-proxy=false, upstream-proxy-auth=false" . URL::getSurgeObfs($item) . ", group=" . Config::get('appName') . "\n";
                     if (strpos($item['remark'], "回国") or strpos($item['remark'], "China")) {
                         $back_china_name .="\n". $item['remark'];
@@ -324,6 +333,9 @@ class LinkController extends BaseController
         $ss_group = "";
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach ($items as $item) {
+            if ($item['obfs'] == "v2ray") {
+                continue;
+            }
             $ss_group .= $item['remark'] . " = ss, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", " . $item['passwd'] . URL::getSurgeObfs($item) . "\n";
             $ss_name .= ", ".$item['remark'];
         }
