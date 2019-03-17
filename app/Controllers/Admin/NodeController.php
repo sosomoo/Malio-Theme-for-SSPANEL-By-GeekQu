@@ -67,6 +67,11 @@ class NodeController extends AdminController
                 $rs['msg'] = "您输入的节点地址格式有误！";
                 return $response->getBody()->write(json_encode($rs));
             }
+            if (in_array($node->sort, array(11, 12)) && $server_list[3] == "tls" && Tools::is_ip($server_list[0])) {
+                $rs['ret'] = 0;
+                $rs['msg'] = "节点地址出现错误，使用 tls 需要域名！";
+                return $response->getBody()->write(json_encode($rs));
+            }
             if (!Tools::is_ip($server_list[0])) {
                 $node->node_ip = gethostbyname($server_list[0]);
                 if ($node->node_ip == "127.0.0.1") {
@@ -144,6 +149,11 @@ class NodeController extends AdminController
             if (in_array($node->sort, array(11, 12)) && count($server_list) <= 5) {
                 $rs['ret'] = 0;
                 $rs['msg'] = "您输入的节点地址格式有误！";
+                return $response->getBody()->write(json_encode($rs));
+            }
+            if (in_array($node->sort, array(11, 12)) && $server_list[3] == "tls" && Tools::is_ip($server_list[0])) {
+                $rs['ret'] = 0;
+                $rs['msg'] = "节点地址出现错误，使用 tls 需要域名！";
                 return $response->getBody()->write(json_encode($rs));
             }
             if (!Tools::is_ip($server_list[0])) {
