@@ -305,50 +305,10 @@ class URL
 
     public static function getV2Url($user, $node, $arrout = 0)
     {
-        $node_explode = explode(';', $node->server);
-        $item = [
-            'v'=>'2',
-            'host'=>'',
-            'path'=>'',
-            'tls'=>''
-        ];
+        $item = Tools::v2Array($node->server);
+        $item['v'] = "2";
         $item['ps'] = $node->name;
-        $item['add'] = $node_explode[0];
-        if ($node_explode[1] == "0" or $node_explode[1] == "") {
-            $item['port'] = "443";
-        } else {
-            $item['port'] = $node_explode[1];
-        }
         $item['id'] = $user->getUuid();
-        $item['aid'] = $node_explode[2];
-        $item['net'] = "tcp";
-        $item['type'] = "none";
-        if (count($node_explode) >= 4) {
-            $item['net'] = $node_explode[3];
-            if ($item['net'] == 'ws') {
-                $item['path'] = '/';
-            } elseif ($item['net'] == 'tls') {
-                $item['tls'] = 'tls';
-            }
-        }
-        if (count($node_explode) >= 5) {
-            if (in_array($item['net'], array("kcp", "http"))) {
-                $item['type'] = $node_explode[4];
-            } elseif ($node_explode[4] == 'ws') {
-                $item['net'] = 'ws';
-            }
-        }
-        if (count($node_explode) >= 6) {
-            $item = array_merge($item, URL::parse_args($node_explode[5]));
-            if (array_key_exists("server", $item)) {
-                $item['add'] = $item['server'];
-                unset($item['server']);
-            }
-            if (array_key_exists("outside_port", $item)) {
-                $item['port'] = $item['outside_port'];
-                unset($item['outside_port']);
-            }
-        }
         if ($arrout == 0) {
             return "vmess://".base64_encode((json_encode($item, JSON_UNESCAPED_UNICODE)));
         } else {
