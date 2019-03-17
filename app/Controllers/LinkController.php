@@ -363,7 +363,7 @@ class LinkController extends BaseController
                         $sss['plugin'] = "obfs";
                         $sss['plugin-opts']['mode'] = "tls";
                         break;
-                    case "v2ray-plugin":
+                    case "v2ray":
                         $sss['plugin'] = "v2ray-plugin";
                         $sss['plugin-opts']['mode'] = "websocket";
                         if (strpos($item['obfs_param'], "security=tls")) {
@@ -374,7 +374,7 @@ class LinkController extends BaseController
                         break;
                 }
             }
-            if ($item['obfs'] != "plain" && $item['obfs_param'] != '' && $item['obfs'] != "v2ray-plugin") {
+            if ($item['obfs'] != "plain" && $item['obfs_param'] != '' && $item['obfs'] != "v2ray") {
                 $sss['plugin-opts']['host'] = $item['obfs_param'];
             } else {
                 $sss['plugin-opts']['host'] = "wns.windows.com";
