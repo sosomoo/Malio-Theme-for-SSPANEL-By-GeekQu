@@ -100,11 +100,11 @@
 
 									{$relay_rule = null}
 
-                                    {if $node['sort'] == 10 && $node['sort'] != 11 && $node['sort']!=12}
+                                    {if $node['sort'] == 10 && $node['sort'] != 11 && $node['sort']!=12&& $node['sort']!=13}
 										{$relay_rule = $tools->pick_out_relay_rule($node['id'], $user->port, $relay_rules)}
 									{/if}
 
-									{if $node['mu_only'] != 1 && $node['sort'] != 11 && $node['sort']!=12}
+									{if $node['mu_only'] != 1 && $node['sort'] != 11 && $node['sort']!=12&& $node['sort']!=13}
 									    <div class="tiptitle">
 											<a href="javascript:void(0);" onClick="urlChange('{$node['id']}',0,{if $relay_rule != null}{$relay_rule->id}{else}0{/if})">
 												{$node['name']}{if $relay_rule != null} - {$relay_rule->dist_node()->name}{/if}
@@ -122,7 +122,7 @@
 										{$point_node=$node}
 									{/if}
 
-									{if $node['sort'] == 0 || $node['sort'] == 10}
+									{if $node['sort'] == 0 || $node['sort'] == 10||$node['sort']==13}
 										{$point_node=$node}
 									{/if}
 
@@ -232,13 +232,13 @@
 													{$relay_rule = null}
 													<!-- 用户等级不小于节点等级 -->
 
-                                                    {if $node['sort'] == 10 && $node['sort'] != 11 &&$node['sort'] != 12}
+                                                    {if $node['sort'] == 10 && $node['sort'] != 11 &&$node['sort'] != 12&& $node['sort']!=13}
 														{$relay_rule = $tools->pick_out_relay_rule($node['id'], $user->port, $relay_rules)}
 													{/if}
                                                  <div class="card nodetip-table">
 														<div class="card-main">
 																<div class="card-inner">
-													{if $node['mu_only'] != 1 && $node['sort'] != 11 && $node['sort']!=12}
+													{if $node['mu_only'] != 1 && $node['sort'] != 11 && $node['sort']!=12&& $node['sort']!=13}
 													
 																<p class="card-heading">
 																	<a href="javascript:void(0);" onClick="urlChange('{$node['id']}',0,{if $relay_rule != null}{$relay_rule->id}{else}0{/if})">{$node['name']}
@@ -251,7 +251,7 @@
 														{$point_node=$node}
 												    {/if}
 
-                                                    {if $node['sort'] == 0 || $node['sort'] == 10}
+                                                    {if $node['sort'] == 0 || $node['sort'] == 10||$node['sort']==13}
 														{$point_node=$node}
 													{/if}
 
