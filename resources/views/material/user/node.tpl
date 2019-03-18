@@ -25,7 +25,7 @@
 	<p>伪装方式：<span class="card-tag tag-green">{$v2server['type']}</span></p>
 {/if}
 
-{if $v2server['net']=="ws" && $v2server['tls']=="tls"}
+{if ($v2server['net']=="ws" && $v2server['tls']=="tls")||$v2server['net']=="tls"}
 	<p>TLS：<span class="card-tag tag-green">TLS</span></p>
 {/if}
 
