@@ -295,26 +295,19 @@ class XCat
     }
     
     public function iptest()
-    {   $nodes = Node::all();
-
-        foreach ($nodes as $node)  {
-            $ip ="";
-            $server="";
-            if ($node->sort == 11 || $node->sort == 12) {
+    {
+        $nodes = Node::all();
+        foreach ($nodes as $node) {
+            $ip = "";
+            $server = "";
+            if (in_array($node->sort, array(0, 1, 10, 11, 12, 13))) {
                 $server_list = explode(";", $node->server);
                 $server = $server_list[0];
-                if(!Tools::is_ip($server_list[0])){
-
+                if (!Tools::is_ip($server)) {
                     $ip = DNSoverHTTPS::gethostbyName($server); // returns a collection of DNS A Records
                 }
-            } else if($node->sort == 0 || $node->sort == 1 || $node->sort == 10){
-                $server = $node->server;
-                if(!Tools::is_ip($node->server)){
-                    $ip = DNSoverHTTPS::gethostbyName($server);
-                }
             }
-            if ($server!="" and $ip !=""){
-
+            if ($server!="" and $ip !="") {
                 echo "Server: ".$server." ip address: ".$ip."\n";
             }
         }

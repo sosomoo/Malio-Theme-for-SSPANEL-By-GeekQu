@@ -115,9 +115,9 @@ class LinkController extends BaseController
             $surfboard = (int)$request->getQueryParams()["surfboard"];
         }
 
-        if (isset($request->getQueryParams()["mu"])) {
+        if (isset($request->getQueryParams()["mu"])) {    
             $mu = (int)$request->getQueryParams()["mu"];
-            switch($mu){
+            switch ($mu) {
                 case 0:
                     $sub = 1;
                     break;
@@ -140,28 +140,23 @@ class LinkController extends BaseController
             $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf');
             $newResponse->getBody()->write(LinkController::GetQuantumult($user, $quantumult));
             return $newResponse;
-        }
-        elseif (in_array($surge, array(1, 2, 3))) {
+        } elseif (in_array($surge, array(1, 2, 3))) {
             $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Surge.conf');
             $newResponse->getBody()->write(LinkController::GetSurge($user, $surge));
             return $newResponse;
-        }
-        elseif ($surfboard == 1) {
+        } elseif ($surfboard == 1) {
             $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Surfboard.conf');
             $newResponse->getBody()->write(LinkController::GetSurfboard($user));
             return $newResponse;
-        }
-        elseif ($clash == 1) {
+        } elseif ($clash == 1) {
             $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=config.yml');
             $newResponse->getBody()->write(LinkController::GetClash($user, $opts));
             return $newResponse;
-        }
-        elseif ($ssd == 1) {
+        } elseif ($ssd == 1) {
             $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=SSD.txt');
             $newResponse->getBody()->write(LinkController::GetSSD($user));
             return $newResponse;
-        }
-        else {
+        } else {
             $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt');
             $newResponse->getBody()->write(LinkController::GetSub($user, $sub, $extend));
             return $newResponse;
@@ -206,10 +201,12 @@ class LinkController extends BaseController
         $proxy_group = "";
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach ($items as $item) {
+            if ($item['obfs'] == "v2ray") {
+                continue;
+            }
             if (in_array($surge, array(1, 3))) {
                 $proxy_group .= $item['remark'] . " = ss, " . $item['address'] . ", " . $item['port'] . ", encrypt-method=" . $item['method'] . ", password=" . $item['passwd'] . URL::getSurgeObfs($item) . ", tfo=true, udp-relay=true\n";
-            }
-            else {
+            } else {
                 $proxy_group .= $item['remark'] . " = custom, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", " . $item['passwd'] . ", https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module" . URL::getSurgeObfs($item) . ", tfo=true\n";
             }
             $proxy_name .= ", ".$item['remark'];
@@ -222,8 +219,7 @@ class LinkController extends BaseController
             ->assign('proxy_name', $proxy_name)
             ->assign('proxy_group', $proxy_group);
             return $render->fetch('surge.tpl');
-        }
-        else {
+        } else {
             return $proxy_group;
         }
     }
@@ -236,27 +232,29 @@ class LinkController extends BaseController
         $subUrl = "";
         if ($quantumult == 2) {
             $subUrl = $subInfo['link'];
-        }
-        else {
+        } else {
             $back_china_name = "";
             $v2ray_group = "";
             $v2ray_name = "";
             $v2rays = URL::getAllVMessUrl($user, 1);
-            foreach($v2rays as $v2ray) {
-                if (strpos($v2ray['ps'],"回国") or strpos($v2ray['ps'],"China")){
-                   $back_china_name .="\n". $v2ray['ps'];
-                }else{
+            foreach ($v2rays as $v2ray) {
+                if ($v2ray['net'] == "kcp") {
+                    continue;
+                }
+                if (strpos($v2ray['ps'], "回国") or strpos($v2ray['ps'], "China")) {
+                    $back_china_name .= "\n" . $v2ray['ps'];
+                } else {
                     $v2ray_name .= "\n" . $v2ray['ps'];
                 }
                 $v2ray_tls = ", over-tls=false, certificate=1";
-                if ($v2ray['tls'] == "tls"){
+                if ($v2ray['tls'] == "tls") {
                     $v2ray_tls = ", over-tls=true, tls-host=" . $v2ray['add'] . ", certificate=1";
                 }
                 $v2ray_obfs = "";
-                if ($v2ray['net'] == "ws" || $v2ray['net'] == "http"){
+                if ($v2ray['net'] == "ws" || $v2ray['net'] == "http") {
                     $v2ray_obfs = ", obfs=" . $v2ray['net'] . ", obfs-path=\"" . $v2ray['path'] . "\", obfs-header=\"Host: " . $v2ray['add'] . "[Rr][Nn]User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_0 like Mac OS X) AppleWebKit/888.8.88 (KHTML, like Gecko) Mobile/6666666\"";
                 }
-                if ($v2ray['net'] == "kcp"){
+                if ($v2ray['net'] == "kcp") {
                     $v2ray_group .= "";
                 } else {
                     if ($quantumult == 1) {
@@ -268,27 +266,29 @@ class LinkController extends BaseController
             }
             if ($quantumult == 1) {
                 return base64_encode($v2ray_group);
-            }
-            elseif ($quantumult == 3) {
+            } elseif ($quantumult == 3) {
                 $ss_group = "";
                 $ss_name = "";
                 $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
-                foreach($items as $item) {
+                foreach ($items as $item) {
+                    if ($item['obfs'] == "v2ray") {
+                        continue;
+                    }
                     $ss_group .= $item['remark'] . " = shadowsocks, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", upstream-proxy=false, upstream-proxy-auth=false" . URL::getSurgeObfs($item) . ", group=" . Config::get('appName') . "\n";
-                    if (strpos($item['remark'],"回国") or strpos($item['remark'],"China")){
+                    if (strpos($item['remark'], "回国") or strpos($item['remark'], "China")) {
                         $back_china_name .="\n". $item['remark'];
-                    }else{
+                    } else {
                         $ss_name .= "\n" . $item['remark'];
                     }
                 }
                 $ssr_group = "";
                 $ssr_name = "";
                 $ssrs = array_merge(URL::getAllItems($user, 0, 0), URL::getAllItems($user, 1, 0));
-                foreach($ssrs as $item) {
+                foreach ($ssrs as $item) {
                     $ssr_group .= $item['remark'] . " = shadowsocksr, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", \"" . $item['passwd'] . "\", protocol=" . $item['protocol'] . ", protocol_param=" . $item['protocol_param'] . ", obfs=" . $item['obfs'] . ", obfs_param=\"" . $item['obfs_param'] . "\", group=" . Config::get('appName') . "\n";
-                    if (strpos($item['remark'],"回国") or strpos($item['remark'],"China")){
+                    if (strpos($item['remark'], "回国") or strpos($item['remark'], "China")) {
                         $back_china_name .="\n". $item['remark'];
-                    }else{
+                    } else {
                         $ssr_name .= "\n" . $item['remark'];
                     }
                 }
@@ -311,8 +311,7 @@ class LinkController extends BaseController
                     "direct_group" => $quan_direct_group,
                     "apple_group" => $quan_apple_group,
                 ];
-            }
-            else {
+            } else {
                 return "悟空别闹...";
             }
         }
@@ -333,7 +332,10 @@ class LinkController extends BaseController
         $ss_name = "";
         $ss_group = "";
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
-        foreach($items as $item) {
+        foreach ($items as $item) {
+            if ($item['obfs'] == "v2ray") {
+                continue;
+            }
             $ss_group .= $item['remark'] . " = ss, " . $item['address'] . ", " . $item['port'] . ", " . $item['method'] . ", " . $item['passwd'] . URL::getSurgeObfs($item) . "\n";
             $ss_name .= ", ".$item['remark'];
         }
@@ -363,22 +365,35 @@ class LinkController extends BaseController
                 "cipher" => $item['method'],
                 "password" => $item['passwd'],
             ];
-            if (in_array($item['obfs'], array("simple_obfs_tls", "simple_obfs_http"))) {
-                $sss['plugin'] = "obfs";
-                if (strpos($item['obfs'], 'http')) {
-                    $sss['plugin-opts']['mode'] = "http";
-                } else {
-                    $sss['plugin-opts']['mode'] = "tls";
-                }
-                if ($item['obfs_param'] != '') {
-                    $sss['plugin-opts']['host'] = $item['obfs_param'];
-                } else {
-                    $sss['plugin-opts']['host'] = "wns.windows.com";
+            if ($item['obfs'] != "plain") {
+                switch ($item['obfs']) {
+                    case "simple_obfs_http":
+                        $sss['plugin'] = "obfs";
+                        $sss['plugin-opts']['mode'] = "http";
+                        break;
+                    case "simple_obfs_tls":
+                        $sss['plugin'] = "obfs";
+                        $sss['plugin-opts']['mode'] = "tls";
+                        break;
+                    case "v2ray":
+                        $sss['plugin'] = "v2ray-plugin";
+                        $sss['plugin-opts']['mode'] = "websocket";
+                        if (strpos($item['obfs_param'], "security=tls")) {
+                            $sss['plugin-opts']['tls'] = true;
+                        }
+                        $sss['plugin-opts']['host'] = $user->getMuMd5();
+                        $sss['plugin-opts']['path'] = $item['path'];
+                        break;
                 }
             }
-            if (strpos($sss['name'],"回国") or strpos($sss['name'],"China")){
+            if ($item['obfs'] != "plain" && $item['obfs_param'] != '' && $item['obfs'] != "v2ray") {
+                $sss['plugin-opts']['host'] = $item['obfs_param'];
+            } else {
+                $sss['plugin-opts']['host'] = "wns.windows.com";
+            }            
+            if (strpos($sss['name'], "回国") or strpos($sss['name'], "China")) {
                 $back_china_confs[] = $sss;
-            }else{
+            } else {
                 $proxy_confs[] = $sss;
             }
             $confs[] = $sss;
@@ -408,9 +423,9 @@ class LinkController extends BaseController
                 $v2rays['tls'] = true;
             }
             if ($item['net'] != "kcp") {
-                if (strpos($v2rays['name'],"回国") or strpos($v2rays['name'],"China")){
+                if (strpos($v2rays['name'], "回国") or strpos($v2rays['name'], "China")) {
                     $back_china_confs[] = $v2rays;
-                }else{
+                } else {
                     $proxy_confs[] = $v2rays;
                 }
                 $confs[] = $v2rays;
@@ -423,9 +438,9 @@ class LinkController extends BaseController
         ->assign('opts', $opts)
         ->assign('confs', $confs)
         ->assign('proxies', array_map(function ($conf) {
-                return $conf['name'];
-            }, $proxy_confs))
-        ->assign('back_china_proxies',array_map(function ($conf) {
+            return $conf['name'];
+        }, $proxy_confs))
+        ->assign('back_china_proxies', array_map(function ($conf) {
             return $conf['name'];
         }, $back_china_confs));
         return $render->fetch('clash.tpl');
