@@ -386,11 +386,14 @@ class LinkController extends BaseController
                         break;
                 }
             }
-            if ($item['obfs'] != "plain" && $item['obfs_param'] != '' && $item['obfs'] != "v2ray") {
-                $sss['plugin-opts']['host'] = $item['obfs_param'];
-            } else {
-                $sss['plugin-opts']['host'] = "wns.windows.com";
-            }            
+            if ($item['obfs'] != "v2ray") {
+                if ($item['obfs'] != "plain" && $item['obfs_param'] != '') {
+                    $sss['plugin-opts']['host'] = $item['obfs_param'];
+                } else {
+                    $sss['plugin-opts']['host'] = "wns.windows.com";
+                }
+            }
+
             if (strpos($sss['name'], "回国") or strpos($sss['name'], "China")) {
                 $back_china_confs[] = $sss;
             } else {

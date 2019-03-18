@@ -528,6 +528,8 @@ class Tools
         }
         if (count($server) >= 5 && $server[4] == 'ws') {
             $item['net'] = 'ws';
+        }elseif (count($server) >= 5 && $server[4] == 'tls'){
+            $item['tls'] = 'tls';
         }
         if (count($server) >= 6) {
             $item = array_merge($item, URL::parse_args($server[5]));
