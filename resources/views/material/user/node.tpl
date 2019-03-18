@@ -5,7 +5,7 @@
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 
 {function displayV2rayNode node=null}
-	{$v2server=URL::getV2Url($user, $node, 1)}
+	{$v2server=URL::getV2Url($user, $node['raw_node'], 1)}
 
 	<p>地址：<span class="card-tag tag-blue">{$v2server['add']}</span></p>
 
