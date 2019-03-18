@@ -33,7 +33,6 @@ class AdminController extends UserController
         return $this->view()->assign('nodes', $nodes)->display('admin/node.tpl');
     }
 
-
     public function editConfig($request, $response, $args)
     {
         return (new ChenPay())->editConfig();
@@ -63,17 +62,17 @@ class AdminController extends UserController
         $table_config['ajax_url'] = 'payback/ajax';
         return $this->view()->assign('table_config', $table_config)->display('admin/invite.tpl');
     }
-	
+    
     public function addInvite($request, $response, $args)
     {
         $num = $request->getParam('num');
         $prefix = $request->getParam('prefix');
 
-		if(Tools::isInt($num)==false){
-		    $res['ret'] = 0;
+        if (Tools::isInt($num)==false) {
+            $res['ret'] = 0;
             $res['msg'] = "非法请求";
             return $response->getBody()->write(json_encode($res));
-		}
+        }
 
         if ($request->getParam('uid')!="0") {
             if (strpos($request->getParam('uid'), "@")!=false) {
@@ -91,8 +90,8 @@ class AdminController extends UserController
         } else {
             $uid=0;
         }
-		$user->invite_num += $num;
-		$user->save();
+        $user->invite_num += $num;
+        $user->save();
         $res['ret'] = 1;
         $res['msg'] = "邀请次数添加成功";
         return $response->getBody()->write(json_encode($res));
@@ -116,37 +115,35 @@ class AdminController extends UserController
     {
         $code = new Coupon();
         $code->onetime=$request->getParam('onetime');
-		$generate_type=$request->getParam('generate_type');
-		$final_code=$request->getParam('prefix');
+        $generate_type=$request->getParam('generate_type');
+        $final_code=$request->getParam('prefix');
 
-		if(empty($final_code)&&($generate_type==1||$generate_type==3)){
-			$res['ret'] = 0;
-			$res['msg'] = "优惠码不能为空";
-			return $response->getBody()->write(json_encode($res));
-		}
+        if (empty($final_code)&&($generate_type==1||$generate_type==3)) {
+            $res['ret'] = 0;
+            $res['msg'] = "优惠码不能为空";
+            return $response->getBody()->write(json_encode($res));
+        }
 
-		if($generate_type==1){
-			if(Coupon::where('code',$final_code)->count()!=0){
-				$res['ret'] = 0;
-				$res['msg'] = "优惠码已存在";
-				return $response->getBody()->write(json_encode($res));
-			}
-		}
-		else{
-			while(true){
-				if($generate_type==2){
-					$temp_code=Tools::genRandomChar(8);
-				}
-				elseif($generate_type==3){
-					$temp_code=$final_code.Tools::genRandomChar(8);
-				}
+        if ($generate_type==1) {
+            if (Coupon::where('code', $final_code)->count()!=0) {
+                $res['ret'] = 0;
+                $res['msg'] = "优惠码已存在";
+                return $response->getBody()->write(json_encode($res));
+            }
+        } else {
+            while (true) {
+                if ($generate_type==2) {
+                    $temp_code=Tools::genRandomChar(8);
+                } elseif ($generate_type==3) {
+                    $temp_code=$final_code.Tools::genRandomChar(8);
+                }
 
-				if(Coupon::where('code',$temp_code)->count()==0){
-					$final_code=$temp_code;
-					break;
-				}
-			}
-		}
+                if (Coupon::where('code', $temp_code)->count()==0) {
+                    $final_code=$temp_code;
+                    break;
+                }
+            }
+        }
 
         $code->code = $final_code;
         $code->expire=time()+$request->getParam('expire')*3600;

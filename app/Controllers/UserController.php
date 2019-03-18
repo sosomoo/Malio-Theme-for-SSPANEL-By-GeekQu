@@ -478,14 +478,19 @@ class UserController extends BaseController
             }
 			$array_node=array();
 
-			$array_node['id']=$node->id;
-			$array_node['class']=$node->node_class;
-			$array_node['name']=$node->name;
-			$array_node['server']=$node->server;
-			$array_node['sort']=$node->sort;
-			$array_node['info']=$node->info;
-			$array_node['mu_only']=$node->mu_only;
-			$array_node['group']=$node->node_group;
+            $array_node['id']=$node->id;
+            $array_node['class']=$node->node_class;
+            $array_node['name']=$node->name;
+            if ($node->sort == 13) {
+                $server = explode(';', $node->server);
+                $array_node['server']=$server[1];
+            } else {
+                $array_node['server']=$node->server;
+            }
+            $array_node['sort']=$node->sort;
+            $array_node['info']=$node->info;
+            $array_node['mu_only']=$node->mu_only;
+            $array_node['group']=$node->node_group;
 
             $array_node['raw_node'] = $node;
 			$regex = Config::get('flag_regex');
@@ -509,15 +514,13 @@ class UserController extends BaseController
 				$array_node['online']=-1;
 			}
 
-			if ($node->sort == 0 ||$node->sort == 7 || $node->sort == 8 ||
-				$node->sort == 10 || $node->sort == 11|| $node->sort ==12){
-				$array_node['online_user']=$node->getOnlineUserCount();
-			}
-			else{
-				$array_node['online_user']=-1;
-			}
+            if (in_array($node->sort, array(0, 10, 11, 12, 13,7,8))) {
+                $array_node['online_user']=$node->getOnlineUserCount();
+            } else {
+                $array_node['online_user']=-1;
+            }
 
-			$nodeLoad = $node->getNodeLoad();
+            $nodeLoad = $node->getNodeLoad();
             if (isset($nodeLoad[0]['load'])) {
                 $array_node['latest_load'] = ((explode(" ", $nodeLoad[0]['load']))[0]) * 100;
             }
@@ -604,8 +607,7 @@ class UserController extends BaseController
                     $a++;
                 }
 
-
-                if ($node->sort == 0 || $node->sort == 7 || $node->sort == 8 || $node->sort == 10 || $node->sort == 11 || $node->sort == 12) {
+                if (in_array($node->sort, array(0, 10, 11, 12, 13,7,8))) {
                     $node_tempalive = $node->getOnlineUserCount();
                     $node_prealive[$node->id] = $node_tempalive;
                     if ($node->isNodeOnline() !== null) {
@@ -718,6 +720,11 @@ class UserController extends BaseController
                 }
                 break;
             case 10:
+                if ((($user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin) && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
+                    return $this->view()->assign('node', $node)->assign('user', $user)->assign('mu', $mu)->assign('relay_rule_id', $relay_rule_id)->registerClass("URL", "App\Utils\URL")->display('user/nodeinfo.tpl');
+                }
+                break;
+            case 13:
                 if ((($user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin) && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
                     return $this->view()->assign('node', $node)->assign('user', $user)->assign('mu', $mu)->assign('relay_rule_id', $relay_rule_id)->registerClass("URL", "App\Utils\URL")->display('user/nodeinfo.tpl');
                 }
