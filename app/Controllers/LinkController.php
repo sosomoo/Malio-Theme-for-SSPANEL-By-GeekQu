@@ -238,7 +238,7 @@ class LinkController extends BaseController
             $v2ray_name = "";
             $v2rays = URL::getAllVMessUrl($user, 1);
             foreach ($v2rays as $v2ray) {
-                if ($v2ray['net'] == "kcp") {
+                if ($v2ray['net'] == "kcp" || $v2ray['net'] == "quic") {
                     continue;
                 }
                 if (strpos($v2ray['ps'], "回国") or strpos($v2ray['ps'], "China")) {
@@ -254,14 +254,10 @@ class LinkController extends BaseController
                 if ($v2ray['net'] == "ws" || $v2ray['net'] == "http") {
                     $v2ray_obfs = ", obfs=" . $v2ray['net'] . ", obfs-path=\"" . $v2ray['path'] . "\", obfs-header=\"Host: " . $v2ray['add'] . "[Rr][Nn]User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_0 like Mac OS X) AppleWebKit/888.8.88 (KHTML, like Gecko) Mobile/6666666\"";
                 }
-                if ($v2ray['net'] == "kcp") {
-                    $v2ray_group .= "";
+                if ($quantumult == 1) {
+                    $v2ray_group .= "vmess://" . base64_encode($v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "_v2" . $v2ray_tls . $v2ray_obfs) . "\n";
                 } else {
-                    if ($quantumult == 1) {
-                        $v2ray_group .= "vmess://" . base64_encode($v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "_v2" . $v2ray_tls . $v2ray_obfs) . "\n";
-                    } else {
-                        $v2ray_group .= $v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "_v2" . $v2ray_tls . $v2ray_obfs . "\n";
-                    }
+                    $v2ray_group .= $v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "_v2" . $v2ray_tls . $v2ray_obfs . "\n";
                 }
             }
             if ($quantumult == 1) {
@@ -458,32 +454,26 @@ class LinkController extends BaseController
     public static function GetSub($user, $sub, $extend)
     {
         $return_url = '';
-        // SSR
-        if ($sub == 1) {
-            $return_url .= URL::getAllUrl($user, 0, 0, $extend).PHP_EOL;
-            return Tools::base64_url_encode($return_url);
+        switch ($sub) {
+            case 1: // SSR
+                $return_url .= URL::getAllUrl($user, 0, 0, $extend).PHP_EOL;
+            break;
+            case 2: // SS
+                $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
+            break;
+            case 3: // V2
+                $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
+            break;
+            case 4: // V2 + SS
+                $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
+            break;
+            case 5: // V2 + SS + SSR
+                $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 0, $extend).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
+            break;
         }
-        // SS
-        elseif ($sub == 2) {
-            $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
-            return Tools::base64_url_encode($return_url);
-        }
-        // V2
-        elseif ($sub == 3) {
-            return Tools::base64_url_encode(URL::getAllVMessUrl($user));
-        }
-        // V2 + SS
-        elseif ($sub == 4) {
-            $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
-            return Tools::base64_url_encode($return_url);
-        }
-        // V2 + SS + SSR
-        elseif ($sub == 5) {
-            $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 0, $extend).PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
-            return Tools::base64_url_encode($return_url);
-        }
+        return Tools::base64_url_encode($return_url);
     }
 }
