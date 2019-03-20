@@ -197,7 +197,7 @@
 												{if $ss_item['obfs']=="v2ray" && URL::CanMethodConnect($user->method)!=2}
 													<p>您好，Shadowsocks V2Ray-Plugin 节点需要使用 SS/SSD 模式。请您到 资料编辑 页面切换后再来查看此处。</p>
 												{else}
-												<p><a class="copy-text" data-clipboard-text="{URL::getItemUrl($ssr_item, 1)}">点我复制配置链接</a></p>
+												<p><a class="copy-text" data-clipboard-text="{URL::getItemUrl($ss_item, 1)}">点我复制配置链接</a></p>
 												<p><a href="{URL::getItemUrl($ss_item, 1)}">iOS 上用 Safari 打开点我即可直接添加</a></p>
 												{/if}
 											{else}
