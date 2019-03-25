@@ -484,5 +484,43 @@ class LinkController extends BaseController
             $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
             return Tools::base64_url_encode($return_url);
         }
+        // v2
+        $items = URL::getAllVMessUrl($user, 1);
+        foreach ($items as $item) {
+            if (in_array($item['net'], array("kcp", "http", "quic"))) {
+                continue;
+            }
+            $v2rays = [
+                "name" => $item['ps'],
+                "type" => "vmess",
+                "server" => $item['add'],
+                "port" => $item['port'],
+                "uuid" => $item['id'],
+                "alterId" => $item['aid'],
+                "cipher" => "auto",
+            ];
+            if ($item['net'] == "ws") {
+                $v2rays['network'] = 'ws';
+                $v2rays['ws-path'] = $item['path'];
+                if ($item['tls'] == 'tls') {
+                    $v2rays['tls'] = true;
+                }
+                if ($item['host'] != '') {
+                    $v2rays['ws-headers']['Host'] = $item['host'];
+                }
+            } elseif ($item['net'] == "tls") {
+                $v2rays['tls'] = true;
+            }
+            $proxy_confs[] = $v2rays;
+            $confs[] = $v2rays;
+        }
+        $render = ConfRender::getTemplateRender();
+        $render->assign('user', $user)
+        ->assign('confs', $confs)
+        ->assign('proxies', array_map(function ($conf) {
+            return $conf['name'];
+        }, $proxy_confs));
+        return $render->fetch('clash.tpl');
     }
+
 }
