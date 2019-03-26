@@ -284,15 +284,15 @@ class URL
                 $personal_info = $item['method'].':'.$item['passwd'];
                 $ssurl = "ss://".Tools::base64_url_encode($personal_info)."@".$item['address'].":".$item['port'];
                 $plugin = '';
-                if (in_array($item['obfs'], $ss_obfs_list) && $item['obfs'] == "v2ray-plugin") {
+                if (in_array($item['obfs'], $ss_obfs_list) || $item['obfs'] == "v2ray") {
                     if (strpos($item['obfs'], 'http') !== false) {
                         $plugin .= "obfs-local;obfs=http";
                     } elseif (strpos($item['obfs'], 'tls') !== false) {
                         $plugin .= "obfs-local;obfs=tls";
                     } else {
-                        $plugin .= "v2ray-plugin;".$item['obfs_param'];
+                        $plugin .= "v2ray;".$item['obfs_param'];
                     }
-                    if ($item['obfs_param'] != '' && $item['obfs'] != "v2ray-plugin") {
+                    if ($item['obfs_param'] != '' && $item['obfs'] != "v2ray") {
                         $plugin .= ";obfs-host=".$item['obfs_param'];
                     }
                     $ssurl .= "?plugin=".rawurlencode($plugin);

@@ -446,7 +446,7 @@ class Tools
 
 		return ctype_digit($str);
     }
-
+    
     public static function v2Array($node)
     {
         $server = explode(';', $node);
@@ -477,6 +477,8 @@ class Tools
                 $item['type'] = $server[4];
             } elseif ($server[4] == 'ws') {
                 $item['net'] = 'ws';
+            } elseif ($server[4] == 'tls') {
+                $item['tls'] = 'tls';
             }
         }
         if (count($server) >= 6) {

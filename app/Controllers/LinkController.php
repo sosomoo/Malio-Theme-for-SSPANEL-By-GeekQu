@@ -476,4 +476,5 @@ class LinkController extends BaseController
         }
         return Tools::base64_url_encode($return_url);
     }
+
 }
