@@ -67,6 +67,8 @@ $app->add(new WhoopsMiddleware);
 
 
 // Home
+$app->post('/spay_back', 'App\Services\Payment:notify');
+$app->get('/spay_back', 'App\Services\Payment:notify');
 $app->get('/', 'App\Controllers\HomeController:index');
 $app->get('/indexold', 'App\Controllers\HomeController:indexold');
 $app->get('/404', 'App\Controllers\HomeController:page404');
@@ -296,6 +298,8 @@ $app->group('/admin', function () {
     $this->delete('/user', 'App\Controllers\Admin\UserController:delete');
     $this->post('/user/changetouser', 'App\Controllers\Admin\UserController:changetouser');
     $this->post('/user/ajax', 'App\Controllers\Admin\UserController:ajax');
+    $this->post('/user/create', 'App\Controllers\Admin\UserController:createNewUser');
+    $this->post('/user/buy', 'App\Controllers\Admin\UserController:buy');
 
 
     $this->get('/coupon', 'App\Controllers\AdminController:coupon');
