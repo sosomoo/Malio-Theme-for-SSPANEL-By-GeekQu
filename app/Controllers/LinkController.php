@@ -349,7 +349,7 @@ class LinkController extends BaseController
         $userapiUrl = $subInfo['clash'];
         $confs = [];
         $proxy_confs = [];
-        $back_china_confs=[];
+        $back_china_confs = [];
         // ss
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach ($items as $item) {
@@ -389,7 +389,6 @@ class LinkController extends BaseController
                     $sss['plugin-opts']['host'] = "wns.windows.com";
                 }
             }
-
             if (strpos($sss['name'], "回国") or strpos($sss['name'], "China")) {
                 $back_china_confs[] = $sss;
             } else {
@@ -434,15 +433,16 @@ class LinkController extends BaseController
 
         $render = ConfRender::getTemplateRender();
         $render->assign('user', $user)
-        ->assign('userapiUrl', $userapiUrl)
-        ->assign('opts', $opts)
-        ->assign('confs', $confs)
-        ->assign('proxies', array_map(function ($conf) {
-            return $conf['name'];
-        }, $proxy_confs))
-        ->assign('back_china_proxies', array_map(function ($conf) {
-            return $conf['name'];
-        }, $back_china_confs));
+               ->assign('userapiUrl', $userapiUrl)
+               ->assign('opts', $opts)
+               ->assign('confs', $confs)
+               ->assign('proxies', array_map(function ($conf) {
+                   return $conf['name'];
+               }, $proxy_confs))
+               ->assign('back_china_proxies', array_map(function ($conf) {
+                   return $conf['name'];
+               }, $back_china_confs));
+
         return $render->fetch('clash.tpl');
     }
 
@@ -456,19 +456,24 @@ class LinkController extends BaseController
         $return_url = '';
         switch ($sub) {
             case 1: // SSR
+                $return_url .= $extend==0?:URL::getUserTraffic($user, 1).PHP_EOL;
                 $return_url .= URL::getAllUrl($user, 0, 0, $extend).PHP_EOL;
             break;
             case 2: // SS
+                $return_url .= $extend==0?:URL::getUserTraffic($user, 2).PHP_EOL;
                 $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
             break;
             case 3: // V2
+                $return_url .= $extend==0?:URL::getUserTraffic($user, 3).PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
             break;
             case 4: // V2 + SS
+                $return_url .= $extend==0?:URL::getUserTraffic($user, 3).PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
                 $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
             break;
             case 5: // V2 + SS + SSR
+                $return_url .= $extend==0?:URL::getUserTraffic($user, 1).PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
                 $return_url .= URL::getAllUrl($user, 0, 0, $extend).PHP_EOL;
                 $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
