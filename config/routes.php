@@ -162,7 +162,7 @@ $app->group('/user', function () {
     $this->get('/url_reset', 'App\Controllers\UserController:resetURL');
 
     // Switch Type || SS/SSR
-    $this->get('/switchtype', 'App\Controllers\UserController:switchType');
+    $this->post('/switchtype', 'App\Controllers\UserController:switchType');
 
     $this->get('/inviteurl_reset', 'App\Controllers\UserController:resetInviteURL');
 

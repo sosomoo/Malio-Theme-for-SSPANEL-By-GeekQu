@@ -820,7 +820,7 @@ class UserController extends BaseController
 
         $config_service = new Config();
 
-        return $this->view()->assign('user', $this->user)->assign('themes', $themes)->assign('isBlock', $isBlock)->assign('Block', $Block)->assign('bind_token', $bind_token)->assign('telegram_bot', Config::get('telegram_bot'))->assign('config_service', $config_service)
+        return $this->view()->assign('user', $this->user)->assign('schemes', Config::get('user_agreement_scheme'))->assign('themes', $themes)->assign('isBlock', $isBlock)->assign('Block', $Block)->assign('bind_token', $bind_token)->assign('telegram_bot', Config::get('telegram_bot'))->assign('config_service', $config_service)
             ->registerClass("URL", "App\Utils\URL")->display('user/edit.tpl');
     }
 
@@ -1409,23 +1409,31 @@ class UserController extends BaseController
     public function switchType($request, $response, $args)
     {
         $user = $this->user;
-        if ($user->method != "chacha20-ietf-poly1305") {
-            $method = "chacha20-ietf-poly1305";
-        } else {
-            $method = "chacha20-ietf";
-        }
-        $protocol = "origin";
-        $obfs = "plain";
-        $obfs_param = "";
 
-        $user->method = $method;
-        $user->protocol = $protocol;
-        $user->obfs = $obfs;
-        $user->obfs_param = $obfs_param;
+        $type = $request->getParam('id');
+        $type = trim($type);
+
+        $scheme = [];
+        $items = Config::get('user_agreement_scheme');
+        foreach ($items as $item) {
+            if ($type == $item['id']) {
+                $scheme = $item;
+            }
+        }
+        if (!isset($scheme['id'])) {
+            $res['ret'] = 0;
+            $res['msg'] = "非法输入";
+            return $response->getBody()->write(json_encode($res));
+        }
+
+        $user->method = $scheme['method'];
+        $user->protocol = $scheme['protocol'];
+        $user->obfs = $scheme['obfs'];
         $user->save();
 
-        $newResponse = $response->withStatus(302)->withHeader('Location', '/user/edit');
-        return $newResponse;
+        $res['ret'] = 1;
+        $res['msg'] = "切换".$scheme['name']."成功";
+        return $this->echoJson($response, $res);
     }
 
     public function updateSSR($request, $response, $args)

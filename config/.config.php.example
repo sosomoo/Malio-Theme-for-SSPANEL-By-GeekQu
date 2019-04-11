@@ -113,6 +113,13 @@ $System_Config['notify_limit_mode'] = 'false';			//false为关闭，per为按照
 $System_Config['notify_limit_value'] = '20';			//当上一项为per时，此处填写百分比；当上一项为mb时，此处填写流量
 $System_Config['mergeSub'] = 'false';						//合并订阅设置 可选项 false / true
 
+#加密、协议、混淆切换方案
+$System_Config['user_agreement_scheme'] = [
+    ['id'=>1,'name'=>'SS 方案','method'=>'chacha20-ietf-poly1305','protocol'=>'origin','obfs'=>'plain','description'=>'使用 AEAD 系列加密，无混淆。'],
+    ['id'=>2,'name'=>'SSR 方案','method'=>'chacha20-ietf','protocol'=>'auth_aes128_sha1','obfs'=>'http_simple_compatible','description'=>'使用 auth_aes128_sha1 协议，可选 http_simple 混淆。'],
+    ['id'=>3,'name'=>'SS/SSR 兼容方案','method'=>'chacha20-ietf','protocol'=>'auth_aes128_sha1_compatible','obfs'=>'plain','description'=>'可选 auth_aes128_sha1 协议，无混淆。']
+];
+
 //Bot 设置--------------------------------------------------------------------------------------------
 #通用
 $System_Config['qrcode']='zxing_local';				//二维码解码方式，online，phpzbar，zxing_online，zxing_local
