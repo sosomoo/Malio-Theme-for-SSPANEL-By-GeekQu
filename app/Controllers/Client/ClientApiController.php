@@ -59,13 +59,10 @@ class ClientApiController extends BaseController
         $token = $storage->get($accessToken);
         $user = User::find($token->userId);
         $ssr_sub_token = LinkController::GenerateSSRSubCode($user->id, 0);
-        $mu = 0;
-        if($request->getQueryParams()["mu"]!=""){
-            $mu = $request->getQueryParams()["mu"];
-        }
+        $sub = 1;
         $res['ret'] = 1;
         $res['msg'] = "ok";
-        $res['data'] = Config::get('subUrl').$ssr_sub_token.'?mu='.$mu;
+        $res['data'] = Config::get('subUrl').$ssr_sub_token.'?sub=1';
         return $this->echoJson($response, $res);
     }
 }
