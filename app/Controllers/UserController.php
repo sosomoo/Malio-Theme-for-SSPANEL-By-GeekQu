@@ -1840,4 +1840,32 @@ class UserController extends BaseController
         $newResponse = $response->withStatus(302)->withHeader('Location', $local);
         return $newResponse;
     }
+
+    public function getUserAllURL($request, $response, $args)
+    {
+        $user = $this->user;
+        $type = $request->getQueryParams()["type"];
+        $return = "";
+        switch ($type) {
+            case "ss":
+                $return .= URL::getAllUrl($user, 0, 1).PHP_EOL;
+            break;
+            case "ssr":
+                $return .= URL::getAllUrl($user, 0, 0).PHP_EOL;
+            break;
+            case "ssd":
+                $return .= URL::getAllSSDUrl($user).PHP_EOL;
+            break;
+            case "v2ray":
+                $return .= URL::getAllVMessUrl($user).PHP_EOL;
+            break;
+            default:
+                $return .= "悟空别闹！";
+            break;
+        }
+        $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=node.txt');
+        $newResponse->getBody()->write($return);
+        return $newResponse;
+    }
+
 }

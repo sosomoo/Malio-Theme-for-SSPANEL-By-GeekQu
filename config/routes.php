@@ -164,6 +164,9 @@ $app->group('/user', function () {
     // Switch Type || SS/SSR
     $this->post('/switchtype', 'App\Controllers\UserController:switchType');
 
+    // getUserAllURL
+    $this->get('/getUserAllURL', 'App\Controllers\UserController:getUserAllURL');
+
     $this->get('/inviteurl_reset', 'App\Controllers\UserController:resetInviteURL');
 
     //Reconstructed Payment System

@@ -457,11 +457,11 @@ class LinkController extends BaseController
         switch ($sub) {
             case 1: // SSR
                 $return_url .= $extend==0?:URL::getUserTraffic($user, 1).PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 0, $extend).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 0).PHP_EOL;
             break;
             case 2: // SS
                 $return_url .= $extend==0?:URL::getUserTraffic($user, 2).PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 1).PHP_EOL;
             break;
             case 3: // V2
                 $return_url .= $extend==0?:URL::getUserTraffic($user, 3).PHP_EOL;
@@ -470,13 +470,13 @@ class LinkController extends BaseController
             case 4: // V2 + SS
                 $return_url .= $extend==0?:URL::getUserTraffic($user, 3).PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 1).PHP_EOL;
             break;
             case 5: // V2 + SS + SSR
                 $return_url .= $extend==0?:URL::getUserTraffic($user, 1).PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 0, $extend).PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 0).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 1).PHP_EOL;
             break;
         }
         return Tools::base64_url_encode($return_url);
