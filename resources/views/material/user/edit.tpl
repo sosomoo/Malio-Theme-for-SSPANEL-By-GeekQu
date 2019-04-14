@@ -56,6 +56,8 @@
 											<label class="floating-label" for="sspwd">新连接密码</label>
 											<input class="form-control maxwidth-edit" id="sspwd" type="text">
 										</div>
+										<br/>
+										<p>您需要了解的是，修改此密码会变更您 V2Ray 节点的 UUID，请注意及时更新托管订阅。</p>
 									</div>
 								</div>
 							</div>
