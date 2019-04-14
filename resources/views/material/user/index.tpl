@@ -249,14 +249,17 @@
 													</nav>
 
 													<div class="tab-pane fade active in" id="sub_center_general">
-														<p><span class="icon icon-lg text-white">filter_1</span> [ SS ]：</p>
-															<p>使用方式：<a id="general_ss" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ss","#general_ss","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+														<p><span class="icon icon-lg text-white">filter_1</span> [ SS ]：
+															<a id="general_ss" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ss","#general_ss","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
+														</p>
 														<hr/>
-														<p><span class="icon icon-lg text-white">filter_2</span> [ SSR ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_ssr" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssr","#general_ssr","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+														<p><span class="icon icon-lg text-white">filter_2</span> [ SSR ]：
+															<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_ssr" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssr","#general_ssr","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
+														</p>
 														<hr/>
-														<p><span class="icon icon-lg text-white">filter_3</span> [ VMess ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_v2ray" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=v2ray","#general_v2ray","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+														<p><span class="icon icon-lg text-white">filter_3</span> [ VMess ]：
+															<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_v2ray" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=v2ray","#general_v2ray","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
+														</p>
 													</div>
 
 													<div class="tab-pane fade" id="sub_center_windows">
