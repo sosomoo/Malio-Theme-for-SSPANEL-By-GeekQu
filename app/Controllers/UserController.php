@@ -482,8 +482,8 @@ class UserController extends BaseController
             $array_node['class']=$node->node_class;
             $array_node['name']=$node->name;
             if ($node->sort == 13) {
-                $server = explode(';', $node->server);
-                $array_node['server']=$server[1];
+                $server = Tools::ssv2Array($node->server);
+                $array_node['server']=$server['add'];
             } else {
                 $array_node['server']=$node->server;
             }
@@ -544,8 +544,16 @@ class UserController extends BaseController
 			$array_node['status']=$node->status;
 
 			array_push($array_nodes,$array_node);
-		}
-		return $this->view()->assign('nodes', $array_nodes)->assign('nodes_muport', $nodes_muport)->assign('relay_rules', $relay_rules)->assign('tools', new Tools())->assign('user', $user)->registerClass("URL", "App\Utils\URL")->display('user/node.tpl');
+        }
+        
+        return $this->view()
+            ->assign('nodes', $array_nodes)
+            ->assign('nodes_muport', $nodes_muport)
+            ->assign('relay_rules', $relay_rules)
+            ->assign('tools', new Tools())
+            ->assign('user', $user)
+            ->registerClass("URL", "App\Utils\URL")
+            ->display('user/node.tpl');
 	}
 
 
