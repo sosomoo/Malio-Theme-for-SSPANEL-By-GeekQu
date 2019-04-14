@@ -315,9 +315,19 @@ class URL
     public static function getAllVMessUrl($user, $arrout = 0)
     {
         if ($user->is_admin) {
-            $nodes = Node::where('sort', 11)->orwhere('sort', 12)->where("type", "1")->orderBy("name")->get();
+            $nodes = Node::where(
+                function ($query) {
+                    $query->where('sort', 11)
+                        ->orwhere('sort', 12);
+                }
+                )->where("type", "1")->orderBy("name")->get();
         } else {
-            $nodes = Node::where('sort', 11)->orwhere('sort', 12)->where(
+            $nodes = Node::where(
+                function ($query) {
+                    $query->where('sort', 11)
+                        ->orwhere('sort', 12);
+                }
+                )->where(
                 function ($query) use ($user) {
                     $query->where("node_group", "=", $user->node_group)
                         ->orWhere("node_group", "=", 0);
@@ -329,14 +339,13 @@ class URL
             foreach ($nodes as $node) {
                 $result .= (URL::getV2Url($user, $node, $arrout) . "\n");
             }
-            return $result;
         } else {
             $result = [];
             foreach ($nodes as $node) {
                 array_push($result, URL::getV2Url($user, $node, $arrout));
             }
-            return $result;
         }
+        return $result;
     }
 
     public static function getAllSSDUrl($user)
