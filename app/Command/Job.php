@@ -19,6 +19,7 @@ use App\Models\BlockIp;
 use App\Models\TelegramSession;
 use App\Models\EmailVerify;
 use App\Services\Config;
+use App\Services\Password;
 use App\Utils\DNSoverHTTPS;
 use App\Utils\Radius;
 use App\Utils\Tools;

@@ -20,6 +20,7 @@ use App\Utils\Check;
 use App\Utils\Tools;
 use App\Utils\GA;
 
+
 class UserController extends AdminController
 {
     public function index($request, $response, $args)
