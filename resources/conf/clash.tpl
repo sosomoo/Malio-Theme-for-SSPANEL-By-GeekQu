@@ -65,7 +65,7 @@ Proxy:
 
 Proxy Group:
   - { name: "Auto", type: fallback, proxies: {json_encode($proxies,320)}, url: "http://www.gstatic.com/generate_204", interval: 300 }
-{append var='proxies' value='Auto'}
+{append var='proxies' value='Auto' index=0}
 {if count($back_china_proxies)!=0}
   - { name: "Back_China_Auto", type: fallback, proxies: {json_encode($back_china_proxies,320)}, url: "http://www.gstatic.com/generate_204", interval: 300 }
 {append var='back_china_proxies' value='Back_China_Auto'}
