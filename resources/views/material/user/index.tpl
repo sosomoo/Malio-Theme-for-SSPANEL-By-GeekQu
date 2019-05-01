@@ -283,6 +283,22 @@
 													</div>
 
 													<div class="tab-pane fade" id="sub_center_ios">
+														{if $display_ios_class>=0}
+															{if $user->class>=$display_ios_class && $user->get_top_up()>=$display_ios_topup}
+																<div><span class="icon icon-lg text-white">account_box</span> 本站iOS账户：</div>
+																<div class="float-clear">
+																	<input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$ios_account}" readonly="true">
+																	<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_account}">点击复制</button><br>
+																</div>
+																<div><span class="icon icon-lg text-white">lock</span> 本站iOS密码：</div>
+																<div class="float-clear">
+																	<input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$ios_password}" readonly="true">
+																	<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_password}">点击复制</button><br>
+																</div>
+																<p><span class="icon icon-lg text-white">error</span><strong>禁止将账户分享给他人！</strong></p>
+																<hr/>
+															{/if}
+														{/if}
 														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/surge-3/id1442620678?ls=1&mt=8"><i class="material-icons">save_alt</i> GET</a> Surge - [ SS ]：</p>
 															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 															<p>使用方式：<a class="btn-dl" href="surge3:///install-config?url={urlencode($subInfo["surge3"])}"><i class="material-icons icon-sm">how_to_vote</i>3.x 一键</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge_node"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="btn-dl" href="surge:///install-config?url={urlencode($subInfo["surge2"])}"><i class="material-icons icon-sm">how_to_vote</i>2.x 一键</a></p>
