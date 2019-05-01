@@ -31,10 +31,10 @@ class AnnController extends AdminController
     public function add($request, $response, $args)
     {
         $issend = $request->getParam('issend');
+		$PushBear = $request->getParam('PushBear');
         $vip = $request->getParam('vip');
         $content = $request->getParam('content');
-        $beginSend = (int)($request->getParam('page') - 1) * Config::get('sendPageLimit');
-        $users = User::where('class', ">=", $vip)->skip($beginSend)->limit(Config::get('sendPageLimit'))->get();
+
         if($request->getParam('page') == 1){
             $ann = new Ann();
             $ann->date =  date("Y-m-d H:i:s");
@@ -48,6 +48,8 @@ class AnnController extends AdminController
             }
         }
         if ($issend == 1){
+		$beginSend = (int)($request->getParam('page') - 1) * Config::get('sendPageLimit');
+        $users = User::where('class', ">=", $vip)->skip($beginSend)->limit(Config::get('sendPageLimit'))->get();
             foreach($users as $user){
                 $subject = Config::get('appName')."-公告";
                 $to = $user->email;
@@ -65,6 +67,23 @@ class AnnController extends AdminController
                 }
             }
         }
+			if ($PushBear == 1){
+				$ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
+				$postdata = http_build_query(
+				array(
+				'text' => Config::get('appName')."-公告",
+				'desp' => $$request->getParam('markdown')
+				));
+				$opts = array('http' =>
+				array(
+				'method'  => 'POST',
+				'header'  => 'Content-type: application/x-www-form-urlencoded',
+				'content' => $postdata
+				));
+				$context  = stream_context_create($opts);
+				file_get_contents('https://sc.ftqq.com/'.$ScFtqq_SCKEY.'.send', false, $context);
+				
+			}
         if(count($users) == Config::get('sendPageLimit')){
             $rs['ret'] = 2;
             $rs['msg'] = $request->getParam('page') + 1;
@@ -72,10 +91,16 @@ class AnnController extends AdminController
         }else{
             Telegram::SendMarkdown("新公告：".PHP_EOL.$request->getParam('markdown'));
             $rs['ret'] = 1;
-			if ($issend == 1){
+			if ($issend == 1 && $PushBear == 1){
+				$rs['msg'] = "公告添加成功，邮件发送和PushBear推送成功";
+			}
+			if($issend == 1 && $PushBear != 1){
 				$rs['msg'] = "公告添加成功，邮件发送成功";
 			}
-			else{
+			if($issend != 1 && $PushBear == 1){
+				$rs['msg'] = "公告添加成功，PushBear推送成功";
+			}
+			if($issend != 1 && $PushBear != 1){
 				$rs['msg'] = "公告添加成功";
 			}
             return $response->getBody()->write(json_encode($rs));

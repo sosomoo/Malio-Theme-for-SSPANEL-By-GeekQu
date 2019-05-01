@@ -12,6 +12,7 @@ class Boot
         if (Config::get('debug') == "true") {
             define("DEBUG", true);
         }
+        View::$beginTime = microtime(true);
     }
 
     public static function setVersion($version)
@@ -34,5 +35,8 @@ class Boot
             $capsule->addConnection(Config::getRadiusDbConfig(), 'radius');
         }
         $capsule->bootEloquent();
+
+        View::$connection = $capsule->getDatabaseManager();
+        $capsule->getDatabaseManager()->connection('default')->enableQueryLog();
     }
 }
