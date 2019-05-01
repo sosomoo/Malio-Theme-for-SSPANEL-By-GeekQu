@@ -5,13 +5,13 @@
 #---------------------------------------------------#
 
 # HTTP 代理端口
-port: {if array_key_exists("port",$opts)}{$opts['port']}{else}8234{/if}
+port: {if array_key_exists("port",$opts)}{$opts['port']}{else}8234{/if} 
 
 # SOCKS5 代理端口
-socks-port: {if array_key_exists("socks-port",$opts)}{$opts['socks-port']}{else}8235{/if}
+socks-port: {if array_key_exists("socks-port",$opts)}{$opts['socks-port']}{else}8235{/if} 
 
 # Linux 和 macOS 的 redir 代理端口
-redir-port: {if array_key_exists("redir-port",$opts)}{$opts['redir-port']}{else}8236{/if}
+redir-port: {if array_key_exists("redir-port",$opts)}{$opts['redir-port']}{else}8236{/if} 
 
 # 允许局域网的连接
 allow-lan: true
@@ -21,13 +21,13 @@ mode: Rule
 
 # 设置日志输出级别 (默认级别：silent，即不输出任何内容，以避免因日志内容过大而导致程序内存溢出）。
 # 5 个级别：silent / info / warning / error / debug。级别越高日志输出量越大，越倾向于调试，若需要请自行开启。
-log-level: {if array_key_exists("log-level",$opts)}{$opts['log-level']}{else}silent{/if}
+log-level: {if array_key_exists("log-level",$opts)}{$opts['log-level']}{else}silent{/if} 
 
 # Clash 的 RESTful API
 external-controller: '0.0.0.0:8233'
 
 # RESTful API 的口令
-secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}MixsChina{/if}'
+secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}MixsChina{/if}' 
 
 # 您可以将静态网页资源（如 clash-dashboard）放置在一个目录中，clash 将会服务于 `RESTful API/ui`
 # 参数应填写配置目录的相对路径或绝对路径。
@@ -60,50 +60,23 @@ dns:
 
 Proxy:
 {foreach $confs as $conf}
-  - {json_encode($conf,JSON_UNESCAPED_SLASHES)}
+  - {json_encode($conf,320)}
 {/foreach}
 
 Proxy Group:
-  - { name: "Auto", type: fallback, proxies: {$proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
-{append var='proxies' value='Auto'}
+  - { name: "Auto", type: fallback, proxies: {json_encode($proxies,320)}, url: "http://www.gstatic.com/generate_204", interval: 300 }
+{append var='proxies' value='Auto' index=0}
 {if count($back_china_proxies)!=0}
-  - { name: "Back_China_Auto", type: fallback, proxies: {$back_china_proxies|json_encode}, url: "http://www.gstatic.com/generate_204", interval: 300 }
+  - { name: "Back_China_Auto", type: fallback, proxies: {json_encode($back_china_proxies,320)}, url: "http://www.gstatic.com/generate_204", interval: 300 }
 {append var='back_china_proxies' value='Back_China_Auto'}
-  - { name: "Back_China_Proxy", type: select, proxies: {$back_china_proxies|json_encode} }
+  - { name: "Back_China_Proxy", type: select, proxies: {json_encode($back_china_proxies,320)} }
 {/if}
-  - { name: "Proxy", type: select, proxies: {$proxies|json_encode} }
+  - { name: "Proxy", type: select, proxies: {json_encode($proxies,320)} }
   - { name: "Domestic", type: select, proxies: ["DIRECT","Proxy"] }
 {$China_media=["Domestic","Proxy"]}
 {if count($back_china_proxies)!=0}{append var='China_media' value='Back_China_Proxy'}{/if}
-  - { name: "China_media", type: select, proxies: {$China_media|json_encode} }
+  - { name: "China_media", type: select, proxies: {json_encode($China_media,320)} }
   - { name: "Global_media", type: select, proxies: ["Proxy"]}
   - { name: "Others", type: select, proxies: ["Proxy","Domestic"]}
 
 {include file='rule/Rule.yml'}
-
-# Clash for Windows 自定义系统代理需要绕过的域名或IP。
-
-cfw-bypass:
-  - 'music.163.com'
-  - '*.music.126.net'
-  - localhost
-  - 127.*
-  - 10.*
-  - 172.16.*
-  - 172.17.*
-  - 172.18.*
-  - 172.19.*
-  - 172.20.*
-  - 172.21.*
-  - 172.22.*
-  - 172.23.*
-  - 172.24.*
-  - 172.25.*
-  - 172.26.*
-  - 172.27.*
-  - 172.28.*
-  - 172.29.*
-  - 172.30.*
-  - 172.31.*
-  - 192.168.*
-  - <local>

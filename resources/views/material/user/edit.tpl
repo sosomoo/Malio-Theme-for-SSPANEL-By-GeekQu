@@ -56,6 +56,8 @@
 											<label class="floating-label" for="sspwd">新连接密码</label>
 											<input class="form-control maxwidth-edit" id="sspwd" type="text">
 										</div>
+										<br/>
+										<p>您需要了解的是，修改此密码同时也会变更您 V2Ray 节点的 UUID，请注意及时更新托管订阅。</p>
 									</div>
 								</div>
 							</div>
@@ -67,16 +69,24 @@
 								<div class="card-inner">
 									<div class="card-inner">
 										<div class="cardbtn-edit">
-												<div class="card-heading">切换 SS/SSR</div>
-												<div class="reset-flex">
-													<a class="switch-type btn btn-brand-accent btn-flat"><span class="icon">check</span>&nbsp;</a>
-												</div>
+												<div class="card-heading">切换协议配置</div>
+												<button class="btn btn-flat" id="user_agreement_scheme-update"><span class="icon">check</span>&nbsp;</button>
 										</div>
-										<p>您当前为 {if URL::CanMethodConnect($user->method) == 2}SS/SSD 模式{else}SS/SSD/SSR 兼容模式{/if}</p>
-                                        <p>点击会在 SS/SSR 中切换，请注意客户端的使用。</p>
-									</div>
-								</div>
-							</div>
+										<p>配置方案描述：</p>
+                                        	{foreach $schemes as $scheme}
+											<p>{$scheme['name']} --&gt;&gt; {$scheme['description']}</p>
+											{/foreach}
+										<div class="form-group form-group-label control-highlight-custom dropdown">
+											<button id="agreement_scheme" type="button" class="form-control maxwidth-edit" data-toggle="dropdown" value="0">请选择配置方案</button>
+											<ul class="dropdown-menu" aria-labelledby="agreement_scheme">
+												{foreach $schemes as $scheme}
+												<li><a href="#" class="dropdown-option" onclick="return false;" val="{$scheme['id']}" data="agreement_scheme">{$scheme['name']}</a></li>
+												{/foreach}
+											</ul>
+										</div>
+								    </div>
+							    </div>
+						    </div>
 						</div>
 
 
@@ -905,14 +915,32 @@ $(".copy-text").click(function () {
 </script>
 
 <script>
-	$(function(){
-		new Clipboard('.switch-type');
-	});
-
-	$(".switch-type").click(function () {
-		$("#result").modal();
-		$("#msg").html("切换成功！");
-		window.setTimeout("location.href='/user/switchtype'", {$config['jump_delay']});
-	});
+    $(document).ready(function () {
+        $("#user_agreement_scheme-update").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "switchtype",
+                dataType: "json",
+                data: {
+                    id: $("#agreement_scheme").val()
+                },
+                success: function (data) {
+                    if (data.ret) {
+                        $("#result").modal();
+						$("#msg").html(data.msg);
+						window.setTimeout("location.href='/user/edit'", {$config['jump_delay']});
+                    } else {
+                        $("#result").modal();
+						$("#msg").html(data.msg);
+                    }
+                },
+                error: function (jqXHR) {
+                    $("#result").modal();
+					$("#msg").html(data.msg+"     出现了一些错误。");
+                }
+            })
+        })
+    })
 </script>
+
 

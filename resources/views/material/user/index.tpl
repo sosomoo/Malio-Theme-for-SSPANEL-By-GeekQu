@@ -1,20 +1,7 @@
 
 {include file='user/main.tpl'}
 {$ssr_prefer = URL::SSRCanConnect($user, 0)}
-
 {$pre_user = URL::cloneUser($user)}
-
-{$user = URL::getSSRConnectInfo($pre_user)}
-{$ssr_url_all = URL::getAllUrl($pre_user, 0, 0)}
-{$ssr_url_all_mu = URL::getAllUrl($pre_user, 1, 0)}
-
-{$user = URL::getSSConnectInfo($pre_user)}
-{$ss_url_all = URL::getAllUrl($pre_user, 0, 2)}
-{$ss_url_all_mu = URL::getAllUrl($pre_user, 1, 1)}
-
-{$ssd_url_all = URL::getAllSSDUrl($user)}
-
-{$v2_url_all = URL::getAllVMessUrl($user)}
 
 	<main class="content">
 
@@ -159,7 +146,8 @@
 										{if $ann != null}
 										<p>{$ann->content}</p>
 										<br/>
-										<strong>查看所有公告请<a href="/user/announcement">点击这里</a></strong>
+										<hr/>
+										<p><a href="/user/announcement">点击查看所有公告</a></p>
 										{/if}
 										{if $config["enable_admin_contact"] == 'true'}
 										<p class="card-heading">管理员联系方式</p>
@@ -203,6 +191,7 @@
 												<div class="tab-pane fade" id="info_center">
 													<p>您的链接信息：</p>
 													{if URL::SSRCanConnect($user)}
+													{$user = URL::getSSRConnectInfo($pre_user)}
 													<dl class="dl-horizontal">
 														<p><dt>端口</dt>
 														<dd>{$user->port}</dd></p>
@@ -220,6 +209,7 @@
 													<hr/>
 													<p>您当前为 SSR 协议模式，请您选用支持 SSR 协议的客户端来连接。</p>
 													{else}
+													{$user = URL::getSSConnectInfo($pre_user)}
 													<dl class="dl-horizontal">
 														<p><dt>端口</dt>
 														<dd>{$user->port}</dd></p>
@@ -241,6 +231,9 @@
 													<nav class="tab-nav margin-top-no">
 														<ul class="nav nav-list">
 															<li class="active">
+																<a class="" data-toggle="tab" href="#sub_center_general"><i class="icon icon-lg">desktop_windows</i>&nbsp;General</a>
+															</li>
+															<li>
 																<a class="" data-toggle="tab" href="#sub_center_windows"><i class="icon icon-lg">desktop_windows</i>&nbsp;Windows</a>
 															</li>
 															<li>
@@ -254,38 +247,32 @@
 															</li>
 														</ul>
 													</nav>
-													<div class="tab-pane fade active in" id="sub_center_windows">
-														<p><span class="icon icon-lg text-white">filter_1</span> [ SS ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$ss_url_all}{$ss_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+
+													<div class="tab-pane fade active in" id="sub_center_general">
+														<p><span class="icon icon-lg text-white">filter_1</span> [ SS ]：
+															<a id="general_ss" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ss","#general_ss","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
+														</p>
 														<hr/>
-														<p><span class="icon icon-lg text-white">filter_2</span> [ SSR ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+														<p><span class="icon icon-lg text-white">filter_2</span> [ SSR ]：
+															<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_ssr" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssr","#general_ssr","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
+														</p>
 														<hr/>
-														<p><span class="icon icon-lg text-white">filter_3</span> [ VMess ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>
-														<p>如您的应用不在下方的支持列表，那么请使用上方的使用方案：</p>
-														<hr/>
+														<p><span class="icon icon-lg text-white">filter_3</span> [ VMess ]：
+															<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_v2ray" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=v2ray","#general_v2ray","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
+														</p>
+													</div>
+
+													<div class="tab-pane fade" id="sub_center_windows">
 														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Windows/releases"><i class="material-icons">save_alt</i> GET</a> SSD - [ SS ]：</p>
 															<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssd"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssd_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssd"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a id="win_ssd" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssd","#win_ssd","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/Fndroid/clash_for_windows_pkg/releases"><i class="material-icons">save_alt</i> GET</a> Clash for Windows - [ SS/VMess ]：</p>
 															<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/Clash-for-Windows"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
 													</div>
+
 													<div class="tab-pane fade" id="sub_center_mac">
-														<p><span class="icon icon-lg text-white">filter_1</span> [ SS ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$ss_url_all}{$ss_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>														
-														<p><span class="icon icon-lg text-white">filter_2</span> [ SSR ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_3</span> [ VMess ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>
-														<p>如您的应用不在下方的支持列表，那么请使用上方的使用方案：</p>
-														<hr/>
 														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://nssurge.com/mac/v3/Surge-latest.zip"><i class="material-icons">save_alt</i> GET</a> Surge - [ SS ]：</p>
 															<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge3"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 托管</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge_node"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge2"]}"><i class="material-icons icon-sm">how_to_vote</i>2.x 托管</a></p>
@@ -294,18 +281,8 @@
 															<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/ClashX"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
 													</div>
+
 													<div class="tab-pane fade" id="sub_center_ios">
-														<p><span class="icon icon-lg text-white">filter_1</span> [ SS ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$ss_url_all}{$ss_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>														
-														<p><span class="icon icon-lg text-white">filter_2</span> [ SSR ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_3</span> [ VMess ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>
-														<p>如您的应用不在下方的支持列表，那么请使用上方的使用方案：</p>
-														<hr/>
 														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/surge-3/id1442620678?ls=1&mt=8"><i class="material-icons">save_alt</i> GET</a> Surge - [ SS ]：</p>
 															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 															<p>使用方式：<a class="btn-dl" href="surge3:///install-config?url={urlencode($subInfo["surge3"])}"><i class="material-icons icon-sm">how_to_vote</i>3.x 一键</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge_node"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="btn-dl" href="surge:///install-config?url={urlencode($subInfo["surge2"])}"><i class="material-icons icon-sm">how_to_vote</i>2.x 一键</a></p>
@@ -322,21 +299,11 @@
 															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Shadowrocket"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 															<p>使用方式：<a class="btn-dl" onclick=AddSub("{$subInfo["v2ray"]}","sub://")><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="btn-dl" onclick=AddSub("{$subInfo["ssr"]}","sub://")><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a class="btn-dl" onclick=AddSub("{$subInfo["v2ray_ss_ssr"]}","sub://")><i class="material-icons icon-sm">how_to_vote</i>SS(R) + V2 订阅</a></p>
 													</div>
+
 													<div class="tab-pane fade" id="sub_center_android">
-														<p><span class="icon icon-lg text-white">filter_1</span> [ SS ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$ss_url_all}{$ss_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>														
-														<p><span class="icon icon-lg text-white">filter_2</span> [ SSR ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssr_url_all}{$ssr_url_all_mu}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_3</span> [ VMess ]：</p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$v2_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>
-														<p>如您的应用不在下方的支持列表，那么请使用上方的使用方案：</p>
-														<hr/>
 														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Android/releases"><i class="material-icons">save_alt</i> GET</a> SSD - [ SS ]：</p>
 															<p>教程文档：<a class="btn-dl" href="/doc/#/Android/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssd"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a class="copy-text btn-dl" data-clipboard-text="{$ssd_url_all}"><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssd"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a id="android_ssd" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssd","#android_ssd","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="#"><i class="material-icons">save_alt</i> GET</a> SSR - [ SSR ]：</p>
 															<p>教程文档：<a class="btn-dl" href="/doc/#/Android/ShadowsocksR"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>

@@ -137,27 +137,46 @@ class LinkController extends BaseController
         }
 
         if (in_array($quantumult, array(1, 2, 3))) {
-            $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf');
+            $newResponse = $response
+            ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
+            ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf');
             $newResponse->getBody()->write(LinkController::GetQuantumult($user, $quantumult));
             return $newResponse;
         } elseif (in_array($surge, array(1, 2, 3))) {
-            $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Surge.conf');
+            $newResponse = $response
+            ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
+            ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->withHeader('Content-Disposition', ' attachment; filename=Surge.conf');
             $newResponse->getBody()->write(LinkController::GetSurge($user, $surge));
             return $newResponse;
         } elseif ($surfboard == 1) {
-            $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=Surfboard.conf');
+            $newResponse = $response
+            ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
+            ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->withHeader('Content-Disposition', ' attachment; filename=Surfboard.conf');
             $newResponse->getBody()->write(LinkController::GetSurfboard($user));
             return $newResponse;
         } elseif ($clash == 1) {
-            $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=config.yml');
+            $newResponse = $response
+            ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
+            ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->withHeader('Content-Disposition', ' attachment; filename=config.yml');
             $newResponse->getBody()->write(LinkController::GetClash($user, $opts));
             return $newResponse;
         } elseif ($ssd == 1) {
-            $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=SSD.txt');
+            $newResponse = $response
+            ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
+            ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->withHeader('Content-Disposition', ' attachment; filename=SSD.txt');
             $newResponse->getBody()->write(LinkController::GetSSD($user));
             return $newResponse;
         } else {
-            $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt');
+            $newResponse = $response
+            ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
+            ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt')
+            ->withHeader('Subscription-Userinfo', ' upload='.$user->u.'; download='.$user->d.'; total='.$user->transfer_enable.'; expire='.strtotime($user->class_expire).'');
             $newResponse->getBody()->write(LinkController::GetSub($user, $sub, $extend));
             return $newResponse;
         }
@@ -238,7 +257,7 @@ class LinkController extends BaseController
             $v2ray_name = "";
             $v2rays = URL::getAllVMessUrl($user, 1);
             foreach ($v2rays as $v2ray) {
-                if ($v2ray['net'] == "kcp") {
+                if ($v2ray['net'] == "kcp" || $v2ray['net'] == "quic") {
                     continue;
                 }
                 if (strpos($v2ray['ps'], "回国") or strpos($v2ray['ps'], "China")) {
@@ -254,14 +273,10 @@ class LinkController extends BaseController
                 if ($v2ray['net'] == "ws" || $v2ray['net'] == "http") {
                     $v2ray_obfs = ", obfs=" . $v2ray['net'] . ", obfs-path=\"" . $v2ray['path'] . "\", obfs-header=\"Host: " . $v2ray['add'] . "[Rr][Nn]User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_0 like Mac OS X) AppleWebKit/888.8.88 (KHTML, like Gecko) Mobile/6666666\"";
                 }
-                if ($v2ray['net'] == "kcp") {
-                    $v2ray_group .= "";
+                if ($quantumult == 1) {
+                    $v2ray_group .= "vmess://" . base64_encode($v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "_v2" . $v2ray_tls . $v2ray_obfs) . "\n";
                 } else {
-                    if ($quantumult == 1) {
-                        $v2ray_group .= "vmess://" . base64_encode($v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "_v2" . $v2ray_tls . $v2ray_obfs) . "\n";
-                    } else {
-                        $v2ray_group .= $v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "_v2" . $v2ray_tls . $v2ray_obfs . "\n";
-                    }
+                    $v2ray_group .= $v2ray['ps'] . " = vmess, " . $v2ray['add'] . ", " . $v2ray['port'] . ", chacha20-ietf-poly1305, \"" . $v2ray['id'] . "\", group=" . Config::get('appName') . "_v2" . $v2ray_tls . $v2ray_obfs . "\n";
                 }
             }
             if ($quantumult == 1) {
@@ -353,7 +368,7 @@ class LinkController extends BaseController
         $userapiUrl = $subInfo['clash'];
         $confs = [];
         $proxy_confs = [];
-        $back_china_confs=[];
+        $back_china_confs = [];
         // ss
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach ($items as $item) {
@@ -393,96 +408,12 @@ class LinkController extends BaseController
                     $sss['plugin-opts']['host'] = "wns.windows.com";
                 }
             }
-
             if (strpos($sss['name'], "回国") or strpos($sss['name'], "China")) {
                 $back_china_confs[] = $sss;
             } else {
                 $proxy_confs[] = $sss;
             }
             $confs[] = $sss;
-        }
-        // v2
-        $items = URL::getAllVMessUrl($user, 1);
-        foreach ($items as $item) {
-            $v2rays = [
-                "name" => $item['ps'],
-                "type" => "vmess",
-                "server" => $item['add'],
-                "port" => $item['port'],
-                "uuid" => $item['id'],
-                "alterId" => $item['aid'],
-                "cipher" => "auto",
-            ];
-            if ($item['net'] == "ws") {
-                $v2rays['network'] = 'ws';
-                $v2rays['ws-path'] = $item['path'];
-                if ($item['tls'] == 'tls') {
-                    $v2rays['tls'] = true;
-                }
-                if ($item['host'] != '') {
-                    $v2rays['ws-headers']['Host'] = $item['host'];
-                }
-            } elseif ($item['net'] == "tls") {
-                $v2rays['tls'] = true;
-            }
-            if ($item['net'] != "kcp") {
-                if (strpos($v2rays['name'], "回国") or strpos($v2rays['name'], "China")) {
-                    $back_china_confs[] = $v2rays;
-                } else {
-                    $proxy_confs[] = $v2rays;
-                }
-                $confs[] = $v2rays;
-            }
-        }
-
-        $render = ConfRender::getTemplateRender();
-        $render->assign('user', $user)
-        ->assign('userapiUrl', $userapiUrl)
-        ->assign('opts', $opts)
-        ->assign('confs', $confs)
-        ->assign('proxies', array_map(function ($conf) {
-            return $conf['name'];
-        }, $proxy_confs))
-        ->assign('back_china_proxies', array_map(function ($conf) {
-            return $conf['name'];
-        }, $back_china_confs));
-        return $render->fetch('clash.tpl');
-    }
-
-    public static function GetSSD($user)
-    {
-        return URL::getAllSSDUrl($user);
-    }
-
-    public static function GetSub($user, $sub, $extend)
-    {
-        $return_url = '';
-        // SSR
-        if ($sub == 1) {
-            $return_url .= URL::getAllUrl($user, 0, 0, $extend).PHP_EOL;
-            return Tools::base64_url_encode($return_url);
-        }
-        // SS
-        elseif ($sub == 2) {
-            $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
-            return Tools::base64_url_encode($return_url);
-        }
-        // V2
-        elseif ($sub == 3) {
-            return Tools::base64_url_encode(URL::getAllVMessUrl($user));
-        }
-        // V2 + SS
-        elseif ($sub == 4) {
-            $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
-            return Tools::base64_url_encode($return_url);
-        }
-        // V2 + SS + SSR
-        elseif ($sub == 5) {
-            $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 0, $extend).PHP_EOL;
-            $return_url .= URL::getAllUrl($user, 0, 1, $extend).PHP_EOL;
-            return Tools::base64_url_encode($return_url);
         }
         // v2
         $items = URL::getAllVMessUrl($user, 1);
@@ -511,16 +442,63 @@ class LinkController extends BaseController
             } elseif ($item['net'] == "tls") {
                 $v2rays['tls'] = true;
             }
-            $proxy_confs[] = $v2rays;
+            if (strpos($v2rays['name'], "回国") or strpos($v2rays['name'], "China")) {
+                $back_china_confs[] = $v2rays;
+            } else {
+                $proxy_confs[] = $v2rays;
+            }
             $confs[] = $v2rays;
         }
+
         $render = ConfRender::getTemplateRender();
         $render->assign('user', $user)
-        ->assign('confs', $confs)
-        ->assign('proxies', array_map(function ($conf) {
-            return $conf['name'];
-        }, $proxy_confs));
+               ->assign('userapiUrl', $userapiUrl)
+               ->assign('opts', $opts)
+               ->assign('confs', $confs)
+               ->assign('proxies', array_map(function ($conf) {
+                   return $conf['name'];
+               }, $proxy_confs))
+               ->assign('back_china_proxies', array_map(function ($conf) {
+                   return $conf['name'];
+               }, $back_china_confs));
+
         return $render->fetch('clash.tpl');
+    }
+
+    public static function GetSSD($user)
+    {
+        return URL::getAllSSDUrl($user);
+    }
+
+    public static function GetSub($user, $sub, $extend)
+    {
+        $return_url = '';
+        switch ($sub) {
+            case 1: // SSR
+                $return_url .= $extend==0?"":URL::getUserTraffic($user, 1).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 0).PHP_EOL;
+            break;
+            case 2: // SS
+                $return_url .= $extend==0?"":URL::getUserTraffic($user, 2).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 1).PHP_EOL;
+            break;
+            case 3: // V2
+                $return_url .= $extend==0?"":URL::getUserTraffic($user, 3).PHP_EOL;
+                $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
+            break;
+            case 4: // V2 + SS
+                $return_url .= $extend==0?"":URL::getUserTraffic($user, 3).PHP_EOL;
+                $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 1).PHP_EOL;
+            break;
+            case 5: // V2 + SS + SSR
+                $return_url .= $extend==0?"":URL::getUserTraffic($user, 1).PHP_EOL;
+                $return_url .= URL::getAllVMessUrl($user).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 0).PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 1).PHP_EOL;
+            break;
+        }
+        return Tools::base64_url_encode($return_url);
     }
 
 }
