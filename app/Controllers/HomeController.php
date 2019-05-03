@@ -53,7 +53,7 @@ class HomeController extends BaseController
             $login_number = '';
         }
 
-        if (!Config::get('newIndex')=='true' && Config::get('theme')=='material') {
+        if (Config::get('newIndex')!='true' && Config::get('theme')=='material') {
             return $this->view()->display('indexold.tpl');
         } else {
             return $this->view()
