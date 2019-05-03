@@ -53,7 +53,10 @@ class HomeController extends BaseController
             $login_number = '';
         }
 
-        return $this->view()
+        if (!Config::get('newIndex')=='true' && Config::get('theme')=='material') {
+            return $this->view()->display('indexold.tpl');
+        } else {
+            return $this->view()
             ->assign('geetest_html', $GtSdk)
             ->assign('login_token', $login_token)
             ->assign('login_number', $login_number)
@@ -63,6 +66,7 @@ class HomeController extends BaseController
             ->assign('base_url', Config::get('baseUrl'))
             ->assign('recaptcha_sitekey', $recaptcha_sitekey)
             ->display('index.tpl');
+        }
     }
 
     public function indexold()
