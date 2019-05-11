@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Services\Config;
 
 /**
  *  ConfController
@@ -13,18 +14,21 @@ class ConfController extends BaseController
     {
         $General = ConfController::SurgeConfGeneral($Configs['General']);
         $Proxys = ConfController::SurgeConfProxy($Configs['Proxy']);
-        $ProxyGroup = ConfController::SurgeConfProxyGroup($AllProxys, $Configs['ProxyGroup']);
+        $ProxyGroup = ConfController::SurgeConfProxyGroup($Nodes, $Configs['ProxyGroup']);
         $Rule = ConfController::SurgeConfRule($Configs['Rule']);
 
         $Conf = "#!MANAGED-CONFIG "
-        .Config::get('baseUrl').$_SERVER['REQUEST_URI'].
-        "\n[General]"
+        .Config::get('baseUrl') . $_SERVER['REQUEST_URI'].
+        "\n\n#---------------------------------------------------#".
+        "\n## 上次更新于：" .date("Y-m-d h:i:s").
+        "\n#---------------------------------------------------#".
+        "\n\n[General]"
         .$General.
-        "\n[Proxy]"
+        "\n\n[Proxy]\n"
         .$AllProxys.$Proxys.
-        "\n[Proxy Group]"
+        "\n\n[Proxy Group]"
         .$ProxyGroup.
-        "\n[Rule]"
+        "\n\n[Rule]\n"
         .$Rule;
 
         return $Conf;
@@ -104,6 +108,7 @@ class ConfController extends BaseController
             }
             $return .= "\n$str";
         }
+        return $return;
     }
 
     public static function SurgeConfRule($Rules)
