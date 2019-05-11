@@ -88,7 +88,6 @@ class ConfController extends BaseController
                             continue;
                         }
                         $AllRemark[] = $item['remark'];
-                        $Remarks .= ", ".$item['remark'];
                     }
                 }
                 if (isset($ProxyGroup['content']['regex'])) {
