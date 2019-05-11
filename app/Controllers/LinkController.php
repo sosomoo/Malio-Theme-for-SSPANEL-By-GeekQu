@@ -76,44 +76,14 @@ class LinkController extends BaseController
             return null;
         }
 
-        $extend = 0;
-        if (isset($request->getQueryParams()["extend"])) {
-            $extend = (int)$request->getQueryParams()["extend"];
-        }
+        $opts = $request->getQueryParams();
 
-        $sub = 0;
-        if (isset($request->getQueryParams()["sub"])) {
-            $sub = (int)$request->getQueryParams()["sub"];
-        }
-
-        // apps
-        $opts = [];
-
-        $ssd = 0;
-        if (isset($request->getQueryParams()["ssd"])) {
-            $ssd = (int)$request->getQueryParams()["ssd"];
-        }
-
-        $clash = 0;
-        if (isset($request->getQueryParams()["clash"])) {
-            $clash = (int)$request->getQueryParams()["clash"];
-            $opts = $request->getQueryParams();
-        }
-
-        $surge = 0;
-        if (isset($request->getQueryParams()["surge"])) {
-            $surge = (int)$request->getQueryParams()["surge"];
-        }
-
-        $quantumult = 0;
-        if (isset($request->getQueryParams()["quantumult"])) {
-            $quantumult = (int)$request->getQueryParams()["quantumult"];
-        }
-
-        $surfboard = 0;
-        if (isset($request->getQueryParams()["surfboard"])) {
-            $surfboard = (int)$request->getQueryParams()["surfboard"];
-        }
+        $sub = isset($request->getQueryParams()["sub"]) ? (int)$request->getQueryParams()["sub"] : 0;
+        $ssd = isset($request->getQueryParams()["ssd"]) ? (int)$request->getQueryParams()["ssd"] : 0;
+        $clash = isset($request->getQueryParams()["clash"]) ? (int)$request->getQueryParams()["clash"] : 0;
+        $surge = isset($request->getQueryParams()["surge"]) ? (int)$request->getQueryParams()["surge"] : 0;
+        $quantumult = isset($request->getQueryParams()["quantumult"]) ? (int)$request->getQueryParams()["quantumult"] : 0;
+        $surfboard = isset($request->getQueryParams()["surfboard"]) ? (int)$request->getQueryParams()["surfboard"] : 0;
 
         if (isset($request->getQueryParams()["mu"])) {    
             $mu = (int)$request->getQueryParams()["mu"];
@@ -148,7 +118,7 @@ class LinkController extends BaseController
             ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
             ->withHeader('Content-Disposition', ' attachment; filename=Surge.conf');
-            $newResponse->getBody()->write(LinkController::GetSurge($user, $surge));
+            $newResponse->getBody()->write(LinkController::GetSurge($user, $surge, $opts));
             return $newResponse;
         } elseif ($surfboard == 1) {
             $newResponse = $response
@@ -177,7 +147,7 @@ class LinkController extends BaseController
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
             ->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt')
             ->withHeader('Subscription-Userinfo', ' upload='.$user->u.'; download='.$user->d.'; total='.$user->transfer_enable.'; expire='.strtotime($user->class_expire).'');
-            $newResponse->getBody()->write(LinkController::GetSub($user, $sub, $extend));
+            $newResponse->getBody()->write(LinkController::GetSub($user, $sub, $opts));
             return $newResponse;
         }
     }
@@ -212,7 +182,7 @@ class LinkController extends BaseController
         return $return_info;
     }
 
-    public static function GetSurge($user, $surge = 0)
+    public static function GetSurge($user, $surge, $opts)
     {
         $subInfo = LinkController::GetSubinfo($user, $surge);
         $userapiUrl = $subInfo['surge'];
@@ -230,6 +200,17 @@ class LinkController extends BaseController
             }
             $proxy_name .= ", ".$item['remark'];
         }
+
+        if (isset($opts['source']) && $opts['source'] != "") {
+            $SourceURL = urldecode($opts['source']);
+            // 远程规则仅支持 github 以及 gitlab
+            if (!preg_match("/^https:\/\/((gist\.)?github\.com|gitlab\.com)/i", $SourceURL)) {
+                return "远程规则仅支持 (gist)github 以及 gitlab 的链接。";
+            }
+            $SourceConf = json_decode(file_get_contents($SourceURL), true);
+            return ConfController::SurgeConfs($user, $proxy_group, $items, $SourceConf);
+        }
+
         if (in_array($surge, array(2, 3))) {
             $render = ConfRender::getTemplateRender();
             $render->assign('user', $user)
@@ -470,8 +451,9 @@ class LinkController extends BaseController
         return URL::getAllSSDUrl($user);
     }
 
-    public static function GetSub($user, $sub, $extend)
+    public static function GetSub($user, $sub, $opts)
     {
+        $extend = isset($opts['extend']) ? $opts['extend'] : 0;
         $return_url = '';
         switch ($sub) {
             case 1: // SSR

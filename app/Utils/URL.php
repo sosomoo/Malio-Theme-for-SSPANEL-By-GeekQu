@@ -587,6 +587,7 @@ class URL
         $return_array['passwd'] = $user->passwd;
         $return_array['method'] = $user->method;
         $return_array['remark'] = $node_name;
+        $return_array['class'] = $node->node_class;
         $return_array['group'] = Config::get('appName');
         return $return_array;
     }
