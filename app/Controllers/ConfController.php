@@ -42,7 +42,7 @@ class ConfController extends BaseController
     public static function SurgeConfProxy($Proxys)
     {
         $return = "";
-        foreach ($General as $value) {
+        foreach ($Proxys as $value) {
             if (!preg_match("/(\[General|Replica|Proxy|Proxy\sGroup|Rule|Host|URL\sRewrite|Header\sRewrite|MITM|Script\])/", $value)) {
                 $return .= "\n$value";
             }
