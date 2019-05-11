@@ -82,6 +82,14 @@ class ConfController extends BaseController
                             $Remarks .= ", ".$item['remark'];
                         }
                     }
+                } else {
+                    foreach ($Nodes as $item) {
+                        if ($item['obfs'] == "v2ray") {
+                            continue;
+                        }
+                        $AllRemark[] = $item['remark'];
+                        $Remarks .= ", ".$item['remark'];
+                    }
                 }
                 if (isset($ProxyGroup['content']['regex'])) {
                     $Remarks = "";
