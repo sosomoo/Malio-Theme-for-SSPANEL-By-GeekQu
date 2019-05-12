@@ -13,32 +13,34 @@ class ConfController extends BaseController
     public static function SurgeConfs($User, $AllProxys, $Nodes, $Configs)
     {
         $General = ConfController::SurgeConfGeneral($Configs['General']);
-        $Proxys = ConfController::SurgeConfProxy($Configs['Proxy']);
+        $Proxys = isset($Configs['Proxy']) ? ConfController::SurgeConfProxy($Configs['Proxy']) : "";
         $ProxyGroup = ConfController::SurgeConfProxyGroup($Nodes, $Configs['ProxyGroup']);
         $Rule = ConfController::SurgeConfRule($Configs['Rule']);
 
         $Conf = "#!MANAGED-CONFIG "
-        .Config::get('baseUrl') . $_SERVER['REQUEST_URI'].
-        "\n\n#---------------------------------------------------#".
-        "\n## 上次更新于：" .date("Y-m-d h:i:s").
-        "\n#---------------------------------------------------#".
-        "\n\n[General]"
-        .$General.
-        "\n\n[Proxy]\n"
-        .$AllProxys.$Proxys.
-        "\n\n[Proxy Group]"
-        .$ProxyGroup.
-        "\n\n[Rule]\n"
-        .$Rule;
+            . Config::get('baseUrl') . $_SERVER['REQUEST_URI'] .
+            "\n\n#---------------------------------------------------#" .
+            "\n## 上次更新于：" . date("Y-m-d h:i:s") .
+            "\n#---------------------------------------------------#" .
+            "\n\n[General]"
+            . $General .
+            "\n\n[Proxy]\n"
+            . $AllProxys . $Proxys .
+            "\n\n[Proxy Group]"
+            . $ProxyGroup .
+            "\n\n[Rule]\n"
+            . $Rule;
 
         return $Conf;
     }
-    
+
     public static function SurgeConfGeneral($General)
     {
         $return = "";
-        foreach ($General as $key => $value) {
-            $return .= "\n$key = $value";
+        if (count($General) != 0) {
+            foreach ($General as $key => $value) {
+                $return .= "\n$key = $value";
+            }
         }
         return $return;
     }
@@ -46,9 +48,11 @@ class ConfController extends BaseController
     public static function SurgeConfProxy($Proxys)
     {
         $return = "";
-        foreach ($Proxys as $value) {
-            if (!preg_match("/(\[General|Replica|Proxy|Proxy\sGroup|Rule|Host|URL\sRewrite|Header\sRewrite|MITM|Script\])/", $value)) {
-                $return .= "\n$value";
+        if (count($Proxys) != 0) {
+            foreach ($Proxys as $value) {
+                if (!preg_match("/(\[General|Replica|Proxy|Proxy\sGroup|Rule|Host|URL\sRewrite|Header\sRewrite|MITM|Script\])/", $value)) {
+                    $return .= "\n$value";
+                }
             }
         }
         return $return;
@@ -69,7 +73,7 @@ class ConfController extends BaseController
                         }
                         if ($item['class'] == $ProxyGroup['content']['class']) {
                             $AllRemark[] = $item['remark'];
-                            $Remarks .= ", ".$item['remark'];
+                            $Remarks .= ", " . $item['remark'];
                         }
                     }
                 } elseif (isset($ProxyGroup['content']['noclass'])) {
@@ -79,7 +83,7 @@ class ConfController extends BaseController
                         }
                         if ($item['class'] != $ProxyGroup['content']['noclass']) {
                             $AllRemark[] = $item['remark'];
-                            $Remarks .= ", ".$item['remark'];
+                            $Remarks .= ", " . $item['remark'];
                         }
                     }
                 } else {
@@ -94,21 +98,21 @@ class ConfController extends BaseController
                     $Remarks = "";
                     foreach ($AllRemark as $item) {
                         if (preg_match($ProxyGroup['content']['regex'], $item)) {
-                            $Remarks .= ", ".$item;
+                            $Remarks .= ", " . $item;
                         }
                     }
                 }
-                $text1 = isset($ProxyGroup['content']['text1']) && $ProxyGroup['content']['text1'] != "" ? ", " .$ProxyGroup['content']['text1'] : "";
-                $text2 = isset($ProxyGroup['content']['text2']) && $ProxyGroup['content']['text2'] != "" ? ", " .$ProxyGroup['content']['text2'] : "";
-                $url = isset($ProxyGroup['url']) && $ProxyGroup['url'] != "" ? ", url = " .$ProxyGroup['url'] : "";
-                $interval = isset($ProxyGroup['interval']) && $ProxyGroup['interval'] != "" ? ", interval = " .$ProxyGroup['interval'] : "";
+                $text1 = isset($ProxyGroup['content']['text1']) && $ProxyGroup['content']['text1'] != "" ? ", " . $ProxyGroup['content']['text1'] : "";
+                $text2 = isset($ProxyGroup['content']['text2']) && $ProxyGroup['content']['text2'] != "" ? ", " . $ProxyGroup['content']['text2'] : "";
+                $url = isset($ProxyGroup['url']) && $ProxyGroup['url'] != "" ? ", url = " . $ProxyGroup['url'] : "";
+                $interval = isset($ProxyGroup['interval']) && $ProxyGroup['interval'] != "" ? ", interval = " . $ProxyGroup['interval'] : "";
                 $str .= $ProxyGroup['name'] . " = " . $ProxyGroup['type'] . $text1 . $Remarks . $text2 . $url . $interval;
             } elseif ($ProxyGroup['type'] == "ssid") {
                 $wifi = "";
                 foreach ($ProxyGroup['content'] as $key => $value) {
                     $wifi .= ", \"" . $key . "\" = " . $value;
                 }
-                $cellular = isset($ProxyGroup['cellular']) ? ", cellular = " .$ProxyGroup['cellular'] : "";
+                $cellular = isset($ProxyGroup['cellular']) ? ", cellular = " . $ProxyGroup['cellular'] : "";
                 $str .= $ProxyGroup['name'] . " = " . $ProxyGroup['type'] . ", default = " . $ProxyGroup['default'] . $cellular . $wifi;
             } else {
                 $str .= "";
