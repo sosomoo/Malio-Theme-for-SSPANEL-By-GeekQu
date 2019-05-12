@@ -202,13 +202,18 @@ class LinkController extends BaseController
         }
 
         if (isset($opts['source']) && $opts['source'] != "") {
-            $SourceURL = urldecode($opts['source']);
+            $SourceURL = trim(urldecode($opts['source']));
             // 远程规则仅支持 github 以及 gitlab
             if (!preg_match("/^https:\/\/((gist\.)?github\.com|gitlab\.com)/i", $SourceURL)) {
-                return "远程规则仅支持 (gist)github 以及 gitlab 的链接。";
+                return "远程配置仅支持 (gist)github 以及 gitlab 的链接。";
             }
-            $SourceConf = json_decode(file_get_contents($SourceURL), true);
-            return ConfController::SurgeConfs($user, $proxy_group, $items, $SourceConf);
+            $SourceContent = @file_get_contents($SourceURL);
+            if ($SourceContent) {
+                $SourceConf = json_decode($SourceContent, true);
+                return ConfController::SurgeConfs($user, $proxy_group, $items, $SourceConf);
+            } else {
+                return "远程配置下载失败。";
+            }
         }
 
         if (in_array($surge, array(2, 3))) {
