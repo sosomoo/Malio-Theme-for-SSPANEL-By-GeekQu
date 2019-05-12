@@ -124,10 +124,11 @@ class ConfController extends BaseController
             // 远程规则仅支持 github 以及 gitlab
             if (preg_match("/^https:\/\/((gist\.)?github\.com|gitlab\.com)/i", $Rules['source'])) {
                 $return = file_get_contents($Rules['source']);
+            } else {
+                $return = "// 远程规则仅支持 github 以及 gitlab\nGEOIP,CN,DIRECT\nFINAL,DIRECT,dns-failed";
+
             }
-        } //elseif (isset($Rules['internal']) && $Rules['internal'] != "") {
-            // 内置部分规则，暂时未写
-        //}
+        }
         return $return;
     }
 
