@@ -128,7 +128,7 @@ class ConfController extends BaseController
         if (isset($Rules['source']) && $Rules['source'] != "") {
             $sourceURL = trim($Rules['source']);
             // 远程规则仅支持 github 以及 gitlab
-            if (preg_match("/^https:\/\/((gist\.)?github\.com|gitlab\.com)/i", $sourceURL)) {
+            if (preg_match("/^https:\/\/((gist\.)?github\.com|raw\.githubusercontent\.com|gitlab\.com)/i", $sourceURL)) {
                 $return = @file_get_contents($sourceURL);
                 if (!$return) {
                     $return = "// 远程规则加载失败\nGEOIP,CN,DIRECT\nFINAL,DIRECT,dns-failed";

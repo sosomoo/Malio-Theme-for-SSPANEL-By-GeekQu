@@ -204,7 +204,7 @@ class LinkController extends BaseController
         if (isset($opts['source']) && $opts['source'] != "") {
             $SourceURL = trim(urldecode($opts['source']));
             // 远程规则仅支持 github 以及 gitlab
-            if (!preg_match("/^https:\/\/((gist\.)?github\.com|gitlab\.com)/i", $SourceURL)) {
+            if (!preg_match("/^https:\/\/((gist\.)?github\.com|raw\.githubusercontent\.com|gitlab\.com)/i", $SourceURL)) {
                 return "远程配置仅支持 (gist)github 以及 gitlab 的链接。";
             }
             $SourceContent = @file_get_contents($SourceURL);
