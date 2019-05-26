@@ -150,7 +150,7 @@ class ConfController extends BaseController
             return printf('无法解析 YAML 字符串: %s', $exception->getMessage());
         }
         if (isset($Configs['Proxy']) || count($Configs['Proxy']) != 0) {
-            $Proxys = array_merge($AllProxys, $Configs['Proxy']));
+            $Proxys = array_merge($AllProxys, $Configs['Proxy']);
         }
         $tmp = ConfController::ClashConfGeneral($Configs['General']);
         $tmp['Proxy'] = $Proxys;
@@ -161,7 +161,7 @@ class ConfController extends BaseController
             "\n## 上次更新于：" . date("Y-m-d h:i:s") .
             "\n#---------------------------------------------------#" .
             "\n\n"
-            . Yaml::dump($tmp, 2) .
+            . Yaml::dump($tmp, 4) .
             "\n\nRule:\n"
             . ConfController::ClashConfRule($Configs['Rule']);
 
@@ -195,17 +195,20 @@ class ConfController extends BaseController
                     foreach ($Nodes as $item) {
                         if ($item['class'] == $ProxyGroup['content']['class']) {
                             $AllRemark[] = $item['name'];
+                            unset($item['class']);
                         }
                     }
                 } elseif (isset($ProxyGroup['content']['noclass'])) {
                     foreach ($Nodes as $item) {
                         if ($item['class'] != $ProxyGroup['content']['noclass']) {
                             $AllRemark[] = $item['name'];
+                            unset($item['class']);
                         }
                     }
                 } else {
                     foreach ($Nodes as $item) {
                         $AllRemark[] = $item['name'];
+                        unset($item['class']);
                     }
                 }
                 if (isset($ProxyGroup['content']['regex'])) {
