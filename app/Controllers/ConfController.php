@@ -150,13 +150,11 @@ class ConfController extends BaseController
             return printf('无法解析 YAML 字符串: %s', $exception->getMessage());
         }
         if (isset($Configs['Proxy']) || count($Configs['Proxy']) != 0) {
-            $AllProxys[] = $Configs['Proxy'];
+            $Proxys = array_merge($AllProxys, $Configs['Proxy']));
         }
-        $tmp = [
-            ConfController::ClashConfGeneral($Configs['General']),
-            "Proxy" => $AllProxys,
-            "ProxyGroup" => $ConfController::ClashConfProxyGroup($AllProxys, $Configs['ProxyGroup'])
-        ];
+        $tmp = ConfController::ClashConfGeneral($Configs['General']);
+        $tmp['Proxy'] = $Proxys;
+        $tmp['ProxyGroup'] = ConfController::ClashConfProxyGroup($AllProxys, $Configs['ProxyGroup']);
         $Conf = "#!MANAGED-CONFIG "
             . Config::get('baseUrl') . $_SERVER['REQUEST_URI'] .
             "\n\n#---------------------------------------------------#" .
@@ -165,7 +163,7 @@ class ConfController extends BaseController
             "\n\n"
             . Yaml::dump($tmp, 2) .
             "\n\nRule:\n"
-            . $ConfController::ClashConfRule($Configs['Rule']);
+            . ConfController::ClashConfRule($Configs['Rule']);
 
         return $Conf;
     }
@@ -190,24 +188,24 @@ class ConfController extends BaseController
             if (in_array($ProxyGroup['type'], ["select", "url-test", "fallback", "load-balance"])) {
                 $proxies = [];
                 if (isset($ProxyGroup['content']['left-proxies']) && count($ProxyGroup['content']['left-proxies']) != 0) {
-                    $proxies[] = $ProxyGroup['content']['left-proxies'];
+                    $proxies = $ProxyGroup['content']['left-proxies'];
                 }
                 $AllRemark = [];
                 if (isset($ProxyGroup['content']['class'])) {
                     foreach ($Nodes as $item) {
                         if ($item['class'] == $ProxyGroup['content']['class']) {
-                            $AllRemark[] = $item['remark'];
+                            $AllRemark[] = $item['name'];
                         }
                     }
                 } elseif (isset($ProxyGroup['content']['noclass'])) {
                     foreach ($Nodes as $item) {
                         if ($item['class'] != $ProxyGroup['content']['noclass']) {
-                            $AllRemark[] = $item['remark'];
+                            $AllRemark[] = $item['name'];
                         }
                     }
                 } else {
                     foreach ($Nodes as $item) {
-                        $AllRemark[] = $item['remark'];
+                        $AllRemark[] = $item['name'];
                     }
                 }
                 if (isset($ProxyGroup['content']['regex'])) {
@@ -218,10 +216,10 @@ class ConfController extends BaseController
                     }
                 }
                 if (isset($ProxyGroup['content']['class']) || isset($ProxyGroup['content']['noclass']) || isset($ProxyGroup['content']['regex'])) {
-                    $proxies[] = $AllRemark;
+                    $proxies = array_merge($proxies, $AllRemark);
                 }
                 if (isset($ProxyGroup['content']['right-proxies']) && count($ProxyGroup['content']['right-proxies']) != 0) {
-                    $proxies[] = $ProxyGroup['content']['right-proxies'];
+                    $proxies = array_merge($proxies, $ProxyGroup['content']['right-proxies']);
                 }
                 $tmp = [
                     "name" => $ProxyGroup['name'],
