@@ -150,18 +150,26 @@ class ConfController extends BaseController
             return printf('无法解析 YAML 字符串: %s', $exception->getMessage());
         }
         if (isset($Configs['Proxy']) || count($Configs['Proxy']) != 0) {
-            $Proxys = array_merge($AllProxys, $Configs['Proxy']);
+            $tmpProxys = array_merge($AllProxys, $Configs['Proxy']);
+        } else {
+            $tmpProxys = $AllProxys;
+
+        }
+        $Proxys = [];
+        foreach ($tmpProxys as $Proxy) {
+            unset($Proxy['class']);
+            $Proxys[] = $Proxy;
         }
         $tmp = ConfController::ClashConfGeneral($Configs['General']);
         $tmp['Proxy'] = $Proxys;
-        $tmp['ProxyGroup'] = ConfController::ClashConfProxyGroup($AllProxys, $Configs['ProxyGroup']);
+        $tmp['Proxy Group'] = ConfController::ClashConfProxyGroup($AllProxys, $Configs['ProxyGroup']);
         $Conf = "#!MANAGED-CONFIG "
             . Config::get('baseUrl') . $_SERVER['REQUEST_URI'] .
             "\n\n#---------------------------------------------------#" .
             "\n## 上次更新于：" . date("Y-m-d h:i:s") .
             "\n#---------------------------------------------------#" .
             "\n\n"
-            . Yaml::dump($tmp, 4) .
+            . Yaml::dump($tmp, 4, 2) .
             "\n\nRule:\n"
             . ConfController::ClashConfRule($Configs['Rule']);
 
@@ -195,20 +203,17 @@ class ConfController extends BaseController
                     foreach ($Nodes as $item) {
                         if ($item['class'] == $ProxyGroup['content']['class']) {
                             $AllRemark[] = $item['name'];
-                            unset($item['class']);
                         }
                     }
                 } elseif (isset($ProxyGroup['content']['noclass'])) {
                     foreach ($Nodes as $item) {
                         if ($item['class'] != $ProxyGroup['content']['noclass']) {
                             $AllRemark[] = $item['name'];
-                            unset($item['class']);
                         }
                     }
                 } else {
                     foreach ($Nodes as $item) {
                         $AllRemark[] = $item['name'];
-                        unset($item['class']);
                     }
                 }
                 if (isset($ProxyGroup['content']['regex'])) {
@@ -220,9 +225,9 @@ class ConfController extends BaseController
                 }
                 if (isset($ProxyGroup['content']['class']) || isset($ProxyGroup['content']['noclass']) || isset($ProxyGroup['content']['regex'])) {
                     $proxies = array_merge($proxies, $AllRemark);
-                }
-                if (isset($ProxyGroup['content']['right-proxies']) && count($ProxyGroup['content']['right-proxies']) != 0) {
-                    $proxies = array_merge($proxies, $ProxyGroup['content']['right-proxies']);
+                    if (isset($ProxyGroup['content']['right-proxies']) && count($ProxyGroup['content']['right-proxies']) != 0) {
+                        $proxies = array_merge($proxies, $ProxyGroup['content']['right-proxies']);
+                    }
                 }
                 $tmp = [
                     "name" => $ProxyGroup['name'],
