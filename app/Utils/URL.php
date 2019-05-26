@@ -307,6 +307,7 @@ class URL
         $item['v'] = "2";
         $item['ps'] = $node->name;
         $item['id'] = $user->getUuid();
+        $item['class'] = $node->node_class;
         if ($arrout == 0) {
             return "vmess://" . base64_encode((json_encode($item, JSON_UNESCAPED_UNICODE)));
         } else {
@@ -582,7 +583,7 @@ class URL
             $return_array['protocol'] = $user->protocol;
             $return_array['protocol_param'] = $user->protocol_param;
             $return_array['obfs'] = $user->obfs;
-            $return_array['obfs_param'] = $user->obfs_param;        
+            $return_array['obfs_param'] = $user->obfs_param;
         }
         $return_array['passwd'] = $user->passwd;
         $return_array['method'] = $user->method;

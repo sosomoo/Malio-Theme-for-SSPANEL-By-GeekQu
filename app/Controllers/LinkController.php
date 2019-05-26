@@ -85,7 +85,7 @@ class LinkController extends BaseController
         $quantumult = isset($request->getQueryParams()["quantumult"]) ? (int)$request->getQueryParams()["quantumult"] : 0;
         $surfboard = isset($request->getQueryParams()["surfboard"]) ? (int)$request->getQueryParams()["surfboard"] : 0;
 
-        if (isset($request->getQueryParams()["mu"])) {    
+        if (isset($request->getQueryParams()["mu"])) {
             $mu = (int)$request->getQueryParams()["mu"];
             switch ($mu) {
                 case 0:
@@ -151,7 +151,7 @@ class LinkController extends BaseController
             return $newResponse;
         }
     }
-    
+
     public static function GetSubinfo($user, $int = 0)
     {
         if ($int == 0) {
@@ -228,7 +228,7 @@ class LinkController extends BaseController
             return $proxy_group;
         }
     }
-    
+
     public static function GetQuantumult($user, $quantumult = 0)
     {
         $subInfo = LinkController::GetSubinfo($user, 0);
@@ -394,6 +394,9 @@ class LinkController extends BaseController
                     $sss['plugin-opts']['host'] = "wns.windows.com";
                 }
             }
+            if (isset($opts['source']) && $opts['source'] != "") {
+                $sss['class'] = $item['class'];
+            }
             if (strpos($sss['name'], "回国") or strpos($sss['name'], "China")) {
                 $back_china_confs[] = $sss;
             } else {
@@ -428,12 +431,29 @@ class LinkController extends BaseController
             } elseif ($item['net'] == "tls") {
                 $v2rays['tls'] = true;
             }
+            if (isset($opts['source']) && $opts['source'] != "") {
+                $v2rays['class'] = $item['class'];
+            }
             if (strpos($v2rays['name'], "回国") or strpos($v2rays['name'], "China")) {
                 $back_china_confs[] = $v2rays;
             } else {
                 $proxy_confs[] = $v2rays;
             }
             $confs[] = $v2rays;
+        }
+
+        if (isset($opts['source']) && $opts['source'] != "") {
+            $SourceURL = trim(urldecode($opts['source']));
+            // 远程规则仅支持 github 以及 gitlab
+            if (!preg_match("/^https:\/\/((gist\.)?github\.com|raw\.githubusercontent\.com|gitlab\.com)/i", $SourceURL)) {
+                return "远程配置仅支持 (gist)github 以及 gitlab 的链接。";
+            }
+            $SourceContent = @file_get_contents($SourceURL);
+            if ($SourceContent) {
+                return ConfController::ClashConfs($user, $confs, $SourceContent);
+            } else {
+                return "远程配置下载失败。";
+            }
         }
 
         $render = ConfRender::getTemplateRender();
@@ -487,5 +507,4 @@ class LinkController extends BaseController
         }
         return Tools::base64_url_encode($return_url);
     }
-
 }
