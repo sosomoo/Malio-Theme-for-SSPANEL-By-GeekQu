@@ -12,6 +12,9 @@ use Symfony\Component\Yaml\Exception\ParseException;
  */
 class ConfController extends BaseController
 {
+
+    // #------------------------- Surge --------------------------#
+
     public static function SurgeConfs($User, $AllProxys, $Nodes, $Configs)
     {
         $General = ConfController::SurgeConfGeneral($Configs['General']);
@@ -142,6 +145,8 @@ class ConfController extends BaseController
         return $return;
     }
 
+    // #------------------------- Clash --------------------------#
+
     public static function ClashConfs($User, $AllProxys, $SourceContent)
     {
         try {
@@ -153,7 +158,6 @@ class ConfController extends BaseController
             $tmpProxys = array_merge($AllProxys, $Configs['Proxy']);
         } else {
             $tmpProxys = $AllProxys;
-
         }
         $Proxys = [];
         foreach ($tmpProxys as $Proxy) {
