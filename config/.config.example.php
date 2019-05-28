@@ -31,7 +31,7 @@ $System_Config['db_password'] = 'sspanel';						//用户名对应的密码
 $System_Config['newIndex'] = 'true';	//使用新的 Node.js 开发的首页请填写 true，其他值为使用先前的首页，如您使用其他主题请保持 true
 
 //邮件设置--------------------------------------------------------------------------------------------
-$System_Config['mailDriver'] = 'none';	//发送邮件方式：none / mailgun / smtp / sendgrid 
+$System_Config['mailDriver'] = 'none';	//发送邮件方式：none / mailgun / smtp / sendgrid
 $System_Config['sendPageLimit']= 50;	//发信分页 解决大站发公告超时问题
 
 # mailgun
@@ -96,15 +96,16 @@ $System_Config['email_verify_iplimit']='10';		//验证码有效期内，单IP可
 
 //已注册用户设置---------------------------------------------------------------------------------------
 #基础
-$System_Config['checkinMin'] = '1';				//用户签到最少流量 单位MB
+$System_Config['checkinMin'] = '1';			//用户签到最少流量 单位MB
 $System_Config['checkinMax'] = '50';			//用户签到最多流量
-$System_Config['auto_clean_uncheck_days']='-1';	//自动清理多少天没签到的0级用户，小于等于0时关闭
-$System_Config['auto_clean_unused_days']='-1';	//自动清理多少天没使用的0级用户，小于等于0时关闭
+$System_Config['auto_clean_uncheck_days']='-1';	        //自动清理多少天没签到的0级用户，小于等于0时关闭
+$System_Config['auto_clean_unused_days']='-1';	        //自动清理多少天没使用的0级用户，小于等于0时关闭
 $System_Config['auto_clean_min_money']='1';		//余额低于多少的0级用户可以被清理
 $System_Config['code_payback']='20';			//充值返利百分比
-$System_Config['invite_gift']='2';				//邀请新用户获得流量奖励，单位G
-$System_Config['enable_bought_reset']='true';	//购买时是否重置流量
-$System_Config['port_price']='-1';				//用户随机重置端口所需要的价格，价格小于0时视为不开放购买
+$System_Config['invite_gift']='2';			//邀请新用户获得流量奖励，单位G
+$System_Config['enable_bought_reset']='true';	        //购买时是否重置流量
+$System_Config['enable_bought_extend']='true';	        //购买时是否延长等级期限（同等级配套）
+$System_Config['port_price']='-1';			//用户随机重置端口所需要的价格，价格小于0时视为不开放购买
 $System_Config['port_price_specify']='-1';		//用户指明钦定端口所需要的价格，价格小于0时视为不开放购买
 
 #高级
@@ -185,22 +186,9 @@ $System_Config['enable_checkin_captcha'] = 'false';	//启用签到验证码
 
 
 //支付系统设置----------------------------------------------------------------------------------------
-#取值 none | codepay | trimepay | f2fpay | yftpay | chenAlipay | paymentwall | spay |tomatopay
+#取值 none | codepay | trimepay | f2fpay | chenAlipay | paymentwall | spay |tomatopay
 $System_Config['payment_system']='none';
-#tomatopay番茄云支付
-#使用教程:https://swapidc.fanqieui.com/?t/329.html  tg群 https://t.me/fanqiepay
-$System_Config['tomatopay'] = [
-        'wxpay'=>[
-            'mchid' => '1555860947',   // 商户号
-            'account' => '2487642542@qq.com', //您在番茄云支付的登录邮箱
-            'token' => "qGNbcGjW8MFhDupjxeJy7wqDUBoz7ZJg" // 安全验证码
-        ],
-        'alipay'=>[
-            'mchid' => '1555860935',   // 商户号
-            'account' => '2487642542@qq.com', //您在番茄云支付的登录邮箱
-            'token' => "owVtOoA7n7e3MM7J4yJxiKMaQ8NEOJjr" // 安全验证码
-        ],
- ];
+
 #codepay码支付
 #wiki地址:https://goo.gl/dRwRDi  http://t.cn/RnsWjtB
 $System_Config['codepay_id']='';					//码支付ID
@@ -223,10 +211,6 @@ $System_Config['alipay_id']='';
 $System_Config['alipay_key']='';
 $System_Config['amount']=[2,23,233,2333,23333];		//充值金额选项设定
 
-#yftpay,https://pay.anypay.me/
-$System_Config['yft_secret']='';
-$System_Config['yft_accesskey']='';
-
 #alipay,zfbjk.com
 $System_Config['zfbjk_pid']='';
 $System_Config['zfbjk_key']='';
@@ -236,6 +220,10 @@ $System_Config['zfbjk_qrcodeurl']='';
 $System_Config['trimepay_appid']='';				//AppID
 $System_Config['trimepay_secret']='';				//AppSecret
 
+# BitPay 数字货币支付（比特币、以太坊、EOS等） 商户后台获取授权码 https://merchants.mugglepay.com/
+#   客服和技术 24x7 在线支持： https://t.me/joinchat/GLKSKhUnE4GvEAPgqtChAQ
+$System_Config['bitpay_secret']='';
+ 
 
 //其他面板显示设置------------------------------------------------------------------------------------------
 #后台商品列表 销量统计
@@ -265,6 +253,8 @@ $System_Config['detect_gfw_count']='3';												//尝试次数
 
 #离线检测
 $System_Config['enable_detect_offline']='true';
+#离线检测是否推送到Server酱 请配置好上文的Server配置
+$System_Config['enable_detect_offline_useScFtqq']='true';
 
 
 //V2Ray相关设置------------------------------------------------------------------------------------------
@@ -317,7 +307,7 @@ $System_Config['radius_secret']='';					//Radius连接密钥
 $System_Config['enable_cloudxns']='false';			//是否开启Cloudxns
 $System_Config['cloudxns_apikey']='';				//自己去 cloudxns.net 申请
 $System_Config['cloudxns_apisecret']='';
-$System_Config['cloudxns_domain']='zhaoj.in';		//你的域名
+$System_Config['cloudxns_domain']='';		//你的域名
 
 #Cloudflare
 $System_Config['cloudflare_enable']='false';										//是否开启 Cloudflare 解析

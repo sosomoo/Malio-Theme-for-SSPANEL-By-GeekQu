@@ -6,29 +6,21 @@ namespace App\Controllers;
 
 use App\Models\Link;
 use App\Models\User;
-use App\Models\Node;
-use App\Models\Relay;
 use App\Models\Smartline;
 use App\Utils\ConfRender;
 use App\Utils\Tools;
 use App\Utils\URL;
-use App\Services\Config;
 
 /**
  *  HomeController
  */
 class LinkController extends BaseController
 {
-    public function __construct()
-    {
-    }
-
     public static function GenerateRandomLink()
     {
-        $i = 0;
         for ($i = 0; $i < 10; $i++) {
             $token = Tools::genRandomChar(16);
-            $Elink = Link::where("token", "=", $token)->first();
+            $Elink = Link::where('token', '=', $token)->first();
             if ($Elink == null) {
                 return $token;
             }
@@ -39,19 +31,19 @@ class LinkController extends BaseController
 
     public static function GenerateSSRSubCode($userid, $without_mu)
     {
-        $Elink = Link::where("type", "=", 11)->where("userid", "=", $userid)->where("geo", $without_mu)->first();
+        $Elink = Link::where('type', '=', 11)->where('userid', '=', $userid)->where('geo', $without_mu)->first();
         if ($Elink != null) {
             return $Elink->token;
         }
         $NLink = new Link();
         $NLink->type = 11;
-        $NLink->address = "";
+        $NLink->address = '';
         $NLink->port = 0;
         $NLink->ios = 0;
         $NLink->geo = $without_mu;
-        $NLink->method = "";
+        $NLink->method = '';
         $NLink->userid = $userid;
-        $NLink->token = LinkController::GenerateRandomLink();
+        $NLink->token = self::GenerateRandomLink();
         $NLink->save();
 
         return $NLink->token;
@@ -62,7 +54,7 @@ class LinkController extends BaseController
         $token = $args['token'];
 
         //$builder->getPhrase();
-        $Elink = Link::where("token", "=", $token)->first();
+        $Elink = Link::where('token', '=', $token)->first();
         if ($Elink == null) {
             return null;
         }
@@ -71,7 +63,7 @@ class LinkController extends BaseController
             return null;
         }
 
-        $user = User::where("id", $Elink->userid)->first();
+        $user = User::where('id', $Elink->userid)->first();
         if ($user == null) {
             return null;
         }
@@ -359,27 +351,27 @@ class LinkController extends BaseController
         $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach ($items as $item) {
             $sss = [
-                "name" => $item['remark'],
-                "type" => "ss",
-                "server" => $item['address'],
-                "port" => $item['port'],
-                "cipher" => $item['method'],
-                "password" => $item['passwd'],
+                'name' => $item['remark'],
+                'type' => 'ss',
+                'server' => $item['address'],
+                'port' => $item['port'],
+                'cipher' => $item['method'],
+                'password' => $item['passwd'],
             ];
-            if ($item['obfs'] != "plain") {
+            if ($item['obfs'] != 'plain') {
                 switch ($item['obfs']) {
-                    case "simple_obfs_http":
-                        $sss['plugin'] = "obfs";
-                        $sss['plugin-opts']['mode'] = "http";
+                    case 'simple_obfs_http':
+                        $sss['plugin'] = 'obfs';
+                        $sss['plugin-opts']['mode'] = 'http';
                         break;
-                    case "simple_obfs_tls":
-                        $sss['plugin'] = "obfs";
-                        $sss['plugin-opts']['mode'] = "tls";
+                    case 'simple_obfs_tls':
+                        $sss['plugin'] = 'obfs';
+                        $sss['plugin-opts']['mode'] = 'tls';
                         break;
-                    case "v2ray":
-                        $sss['plugin'] = "v2ray-plugin";
-                        $sss['plugin-opts']['mode'] = "websocket";
-                        if (strpos($item['obfs_param'], "security=tls")) {
+                    case 'v2ray':
+                        $sss['plugin'] = 'v2ray-plugin';
+                        $sss['plugin-opts']['mode'] = 'websocket';
+                        if (strpos($item['obfs_param'], 'security=tls')) {
                             $sss['plugin-opts']['tls'] = true;
                         }
                         $sss['plugin-opts']['host'] = $user->getMuMd5();
@@ -409,19 +401,19 @@ class LinkController extends BaseController
         // v2
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
-            if (in_array($item['net'], array("kcp", "http", "quic"))) {
+            if (in_array($item['net'], array('kcp', 'http', 'quic'))) {
                 continue;
             }
             $v2rays = [
-                "name" => $item['ps'],
-                "type" => "vmess",
-                "server" => $item['add'],
-                "port" => $item['port'],
-                "uuid" => $item['id'],
-                "alterId" => $item['aid'],
-                "cipher" => "auto",
+                'name' => $item['ps'],
+                'type' => 'vmess',
+                'server' => $item['add'],
+                'port' => $item['port'],
+                'uuid' => $item['id'],
+                'alterId' => $item['aid'],
+                'cipher' => 'auto',
             ];
-            if ($item['net'] == "ws") {
+            if ($item['net'] == 'ws') {
                 $v2rays['network'] = 'ws';
                 $v2rays['ws-path'] = $item['path'];
                 if ($item['tls'] == 'tls') {
@@ -430,7 +422,7 @@ class LinkController extends BaseController
                 if ($item['host'] != '') {
                     $v2rays['ws-headers']['Host'] = $item['host'];
                 }
-            } elseif ($item['net'] == "tls") {
+            } elseif ($item['net'] == 'tls') {
                 $v2rays['tls'] = true;
             }
             if (isset($opts['source']) && $opts['source'] != "") {
