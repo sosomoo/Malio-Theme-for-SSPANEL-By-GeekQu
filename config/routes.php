@@ -92,63 +92,63 @@ $app->group('/user', function () {
     $this->post('/buy', App\Controllers\UserController::class . ':buy');
 
     // Relay Mange
-    $this->get('/relay', 'App\Controllers\RelayController:index');
-    $this->get('/relay/create', 'App\Controllers\RelayController:create');
-    $this->post('/relay', 'App\Controllers\RelayController:add');
-    $this->get('/relay/{id}/edit', 'App\Controllers\RelayController:edit');
-    $this->put('/relay/{id}', 'App\Controllers\RelayController:update');
-    $this->delete('/relay', 'App\Controllers\RelayController:delete');
+    $this->get('/relay', App\Controllers\RelayController::class . ':index');
+    $this->get('/relay/create', App\Controllers\RelayController::class . ':create');
+    $this->post('/relay', App\Controllers\RelayController::class . ':add');
+    $this->get('/relay/{id}/edit', App\Controllers\RelayController::class . ':edit');
+    $this->put('/relay/{id}', App\Controllers\RelayController::class . ':update');
+    $this->delete('/relay', App\Controllers\RelayController::class . ':delete');
 
-    $this->get('/ticket', 'App\Controllers\UserController:ticket');
-    $this->get('/ticket/create', 'App\Controllers\UserController:ticket_create');
-    $this->post('/ticket', 'App\Controllers\UserController:ticket_add');
-    $this->get('/ticket/{id}/view', 'App\Controllers\UserController:ticket_view');
-    $this->put('/ticket/{id}', 'App\Controllers\UserController:ticket_update');
+    $this->get('/ticket', App\Controllers\UserController::class . ':ticket');
+    $this->get('/ticket/create', App\Controllers\UserController::class . ':ticket_create');
+    $this->post('/ticket', App\Controllers\UserController::class . ':ticket_add');
+    $this->get('/ticket/{id}/view', App\Controllers\UserController::class . ':ticket_view');
+    $this->put('/ticket/{id}', App\Controllers\UserController::class . ':ticket_update');
 	
-    $this->post('/buy_invite', 'App\Controllers\UserController:buyInvite');
-    $this->post('/custom_invite', 'App\Controllers\UserController:customInvite');
-    $this->get('/edit', 'App\Controllers\UserController:edit');
-    $this->post('/password', 'App\Controllers\UserController:updatePassword');
-    $this->post('/wechat', 'App\Controllers\UserController:updateWechat');
-    $this->post('/ssr', 'App\Controllers\UserController:updateSSR');
-    $this->post('/theme', 'App\Controllers\UserController:updateTheme');
-    $this->post('/mail', 'App\Controllers\UserController:updateMail');
-    $this->post('/sspwd', 'App\Controllers\UserController:updateSsPwd');
-    $this->post('/method', 'App\Controllers\UserController:updateMethod');
-    $this->post('/hide', 'App\Controllers\UserController:updateHide');
-    $this->get('/sys', 'App\Controllers\UserController:sys');
-    $this->get('/trafficlog', 'App\Controllers\UserController:trafficLog');
-    $this->get('/kill', 'App\Controllers\UserController:kill');
-    $this->post('/kill', 'App\Controllers\UserController:handleKill');
-    $this->get('/logout', 'App\Controllers\UserController:logout');
-    $this->get('/backtoadmin', 'App\Controllers\UserController:backtoadmin');
-    $this->get('/code', 'App\Controllers\UserController:code');
-    $this->get('/alipay', 'App\Controllers\UserController:alipay');
-    $this->post('/code/f2fpay', 'App\Services\Payment:purchase');
-    $this->get('/code/codepay', 'App\Services\Payment:purchase');
-    $this->get('/code_check', 'App\Controllers\UserController:code_check');
-    $this->post('/code', 'App\Controllers\UserController:codepost');
-    $this->post('/gacheck', 'App\Controllers\UserController:GaCheck');
-    $this->post('/gaset', 'App\Controllers\UserController:GaSet');
-    $this->get('/gareset', 'App\Controllers\UserController:GaReset');
-    $this->get('/telegram_reset', 'App\Controllers\UserController:telegram_reset');
-    $this->get('/discord_reset', 'App\Controllers\UserController:discord_reset');
-    $this->post('/resetport', 'App\Controllers\UserController:ResetPort');
-    $this->post('/specifyport', 'App\Controllers\UserController:SpecifyPort');
-    $this->post('/pacset', 'App\Controllers\UserController:PacSet');
-    $this->post('/unblock', 'App\Controllers\UserController:Unblock');
-    $this->get('/bought', 'App\Controllers\UserController:bought');
-    $this->delete('/bought', 'App\Controllers\UserController:deleteBoughtGet');
+    $this->post('/buy_invite', App\Controllers\UserController::class . ':buyInvite');
+    $this->post('/custom_invite', App\Controllers\UserController::class . ':customInvite');
+    $this->get('/edit', App\Controllers\UserController::class . ':edit');
+    $this->post('/password', App\Controllers\UserController::class . ':updatePassword');
+    $this->post('/wechat', App\Controllers\UserController::class . ':updateWechat');
+    $this->post('/ssr', App\Controllers\UserController::class . ':updateSSR');
+    $this->post('/theme', App\Controllers\UserController::class . ':updateTheme');
+    $this->post('/mail', App\Controllers\UserController::class . ':updateMail');
+    $this->post('/sspwd', App\Controllers\UserController::class . ':updateSsPwd');
+    $this->post('/method', App\Controllers\UserController::class . ':updateMethod');
+    $this->post('/hide', App\Controllers\UserController::class . ':updateHide');
+    $this->get('/sys', App\Controllers\UserController::class . ':sys');
+    $this->get('/trafficlog', App\Controllers\UserController::class . ':trafficLog');
+    $this->get('/kill', App\Controllers\UserController::class . ':kill');
+    $this->post('/kill', App\Controllers\UserController::class . ':handleKill');
+    $this->get('/logout', App\Controllers\UserController::class . ':logout');
+    $this->get('/backtoadmin', App\Controllers\UserController::class . ':backtoadmin');
+    $this->get('/code', App\Controllers\UserController::class . ':code');
+    $this->get('/alipay', App\Controllers\UserController::class . ':alipay');
+    $this->post('/code/f2fpay', App\Services\Payment::class . ':purchase');
+    $this->get('/code/codepay', App\Services\Payment::class . ':purchase');
+    $this->get('/code_check', App\Controllers\UserController::class . ':code_check');
+    $this->post('/code', App\Controllers\UserController::class . ':codepost');
+    $this->post('/gacheck', App\Controllers\UserController::class . ':GaCheck');
+    $this->post('/gaset', App\Controllers\UserController::class . ':GaSet');
+    $this->get('/gareset', App\Controllers\UserController::class . ':GaReset');
+    $this->get('/telegram_reset', App\Controllers\UserController::class . ':telegram_reset');
+    $this->get('/discord_reset', App\Controllers\UserController::class . ':discord_reset');
+    $this->post('/resetport', App\Controllers\UserController::class . ':ResetPort');
+    $this->post('/specifyport', App\Controllers\UserController::class . ':SpecifyPort');
+    $this->post('/pacset', App\Controllers\UserController::class . ':PacSet');
+    $this->post('/unblock', App\Controllers\UserController::class . ':Unblock');
+    $this->get('/bought', App\Controllers\UserController::class . ':bought');
+    $this->delete('/bought', App\Controllers\UserController::class . ':deleteBoughtGet');
 
-    $this->get('/url_reset', 'App\Controllers\UserController:resetURL');
+    $this->get('/url_reset', App\Controllers\UserController::class . ':resetURL');
 
-    $this->get('/inviteurl_reset', 'App\Controllers\UserController:resetInviteURL');
+    $this->get('/inviteurl_reset', App\Controllers\UserController::class . ':resetInviteURL');
 
     // Switch Type || SS/SSR
-    $this->post('/switchtype', 'App\Controllers\UserController:switchType');
+    $this->post('/switchtype', App\Controllers\UserController::class . ':switchType');
 
     // getUserAllURL
-    $this->get('/getUserAllURL', 'App\Controllers\UserController:getUserAllURL');
+    $this->get('/getUserAllURL', App\Controllers\UserController::class . ':getUserAllURL');
 
     //Reconstructed Payment System
     $this->post('/payment/purchase', App\Services\Payment::class . ':purchase');
@@ -398,10 +398,10 @@ $app->group('/admin', function () {
 
 //doc
 $app->group('/doc', function () {
-    $this->get('', 'App\Controllers\HomeController:docCenter');
-    $this->get('/', 'App\Controllers\HomeController:docCenter');
+    $this->get('', App\Controllers\HomeController::class . ':docCenter');
+    $this->get('/', App\Controllers\HomeController::class . ':docCenter');
 });
-$app->get('/sublink', 'App\Controllers\HomeController:sublinkOut');
+$app->get('/sublink', App\Controllers\HomeController::class . ':sublinkOut');
 //doc end
 
 // Run Slim Routes for App

@@ -455,14 +455,14 @@ class Tools
             'tls' => ''
         ];
         $item['add'] = $server[0];
-        if ($server[1] == "0" or $server[1] == "") {
+        if ($server[1] == '0' or $server[1] == '') {
             $item['port'] = 443;
         } else {
             $item['port'] = (int)$server[1];
         }
         $item['aid'] = (int)$server[2];
-        $item['net'] = "tcp";
-        $item['type'] = "none";
+        $item['net'] = 'tcp';
+        $item['type'] = 'none';
         if (count($server) >= 4) {
             $item['net'] = $server[3];
             if ($item['net'] == 'ws') {
@@ -472,7 +472,7 @@ class Tools
             }
         }
         if (count($server) >= 5) {
-            if (in_array($item['net'], array("kcp", "http"))) {
+            if (in_array($item['net'], array('kcp', 'http'))) {
                 $item['type'] = $server[4];
             } elseif ($server[4] == 'ws') {
                 $item['net'] = 'ws';
@@ -482,11 +482,11 @@ class Tools
         }
         if (count($server) >= 6) {
             $item = array_merge($item, URL::parse_args($server[5]));
-            if (array_key_exists("server", $item)) {
+            if (array_key_exists('server', $item)) {
                 $item['add'] = $item['server'];
                 unset($item['server']);
             }
-            if (array_key_exists("outside_port", $item)) {
+            if (array_key_exists('outside_port', $item)) {
                 $item['port'] = (int)$item['outside_port'];
                 unset($item['outside_port']);
             }
@@ -497,7 +497,7 @@ class Tools
     public static function checkTls($node)
     {
         $server = Tools::v2Array($node);
-        if ($server['tls'] == "tls" && Tools::is_ip($server['add'])) {
+        if ($server['tls'] == 'tls' && Tools::is_ip($server['add'])) {
             return false;
         } else {
             return true;
@@ -514,7 +514,7 @@ class Tools
             'tls' => ''
         ];
         $item['add'] = $server[0];
-        if ($server[1] == "0" or $server[1] == "") {
+        if ($server[1] == '0' or $server[1] == '') {
             $item['port'] = 443;
         } else {
             $item['port'] = (int)$server[1];
@@ -534,11 +534,11 @@ class Tools
         }
         if (count($server) >= 6) {
             $item = array_merge($item, URL::parse_args($server[5]));
-            if (array_key_exists("server", $item)) {
+            if (array_key_exists('server', $item)) {
                 $item['add'] = $item['server'];
                 unset($item['server']);
             }
-            if (array_key_exists("outside_port", $item)) {
+            if (array_key_exists('outside_port', $item)) {
                 $item['port'] = (int)$item['outside_port'];
                 unset($item['outside_port']);
             }

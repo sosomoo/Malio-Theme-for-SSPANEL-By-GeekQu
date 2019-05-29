@@ -10,6 +10,7 @@ use App\Models\Smartline;
 use App\Utils\ConfRender;
 use App\Utils\Tools;
 use App\Utils\URL;
+use App\Services\Config;
 
 /**
  *  HomeController
@@ -103,35 +104,35 @@ class LinkController extends BaseController
             ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
             ->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf');
-            $newResponse->getBody()->write(LinkController::GetQuantumult($user, $quantumult));
+            $newResponse->getBody()->write(self::GetQuantumult($user, $quantumult));
             return $newResponse;
         } elseif (in_array($surge, array(1, 2, 3))) {
             $newResponse = $response
             ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
             ->withHeader('Content-Disposition', ' attachment; filename=Surge.conf');
-            $newResponse->getBody()->write(LinkController::GetSurge($user, $surge, $opts));
+            $newResponse->getBody()->write(self::GetSurge($user, $surge, $opts));
             return $newResponse;
         } elseif ($surfboard == 1) {
             $newResponse = $response
             ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
             ->withHeader('Content-Disposition', ' attachment; filename=Surfboard.conf');
-            $newResponse->getBody()->write(LinkController::GetSurfboard($user));
+            $newResponse->getBody()->write(self::GetSurfboard($user));
             return $newResponse;
         } elseif ($clash == 1) {
             $newResponse = $response
             ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
             ->withHeader('Content-Disposition', ' attachment; filename=config.yml');
-            $newResponse->getBody()->write(LinkController::GetClash($user, $opts));
+            $newResponse->getBody()->write(self::GetClash($user, $opts));
             return $newResponse;
         } elseif ($ssd == 1) {
             $newResponse = $response
             ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
             ->withHeader('Content-Disposition', ' attachment; filename=SSD.txt');
-            $newResponse->getBody()->write(LinkController::GetSSD($user));
+            $newResponse->getBody()->write(self::GetSSD($user));
             return $newResponse;
         } else {
             $newResponse = $response
@@ -139,7 +140,7 @@ class LinkController extends BaseController
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
             ->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt')
             ->withHeader('Subscription-Userinfo', ' upload='.$user->u.'; download='.$user->d.'; total='.$user->transfer_enable.'; expire='.strtotime($user->class_expire).'');
-            $newResponse->getBody()->write(LinkController::GetSub($user, $sub, $opts));
+            $newResponse->getBody()->write(self::GetSub($user, $sub, $opts));
             return $newResponse;
         }
     }
@@ -149,7 +150,7 @@ class LinkController extends BaseController
         if ($int == 0) {
             $int = "";
         }
-        $userapiUrl = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0);
+        $userapiUrl = Config::get('subUrl') . self::GenerateSSRSubCode($user->id, 0);
         $return_info = [
             "link" => $userapiUrl,
             // sub
@@ -176,7 +177,7 @@ class LinkController extends BaseController
 
     public static function GetSurge($user, $surge, $opts)
     {
-        $subInfo = LinkController::GetSubinfo($user, $surge);
+        $subInfo = self::GetSubinfo($user, $surge);
         $userapiUrl = $subInfo['surge'];
         $proxy_name = "";
         $proxy_group = "";
@@ -223,7 +224,7 @@ class LinkController extends BaseController
 
     public static function GetQuantumult($user, $quantumult = 0)
     {
-        $subInfo = LinkController::GetSubinfo($user, 0);
+        $subInfo = self::GetSubinfo($user, 0);
         $proxys = [];
         $groups = [];
         $subUrl = "";
@@ -320,7 +321,7 @@ class LinkController extends BaseController
 
     public static function GetSurfboard($user)
     {
-        $subInfo = LinkController::GetSubinfo($user, 0);
+        $subInfo = self::GetSubinfo($user, 0);
         $userapiUrl = $subInfo['surfboard'];
         $ss_name = "";
         $ss_group = "";
@@ -342,7 +343,7 @@ class LinkController extends BaseController
 
     public static function GetClash($user, $opts)
     {
-        $subInfo = LinkController::GetSubinfo($user, 0);
+        $subInfo = self::GetSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
         $confs = [];
         $proxy_confs = [];
