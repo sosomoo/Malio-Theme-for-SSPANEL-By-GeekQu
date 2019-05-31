@@ -202,8 +202,7 @@ class LinkController extends BaseController
             }
             $SourceContent = @file_get_contents($SourceURL);
             if ($SourceContent) {
-                $SourceConf = json_decode($SourceContent, true);
-                return ConfController::SurgeConfs($user, $proxy_group, $items, $SourceConf);
+                return ConfController::SurgeConfs($user, $proxy_group, $items, $SourceContent);
             } else {
                 return '远程配置下载失败。';
             }
