@@ -223,7 +223,7 @@ $System_Config['trimepay_secret']='';				//AppSecret
 # BitPay 数字货币支付（比特币、以太坊、EOS等） 商户后台获取授权码 https://merchants.mugglepay.com/
 #   客服和技术 24x7 在线支持： https://t.me/joinchat/GLKSKhUnE4GvEAPgqtChAQ
 $System_Config['bitpay_secret']='';
- 
+
 
 //其他面板显示设置------------------------------------------------------------------------------------------
 #后台商品列表 销量统计
@@ -256,12 +256,6 @@ $System_Config['enable_detect_offline']='true';
 #离线检测是否推送到Server酱 请配置好上文的Server配置
 $System_Config['enable_detect_offline_useScFtqq']='true';
 
-
-//V2Ray相关设置------------------------------------------------------------------------------------------
-$System_Config['v2ray_port']='443';					//V2Ray端口
-$System_Config['v2ray_protocol']='HTTP/2 + TLS';	//V2Ray协议
-$System_Config['v2ray_alter_id']='32';
-$System_Config['v2ray_level']='0';
 
 //以下所有均为高级设置（一般用不上，不用改---------------------------------------------------------------------
 #杂项
