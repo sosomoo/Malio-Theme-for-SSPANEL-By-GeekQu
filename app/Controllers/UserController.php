@@ -1440,36 +1440,6 @@ class UserController extends BaseController
         return $this->echoJson($response, $res);
     }
 
-    public function switchType($request, $response, $args)
-    {
-        $user = $this->user;
-
-        $type = $request->getParam('id');
-        $type = trim($type);
-
-        $scheme = [];
-        $items = Config::get('user_agreement_scheme');
-        foreach ($items as $item) {
-            if ($type == $item['id']) {
-                $scheme = $item;
-            }
-        }
-        if (!isset($scheme['id'])) {
-            $res['ret'] = 0;
-            $res['msg'] = "非法输入";
-            return $response->getBody()->write(json_encode($res));
-        }
-
-        $user->method = $scheme['method'];
-        $user->protocol = $scheme['protocol'];
-        $user->obfs = $scheme['obfs'];
-        $user->save();
-
-        $res['ret'] = 1;
-        $res['msg'] = "切换".$scheme['name']."成功";
-        return $this->echoJson($response, $res);
-    }
-
     public function updateSSR($request, $response, $args)
     {
         $protocol = $request->getParam('protocol');
@@ -1865,26 +1835,56 @@ class UserController extends BaseController
         return $response->withStatus(302)->withHeader('Location', $local);
     }
 
+    public function switchType($request, $response, $args)
+    {
+        $user = $this->user;
+
+        $type = $request->getParam('id');
+        $type = trim($type);
+
+        $scheme = [];
+        $items = Config::get('user_agreement_scheme');
+        foreach ($items as $item) {
+            if ($type == $item['id']) {
+                $scheme = $item;
+            }
+        }
+        if (!isset($scheme['id'])) {
+            $res['ret'] = 0;
+            $res['msg'] = '非法输入';
+            return $response->getBody()->write(json_encode($res));
+        }
+
+        $user->method = $scheme['method'];
+        $user->protocol = $scheme['protocol'];
+        $user->obfs = $scheme['obfs'];
+        $user->save();
+
+        $res['ret'] = 1;
+        $res['msg'] = '切换' . $scheme['name'] . '成功';
+        return $this->echoJson($response, $res);
+    }
+
     public function getUserAllURL($request, $response, $args)
     {
         $user = $this->user;
         $type = $request->getQueryParams()["type"];
-        $return = "";
+        $return = '';
         switch ($type) {
-            case "ss":
+            case 'ss':
                 $return .= URL::getAllUrl($user, 0, 1).PHP_EOL;
             break;
-            case "ssr":
+            case 'ssr':
                 $return .= URL::getAllUrl($user, 0, 0).PHP_EOL;
             break;
-            case "ssd":
+            case 'ssd':
                 $return .= URL::getAllSSDUrl($user).PHP_EOL;
             break;
-            case "v2ray":
+            case 'v2ray':
                 $return .= URL::getAllVMessUrl($user).PHP_EOL;
             break;
             default:
-                $return .= "悟空别闹！";
+                $return .= '悟空别闹！';
             break;
         }
         $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=node.txt');
