@@ -30,14 +30,13 @@ class HomeController extends BaseController
     {
         $GtSdk = null;
         $recaptcha_sitekey = null;
-        if (Config::get('captcha_provider') != ''){
-            switch(Config::get('captcha_provider'))
-            {
+        if (Config::get('captcha_provider') != '') {
+            switch (Config::get('captcha_provider')) {
                 case 'recaptcha':
                     $recaptcha_sitekey = Config::get('recaptcha_sitekey');
                     break;
                 case 'geetest':
-                    $uid = time().rand(1, 10000) ;
+                    $uid = time() . random_int(1, 10000);
                     $GtSdk = Geetest::get($uid);
                     break;
             }
@@ -45,7 +44,7 @@ class HomeController extends BaseController
 
         if (Config::get('enable_telegram') == 'true') {
             $login_text = TelegramSessionManager::add_login_session();
-            $login = explode("|", $login_text);
+            $login = explode('|', $login_text);
             $login_token = $login[0];
             $login_number = $login[1];
         } else {
@@ -53,7 +52,10 @@ class HomeController extends BaseController
             $login_number = '';
         }
 
-        return $this->view()
+        if (Config::get('newIndex')!='true' && Config::get('theme')=='material') {
+            return $this->view()->display('indexold.tpl');
+        } else {
+            return $this->view()
             ->assign('geetest_html', $GtSdk)
             ->assign('login_token', $login_token)
             ->assign('login_number', $login_number)
@@ -63,6 +65,7 @@ class HomeController extends BaseController
             ->assign('base_url', Config::get('baseUrl'))
             ->assign('recaptcha_sitekey', $recaptcha_sitekey)
             ->display('index.tpl');
+        }
     }
 
     public function indexold()
@@ -84,39 +87,36 @@ class HomeController extends BaseController
     {
         return $this->view()->display('tos.tpl');
     }
-    
+
     public function staff()
     {
         return $this->view()->display('staff.tpl');
     }
-    
+
     public function telegram($request, $response, $args)
     {
-        $token = "";
-        if (isset($request->getQueryParams()["token"])) {
-            $token = $request->getQueryParams()["token"];
-        }
-        
+        $token = $request->getQueryParams()["token"] ?? "";
+
         if ($token == Config::get('telegram_request_token')) {
             TelegramProcess::process();
         } else {
-            echo("不正确请求！");
+            echo('不正确请求！');
         }
     }
-    
+
     public function page404($request, $response, $args)
     {
         return $this->view()->display('404.tpl');
     }
-    
+
     public function page405($request, $response, $args)
     {
         return $this->view()->display('405.tpl');
     }
-    
+
     public function page500($request, $response, $args)
     {
-		return $this->view()->display('500.tpl');
+        return $this->view()->display('500.tpl');
     }
 
     public function getOrderList($request, $response, $args)
@@ -124,7 +124,7 @@ class HomeController extends BaseController
         $key = $request->getParam('key');
         if (!$key || $key != Config::get('key')) {
             $res['ret'] = 0;
-            $res['msg'] = "错误";
+            $res['msg'] = '错误';
             return $response->getBody()->write(json_encode($res));
         }
         return $response->getBody()->write(json_encode(['data' => AliPay::getList()]));
@@ -137,7 +137,7 @@ class HomeController extends BaseController
         $url = $request->getParam('url');
         if (!$key || $key != Config::get('key')) {
             $res['ret'] = 0;
-            $res['msg'] = "错误";
+            $res['msg'] = '错误';
             return $response->getBody()->write(json_encode($res));
         }
         return $response->getBody()->write(json_encode(['res' => AliPay::setOrder($sn, $url)]));
