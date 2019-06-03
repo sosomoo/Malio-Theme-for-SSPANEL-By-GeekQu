@@ -22,7 +22,6 @@
   </nav>
   <div id="docs">加载中...</div>
   <script>
-{literal}
     const root = window.location.host;
     window.$docsify = {
       name: '{$appName}',
@@ -36,6 +35,7 @@
       homepage: 'index.md',
       nameLink: '/doc/',
       el: '#docs',
+      {literal}
       plugins: [
         function(hook, vm) {
           hook.beforeEach((markdown) => {
@@ -44,8 +44,8 @@
           })
         }
       ]
+      {/literal}
     }
-{/literal}
   </script>
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
   <script src="//unpkg.com/docsify/lib/plugins/emoji.js"></script>

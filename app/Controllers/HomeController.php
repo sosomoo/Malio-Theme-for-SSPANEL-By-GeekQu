@@ -145,10 +145,10 @@ class HomeController extends BaseController
 
     public function getDocCenter()
     {
-        if (Config::get('documents_name') != 'true') {
-            return $this->withAddedHeader('Location', '/');
+        if (Config::get('enable_documents') != 'true') {
+            return self::index();
         }
-        $basePath = Config::get('remote_documents') == 'true' ? Config::get('documents_source') : '/doc/GeekQu';
+        $basePath = Config::get('remote_documents') == 'true' ? Config::get('documents_source') : '/docs/GeekQu';
         return $this->view()
             ->assign('appName', Config::get('documents_name'))
             ->assign('basePath', $basePath)

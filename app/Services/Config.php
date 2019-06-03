@@ -51,7 +51,8 @@ class Config
             "enable_kill" => self::get("enable_kill"),
             "custom_invite_price" => self::get("custom_invite_price"),
             "captcha_provider" => self::get("captcha_provider"),
-            "enable_email_verify" => self::get("enable_email_verify")
+            "enable_email_verify" => self::get("enable_email_verify"),
+            "protocol_specify" => self::get("protocol_specify")
         ];
     }
 

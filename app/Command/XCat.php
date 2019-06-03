@@ -86,6 +86,8 @@ class XCat
                 return Job::backup(true);
             case("initdownload"):
                 return $this->initdownload();
+            case("initdocuments"):
+                return $this->initdocuments();
             case("updatedownload"):
                 return Job::updatedownload();
             case("cleanRelayRule"):
@@ -182,7 +184,7 @@ class XCat
 
     public function initdocuments()
     {
-        system('git clone https://github.com/GeekQu/PANEL_DOC.git ' . BASE_PATH . "/public/doc/", $ret);
+        system('git clone https://github.com/GeekQu/PANEL_DOC.git ' . BASE_PATH . "/public/docs/", $ret);
         echo $ret;
     }
 
