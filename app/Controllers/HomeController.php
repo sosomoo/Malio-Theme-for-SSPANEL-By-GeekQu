@@ -145,7 +145,14 @@ class HomeController extends BaseController
 
     public function getDocCenter()
     {
-        return $this->view()->display('doc/index.tpl');
+        if (Config::get('documents_name') != 'true') {
+            return $this->withAddedHeader('Location', '/');
+        }
+        $basePath = Config::get('remote_documents') == 'true' ? Config::get('documents_source') : '/doc/GeekQu';
+        return $this->view()
+            ->assign('appName', Config::get('documents_name'))
+            ->assign('basePath', $basePath)
+            ->display('doc/index.tpl');
     }
 
     public function getSubLink($request, $response, $args)

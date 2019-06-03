@@ -118,6 +118,7 @@ class XCat
         echo("  resetPort - 重置单个用户端口" . PHP_EOL);
         echo("  resetAllPort - 重置所有用户端口" . PHP_EOL);
         echo("  initdownload - 下载 SSR 程序至服务器" . PHP_EOL);
+        echo("  initdocuments - 下载用户使用文档至服务器" . PHP_EOL);
         echo("  initQQWry - 下载 IP 解析库" . PHP_EOL);
         echo("  resetTraffic - 重置所有用户流量" . PHP_EOL);
         echo("  update - 更新并迁移配置" . PHP_EOL);
@@ -176,6 +177,12 @@ class XCat
     public function initdownload()
     {
         system('git clone https://github.com/xcxnig/ssr-download.git ' . BASE_PATH . "/public/ssr-download/", $ret);
+        echo $ret;
+    }
+
+    public function initdocuments()
+    {
+        system('git clone https://github.com/GeekQu/PANEL_DOC.git ' . BASE_PATH . "/public/doc/", $ret);
         echo $ret;
     }
 
@@ -297,7 +304,7 @@ class XCat
 		system('npm run build');
 		system('cp -u ../public/vuedist/index.html ../resources/views/material/index.tpl');
     }
-    
+
     public function iptest()
     {
         $nodes = Node::all();

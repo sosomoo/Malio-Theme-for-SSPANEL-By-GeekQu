@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta charset="UTF-8">
-  <title>{$config["appName"]}</title>
+  <title>{$appName}</title>
   <link rel="stylesheet" href="//unpkg.com/docsify/themes/vue.css">
 </head>
 <body>
@@ -25,11 +25,11 @@
 {literal}
     const root = window.location.host;
     window.$docsify = {
-      name: '文档中心',
+      name: '{$appName}',
       alias: {
             '/.*/_sidebar.md': '/_sidebar.md'
       },
-      basePath: 'https://raw.githubusercontent.com/GeekQu/PANEL_DOC/master/GeekQu',
+      basePath: '{$basePath}',
       auto2top: true,
       loadSidebar: true,
       autoHeader: true,
