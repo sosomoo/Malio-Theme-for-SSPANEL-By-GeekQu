@@ -104,7 +104,7 @@ $app->group('/user', function () {
     $this->post('/ticket', App\Controllers\UserController::class . ':ticket_add');
     $this->get('/ticket/{id}/view', App\Controllers\UserController::class . ':ticket_view');
     $this->put('/ticket/{id}', App\Controllers\UserController::class . ':ticket_update');
-	
+
     $this->post('/buy_invite', App\Controllers\UserController::class . ':buyInvite');
     $this->post('/custom_invite', App\Controllers\UserController::class . ':customInvite');
     $this->get('/edit', App\Controllers\UserController::class . ':edit');
@@ -398,10 +398,10 @@ $app->group('/admin', function () {
 
 //doc
 $app->group('/doc', function () {
-    $this->get('', App\Controllers\HomeController::class . ':docCenter');
-    $this->get('/', App\Controllers\HomeController::class . ':docCenter');
+    $this->get('', App\Controllers\HomeController::class . ':getDocCenter');
+    $this->get('/', App\Controllers\HomeController::class . ':getDocCenter');
 });
-$app->get('/sublink', App\Controllers\HomeController::class . ':sublinkOut');
+$app->get('/sublink', App\Controllers\HomeController::class . ':getSubLink');
 //doc end
 
 // Run Slim Routes for App
