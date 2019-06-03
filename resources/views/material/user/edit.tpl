@@ -244,7 +244,7 @@
 						</div>  *}
 
 
-						{* <div class="card margin-bottom-no">
+						<div class="card margin-bottom-no">
 							<div class="card-main">
 								<div class="card-inner">
 									<div class="card-inner">
@@ -267,7 +267,7 @@
 								    </div>
 							    </div>
 						    </div>
-						</div> *}
+						</div>
 
 
 				    </div>
