@@ -229,7 +229,7 @@ $System_Config['bitpay_secret']='';
 //其他面板显示设置------------------------------------------------------------------------------------------
 
 #用户文档
-$System_Config['enable_documents'] = 'true';	    //是否开启文档中心
+$System_Config['enable_documents'] = 'true';	    //是否允许未登陆用户查看文档中心
 $System_Config['documents_name'] = $System_Config['appName'] . ' 文档中心';	    //文档中心名称
 $System_Config['remote_documents'] = 'true';	    //是否从远程加载文档中心，否的话请执行 php xcat initdocuments
 $System_Config['documents_source'] = 'https://raw.githubusercontent.com/GeekQu/PANEL_DOC/master/GeekQu';	    //远程文档加载地址

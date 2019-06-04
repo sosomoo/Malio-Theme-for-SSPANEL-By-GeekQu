@@ -143,10 +143,12 @@ class HomeController extends BaseController
         return $response->getBody()->write(json_encode(['res' => AliPay::setOrder($sn, $url)]));
     }
 
-    public function getDocCenter()
+    public function getDocCenter($request, $response, $args)
     {
-        if (Config::get('enable_documents') != 'true') {
-            return self::index();
+        $user = Auth::getUser();
+        if (!$user->isLogin && Config::get('enable_documents') != 'true') {
+            $newResponse = $response->withStatus(302)->withHeader('Location', '/');
+            return $newResponse;
         }
         $basePath = Config::get('remote_documents') == 'true' ? Config::get('documents_source') : '/docs/GeekQu';
         return $this->view()
