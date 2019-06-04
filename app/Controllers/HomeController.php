@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\InviteCode;
+use App\Services\Auth;
 use App\Services\Config;
 use App\Utils\AliPay;
 use App\Utils\TelegramSessionManager;
