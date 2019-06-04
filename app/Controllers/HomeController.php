@@ -3,20 +3,10 @@
 namespace App\Controllers;
 
 use App\Models\InviteCode;
-use App\Models\User;
-use App\Models\Code;
-use App\Models\Payback;
-use App\Models\Paylist;
 use App\Services\Auth;
 use App\Services\Config;
-use App\Services\Payment;
 use App\Utils\AliPay;
-use App\Utils\Tools;
-use App\Utils\Telegram;
-use App\Utils\Tuling;
 use App\Utils\TelegramSessionManager;
-use App\Utils\QRcode;
-use App\Utils\Pay;
 use App\Utils\TelegramProcess;
 use App\Utils\Spay_tool;
 use App\Utils\Geetest;
@@ -56,15 +46,15 @@ class HomeController extends BaseController
             return $this->view()->display('indexold.tpl');
         } else {
             return $this->view()
-            ->assign('geetest_html', $GtSdk)
-            ->assign('login_token', $login_token)
-            ->assign('login_number', $login_number)
-            ->assign('telegram_bot', Config::get('telegram_bot'))
-            ->assign('enable_logincaptcha', Config::get('enable_login_captcha'))
-            ->assign('enable_regcaptcha', Config::get('enable_reg_captcha'))
-            ->assign('base_url', Config::get('baseUrl'))
-            ->assign('recaptcha_sitekey', $recaptcha_sitekey)
-            ->display('index.tpl');
+                ->assign('geetest_html', $GtSdk)
+                ->assign('login_token', $login_token)
+                ->assign('login_number', $login_number)
+                ->assign('telegram_bot', Config::get('telegram_bot'))
+                ->assign('enable_logincaptcha', Config::get('enable_login_captcha'))
+                ->assign('enable_regcaptcha', Config::get('enable_reg_captcha'))
+                ->assign('base_url', Config::get('baseUrl'))
+                ->assign('recaptcha_sitekey', $recaptcha_sitekey)
+                ->display('index.tpl');
         }
     }
 
@@ -95,7 +85,7 @@ class HomeController extends BaseController
 
     public function telegram($request, $response, $args)
     {
-        $token = $request->getQueryParams()["token"] ?? "";
+        $token = $request->getQueryParams()['token'] ?? '';
 
         if ($token == Config::get('telegram_request_token')) {
             TelegramProcess::process();
@@ -143,98 +133,109 @@ class HomeController extends BaseController
         return $response->getBody()->write(json_encode(['res' => AliPay::setOrder($sn, $url)]));
     }
 
-    public function docCenter()
-    {
-        return $this->view()->display('doc/index.tpl');
-    }
-
-    public function sublinkOut($request, $response, $args)
+    public function getDocCenter($request, $response, $args)
     {
         $user = Auth::getUser();
+        if (!$user->isLogin && Config::get('enable_documents') != 'true') {
+            $newResponse = $response->withStatus(302)->withHeader('Location', '/');
+            return $newResponse;
+        }
+        $basePath = Config::get('remote_documents') == 'true' ? Config::get('documents_source') : '/docs/GeekQu';
+        return $this->view()
+            ->assign('appName', Config::get('documents_name'))
+            ->assign('basePath', $basePath)
+            ->display('doc/index.tpl');
+    }
+
+    public function getSubLink($request, $response, $args)
+    {
+        $user = Auth::getUser();
+        $msg = '';
         if (!$user->isLogin) {
-            $msg = "₍₍ ◝(・ω・)◟ ⁾⁾ 您没有登录噢，登录之后再刷新就阔以了啦";
+            $msg .= '₍₍ ◝(・ω・)◟ ⁾⁾ 您没有登录噢，登录之后再刷新就阔以了啦';
         } else {
+            $msg .= '```' . PHP_EOL;
             $subInfo = LinkController::GetSubinfo($user, 0);
             switch ($request->getParam('type')) {
                 case 'ss':
-                    $msg =  "```
-订阅链接：" . $subInfo['ss'] . "
-```";
+                    $msg .= '订阅链接：' . $subInfo['ss'];
                     break;
                 case 'ssr':
-                    $msg =  "```
-订阅链接：" . $subInfo['ssr'] . "
-```";
+                    $msg = '订阅链接：' . $subInfo['ssr'];
                     break;
                 case 'v2ray':
                     // v2rayN 格式
-                    $msg =  "```
-订阅链接：" . $subInfo['v2ray'] . "
-```";
+                    $msg = '订阅链接：' . $subInfo['v2ray'];
                     break;
                     // APPs~
                 case 'ssd':
-                    $msg =  "```
-订阅链接：" . $subInfo['ssd'] . "
-```";
+                    $msg =  '订阅链接：' . $subInfo['ssd'];
                     break;
                 case 'clash':
-                    $msg =  "```
-订阅链接：" . $subInfo['clash'] . "
-```";
+                    $msg =  '订阅链接：' . $subInfo['clash'];
                     break;
                 case 'surge':
-                    $msg =  "```
-// Surge Version 2.x 
-订阅链接：" . $subInfo['surge2'] . "
-// Surge Version 3.x 
-订阅链接：" . $subInfo['surge3'] . "
-```";
+                    $msg =  '// Surge Version 2.x' .
+                    PHP_EOL .
+                    '订阅链接：' .
+                    $subInfo['surge2'] .
+                    '// Surge Version 3.x' .
+                    PHP_EOL .
+                    '订阅链接：' .
+                    $subInfo['surge3'];
                     break;
                 case 'kitsunebi':
-                    $msg =  "```
-// v2ray 订阅
-订阅链接：" . $subInfo['v2ray'] . "
-// 合并订阅，包含 ss、v2ray
-订阅链接：" . $subInfo['v2ray_ss'] . "
-```";
+                    $msg =  '// v2ray 订阅' .
+                    PHP_EOL .
+                    '订阅链接' .
+                    $subInfo['v2ray'] .
+                    '// 合并订阅，包含 ss、v2ray' .
+                    PHP_EOL .
+                    '订阅链接' . $subInfo['v2ray_ss'];
                     break;
                     case 'surfboard':
-                    $msg =  "```
-订阅链接：" . $subInfo['surfboard'] . "
-```";
+                    $msg =  '订阅链接' . $subInfo['surfboard'];
                     break;
                 case 'quantumult_sub':
                     // Quantumult V2ray 专属格式
-                    $msg =  "```
-// ssr 订阅
-订阅链接：" . $subInfo['ssr'] . "
-// V2ray 订阅
-订阅链接：" . $subInfo['quantumult_v2'] . "
-```";
+                    $msg =  '// ssr 订阅' .
+                    PHP_EOL .
+                    '订阅链接' .
+                    $subInfo['ssr'] .
+                    '// V2ray 订阅' .
+                    PHP_EOL .
+                    '订阅链接' .
+                    $subInfo['quantumult_v2'];
                     break;
                 case 'quantumult_conf':
-                    $msg =  "```
-// 导入 ss、ssr、v2ray 以及分流规则的配置
-订阅链接：" . $subInfo['quantumult_sub'] . "
-// 使用自定义策略组的配置，类似 Surge、Clash
-订阅链接：" . $subInfo['quantumult_conf'] . "
-```";
+                    $msg =  '// 导入 ss、ssr、v2ray 以及分流规则的配置' .
+                    PHP_EOL .
+                    '订阅链接' .
+                    $subInfo['quantumult_sub'] .
+                    '// 使用自定义策略组的配置，类似 Surge、Clash' .
+                    PHP_EOL .
+                    '订阅链接' .
+                    $subInfo['quantumult_conf'];
                     break;
                 case 'shadowrocket':
-                    $msg =  "```
-// ssr 订阅
-订阅链接：" . $subInfo['ssr'] . "
-// v2ray 订阅
-订阅链接：" . $subInfo['v2ray'] . "
-// 合并订阅，包含 ss、ssr、v2ray
-订阅链接：" . $subInfo['v2ray_ss_ssr'] . "
-```";
+                    $msg =  '// ssr 订阅' .
+                    PHP_EOL .
+                    '订阅链接' .
+                    $subInfo['ssr'] .
+                    '// v2ray 订阅' .
+                    PHP_EOL .
+                    '订阅链接' .
+                    $subInfo['v2ray'] .
+                    '// 合并订阅，包含 ss、ssr、v2ray' .
+                    PHP_EOL .
+                    '订阅链接' .
+                    $subInfo['v2ray_ss_ssr'];
                     break;
                 default:
                     $msg = '获取失败了呢...，请联系管理员。';
                     break;
             }
+            $msg .= PHP_EOL . '```';
         }
         return $msg;
     }

@@ -114,13 +114,14 @@ $System_Config['account_expire_delete_days']='-1';		//账户到期几天之后�
 $System_Config['enable_kill']='true';					//是否允许用户注销账户
 $System_Config['notify_limit_mode'] = 'false';			//false为关闭，per为按照百分比提醒，mb为按照固定剩余流量提醒
 $System_Config['notify_limit_value'] = '20';			//当上一项为per时，此处填写百分比；当上一项为mb时，此处填写流量
-$System_Config['mergeSub'] = 'false';						//合并订阅设置 可选项 false / true
+$System_Config['mergeSub'] = 'false';					//合并订阅设置 可选项 false / true
+$System_Config['protocol_specify'] = 'true';			//允许用户自行切换加密、协议、混淆，允许请填写 true，禁止用户自行修改将使用下方配置的方案
 
 #加密、协议、混淆切换方案
 $System_Config['user_agreement_scheme'] = [
-    ['id'=>1,'name'=>'SS 方案','method'=>'chacha20-ietf-poly1305','protocol'=>'origin','obfs'=>'plain','description'=>'使用 AEAD 系列加密，无混淆。'],
-    ['id'=>2,'name'=>'SSR 方案','method'=>'chacha20-ietf','protocol'=>'auth_aes128_sha1','obfs'=>'http_simple_compatible','description'=>'使用 auth_aes128_sha1 协议，可选 http_simple 混淆。'],
-    ['id'=>3,'name'=>'SS/SSR 兼容方案','method'=>'chacha20-ietf','protocol'=>'auth_aes128_sha1_compatible','obfs'=>'plain','description'=>'可选 auth_aes128_sha1 协议，无混淆。']
+    ['id'=>1,'name'=>'SS 推荐配置','method'=>'chacha20-ietf-poly1305','protocol'=>'origin','obfs'=>'plain'],
+    ['id'=>2,'name'=>'SSR 推荐配置','method'=>'chacha20-ietf','protocol'=>'auth_aes128_sha1','obfs'=>'http_simple_compatible'],
+    ['id'=>3,'name'=>'SS/SSR 兼容配置','method'=>'chacha20-ietf','protocol'=>'auth_aes128_sha1_compatible','obfs'=>'plain']
 ];
 
 //Bot 设置--------------------------------------------------------------------------------------------
@@ -223,9 +224,16 @@ $System_Config['trimepay_secret']='';				//AppSecret
 # BitPay 数字货币支付（比特币、以太坊、EOS等） 商户后台获取授权码 https://merchants.mugglepay.com/
 #   客服和技术 24x7 在线支持： https://t.me/joinchat/GLKSKhUnE4GvEAPgqtChAQ
 $System_Config['bitpay_secret']='';
- 
+
 
 //其他面板显示设置------------------------------------------------------------------------------------------
+
+#用户文档
+$System_Config['enable_documents'] = 'true';	    //是否允许未登陆用户查看文档中心
+$System_Config['documents_name'] = $System_Config['appName'] . ' 文档中心';	    //文档中心名称
+$System_Config['remote_documents'] = 'true';	    //是否从远程加载文档中心，否的话请执行 php xcat initdocuments
+$System_Config['documents_source'] = 'https://raw.githubusercontent.com/GeekQu/PANEL_DOC/master/GeekQu';	    //远程文档加载地址
+
 #后台商品列表 销量统计
 $System_Config['sales_period']='30';	//统计指定周期内的销量，值为【expire/任意大于0的整数】
 
@@ -257,18 +265,12 @@ $System_Config['enable_detect_offline']='true';
 $System_Config['enable_detect_offline_useScFtqq']='true';
 
 
-//V2Ray相关设置------------------------------------------------------------------------------------------
-$System_Config['v2ray_port']='443';					//V2Ray端口
-$System_Config['v2ray_protocol']='HTTP/2 + TLS';	//V2Ray协议
-$System_Config['v2ray_alter_id']='32';
-$System_Config['v2ray_level']='0';
-
 //以下所有均为高级设置（一般用不上，不用改---------------------------------------------------------------------
 #杂项
 $System_Config['enable_login_bind_ip']='false';		//是否将登陆线程和IP绑定
 $System_Config['rememberMeDuration']='7';           //登录时记住账号时长天数
 $System_Config['authDriver'] = 'cookie';			//不能更改此项
-$System_Config['pwdMethod'] = 'sha256';				//密码加密 可选 md5, sha256, bcrypt, argon2i, argon2id（argon2i需要至少php7.2）
+$System_Config['pwdMethod'] = 'md5';				//密码加密 可选 md5, sha256, bcrypt, argon2i, argon2id（argon2i需要至少php7.2）
 $System_Config['salt'] = '';						//推荐配合 md5/sha256， bcrypt/argon2i/argon2id 会忽略此项
 $System_Config['sessionDriver'] = 'cookie';			//可选: cookie,redis
 $System_Config['cacheDriver'] = 'cookie';			//可选: cookie,redis

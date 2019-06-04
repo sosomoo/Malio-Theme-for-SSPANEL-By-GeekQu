@@ -69,74 +69,6 @@
 								<div class="card-inner">
 									<div class="card-inner">
 										<div class="cardbtn-edit">
-												<div class="card-heading">切换协议配置</div>
-												<button class="btn btn-flat" id="user_agreement_scheme-update"><span class="icon">check</span>&nbsp;</button>
-										</div>
-										<p>配置方案描述：</p>
-                                        	{foreach $schemes as $scheme}
-											<p>{$scheme['name']} --&gt;&gt; {$scheme['description']}</p>
-											{/foreach}
-										<div class="form-group form-group-label control-highlight-custom dropdown">
-											<button id="agreement_scheme" type="button" class="form-control maxwidth-edit" data-toggle="dropdown" value="0">请选择配置方案</button>
-											<ul class="dropdown-menu" aria-labelledby="agreement_scheme">
-												{foreach $schemes as $scheme}
-												<li><a href="#" class="dropdown-option" onclick="return false;" val="{$scheme['id']}" data="agreement_scheme">{$scheme['name']}</a></li>
-												{/foreach}
-											</ul>
-										</div>
-								    </div>
-							    </div>
-						    </div>
-						</div>
-
-
-						<div class="card margin-bottom-no">
-							<div class="card-main">
-								<div class="card-inner">
-									<div class="card-inner">
-										<div class="cardbtn-edit">
-												<div class="card-heading">重置订阅链接</div>
-												<div class="reset-flex">
-													<a class="reset-link btn btn-brand-accent btn-flat" ><i class="icon">autorenew</i>&nbsp;</a>
-												</div>
-										</div>
-                                        <p>点击会重置您的订阅链接，此操作不可逆，请谨慎。</p>
-									</div>
-								</div>
-							</div>
-						</div>
-
-
-						{* <div class="card margin-bottom-no">
-							<div class="card-main">
-								<div class="card-inner">
-									<div class="card-inner">
-										<div class="cardbtn-edit">
-												<div class="card-heading">加密方式修改</div>
-												<button class="btn btn-flat" id="method-update"><span class="icon">check</span>&nbsp;</button>
-										</div>
-										<p>注意：SS/SSD/SSR 支持的加密方式有所不同，请根据实际情况来进行选择</p>
-										<p>当前加密方式：<code id="ajax-user-method" data-default="method">[{if URL::CanMethodConnect($user->method) == 2}SS/SSD{else}SS/SSR{/if} 可连接] {$user->method}</code></p>
-										<div class="form-group form-group-label control-highlight-custom dropdown">
-											<label class="floating-label" for="method">加密方式</label>
-											<button id="method" class="form-control maxwidth-edit" data-toggle="dropdown" value="{$user->method}"></button>
-											<ul class="dropdown-menu" aria-labelledby="method">
-												{$method_list = $config_service->getSupportParam('method')}
-												{foreach $method_list as $method}
-												<li><a href="#" class="dropdown-option" onclick="return false;" val="{$method}" data="method">[{if URL::CanMethodConnect($method) == 2}SS/SSD{else}SS/SSR{/if} 可连接] {$method}</a></li>
-												{/foreach}
-											</ul>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>  *}
-
-						<div class="card margin-bottom-no">
-							<div class="card-main">
-								<div class="card-inner">
-									<div class="card-inner">
-										<div class="cardbtn-edit">
 												<div class="card-heading">联络方式修改</div>
 												<button class="btn btn-flat" id="wechat-update"><span class="icon">check</span>&nbsp;</button>
 										</div>
@@ -190,7 +122,64 @@
 						</div>
 
 
-						{* <div class="card margin-bottom-no">
+						{if $config['protocol_specify'] != 'true'}
+						<div class="card margin-bottom-no">
+							<div class="card-main">
+								<div class="card-inner">
+									<div class="card-inner">
+										<div class="cardbtn-edit">
+												<div class="card-heading">切换协议配置</div>
+												<button class="btn btn-flat" id="user_agreement_scheme-update"><span class="icon">check</span>&nbsp;</button>
+										</div>
+										<p>当前配置：
+											{foreach $schemes as $scheme}
+												{if $scheme['method'] == $user->method && $scheme['protocol'] == $user->protocol && $scheme['obfs'] == $user->obfs}
+													<code>{$scheme['name']}</code>
+												{/if}
+											{/foreach}
+										</p>
+										<div class="form-group form-group-label control-highlight-custom dropdown">
+											<button id="agreement_scheme" type="button" class="form-control maxwidth-edit" data-toggle="dropdown" value="0">请选择配置方案</button>
+											<ul class="dropdown-menu" aria-labelledby="agreement_scheme">
+												{foreach $schemes as $scheme}
+												<li><a href="#" class="dropdown-option" onclick="return false;" val="{$scheme['id']}" data="agreement_scheme">{$scheme['name']}</a></li>
+												{/foreach}
+											</ul>
+										</div>
+								    </div>
+							    </div>
+						    </div>
+						</div>
+
+						{else}
+
+						<div class="card margin-bottom-no">
+							<div class="card-main">
+								<div class="card-inner">
+									<div class="card-inner">
+										<div class="cardbtn-edit">
+												<div class="card-heading">加密方式修改</div>
+												<button class="btn btn-flat" id="method-update"><span class="icon">check</span>&nbsp;</button>
+										</div>
+										<p>注意：SS/SSD/SSR 支持的加密方式有所不同，请根据实际情况来进行选择</p>
+										<p>当前加密方式：<code id="ajax-user-method" data-default="method">[{if URL::CanMethodConnect($user->method) == 2}SS/SSD{else}SS/SSR{/if} 可连接] {$user->method}</code></p>
+										<div class="form-group form-group-label control-highlight-custom dropdown">
+											<label class="floating-label" for="method">加密方式</label>
+											<button id="method" class="form-control maxwidth-edit" data-toggle="dropdown" value="{$user->method}"></button>
+											<ul class="dropdown-menu" aria-labelledby="method">
+												{$method_list = $config_service->getSupportParam('method')}
+												{foreach $method_list as $method}
+												<li><a href="#" class="dropdown-option" onclick="return false;" val="{$method}" data="method">[{if URL::CanMethodConnect($method) == 2}SS/SSD{else}SS/SSR{/if} 可连接] {$method}</a></li>
+												{/foreach}
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="card margin-bottom-no">
 							<div class="card-main">
 								<div class="card-inner">
 									<div class="card-inner">
@@ -241,10 +230,28 @@
 
 								</div>
 							</div>
-						</div>  *}
+						</div>
+						{/if}
 
 
-						{* <div class="card margin-bottom-no">
+						<div class="card margin-bottom-no">
+							<div class="card-main">
+								<div class="card-inner">
+									<div class="card-inner">
+										<div class="cardbtn-edit">
+												<div class="card-heading">重置订阅链接</div>
+												<div class="reset-flex">
+													<a class="reset-link btn btn-brand-accent btn-flat" ><i class="icon">autorenew</i>&nbsp;</a>
+												</div>
+										</div>
+                                        <p>点击会重置您的订阅链接，此操作不可逆，请谨慎。</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="card margin-bottom-no">
 							<div class="card-main">
 								<div class="card-inner">
 									<div class="card-inner">
@@ -267,7 +274,7 @@
 								    </div>
 							    </div>
 						    </div>
-						</div> *}
+						</div>
 
 
 				    </div>
