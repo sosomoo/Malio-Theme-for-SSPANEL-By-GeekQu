@@ -68,9 +68,9 @@ Proxy Group:
 {$tmp[] = "Auto"}
 {assign 'proxies' $tmp|array_merge:$proxies}
 {if count($back_china_proxies)!=0}
-  - { name: "Back_China_Auto", type: fallback, proxies: {json_encode($back_china_proxies,320)}, url: "http://www.gstatic.com/generate_204", interval: 300 }
-  {append var='back_china_proxies' value='Back_China_Auto'}
-  - { name: "Back_China_Proxy", type: select, proxies: {json_encode($back_china_proxies,320)} }
+- { name: "Back_China_Auto", type: fallback, proxies: {json_encode($back_china_proxies,320)}, url: "http://www.gstatic.com/generate_204", interval: 300 }
+{append var='back_china_proxies' value='Back_China_Auto'}
+- { name: "Back_China_Proxy", type: select, proxies: {json_encode($back_china_proxies,320)} }
 {/if}
 - { name: "Proxy", type: select, proxies: {json_encode($proxies,320)} }
 - { name: "Domestic", type: select, proxies: ["DIRECT","Proxy"] }
