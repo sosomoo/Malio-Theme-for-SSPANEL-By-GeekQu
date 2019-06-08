@@ -64,19 +64,20 @@ Proxy:
 {/foreach}
 
 Proxy Group:
-  - { name: "Auto", type: fallback, proxies: {json_encode($proxies,320)}, url: "http://www.gstatic.com/generate_204", interval: 300 }
-{append var='proxies' value='Auto' index=0}
+- { name: "Auto", type: fallback, proxies: {json_encode($proxies,320)}, url: "http://www.gstatic.com/generate_204", interval: 300 }
+{$tmp[] = "Auto"}
+{assign 'proxies' $tmp|array_merge:$proxies}
 {if count($back_china_proxies)!=0}
-  - { name: "Back_China_Auto", type: fallback, proxies: {json_encode($back_china_proxies,320)}, url: "http://www.gstatic.com/generate_204", interval: 300 }
+- { name: "Back_China_Auto", type: fallback, proxies: {json_encode($back_china_proxies,320)}, url: "http://www.gstatic.com/generate_204", interval: 300 }
 {append var='back_china_proxies' value='Back_China_Auto'}
-  - { name: "Back_China_Proxy", type: select, proxies: {json_encode($back_china_proxies,320)} }
+- { name: "Back_China_Proxy", type: select, proxies: {json_encode($back_china_proxies,320)} }
 {/if}
-  - { name: "Proxy", type: select, proxies: {json_encode($proxies,320)} }
-  - { name: "Domestic", type: select, proxies: ["DIRECT","Proxy"] }
+- { name: "Proxy", type: select, proxies: {json_encode($proxies,320)} }
+- { name: "Domestic", type: select, proxies: ["DIRECT","Proxy"] }
 {$China_media=["Domestic","Proxy"]}
 {if count($back_china_proxies)!=0}{append var='China_media' value='Back_China_Proxy'}{/if}
-  - { name: "China_media", type: select, proxies: {json_encode($China_media,320)} }
-  - { name: "Global_media", type: select, proxies: ["Proxy"]}
-  - { name: "Others", type: select, proxies: ["Proxy","Domestic"]}
+- { name: "China_media", type: select, proxies: {json_encode($China_media,320)} }
+- { name: "Global_media", type: select, proxies: ["Proxy"]}
+- { name: "Others", type: select, proxies: ["Proxy","Domestic"]}
 
 {include file='rule/Rule.yml'}
