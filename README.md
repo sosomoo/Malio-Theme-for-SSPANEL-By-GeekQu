@@ -2,6 +2,8 @@
 
 **ss-panel-v3-mod**是一款专为 Shadowsocks/ShadowsocksR 设计的管理面板，再次感谢 ss-panel-v3-mod 的制作者，修改后的功能简介：
 
+此仓库由 GeekQu 维护，修改记录 **[在此查看](https://github.com/GeekQu/ss-panel-v3-mod_Uim/blob/dev/GeekQu.md)**。
+
 - **支付系统集成**：集成 支付宝当面付  易付通 码支付 TrimePay 等多种支付系统，使用方法见项目[wiki](https://github.com/Anankke/SSPanel-Uim/wiki/)
 - **UI** ：修改为 ~~援交~~ 圆角、并自定义了几个图标的显示，节点列表等級 0 可见等級 1 节点但无法看见节点详情，增加了国家图标显示
 - **商店**：商品增加同时连接设备数，用户限速属性
@@ -42,7 +44,7 @@ Wiki 已经启用，欢迎为此面板维护 wiki
 ##### [hkserversolution](https://www.hkserversolution.com/cart.php)
 - Demo 演示站服务器赞助
 
-##### [dumplin](https://github.com/dumplin233) 
+##### [dumplin](https://github.com/dumplin233)
 
 - 码支付对接 + 码支付当面付二合一
 - 为面板加入 AFF 链接功能
