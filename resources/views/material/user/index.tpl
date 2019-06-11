@@ -576,7 +576,7 @@ $(function(){
 
 $(".copy-text").click(function () {
 	$("#result").modal();
-	$("#msg").html("已拷贝订阅链接，请您继续接下来的操作。");
+	$("#msg").html("已拷贝订阅链接，请您继续接下来的操作");
 });
 
 function AddSub(url,jumpurl="") {
@@ -592,12 +592,12 @@ function Copyconfig(url,id,jumpurl="") {
         success: function(res) {
             if(res) {
                 $("#result").modal();
-                $("#msg").html("获取成功。");
+                $("#msg").html("获取成功");
                 $(id).data('data', res);
 				console.log(res);
             } else {
                 $("#result").modal();
-                $("#msg").html("获取失败,请稍后再试");
+                $("#msg").html("获取失败，请稍后再试");
             }
         }
     });
@@ -609,14 +609,14 @@ function Copyconfig(url,id,jumpurl="") {
     clipboard.on('success', function(e) {
 				$("#result").modal();
 				if (jumpurl != "") {
-					$("#msg").html("已经复制成功,您将跳转到app设置");
+					$("#msg").html("复制成功，即将跳转到 APP");
 					window.setTimeout(function () {
-						window.open(jumpurl)
+						window.location.href = jumpurl;
 					}, 1000);
 
 				} else {
 
-					$("#msg").html("已经复制成功");
+					$("#msg").html("复制成功");
 				}
 			}
     );
