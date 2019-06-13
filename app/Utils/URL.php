@@ -268,7 +268,7 @@ class URL
             $personal_info = $item['method'] . ':' . $item['passwd'];
             $ssurl = 'ss://' . Tools::base64_url_encode($personal_info) . '@' . $item['address'] . ':' . $item['port'];
             $plugin = '';
-            if (in_array($item['obfs'], $ss_obfs_list) || $item['obfs'] == 'v2ray') {
+            if ($item['obfs'] == 'v2ray' || in_array($item['obfs'], $ss_obfs_list)) {
                 if (strpos($item['obfs'], 'http') !== false) {
                     $plugin .= 'obfs-local;obfs=http';
                 } elseif (strpos($item['obfs'], 'tls') !== false) {
