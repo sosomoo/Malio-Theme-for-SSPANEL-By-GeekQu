@@ -5,13 +5,13 @@
 #---------------------------------------------------#
 
 # HTTP 代理端口
-port: {if array_key_exists("port",$opts)}{$opts['port']}{else}8234{/if}
+port: {if array_key_exists("port",$opts)}{$opts['port']}{else}7890{/if} 
 
 # SOCKS5 代理端口
-socks-port: {if array_key_exists("socks-port",$opts)}{$opts['socks-port']}{else}8235{/if}
+socks-port: {if array_key_exists("socks-port",$opts)}{$opts['socks-port']}{else}7891{/if} 
 
 # Linux 和 macOS 的 redir 代理端口
-redir-port: {if array_key_exists("redir-port",$opts)}{$opts['redir-port']}{else}8236{/if}
+redir-port: {if array_key_exists("redir-port",$opts)}{$opts['redir-port']}{else}7892{/if} 
 
 # 允许局域网的连接
 allow-lan: true
@@ -24,10 +24,10 @@ mode: Rule
 log-level: {if array_key_exists("log-level",$opts)}{$opts['log-level']}{else}silent{/if}
 
 # Clash 的 RESTful API
-external-controller: '0.0.0.0:8233'
+external-controller: '0.0.0.0:9090'
 
 # RESTful API 的口令
-secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}MixsChina{/if}'
+secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}{/if}' 
 
 # 您可以将静态网页资源（如 clash-dashboard）放置在一个目录中，clash 将会服务于 `RESTful API/ui`
 # 参数应填写配置目录的相对路径或绝对路径。
