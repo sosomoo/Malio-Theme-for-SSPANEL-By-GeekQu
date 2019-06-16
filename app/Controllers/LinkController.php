@@ -99,41 +99,42 @@ class LinkController extends BaseController
             }
         }
 
+        // 将访问 V2RayNG 订阅的 Quantumult 转到 Quantumult 的 V2Ray 专属订阅
+        if (strpos($_SERVER['HTTP_USER_AGENT'], 'Quantumult') !== false && $sub = 3) {
+            $quantumult = 1;
+        }
+
         if (in_array($quantumult, array(1, 2, 3))) {
             $newResponse = $response
                 ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
                 ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
-                ->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf');
+                ->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf')
+                ->withHeader('Subscription-Userinfo', ' upload='.$user->u.'; download='.$user->d.'; total='.$user->transfer_enable.'; expire='.strtotime($user->class_expire).'');
             $newResponse->getBody()->write(self::GetQuantumult($user, $quantumult));
-            return $newResponse;
         } elseif (in_array($surge, array(1, 2, 3))) {
             $newResponse = $response
                 ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
                 ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
                 ->withHeader('Content-Disposition', ' attachment; filename=Surge.conf');
             $newResponse->getBody()->write(self::GetSurge($user, $surge, $opts));
-            return $newResponse;
         } elseif ($surfboard == 1) {
             $newResponse = $response
                 ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
                 ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
                 ->withHeader('Content-Disposition', ' attachment; filename=Surfboard.conf');
             $newResponse->getBody()->write(self::GetSurfboard($user));
-            return $newResponse;
         } elseif ($clash == 1) {
             $newResponse = $response
                 ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
                 ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
                 ->withHeader('Content-Disposition', ' attachment; filename=config.yml');
             $newResponse->getBody()->write(self::GetClash($user, $opts));
-            return $newResponse;
         } elseif ($ssd == 1) {
             $newResponse = $response
                 ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
                 ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
                 ->withHeader('Content-Disposition', ' attachment; filename=SSD.txt');
             $newResponse->getBody()->write(self::GetSSD($user));
-            return $newResponse;
         } else {
             $newResponse = $response
                 ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
@@ -141,8 +142,8 @@ class LinkController extends BaseController
                 ->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt')
                 ->withHeader('Subscription-Userinfo', ' upload='.$user->u.'; download='.$user->d.'; total='.$user->transfer_enable.'; expire='.strtotime($user->class_expire).'');
             $newResponse->getBody()->write(self::GetSub($user, $sub, $opts));
-            return $newResponse;
         }
+        return $newResponse;
     }
 
     public static function GetSubinfo($user, $int = 0)
@@ -487,6 +488,26 @@ class LinkController extends BaseController
     {
         $extend = isset($opts['extend']) ? $opts['extend'] : 0;
         $return_url = '';
+        if (strpos($_SERVER['HTTP_USER_AGENT'], 'Shadowrocket') !== false) {
+            if (strtotime($user->expire_in) > time()) {
+                if ($user->transfer_enable == 0) {
+                    $tmp = '剩余流量：0';
+                } else {
+                    $tmp = '剩余流量：' . $user->unusedTraffic();
+                }
+                $tmp .= ' - 过期时间：';
+                if ($user->class_expire != '1989-06-04 00:05:00') {
+                    $userClassExpire = explode(' ', $user->class_expire);
+                    $tmp .= $userClassExpire[0];
+                } else {
+                    $tmp .= '无限期';
+                }
+            } else {
+                $tmp = '账户已过期，请续费后使用';
+            }
+            $return_url .= ('STATUS=' . $tmp . PHP_EOL . 'REMARKS=' . Config::get('appName') . PHP_EOL);
+            $extend = 0;
+        }
         switch ($sub) {
             case 1: // SSR
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 1) . PHP_EOL;
