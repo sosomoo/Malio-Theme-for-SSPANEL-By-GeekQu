@@ -138,30 +138,49 @@ class URL
         return $new_user;
     }
 
-    public static function getAllItems($user, $is_mu = 0, $is_ss = 0)
-    {
+    public static function getAllItems(
+        $user, $is_mu = 0, $is_ss = 0, $getV2rayPlugin = 1
+    ) {
         $return_array = array();
         if ($user->is_admin) {
             $nodes = Node::where(
-                static function ($query) {
-                    $query->where('sort', 0)
-                        ->orwhere('sort', 10)
-                        ->orwhere('sort', 13);
+                static function ($query) use ($getV2rayPlugin) {
+                    if ($getV2rayPlugin) {
+                        $query->where('sort', 0)
+                            ->orwhere('sort', 10)
+                            ->orwhere('sort', 13);
+                    } else {
+                        $query->where('sort', 0)
+                            ->orwhere('sort', 10);
+                    }
                 }
-            )->where('type', '1')->orderBy('name')->get();
+            )
+            ->where('type', '1')
+            ->orderBy('name')
+            ->get();
         } else {
             $nodes = Node::where(
-                static function ($query) {
-                    $query->where('sort', 0)
-                        ->orwhere('sort', 10)
-                        ->orwhere('sort', 13);
+                static function ($query) use ($getV2rayPlugin) {
+                    if ($getV2rayPlugin) {
+                        $query->where('sort', 0)
+                            ->orwhere('sort', 10)
+                            ->orwhere('sort', 13);
+                    } else {
+                        $query->where('sort', 0)
+                            ->orwhere('sort', 10);
+                    }
                 }
-            )->where(
+            )
+            ->where(
                 static function ($query) use ($user) {
                     $query->where('node_group', '=', $user->node_group)
                         ->orWhere('node_group', '=', 0);
                 }
-            )->where('type', '1')->where('node_class', '<=', $user->class)->orderBy('name')->get();
+            )
+            ->where('type', '1')
+            ->where('node_class', '<=', $user->class)
+            ->orderBy('name')
+            ->get();
         }
         if ($is_mu) {
             if ($user->is_admin) {
@@ -233,18 +252,18 @@ class URL
         return $return_array;
     }
 
-    public static function getAllUrl($user, $is_mu, $is_ss = 0)
+    public static function getAllUrl($user, $is_mu, $is_ss = 0, $getV2rayPlugin = 1)
     {
         $return_url = '';
         if (strtotime($user->expire_in) < time()) {
             return $return_url;
         }
-        $items = self::getAllItems($user, $is_mu, $is_ss);
+        $items = self::getAllItems($user, $is_mu, $is_ss, $getV2rayPlugin);
         foreach ($items as $item) {
             $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
         }
         $is_mu = $is_mu == 0 ? 1 : 0;
-        $items = self::getAllItems($user, $is_mu, $is_ss);
+        $items = self::getAllItems($user, $is_mu, $is_ss, $getV2rayPlugin);
         foreach ($items as $item) {
             $return_url .= URL::getItemUrl($item, $is_ss) . PHP_EOL;
         }
