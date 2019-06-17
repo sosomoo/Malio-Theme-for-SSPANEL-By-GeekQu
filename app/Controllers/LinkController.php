@@ -375,8 +375,8 @@ class LinkController extends BaseController
                         if (strpos($item['obfs_param'], 'security=tls')) {
                             $sss['plugin-opts']['tls'] = true;
                         }
-                        $sss['plugin-opts']['host'] = $user->getMuMd5();
-                        $sss['plugin-opts']['path'] = $item['path'];
+                        $sss['plugin-opts']['host'] = $item['host'];
+                        $sss['plugin-opts']['path'] = ($item['path'] . '?redirect=' . $user->getMuMd5());
                         break;
                 }
                 if ($item['obfs'] != 'v2ray') {
