@@ -443,10 +443,19 @@ class URL
                 $server['encryption'] = $user->method;
                 $server['password'] = $user->passwd;
                 $server['plugin'] = 'v2ray';
+                $server['path'] = (
+                    $server['path'] . '?redirect=' . $user->getMuMd5()
+                );
                 if ($server['tls'] == 'tls' && $server['net'] == 'ws') {
-                    $server['obfs_param'] = 'mode=ws;security=tls;path=' . $server['path'] . '?redirect=' . $user->getMuMd5() . ';host=' . $return_array['host'];
+                    $server['obfs_param'] = (
+                        'mode=ws;security=tls;path=' . $server['path'] .
+                        ';host=' . $return_array['host']
+                    );
                 } else {
-                    $server['obfs_param'] = 'mode=ws;security=none;path=' . $server['path'] . '?redirect=' . $user->getMuMd5() . ';host=' . $return_array['host'];
+                    $server['obfs_param'] = (
+                        'mode=ws;security=none;path=' . $server['path'] .
+                        ';host=' . $return_array['host']
+                    );
                 }
                 $array_server[] = $server;
                 $server_index++;
@@ -606,10 +615,19 @@ class URL
             $return_array['protocol'] = 'origin';
             $return_array['protocol_param'] = '';
             $return_array['obfs'] = 'v2ray';
+            $return_array['path'] = (
+                $return_array['path'] . '?redirect=' . $user->getMuMd5()
+            );
             if ($return_array['tls'] == 'tls' && $return_array['net'] == 'ws') {
-                $return_array['obfs_param'] = 'mode=ws;security=tls;path=' . $return_array['path'] . '?redirect=' . $user->getMuMd5() . ';host=' . $return_array['host'];
+                $return_array['obfs_param'] = (
+                    'mode=ws;security=tls;path=' . $return_array['path'] .
+                    ';host=' . $return_array['host']
+                );
             } else {
-                $return_array['obfs_param'] = 'mode=ws;security=none;path=' . $return_array['path'] . '?redirect=' . $user->getMuMd5() . ';host=' . $return_array['host'];
+                $return_array['obfs_param'] = (
+                    'mode=ws;security=none;path=' . $return_array['path'] .
+                    ';host=' . $return_array['host']
+                );
             }
         } else {
             $return_array['address'] = $node->server;
