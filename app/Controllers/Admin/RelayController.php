@@ -52,7 +52,7 @@ class RelayController extends AdminController
 
         foreach ($dist_nodes as $node) {
             if ($node->sort == 11 || $node->sort == 12) {
-                $node_explode = Tools::ssv2Array($node->server);
+                $node_explode = Tools::v2Array($node->server);
                 $node->name = $node->name . ' 如果是V2ray后端 请设置成 ' . $node_explode['port'];
             } else {
                 $node->name .= ' 如果是V2ray后端 请不要设置，用户页面设置 ';
@@ -163,7 +163,7 @@ class RelayController extends AdminController
 
         foreach ($dist_nodes as $node) {
             if ($node->sort == 11 || $node->sort == 12) {
-                $node_explode = Tools::ssv2Array($node->server);
+                $node_explode = Tools::v2Array($node->server);
                 $node->name = $node->name . ' 如果是V2ray后端 请设置成' . $node_explode['port'];
             } else {
                 $node->name .= ' 如果是V2ray后端 请不要设置，用户页面设置 ';

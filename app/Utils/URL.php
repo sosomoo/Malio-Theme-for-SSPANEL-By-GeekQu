@@ -275,7 +275,19 @@ class URL
     {
         $ss_obfs_list = Config::getSupportParam('ss_obfs');
         if (!$is_ss) {
-            $ssurl = $item['address'] . ':' . $item['port'] . ':' . $item['protocol'] . ':' . $item['method'] . ':' . $item['obfs'] . ':' . Tools::base64_url_encode($item['passwd']) . '/?obfsparam=' . Tools::base64_url_encode($item['obfs_param']) . '&protoparam=' . Tools::base64_url_encode($item['protocol_param']) . '&remarks=' . Tools::base64_url_encode($item['remark']) . '&group=' . Tools::base64_url_encode($item['group']);
+            $ssurl = $item['address'] . ':' . $item['port'] . ':' . $item['protocol'] .
+                ':' . $item['method'] . ':' . $item['obfs'] . ':' .
+                Tools::base64_url_encode(
+                    $item['passwd']
+                ) . '/?obfsparam=' . Tools::base64_url_encode(
+                    $item['obfs_param']
+                ) . '&protoparam=' . Tools::base64_url_encode(
+                    $item['protocol_param']
+                ) . '&remarks=' . Tools::base64_url_encode(
+                    $item['remark']
+                ) . '&group=' . Tools::base64_url_encode(
+                    $item['group']
+                );
             return 'ssr://' . Tools::base64_url_encode($ssurl);
         }
 
@@ -300,7 +312,9 @@ class URL
                 }
                 $ssurl .= '?plugin=' . rawurlencode($plugin);
             }
-            $ssurl .= '#' . rawurlencode(Config::get('appName') . ' - ' . $item['remark']);
+            $ssurl .= '#' . rawurlencode(
+                Config::get('appName') . ' - ' . $item['remark']
+            );
         }
         return $ssurl;
     }
@@ -313,7 +327,9 @@ class URL
         $item['id'] = $user->getUuid();
         $item['class'] = $node->node_class;
         if ($arrout == 0) {
-            return 'vmess://' . base64_encode(json_encode($item, JSON_UNESCAPED_UNICODE));
+            return 'vmess://' . base64_encode(
+                json_encode($item, 320)
+            );
         }
 
         return $item;
@@ -327,7 +343,10 @@ class URL
                     $query->where('sort', 11)
                         ->orwhere('sort', 12);
                 }
-            )->where('type', '1')->orderBy('name')->get();
+            )
+            ->where('type', '1')
+            ->orderBy('name')
+            ->get();
         } else {
             $nodes = Node::where(
                 static function ($query) {
@@ -339,7 +358,11 @@ class URL
                     $query->where('node_group', '=', $user->node_group)
                         ->orWhere('node_group', '=', 0);
                 }
-            )->where('type', '1')->where('node_class', '<=', $user->class)->orderBy('name')->get();
+            )
+            ->where('type', '1')
+            ->where('node_class', '<=', $user->class)
+            ->orderBy('name')
+            ->get();
         }
         if ($arrout == 0) {
             $result = '';
@@ -384,18 +407,28 @@ class URL
             }
         }
 
-        $nodes_muport = Node::where('type', 1)->where('sort', '=', 9)->orderBy('name')->get();
+        $nodes_muport = Node::where('type', 1)
+            ->where('sort', '=', 9)
+            ->orderBy('name')
+            ->get();
         $array_server = array();
-        $nodes = Node::where('type', 1)->where('node_class', '<=', $user->class)
-            ->where(static function ($func) {
-                $func->where('sort', '=', 0)
-                    ->orwhere('sort', '=', 10)
-                    ->orwhere('sort', '=', 13);
-            })
-            ->where(static function ($func) use ($user) {
-                $func->where('node_group', '=', $user->node_group)
-                    ->orwhere('node_group', '=', 0);
-            })->orderBy('name')->get();
+        $nodes = Node::where('type', 1)
+            ->where('node_class', '<=', $user->class)
+            ->where(
+                static function ($func) {
+                    $func->where('sort', '=', 0)
+                        ->orwhere('sort', '=', 10)
+                        ->orwhere('sort', '=', 13);
+                }
+            )
+            ->where(
+                static function ($func) use ($user) {
+                    $func->where('node_group', '=', $user->node_group)
+                        ->orwhere('node_group', '=', 0);
+                }
+            )
+            ->orderBy('name')
+            ->get();
         $server_index = 1;
         foreach ($nodes as $node) {
             $server = array();
@@ -403,18 +436,17 @@ class URL
                 if (self::CanMethodConnect($user->method) != 2) {
                     continue;
                 }
-                $ssv2Array = Tools::ssv2Array($node->server);
-                $server['server'] = $ssv2Array['add'];
+                $server = Tools::ssv2Array($node->server);
+                $server['server'] = $server['add'];
                 $server['id'] = $server_index;
-                $server['remarks'] = $node->name . ' - 单多' . $ssv2Array['port'] . '端口';
-                $server['port'] = $ssv2Array['port'];
+                $server['remarks'] = $node->name . ' - 单多' . $server['port'] . '端口';
                 $server['encryption'] = $user->method;
                 $server['password'] = $user->passwd;
                 $server['plugin'] = 'v2ray';
-                if ($ssv2Array['tls'] == 'tls' && $ssv2Array['net'] == 'ws') {
-                    $server['plugin_options'] = 'mode=ws;security=tls;path=' . $ssv2Array['path'] . ';host=' . $user->getMuMd5();
+                if ($server['tls'] == 'tls' && $server['net'] == 'ws') {
+                    $server['obfs_param'] = 'mode=ws;security=tls;path=' . $server['path'] . '?redirect=' . $user->getMuMd5() . ';host=' . $return_array['host'];
                 } else {
-                    $server['plugin_options'] = 'mode=ws;security=none;path=' . $ssv2Array['path'] . ';host=' . $user->getMuMd5();
+                    $server['obfs_param'] = 'mode=ws;security=none;path=' . $server['path'] . '?redirect=' . $user->getMuMd5() . ';host=' . $return_array['host'];
                 }
                 $array_server[] = $server;
                 $server_index++;
@@ -569,17 +601,15 @@ class URL
             $user = self::getSSRConnectInfo($user);
         }
         if ($node->sort == 13) {
-            $server = Tools::ssv2Array($node->server);
-            $return_array['address'] = $server['add'];
-            $return_array['port'] = $server['port'];
+            $return_array = Tools::ssv2Array($node->server);
+            $return_array['address'] = $return_array['add'];
             $return_array['protocol'] = 'origin';
             $return_array['protocol_param'] = '';
-            $return_array['path'] = $server['path'];
             $return_array['obfs'] = 'v2ray';
-            if ($server['tls'] == 'tls' && $server['net'] == 'ws') {
-                $return_array['obfs_param'] = 'mode=ws;security=tls;path=' . $server['path'] . ';host=' . $user->getMuMd5();
+            if ($return_array['tls'] == 'tls' && $return_array['net'] == 'ws') {
+                $return_array['obfs_param'] = 'mode=ws;security=tls;path=' . $return_array['path'] . '?redirect=' . $user->getMuMd5() . ';host=' . $return_array['host'];
             } else {
-                $return_array['obfs_param'] = 'mode=ws;security=none;path=' . $server['path'] . ';host=' . $user->getMuMd5();
+                $return_array['obfs_param'] = 'mode=ws;security=none;path=' . $return_array['path'] . '?redirect=' . $user->getMuMd5() . ';host=' . $return_array['host'];
             }
         } else {
             $return_array['address'] = $node->server;
