@@ -312,7 +312,7 @@
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/shadowrocket/id932747118?mt=8"><i class="material-icons">save_alt</i> GET</a> Shadowrocket - [ SS/SSR/VMess ]：</p>
 															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Shadowrocket"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="btn-dl" onclick=AddSub("{$subInfo["v2ray"]}","sub://")><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="btn-dl" onclick=AddSub("{$subInfo["ssr"]}","sub://")><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a class="btn-dl" onclick=AddSub("{$subInfo["v2ray_ss_ssr"]}","sub://")><i class="material-icons icon-sm">how_to_vote</i>SS(R) + V2 订阅</a></p>
+															<p>使用方式：<a class="btn-dl" onclick=AddSub("{$subInfo["shadowrocket"]}","sub://")><i class="material-icons icon-sm">how_to_vote</i>SS(R) + V2 混合订阅</a></p>
 													</div>
 
 													<div class="tab-pane fade" id="sub_center_android">

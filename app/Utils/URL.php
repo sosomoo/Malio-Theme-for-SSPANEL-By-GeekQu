@@ -265,7 +265,7 @@ class URL
         $is_mu = $is_mu == 0 ? 1 : 0;
         $items = self::getAllItems($user, $is_mu, $is_ss, $getV2rayPlugin);
         foreach ($items as $item) {
-            $return_url .= URL::getItemUrl($item, $is_ss) . PHP_EOL;
+            $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
         }
 
         return $return_url;

@@ -177,59 +177,51 @@ class HomeController extends BaseController
                 case 'surge':
                     $msg =  '// Surge Version 2.x' .
                     PHP_EOL .
-                    '订阅链接：' .
+                    '托管配置链接：' .
                     $subInfo['surge2'] .
                     '// Surge Version 3.x' .
                     PHP_EOL .
-                    '订阅链接：' .
+                    '托管配置链接：' .
                     $subInfo['surge3'];
                     break;
                 case 'kitsunebi':
                     $msg =  '// v2ray 订阅' .
                     PHP_EOL .
-                    '订阅链接' .
+                    '订阅链接：' .
                     $subInfo['v2ray'] .
                     '// 合并订阅，包含 ss、v2ray' .
                     PHP_EOL .
-                    '订阅链接' . $subInfo['v2ray_ss'];
+                    '订阅链接：' . $subInfo['v2ray_ss'];
                     break;
                     case 'surfboard':
-                    $msg =  '订阅链接' . $subInfo['surfboard'];
+                    $msg =  '订阅链接：' . $subInfo['surfboard'];
                     break;
                 case 'quantumult_sub':
                     // Quantumult V2ray 专属格式
                     $msg =  '// ssr 订阅' .
                     PHP_EOL .
-                    '订阅链接' .
+                    '订阅链接：' .
                     $subInfo['ssr'] .
                     '// V2ray 订阅' .
                     PHP_EOL .
-                    '订阅链接' .
+                    '订阅链接：' .
                     $subInfo['quantumult_v2'];
                     break;
                 case 'quantumult_conf':
                     $msg =  '// 导入 ss、ssr、v2ray 以及分流规则的配置' .
                     PHP_EOL .
-                    '订阅链接' .
+                    '配置链接：' .
                     $subInfo['quantumult_sub'] .
                     '// 使用自定义策略组的配置，类似 Surge、Clash' .
                     PHP_EOL .
-                    '订阅链接' .
+                    '配置链接：' .
                     $subInfo['quantumult_conf'];
                     break;
                 case 'shadowrocket':
-                    $msg =  '// ssr 订阅' .
+                    $msg = '// 合并订阅，包含 ss、ssr、v2ray' .
                     PHP_EOL .
-                    '订阅链接' .
-                    $subInfo['ssr'] .
-                    '// v2ray 订阅' .
-                    PHP_EOL .
-                    '订阅链接' .
-                    $subInfo['v2ray'] .
-                    '// 合并订阅，包含 ss、ssr、v2ray' .
-                    PHP_EOL .
-                    '订阅链接' .
-                    $subInfo['v2ray_ss_ssr'];
+                    '订阅链接：' .
+                    $subInfo['shadowrocket'];
                     break;
                 default:
                     $msg = '获取失败了呢...，请联系管理员。';

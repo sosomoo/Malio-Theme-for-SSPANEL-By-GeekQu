@@ -179,6 +179,7 @@ class LinkController extends BaseController
             'quantumult_v2' => $userapiUrl . '?quantumult=1',
             'quantumult_sub' => $userapiUrl . '?quantumult=2',
             'quantumult_conf' => $userapiUrl . '?quantumult=3',
+            'shadowrocket' => $userapiUrl . '?shadowrocket=1'
         ];
         return $return_info;
     }
@@ -509,10 +510,7 @@ class LinkController extends BaseController
         }
         $return .= ('STATUS=' . $tmp . PHP_EOL . 'REMARKS=' . Config::get('appName') . PHP_EOL);
         // v2ray
-        $items = URL::getAllVMessUrl($user, 1);
-        foreach ($items as $item) {
-            $return .= (URL::getV2Url($user, $item, 0) . PHP_EOL);
-        }
+        $return .= (URL::getAllVMessUrl($user, 0) . PHP_EOL);
         // ss
         $items = array_merge(
             URL::getAllItems($user, 0, 1),
@@ -522,7 +520,7 @@ class LinkController extends BaseController
             if ($item['obfs'] == 'v2ray') {
                 $v2rayplugin = [
                     'address' => $item['address'],
-                    'port' => $item['port'],
+                    'port' => (string)$item['port'],
                     'path' => ($item['path'] . '?redirect=' . $user->getMuMd5()),
                     'host' => $item['host'],
                     'mode' => 'websocket',
@@ -535,27 +533,31 @@ class LinkController extends BaseController
                     json_encode($v2rayplugin)
                 ) . '#' . urlencode($item['remark']) . PHP_EOL);
             } elseif (in_array($item['obfs'], ['simple_obfs_http', 'simple_obfs_tls'])) {
-                $obfs = $item['method'] == 'simple_obfs_http' ? 'obfs=http;' : 'obfs=tls;';
-                $obfs .= $item['obfs_param'] != '' ? ('obfs-host=' . $item['obfs_param'] . ';') : 'obfs-host=windowsupdate.windows.com;';
+                $obfs = (
+                    $item['method'] == 'simple_obfs_http'
+                    ? 'obfs=http;'
+                    : 'obfs=tls;'
+                );
+                $obfs .= (
+                    $item['obfs_param'] != ''
+                    ? ('obfs-host=' . $item['obfs_param'] . ';')
+                    : 'obfs-host=windowsupdate.windows.com;'
+                );
                 $return .= ('ss://' . Tools::base64_url_encode(
                     $item['method'] . ':' . $item['passwd']
                 ) . '@' . $item['address'] . ':' . $item['port'] .
                     '?plugin=simple-obfs;' . $obfs .
-                    'obfs-uri=/#' . urlencode($item['remark']) . PHP_EOL);
+                    'obfs-uri=/#' . urlencode(
+                        Config::get('appName') . ' - ' . $item['remark']
+                    ) . PHP_EOL
+                );
             } elseif ($item['obfs'] == 'plain') {
-                $return .= ('ss://' . Tools::base64_url_encode(
-                    $item['method'] . ':' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port']
-                ) . '#' . urlencode($item['remark']) . PHP_EOL);
+                $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
             }
         }
         // ssr
-        $items = array_merge(
-            URL::getAllItems($user, 0, 0),
-            URL::getAllItems($user, 1, 0)
-        );
-        foreach ($items as $item) {
-            $return .= URL::getItemUrl($item, 0) . PHP_EOL;
-        }
+        $return .= URL::getAllUrl($user, 0, 0, 0) . PHP_EOL;
+
         return Tools::base64_url_encode($return);
     }
 
