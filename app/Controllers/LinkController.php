@@ -510,7 +510,36 @@ class LinkController extends BaseController
         }
         $return .= ('STATUS=' . $tmp . PHP_EOL . 'REMARKS=' . Config::get('appName') . PHP_EOL);
         // v2ray
-        $return .= (URL::getAllVMessUrl($user, 0) . PHP_EOL);
+        $items = URL::getAllVMessUrl($user, 1);
+        foreach ($items as $item) {
+            if ($item['net'] == 'kcp') {
+                continue;
+            }
+            if ($item['net'] == 'ws') {
+                $obfs = (
+                    $item['host'] != ''
+                    ? ('obfsParam=' . $item['host'] .
+                        '&path=' . $item['path'] . '&obfs=websocket&'
+                        )
+                    : ('obfsParam=' . $item['add'] .
+                        '&path=' . $item['path'] . '&obfs=websocket&'
+                        )
+                );
+                $obfs .= (
+                    $item['tls'] == 'tls'
+                    ? 'tls=1'
+                    : 'tls=0'
+                );
+            } else {
+                $obfs = 'obfs=none';
+            }
+            $return .= ('vmess://' . Tools::base64_url_encode(
+                'chacha20-poly1305:' . $item['id'] .
+                '@' . $item['add'] . ':' . $item['port']
+            ) . '?remarks=' . rawurlencode($item['ps']) .
+            '&' . $obfs . PHP_EOL
+            );
+        }
         // ss
         $items = array_merge(
             URL::getAllItems($user, 0, 1),
@@ -531,7 +560,8 @@ class LinkController extends BaseController
                     '@' . $item['address'] . ':' . $item['port']
                 ) . '?v2ray-plugin=' . Tools::base64_url_encode(
                     json_encode($v2rayplugin)
-                ) . '#' . urlencode($item['remark']) . PHP_EOL);
+                ) . '#' . rawurlencode($item['remark']) . PHP_EOL
+                );
             } elseif (in_array($item['obfs'], ['simple_obfs_http', 'simple_obfs_tls'])) {
                 $obfs = (
                     $item['method'] == 'simple_obfs_http'
@@ -547,7 +577,7 @@ class LinkController extends BaseController
                     $item['method'] . ':' . $item['passwd']
                 ) . '@' . $item['address'] . ':' . $item['port'] .
                     '?plugin=simple-obfs;' . $obfs .
-                    'obfs-uri=/#' . urlencode(
+                    'obfs-uri=/#' . rawurlencode(
                         Config::get('appName') . ' - ' . $item['remark']
                     ) . PHP_EOL
                 );
