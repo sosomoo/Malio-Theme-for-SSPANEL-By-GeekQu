@@ -77,6 +77,7 @@ class LinkController extends BaseController
         $surge = isset($request->getQueryParams()['surge']) ? (int)$request->getQueryParams()['surge'] : 0;
         $quantumult = isset($request->getQueryParams()['quantumult']) ? (int)$request->getQueryParams()['quantumult'] : 0;
         $surfboard = isset($request->getQueryParams()['surfboard']) ? (int)$request->getQueryParams()['surfboard'] : 0;
+        $shadowrocket = isset($request->getQueryParams()['shadowrocket']) ? (int)$request->getQueryParams()['shadowrocket'] : 0;
 
         if (isset($request->getQueryParams()['mu'])) {
             $mu = (int)$request->getQueryParams()['mu'];
@@ -135,6 +136,12 @@ class LinkController extends BaseController
                 ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
                 ->withHeader('Content-Disposition', ' attachment; filename=SSD.txt');
             $newResponse->getBody()->write(self::GetSSD($user));
+        } elseif ($shadowrocket == 1) {
+            $newResponse = $response
+                ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
+                ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+                ->withHeader('Content-Disposition', ' attachment; filename=Shadowrocket.txt');
+            $newResponse->getBody()->write(self::getShadowrocket($user, $opts));
         } else {
             $newResponse = $response
                 ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
@@ -172,6 +179,7 @@ class LinkController extends BaseController
             'quantumult_v2' => $userapiUrl . '?quantumult=1',
             'quantumult_sub' => $userapiUrl . '?quantumult=2',
             'quantumult_conf' => $userapiUrl . '?quantumult=3',
+            'shadowrocket' => $userapiUrl . '?shadowrocket=1'
         ];
         return $return_info;
     }
@@ -375,7 +383,7 @@ class LinkController extends BaseController
                         if (strpos($item['obfs_param'], 'security=tls')) {
                             $sss['plugin-opts']['tls'] = true;
                         }
-                        $sss['plugin-opts']['host'] = $user->getMuMd5();
+                        $sss['plugin-opts']['host'] = $item['host'];
                         $sss['plugin-opts']['path'] = $item['path'];
                         $sss['plugin-opts']['skip-cert-verify'] = true;
                         break;
@@ -383,10 +391,8 @@ class LinkController extends BaseController
                 if ($item['obfs'] != 'v2ray') {
                     if ($item['obfs_param'] != '') {
                         $sss['plugin-opts']['host'] = $item['obfs_param'];
-                    } elseif ($user->obfs_param != '') {
-                        $sss['plugin-opts']['host'] = $user->obfs_param;
                     } else {
-                        $sss['plugin-opts']['host'] = 'wns.windows.com';
+                        $sss['plugin-opts']['host'] = 'windowsupdate.windows.com';
                     }
                 }
             }
@@ -484,38 +490,124 @@ class LinkController extends BaseController
         return URL::getAllSSDUrl($user);
     }
 
+    public static function getShadowrocket($user, $opts)
+    {
+        $return = '';
+        if (strtotime($user->expire_in) > time()) {
+            if ($user->transfer_enable == 0) {
+                $tmp = '剩余流量：0';
+            } else {
+                $tmp = '剩余流量：' . $user->unusedTraffic();
+            }
+            $tmp .= ' - 过期时间：';
+            if ($user->class_expire != '1989-06-04 00:05:00') {
+                $userClassExpire = explode(' ', $user->class_expire);
+                $tmp .= $userClassExpire[0];
+            } else {
+                $tmp .= '无限期';
+            }
+        } else {
+            $tmp = '账户已过期，请续费后使用';
+        }
+        $return .= ('STATUS=' . $tmp . PHP_EOL . 'REMARKS=' . Config::get('appName') . PHP_EOL);
+        // v2ray
+        $items = URL::getAllVMessUrl($user, 1);
+        foreach ($items as $item) {
+            if ($item['net'] == 'kcp') {
+                continue;
+            }
+            if ($item['net'] == 'ws') {
+                $obfs = (
+                    $item['host'] != ''
+                    ? ('obfsParam=' . $item['host'] .
+                        '&path=' . $item['path'] . '&obfs=websocket&'
+                        )
+                    : ('obfsParam=' . $item['add'] .
+                        '&path=' . $item['path'] . '&obfs=websocket&'
+                        )
+                );
+                $obfs .= (
+                    $item['tls'] == 'tls'
+                    ? 'tls=1'
+                    : 'tls=0'
+                );
+            } else {
+                $obfs = 'obfs=none';
+            }
+            $return .= ('vmess://' . Tools::base64_url_encode(
+                'chacha20-poly1305:' . $item['id'] .
+                '@' . $item['add'] . ':' . $item['port']
+            ) . '?remarks=' . rawurlencode($item['ps']) .
+            '&' . $obfs . PHP_EOL
+            );
+        }
+        // ss
+        $items = array_merge(
+            URL::getAllItems($user, 0, 1),
+            URL::getAllItems($user, 1, 1)
+        );
+        foreach ($items as $item) {
+            if ($item['obfs'] == 'v2ray') {
+                $v2rayplugin = [
+                    'address' => $item['address'],
+                    'port' => (string)$item['port'],
+                    'path' => $item['path'],
+                    'host' => $item['host'],
+                    'mode' => 'websocket',
+                ];
+                $v2rayplugin['tls'] = $item['tls'] == 'tls' ? true : false;
+                $return .= ('ss://' . Tools::base64_url_encode(
+                    $item['method'] . ':' . $item['passwd'] .
+                    '@' . $item['address'] . ':' . $item['port']
+                ) . '?v2ray-plugin=' . Tools::base64_url_encode(
+                    json_encode($v2rayplugin)
+                ) . '#' . rawurlencode($item['remark']) . PHP_EOL
+                );
+            } elseif (in_array($item['obfs'], ['simple_obfs_http', 'simple_obfs_tls'])) {
+                $obfs = (
+                    $item['method'] == 'simple_obfs_http'
+                    ? 'obfs=http;'
+                    : 'obfs=tls;'
+                );
+                $obfs .= (
+                    $item['obfs_param'] != ''
+                    ? ('obfs-host=' . $item['obfs_param'] . ';')
+                    : 'obfs-host=windowsupdate.windows.com;'
+                );
+                $return .= ('ss://' . Tools::base64_url_encode(
+                    $item['method'] . ':' . $item['passwd']
+                ) . '@' . $item['address'] . ':' . $item['port'] .
+                    '?plugin=simple-obfs;' . $obfs .
+                    'obfs-uri=/#' . rawurlencode(
+                        Config::get('appName') . ' - ' . $item['remark']
+                    ) . PHP_EOL
+                );
+            } elseif ($item['obfs'] == 'plain') {
+                $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
+            }
+        }
+        // ssr
+        $return .= URL::getAllUrl($user, 0, 0, 0) . PHP_EOL;
+
+        return Tools::base64_url_encode($return);
+    }
+
     public static function GetSub($user, $sub, $opts)
     {
         $extend = isset($opts['extend']) ? $opts['extend'] : 0;
+        $getV2rayPlugin = 1;
         $return_url = '';
-        if (strpos($_SERVER['HTTP_USER_AGENT'], 'Shadowrocket') !== false) {
-            if (strtotime($user->expire_in) > time()) {
-                if ($user->transfer_enable == 0) {
-                    $tmp = '剩余流量：0';
-                } else {
-                    $tmp = '剩余流量：' . $user->unusedTraffic();
-                }
-                $tmp .= ' - 过期时间：';
-                if ($user->class_expire != '1989-06-04 00:05:00') {
-                    $userClassExpire = explode(' ', $user->class_expire);
-                    $tmp .= $userClassExpire[0];
-                } else {
-                    $tmp .= '无限期';
-                }
-            } else {
-                $tmp = '账户已过期，请续费后使用';
-            }
-            $return_url .= ('STATUS=' . $tmp . PHP_EOL . 'REMARKS=' . Config::get('appName') . PHP_EOL);
-            $extend = 0;
+        if (strpos($_SERVER['HTTP_USER_AGENT'], 'Kitsunebi') !== false) {
+            $getV2rayPlugin = 0;
         }
         switch ($sub) {
             case 1: // SSR
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 1) . PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 0) . PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 0, $getV2rayPlugin) . PHP_EOL;
                 break;
             case 2: // SS
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 2) . PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 1) . PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 1, $getV2rayPlugin) . PHP_EOL;
                 break;
             case 3: // V2
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 3) . PHP_EOL;
@@ -524,13 +616,13 @@ class LinkController extends BaseController
             case 4: // V2 + SS
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 3) . PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 1) . PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 1, $getV2rayPlugin) . PHP_EOL;
                 break;
             case 5: // V2 + SS + SSR
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 1) . PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 0) . PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 1) . PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 0, $getV2rayPlugin) . PHP_EOL;
+                $return_url .= URL::getAllUrl($user, 0, 1, $getV2rayPlugin) . PHP_EOL;
                 break;
         }
         return Tools::base64_url_encode($return_url);

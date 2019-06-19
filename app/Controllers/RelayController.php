@@ -166,7 +166,7 @@ class RelayController extends UserController
 
         foreach ($dist_nodes as $node) {
             if ($node->sort == 11 || $node->sort == 12) {
-                $node_explode = Tools::ssv2Array($node->server);
+                $node_explode = Tools::v2Array($node->server);
                 $ports[] = $node_explode['port'];
                 $node->name = $node->name . ' 如果是V2ray后端 请设置成 ' . $node_explode['port'];
             } else {
@@ -249,7 +249,7 @@ class RelayController extends UserController
         )->where('type', 1)->where('sort', 9)->where('node_class', '<=', $user->class)->first();
         $v2ray_port_raw = '';
         if ($dist_node->sort == 12 || $dist_node->sort == 11) {
-            $node_explode = Tools::ssv2Array($dist_node->server);
+            $node_explode = Tools::v2Array($dist_node->server);
             $v2ray_port_raw = $node_explode['port'];
         }
         if (($port_raw == null && $port != $user->port && $v2ray_port_raw == '') || ($v2ray_port_raw != '' && ($port != $user->port && $port != $v2ray_port_raw))) {
@@ -355,7 +355,7 @@ class RelayController extends UserController
         }
         foreach ($dist_nodes as $node) {
             if ($node->sort == 11 || $node->sort == 12) {
-                $node_explode = Tools::ssv2Array($node->server);
+                $node_explode = Tools::v2Array($node->server);
                 $ports[] = $node_explode['port'];
                 $node->name = $node->name . ' 如果是V2ray后端 请设置成: ' . $node_explode['port'];
             } else {
@@ -435,7 +435,7 @@ class RelayController extends UserController
         )->where('type', 1)->where('sort', 9)->where('node_class', '<=', $user->class)->first();
         $v2ray_port_raw = '';
         if ($dist_node->sort == 12 || $dist_node->sort == 11) {
-            $node_explode = Tools::ssv2Array($dist_node->server);
+            $node_explode = Tools::v2Array($dist_node->server);
             $v2ray_port_raw = $node_explode['port'];
         }
         if (($port_raw == null && $port != $user->port && $v2ray_port_raw == '') || ($v2ray_port_raw != '' && ($port != $user->port && $port != $v2ray_port_raw))) {
