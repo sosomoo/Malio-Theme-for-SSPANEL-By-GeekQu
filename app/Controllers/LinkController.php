@@ -253,7 +253,7 @@ class LinkController extends BaseController
                     $v2ray_name .= "\n" . $v2ray['ps'];
                 }
                 $v2ray_tls = ', over-tls=false, certificate=1';
-                if ($v2ray['tls'] == 'tls') {
+                if (($v2ray['net'] == 'tcp' && $v2ray['tls'] == 'tls') || $v2ray['tls'] == 'tls') {
                     $v2ray_tls = ', over-tls=true, tls-host=' . $v2ray['add'] . ', certificate=1';
                 }
                 $v2ray_obfs = '';
@@ -429,7 +429,7 @@ class LinkController extends BaseController
                 if ($item['host'] != '') {
                     $v2rays['ws-headers']['Host'] = $item['host'];
                 }
-            } elseif ($item['net'] == 'tls') {
+            } elseif (($item['net'] == 'tcp' && $item['tls'] == 'tls') || $item['net'] == 'tls') {
                 $v2rays['tls'] = true;
             }
             if (isset($opts['source']) && $opts['source'] != '') {
@@ -515,8 +515,9 @@ class LinkController extends BaseController
             if ($item['net'] == 'kcp') {
                 continue;
             }
+            $obfs = '';
             if ($item['net'] == 'ws') {
-                $obfs = (
+                $obfs .= (
                     $item['host'] != ''
                     ? ('obfsParam=' . $item['host'] .
                         '&path=' . $item['path'] . '&obfs=websocket&'
@@ -530,8 +531,15 @@ class LinkController extends BaseController
                     ? 'tls=1'
                     : 'tls=0'
                 );
+            } elseif (($item['net'] == 'tcp' && $item['tls'] == 'tls') || $item['net'] == 'tls') {
+                $obfs .= (
+                    $item['tls'] == 'tls'
+                    ? 'tls=1'
+                    : 'tls=0'
+                );
+                $obfs .= 'obfs=none';
             } else {
-                $obfs = 'obfs=none';
+                $obfs .= 'obfs=none';
             }
             $return .= ('vmess://' . Tools::base64_url_encode(
                 'chacha20-poly1305:' . $item['id'] .
