@@ -532,7 +532,7 @@ class LinkController extends BaseController
                     : 'tls=0'
                 );
             } elseif (($item['net'] == 'tcp' && $item['tls'] == 'tls') || $item['net'] == 'tls') {
-                $obfs .= 'obfs=none';
+                $obfs .= 'obfs=none&';
                 $obfs .= (
                     $item['tls'] == 'tls'
                     ? 'tls=1'
