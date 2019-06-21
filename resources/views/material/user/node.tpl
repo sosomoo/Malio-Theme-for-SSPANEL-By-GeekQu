@@ -25,7 +25,7 @@
         <p>伪装方式：<span class="card-tag tag-green">{$v2server['type']}</span></p>
     {/if}
 
-    {if ($v2server['net']=="ws" && $v2server['tls']=="tls")||$v2server['net']=="tls"}
+    {if ($v2server['net']=="ws" && $v2server['tls']=="tls")||$v2server['net']=="tls"||($v2server['net']=="tcp" && $v2server['tls']=="tls")}
         <p>TLS：<span class="card-tag tag-green">TLS</span></p>
     {/if}
     <p>流量比例：<span class="card-tag tag-red">{$node['traffic_rate']}</span></p>
