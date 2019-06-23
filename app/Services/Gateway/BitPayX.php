@@ -99,12 +99,13 @@ class BitPayX extends AbstractPayment
         $data['merchant_order_id'] = $pl->tradeno;
         $data['price_amount'] = (float)$price;
         $data['price_currency'] = 'CNY';
-        $data['pay_currency'] = $type;
+        if ($type === 'WECHAT' || $type === 'ALIPAY') {
+            $data['pay_currency'] = $type;
+        }
         $data['title'] = '支付单号：' . $pl->tradeno;
         $data['description'] = '充值：' . $price . ' 元';
         $data['callback_url'] = Config::get('baseUrl') . '/payment/notify';
 
-        // 如果不想暴露域名，建议屏蔽下面3行 
         $data['success_url'] = Config::get('baseUrl') . '/user/payment/return?merchantTradeNo=';
         $data['success_url'] .= $pl->tradeno;
         $data['cancel_url'] = $data['success_url'];
@@ -115,7 +116,7 @@ class BitPayX extends AbstractPayment
         $result['pid'] = $pl->tradeno;
         // file_put_contents(BASE_PATH.'/bitpay_purchase.log', json_encode($data)."\r\n", FILE_APPEND);
         // file_put_contents(BASE_PATH.'/bitpay_purchase.log', json_encode($result)."\r\n", FILE_APPEND);
-        if ($result['status'] == 200 || $result['status'] == 201) {
+        if ($result['status'] === 200 || $result['status'] === 201) {
             $result['payment_url'] .= '&lang=zh';
             return json_encode(array('url' => $result['payment_url'], 'errcode' => 0, 'pid' => $pl->id));
         }
@@ -172,7 +173,7 @@ class BitPayX extends AbstractPayment
         $pid = $_GET['merchantTradeNo'];
         $p = Paylist::where('tradeno', '=', $pid)->first();
         $money = $p->total;
-        if ($p->status == 1) {
+        if ($p->status === 1) {
             $success = 1;
         } else {
             $data = $this->query($pid);
