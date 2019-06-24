@@ -135,7 +135,7 @@ class LinkController extends BaseController
 
         // 将访问 V2RayNG 订阅的 Quantumult 转到 Quantumult 的 V2Ray 专属订阅
         if (strpos($_SERVER['HTTP_USER_AGENT'], 'Quantumult') !== false
-            && $sub = 3
+            && $sub == 3
         ) {
             $quantumult = 1;
         }

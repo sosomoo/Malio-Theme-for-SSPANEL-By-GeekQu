@@ -35,6 +35,11 @@
       homepage: 'index.md',
       nameLink: '/doc/',
       el: '#docs',
+      copyCode: {
+          buttonText : '点击拷贝',
+          errorText  : '拷贝失败',
+          successText: '拷贝成功'
+      },
       {literal}
       plugins: [
         function(hook, vm) {
@@ -50,5 +55,6 @@
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
   <script src="//unpkg.com/docsify/lib/plugins/emoji.js"></script>
   <script src="//unpkg.com/docsify/lib/plugins/zoom-image.js"></script>
+  <script src="//unpkg.com/docsify-copy-code"></script>
 </body>
 </html>
