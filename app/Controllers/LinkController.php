@@ -274,7 +274,8 @@ class LinkController extends BaseController
             'quantumult_v2' => $userapiUrl . '?quantumult=1',
             'quantumult_sub' => $userapiUrl . '?quantumult=2',
             'quantumult_conf' => $userapiUrl . '?quantumult=3',
-            'shadowrocket' => $userapiUrl . '?shadowrocket=1'
+            'shadowrocket' => $userapiUrl . '?shadowrocket=1',
+            'kitsunebi' => $userapiUrl . '?kitsunebi=1'
         ];
         return $return_info;
     }
