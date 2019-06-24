@@ -155,7 +155,7 @@ class HomeController extends BaseController
             $msg .= '₍₍ ◝(・ω・)◟ ⁾⁾ 您没有登录噢，登录之后再刷新就阔以了啦';
         } else {
             $msg .= '```' . PHP_EOL;
-            $subInfo = LinkController::GetSubinfo($user, 0);
+            $subInfo = LinkController::getSubinfo($user, 0);
             switch ($request->getParam('type')) {
                 case 'ss':
                     $msg .= '订阅链接：' . $subInfo['ss'];
