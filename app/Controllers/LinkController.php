@@ -817,10 +817,10 @@ class LinkController extends BaseController
                 : '&tls=0'
             );
             $mux = '&mux=1&muxConcurrency=8';
-            $return .= ('vmess://' . Tools::base64_url_encode(
+            $return .= ('vmess://' . base64_encode(
                 'auto:' . $item['id'] .
                 '@' . $item['add'] . ':' . $item['port']
-            ) . '?remarks=' . rawurlencode($item['ps']) .
+            ) . '?remark=' . rawurlencode($item['ps']) .
                 $network . $protocol .
                 '&aid=' . $item['aid']
                 . $tls . $mux . PHP_EOL
@@ -837,7 +837,7 @@ class LinkController extends BaseController
             }
         }
 
-        return Tools::base64_url_encode($return);
+        return base64_encode($return);
     }
 
     /**
