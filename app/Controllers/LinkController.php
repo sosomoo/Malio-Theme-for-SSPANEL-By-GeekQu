@@ -71,13 +71,46 @@ class LinkController extends BaseController
 
         $opts = $request->getQueryParams();
 
-        $sub = isset($request->getQueryParams()['sub']) ? (int)$request->getQueryParams()['sub'] : 0;
-        $ssd = isset($request->getQueryParams()['ssd']) ? (int)$request->getQueryParams()['ssd'] : 0;
-        $clash = isset($request->getQueryParams()['clash']) ? (int)$request->getQueryParams()['clash'] : 0;
-        $surge = isset($request->getQueryParams()['surge']) ? (int)$request->getQueryParams()['surge'] : 0;
-        $quantumult = isset($request->getQueryParams()['quantumult']) ? (int)$request->getQueryParams()['quantumult'] : 0;
-        $surfboard = isset($request->getQueryParams()['surfboard']) ? (int)$request->getQueryParams()['surfboard'] : 0;
-        $shadowrocket = isset($request->getQueryParams()['shadowrocket']) ? (int)$request->getQueryParams()['shadowrocket'] : 0;
+        $sub = (
+            isset($request->getQueryParams()['sub'])
+            ? (int)$request->getQueryParams()['sub']
+            : 0
+        );
+        $ssd = (
+            isset($request->getQueryParams()['ssd'])
+            ? (int)$request->getQueryParams()['ssd']
+            : 0
+        );
+        $clash = (
+            isset($request->getQueryParams()['clash'])
+            ? (int)$request->getQueryParams()['clash']
+            : 0
+        );
+        $surge = (
+            isset($request->getQueryParams()['surge'])
+            ? (int)$request->getQueryParams()['surge']
+            : 0
+        );
+        $quantumult = (
+            isset($request->getQueryParams()['quantumult'])
+            ? (int)$request->getQueryParams()['quantumult']
+            : 0
+        );
+        $surfboard = (
+            isset($request->getQueryParams()['surfboard'])
+            ? (int)$request->getQueryParams()['surfboard']
+            : 0
+        );
+        $kitsunebi = (
+            isset($request->getQueryParams()['kitsunebi'])
+            ? (int)$request->getQueryParams()['kitsunebi']
+            : 0
+        );
+        $shadowrocket = (
+            isset($request->getQueryParams()['shadowrocket'])
+            ? (int)$request->getQueryParams()['shadowrocket']
+            : 0
+        );
 
         if (isset($request->getQueryParams()['mu'])) {
             $mu = (int)$request->getQueryParams()['mu'];
@@ -101,59 +134,121 @@ class LinkController extends BaseController
         }
 
         // 将访问 V2RayNG 订阅的 Quantumult 转到 Quantumult 的 V2Ray 专属订阅
-        if (strpos($_SERVER['HTTP_USER_AGENT'], 'Quantumult') !== false && $sub = 3) {
+        if (strpos($_SERVER['HTTP_USER_AGENT'], 'Quantumult') !== false
+            && $sub = 3
+        ) {
             $quantumult = 1;
         }
 
         if (in_array($quantumult, array(1, 2, 3))) {
-            $newResponse = $response
-                ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
-                ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
-                ->withHeader('Content-Disposition', ' attachment; filename=Quantumult.conf')
-                ->withHeader('Subscription-Userinfo', ' upload='.$user->u.'; download='.$user->d.'; total='.$user->transfer_enable.'; expire='.strtotime($user->class_expire).'');
-            $newResponse->getBody()->write(self::GetQuantumult($user, $quantumult));
+            $getBody = self::getBody(
+                $user,
+                $response,
+                self::getQuantumult($user, $quantumult),
+                'Quantumult.conf'
+            );
         } elseif (in_array($surge, array(1, 2, 3))) {
-            $newResponse = $response
-                ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
-                ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
-                ->withHeader('Content-Disposition', ' attachment; filename=Surge.conf');
-            $newResponse->getBody()->write(self::GetSurge($user, $surge, $opts));
+            $getBody = self::getBody(
+                $user,
+                $response,
+                self::getSurge($user, $surge, $opts),
+                'Surge.conf'
+            );
         } elseif ($surfboard == 1) {
-            $newResponse = $response
-                ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
-                ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
-                ->withHeader('Content-Disposition', ' attachment; filename=Surfboard.conf');
-            $newResponse->getBody()->write(self::GetSurfboard($user));
+            $getBody = self::getBody(
+                $user,
+                $response,
+                self::getSurfboard($user),
+                'Surfboard.conf'
+            );
         } elseif ($clash == 1) {
-            $newResponse = $response
-                ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
-                ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
-                ->withHeader('Content-Disposition', ' attachment; filename=config.yml');
-            $newResponse->getBody()->write(self::GetClash($user, $opts));
+            $getBody = self::getBody(
+                $user,
+                $response,
+                self::getClash($user, $opts),
+                'config.yaml'
+            );
         } elseif ($ssd == 1) {
-            $newResponse = $response
-                ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
-                ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
-                ->withHeader('Content-Disposition', ' attachment; filename=SSD.txt');
-            $newResponse->getBody()->write(self::GetSSD($user));
+            $getBody = self::getBody(
+                $user,
+                $response,
+                self::getSSD($user),
+                'SSD.txt'
+            );
+        } elseif ($kitsunebi == 1) {
+            $getBody = self::getBody(
+                $user,
+                $response,
+                self::getKitsunebi($user),
+                'Kitsunebi.txt'
+            );
         } elseif ($shadowrocket == 1) {
-            $newResponse = $response
-                ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
-                ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
-                ->withHeader('Content-Disposition', ' attachment; filename=Shadowrocket.txt');
-            $newResponse->getBody()->write(self::getShadowrocket($user, $opts));
+            $getBody = self::getBody(
+                $user, $response,
+                self::getShadowrocket($user),
+                'Shadowrocket.txt'
+            );
         } else {
-            $newResponse = $response
-                ->withHeader('Content-type', ' application/octet-stream; charset=utf-8')
-                ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
-                ->withHeader('Content-Disposition', ' attachment; filename=' . $token . '.txt')
-                ->withHeader('Subscription-Userinfo', ' upload='.$user->u.'; download='.$user->d.'; total='.$user->transfer_enable.'; expire='.strtotime($user->class_expire).'');
-            $newResponse->getBody()->write(self::GetSub($user, $sub, $opts));
+            $getBody = self::getBody(
+                $user,
+                $response,
+                self::getSub($user, $sub, $opts),
+                'node.txt'
+            );
+
         }
+
+        return $getBody;
+    }
+
+    /**
+     * 响应内容
+     *
+     * @param object $user     用户
+     * @param array  $response 响应体
+     * @param string $content  订阅内容
+     * @param string $filename 文件名
+     *
+     * @return string
+     */
+    public static function getBody($user, $response, $content, $filename)
+    {
+        $newResponse = $response
+            ->withHeader(
+                'Content-type',
+                ' application/octet-stream; charset=utf-8'
+            )
+            ->withHeader(
+                'Cache-Control',
+                'no-store, no-cache, must-revalidate'
+            )
+            ->withHeader(
+                'Content-Disposition',
+                ' attachment; filename=' . $filename
+            )
+            ->withHeader(
+                'Subscription-Userinfo',
+                (
+                    ' upload=' . $user->u
+                    . '; download=' . $user->d
+                    . '; total=' . $user->transfer_enable
+                    . '; expire=' . strtotime($user->class_expire)
+                )
+            );
+        $newResponse->getBody()->write($content);
+
         return $newResponse;
     }
 
-    public static function GetSubinfo($user, $int = 0)
+    /**
+     * 订阅链接汇总
+     *
+     * @param object $user 用户
+     * @param int    $int  当前用户访问的订阅类型
+     *
+     * @return string
+     */
+    public static function getSubinfo($user, $int = 0)
     {
         if ($int == 0) {
             $int = '';
@@ -179,28 +274,68 @@ class LinkController extends BaseController
             'quantumult_v2' => $userapiUrl . '?quantumult=1',
             'quantumult_sub' => $userapiUrl . '?quantumult=2',
             'quantumult_conf' => $userapiUrl . '?quantumult=3',
-            'shadowrocket' => $userapiUrl . '?shadowrocket=1'
+            'shadowrocket' => $userapiUrl . '?shadowrocket=1',
+            'kitsunebi' => $userapiUrl . '?kitsunebi=1'
         ];
         return $return_info;
     }
 
-    public static function GetSurge($user, $surge, $opts)
+    /**
+     * Surge 配置
+     *
+     * @param object $user  用户
+     * @param int    $surge 订阅类型
+     * @param array  $opts  request
+     *
+     * @return string
+     */
+    public static function getSurge($user, $surge, $opts)
     {
-        $subInfo = self::GetSubinfo($user, $surge);
+        $subInfo = self::getSubinfo($user, $surge);
         $userapiUrl = $subInfo['surge'];
         $proxy_name = '';
         $proxy_group = '';
-        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
+        $items = array_merge(
+            URL::getAllItems($user, 0, 1),
+            URL::getAllItems($user, 1, 1)
+        );
         foreach ($items as $item) {
             if ($item['obfs'] == 'v2ray') {
                 continue;
             }
             if (in_array($surge, array(1, 3))) {
-                $proxy_group .= $item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', encrypt-method=' . $item['method'] . ', password=' . $item['passwd'] . URL::getSurgeObfs($item) . ', tfo=true, udp-relay=true' . PHP_EOL;
+                $proxy_group .= (
+                    $item['remark']
+                    . ' = ss, '
+                    . $item['address'] .
+                    ', '
+                    . $item['port']
+                    . ', encrypt-method='
+                    . $item['method']
+                    . ', password='
+                    . $item['passwd']
+                    . URL::getSurgeObfs($item)
+                    . ', tfo=true, udp-relay=true'
+                    . PHP_EOL
+                );
             } else {
-                $proxy_group .= $item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item) . ', tfo=true' . PHP_EOL;
+                $proxy_group .= (
+                    $item['remark']
+                    . ' = custom, '
+                    . $item['address']
+                    . ', '
+                    . $item['port']
+                    . ', '
+                    . $item['method']
+                    . ', '
+                    . $item['passwd']
+                    . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module'
+                    . URL::getSurgeObfs($item)
+                    . ', tfo=true'
+                    . PHP_EOL
+                );
             }
-            $proxy_name .= ', '.$item['remark'];
+            $proxy_name .= (', ' . $item['remark']);
         }
 
         if (isset($opts['source']) && $opts['source'] != '') {
@@ -211,7 +346,9 @@ class LinkController extends BaseController
             }
             $SourceContent = @file_get_contents($SourceURL);
             if ($SourceContent) {
-                return ConfController::SurgeConfs($user, $proxy_group, $items, $SourceContent);
+                return ConfController::getSurgeConfs(
+                    $user, $proxy_group, $items, $SourceContent
+                );
             } else {
                 return '远程配置下载失败。';
             }
@@ -230,9 +367,17 @@ class LinkController extends BaseController
         }
     }
 
-    public static function GetQuantumult($user, $quantumult = 0)
+    /**
+     * Quantumult 配置
+     *
+     * @param object $user       用户
+     * @param int    $quantumult 订阅类型
+     *
+     * @return string
+     */
+    public static function getQuantumult($user, $quantumult = 0)
     {
-        $subInfo = self::GetSubinfo($user, 0);
+        $subInfo = self::getSubinfo($user, 0);
         $proxys = [];
         $groups = [];
         $subUrl = '';
@@ -258,7 +403,7 @@ class LinkController extends BaseController
                 }
                 $v2ray_obfs = '';
                 if ($v2ray['net'] == 'ws' || $v2ray['net'] == 'http') {
-                    $v2ray_obfs = ', obfs=' . $v2ray['net'] . ', obfs-path="' . $v2ray['path'] . '", obfs-header="Host: ' . $v2ray['add'] . '[Rr][Nn]User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_0 like Mac OS X) AppleWebKit/888.8.88 (KHTML, like Gecko) Mobile/6666666"';
+                    $v2ray_obfs = ', obfs=' . $v2ray['net'] . ', obfs-path="' . $v2ray['path'] . '", obfs-header="Host: ' . $v2ray['host'] . '[Rr][Nn]User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_0 like Mac OS X) AppleWebKit/888.8.88 (KHTML, like Gecko) Mobile/6666666"';
                 }
                 if ($quantumult == 1) {
                     $v2ray_group .= 'vmess://' . base64_encode($v2ray['ps'] . ' = vmess, ' . $v2ray['add'] . ', ' . $v2ray['port'] . ', chacha20-ietf-poly1305, "' . $v2ray['id'] . '", group=' . Config::get('appName') . '_v2' . $v2ray_tls . $v2ray_obfs) . PHP_EOL;
@@ -327,9 +472,16 @@ class LinkController extends BaseController
         return $render->fetch('quantumult.tpl');
     }
 
-    public static function GetSurfboard($user)
+    /**
+     * Surfboard 配置
+     *
+     * @param object $user 用户
+     *
+     * @return string
+     */
+    public static function getSurfboard($user)
     {
-        $subInfo = self::GetSubinfo($user, 0);
+        $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['surfboard'];
         $ss_name = '';
         $ss_group = '';
@@ -349,9 +501,17 @@ class LinkController extends BaseController
         return $render->fetch('surfboard.tpl');
     }
 
-    public static function GetClash($user, $opts)
+    /**
+     * Clash 配置
+     *
+     * @param object $user 用户
+     * @param array  $opts request
+     *
+     * @return string
+     */
+    public static function getClash($user, $opts)
     {
-        $subInfo = self::GetSubinfo($user, 0);
+        $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
         $confs = [];
         $proxy_confs = [];
@@ -452,7 +612,7 @@ class LinkController extends BaseController
             }
             $SourceContent = @file_get_contents($SourceURL);
             if ($SourceContent) {
-                return ConfController::ClashConfs($user, $confs, $SourceContent);
+                return ConfController::getClashConfs($user, $confs, $SourceContent);
             } else {
                 return '远程配置下载失败。';
             }
@@ -485,12 +645,26 @@ class LinkController extends BaseController
         return $render->fetch('clash.tpl');
     }
 
-    public static function GetSSD($user)
+    /**
+     * SSD 订阅
+     *
+     * @param object $user 用户
+     *
+     * @return string
+     */
+    public static function getSSD($user)
     {
         return URL::getAllSSDUrl($user);
     }
 
-    public static function getShadowrocket($user, $opts)
+    /**
+     * Shadowrocket 订阅
+     *
+     * @param object $user 用户
+     *
+     * @return string
+     */
+    public static function getShadowrocket($user)
     {
         $return = '';
         if (strtotime($user->expire_in) > time()) {
@@ -509,7 +683,12 @@ class LinkController extends BaseController
         } else {
             $tmp = '账户已过期，请续费后使用';
         }
-        $return .= ('STATUS=' . $tmp . PHP_EOL . 'REMARKS=' . Config::get('appName') . PHP_EOL);
+        $return .= (
+            'STATUS=' . rawurlencode($tmp)
+            . PHP_EOL
+            . 'REMARKS=' . rawurlencode(Config::get('appName'))
+            . PHP_EOL
+        );
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
@@ -520,33 +699,33 @@ class LinkController extends BaseController
             if ($item['net'] == 'ws') {
                 $obfs .= (
                     $item['host'] != ''
-                    ? ('obfsParam=' . $item['host'] .
-                        '&path=' . $item['path'] . '&obfs=websocket&'
+                    ? ('&obfsParam=' . $item['host'] .
+                        '&path=' . $item['path'] . '&obfs=websocket'
                         )
-                    : ('obfsParam=' . $item['add'] .
-                        '&path=' . $item['path'] . '&obfs=websocket&'
+                    : ('&obfsParam=' . $item['add'] .
+                        '&path=' . $item['path'] . '&obfs=websocket'
                         )
                 );
                 $obfs .= (
                     $item['tls'] == 'tls'
-                    ? 'tls=1'
-                    : 'tls=0'
+                    ? '&tls=1'
+                    : '&tls=0'
                 );
             } elseif (($item['net'] == 'tcp' && $item['tls'] == 'tls') || $item['net'] == 'tls') {
-                $obfs .= 'obfs=none&';
+                $obfs .= '&obfs=none';
                 $obfs .= (
                     $item['tls'] == 'tls'
-                    ? 'tls=1'
-                    : 'tls=0'
+                    ? '&tls=1'
+                    : '&tls=0'
                 );
             } else {
-                $obfs .= 'obfs=none';
+                $obfs .= '&obfs=none';
             }
             $return .= ('vmess://' . Tools::base64_url_encode(
                 'chacha20-poly1305:' . $item['id'] .
                 '@' . $item['add'] . ':' . $item['port']
-            ) . '?remarks=' . rawurlencode($item['ps']) .
-            '&' . $obfs . PHP_EOL
+            ) . '?remarks=' . rawurlencode($item['ps'])
+            . $obfs . PHP_EOL
             );
         }
         // ss
@@ -600,7 +779,79 @@ class LinkController extends BaseController
         return Tools::base64_url_encode($return);
     }
 
-    public static function GetSub($user, $sub, $opts)
+    /**
+     * Kitsunebi 订阅
+     *
+     * @param object $user 用户
+     *
+     * @return string
+     */
+    public static function getKitsunebi($user)
+    {
+        $return = '';
+        // v2ray
+        $items = URL::getAllVMessUrl($user, 1);
+        foreach ($items as $item) {
+            $network = (
+                $item['net'] == 'tls'
+                ? '&network=tcp'
+                : ('&network=' . $item['net'])
+            );
+            $protocol = '';
+            switch ($item['net']) {
+                case 'kcp':
+                    $protocol .= (
+                        '&kcpheader=' . $item['type'] .
+                        '&uplinkcapacity=1' .
+                        '&downlinkcapacity=6'
+                    );
+                    break;
+                case 'ws':
+                    $protocol .= (
+                        '&wspath=' . $item['path'] .
+                        '&wsHost=' . $item['host']
+                    );
+                    break;
+            }
+            $tls = (
+                $item['tls'] == 'tls' || $item['net'] == 'tls'
+                ? '&tls=1'
+                : '&tls=0'
+            );
+            $mux = '&mux=1&muxConcurrency=8';
+            $return .= ('vmess://' . base64_encode(
+                'auto:' . $item['id'] .
+                '@' . $item['add'] . ':' . $item['port']
+            ) . '?remark=' . rawurlencode($item['ps']) .
+                $network . $protocol .
+                '&aid=' . $item['aid']
+                . $tls . $mux . PHP_EOL
+            );
+        }
+        // ss
+        $items = array_merge(
+            URL::getAllItems($user, 0, 1),
+            URL::getAllItems($user, 1, 1)
+        );
+        foreach ($items as $item) {
+            if ($item['obfs'] == 'plain') {
+                $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
+            }
+        }
+
+        return base64_encode($return);
+    }
+
+    /**
+     * 通用订阅，ssr & v2rayn
+     *
+     * @param object $user 用户
+     * @param int    $sub  订阅类型
+     * @param array  $opts request
+     *
+     * @return string
+     */
+    public static function getSub($user, $sub, $opts)
     {
         $extend = isset($opts['extend']) ? $opts['extend'] : 0;
         $getV2rayPlugin = 1;

@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * 部分应用自定义配置
+ *
+ * PHP version 7.2+
+ *
+ * @category GeekQu
+ * @package  App/Controllers/Controllers
+ * @author   GeekQu <iloves@live.com>
+ * @license  MIT https://github.com/GeekQu/ss-panel-v3-mod_Uim/blob/dev/LICENSE
+ * @link     https://github.com/GeekQu
+ */
+
 namespace App\Controllers;
 
 use App\Models\User;
@@ -8,34 +20,52 @@ use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
- *  ConfController
+ * ConfController
+ *
+ * @category GeekQu
+ * @package  App/Controllers/Controllers
+ * @author   GeekQu <iloves@live.com>
+ * @license  MIT https://github.com/GeekQu/ss-panel-v3-mod_Uim/blob/dev/LICENSE
+ * @link     https://github.com/GeekQu
  */
 class ConfController extends BaseController
 {
 
-    // #------------------------- Surge --------------------------#
-
-    public static function SurgeConfs($User, $AllProxys, $Nodes, $SourceContent)
+    /**
+     *  从远端自定义配置文件生成 Surge 托管配置
+     *
+     * @param object $User          用户
+     * @param string $AllProxys     Surge 格式的全部节点
+     * @param array  $Nodes         全部节点数组
+     * @param string $SourceContent 远程配置内容
+     *
+     * @return string
+     */
+    public static function getSurgeConfs($User, $AllProxys, $Nodes, $SourceContent)
     {
         try {
             $Configs = Yaml::parse($SourceContent);
         } catch (ParseException $exception) {
             return printf('无法解析 YAML 字符串: %s', $exception->getMessage());
         }
-        $General = ConfController::SurgeConfGeneral($Configs['General']);
-        $Proxys = isset($Configs['Proxy']) ? ConfController::SurgeConfProxy($Configs['Proxy']) : '';
+        $General = self::getSurgeConfGeneral($Configs['General']);
+        $Proxys = (
+            isset($Configs['Proxy'])
+            ? self::getSurgeConfProxy($Configs['Proxy'])
+            : ''
+        );
         if (isset($Configs['ProxyGroup'])) {
-            $ProxyGroup = ConfController::SurgeConfProxyGroup(
+            $ProxyGroup = self::getSurgeConfProxyGroup(
                 $Nodes,
                 $Configs['ProxyGroup']
             );
         } else {
-            $ProxyGroup = ConfController::SurgeConfProxyGroup(
+            $ProxyGroup = self::getSurgeConfProxyGroup(
                 $Nodes,
                 $Configs['Proxy Group']
             );
         }
-        $Rule = ConfController::SurgeConfRule($Configs['Rule']);
+        $Rule = self::getSurgeConfRule($Configs['Rule']);
         $Conf = '#!MANAGED-CONFIG '
             . Config::get('baseUrl') . $_SERVER['REQUEST_URI'] .
             "\n\n#---------------------------------------------------#" .
@@ -53,7 +83,14 @@ class ConfController extends BaseController
         return $Conf;
     }
 
-    public static function SurgeConfGeneral($General)
+    /**
+     * Surge 配置中的 General
+     *
+     * @param array $General Surge General 定义
+     *
+     * @return string
+     */
+    public static function getSurgeConfGeneral($General)
     {
         $return = '';
         if (count($General) != 0) {
@@ -64,7 +101,14 @@ class ConfController extends BaseController
         return $return;
     }
 
-    public static function SurgeConfProxy($Proxys)
+    /**
+     * Surge 配置中的 Proxy
+     *
+     * @param array $Proxys 自定义配置中的额外 Proxy
+     *
+     * @return string
+     */
+    public static function getSurgeConfProxy($Proxys)
     {
         $return = '';
         if (count($Proxys) != 0) {
@@ -77,7 +121,15 @@ class ConfController extends BaseController
         return $return;
     }
 
-    public static function SurgeConfProxyGroup($Nodes, $ProxyGroups)
+    /**
+     * Surge 配置中的 ProxyGroup
+     *
+     * @param array $Nodes       全部节点数组
+     * @param array $ProxyGroups Surge 策略组定义
+     *
+     * @return string
+     */
+    public static function getSurgeConfProxyGroup($Nodes, $ProxyGroups)
     {
         $return = '';
         foreach ($ProxyGroups as $ProxyGroup) {
@@ -121,18 +173,59 @@ class ConfController extends BaseController
                         }
                     }
                 }
-                $text1 = isset($ProxyGroup['content']['text1']) && $ProxyGroup['content']['text1'] != '' ? ', ' . $ProxyGroup['content']['text1'] : '';
-                $text2 = isset($ProxyGroup['content']['text2']) && $ProxyGroup['content']['text2'] != '' ? ', ' . $ProxyGroup['content']['text2'] : '';
-                $url = isset($ProxyGroup['url']) && $ProxyGroup['url'] != '' ? ', url = ' . $ProxyGroup['url'] : '';
-                $interval = isset($ProxyGroup['interval']) && $ProxyGroup['interval'] != '' ? ', interval = ' . $ProxyGroup['interval'] : '';
-                $str .= $ProxyGroup['name'] . ' = ' . $ProxyGroup['type'] . $text1 . $Remarks . $text2 . $url . $interval;
+                $text1 = (
+                    isset($ProxyGroup['content']['text1'])
+                    && $ProxyGroup['content']['text1'] != ''
+                    ? ', ' . $ProxyGroup['content']['text1']
+                    : ''
+                );
+                $text2 = (
+                    isset($ProxyGroup['content']['text2'])
+                    && $ProxyGroup['content']['text2'] != ''
+                    ? ', ' . $ProxyGroup['content']['text2']
+                    : ''
+                );
+                $url = (
+                    isset($ProxyGroup['url'])
+                    && $ProxyGroup['url'] != ''
+                    ? ', url = ' . $ProxyGroup['url']
+                    : ''
+                );
+                $interval = (
+                    isset($ProxyGroup['interval'])
+                    && $ProxyGroup['interval'] != ''
+                    ? ', interval = ' . $ProxyGroup['interval']
+                    : ''
+                );
+                $str .= (
+                    $ProxyGroup['name']
+                    . ' = '
+                    . $ProxyGroup['type']
+                    . $text1
+                    . $Remarks
+                    . $text2
+                    . $url
+                    . $interval
+                );
             } elseif ($ProxyGroup['type'] == 'ssid') {
                 $wifi = '';
                 foreach ($ProxyGroup['content'] as $key => $value) {
                     $wifi .= ', "' . $key . '" = ' . $value;
                 }
-                $cellular = isset($ProxyGroup['cellular']) ? ', cellular = ' . $ProxyGroup['cellular'] : '';
-                $str .= $ProxyGroup['name'] . ' = ' . $ProxyGroup['type'] . ', default = ' . $ProxyGroup['default'] . $cellular . $wifi;
+                $cellular = (
+                    isset($ProxyGroup['cellular'])
+                    ? ', cellular = ' . $ProxyGroup['cellular']
+                    : ''
+                );
+                $str .= (
+                    $ProxyGroup['name']
+                    . ' = '
+                    . $ProxyGroup['type']
+                    . ', default = '
+                    . $ProxyGroup['default']
+                    . $cellular
+                    . $wifi
+                );
             } else {
                 $str .= '';
             }
@@ -141,7 +234,14 @@ class ConfController extends BaseController
         return $return;
     }
 
-    public static function SurgeConfRule($Rules)
+    /**
+     * Surge 配置中的 Rule
+     *
+     * @param array $Rules Surge 规则加载地址
+     *
+     * @return string
+     */
+    public static function getSurgeConfRule($Rules)
     {
         $return = '';
         if (isset($Rules['source']) && $Rules['source'] != '') {
@@ -150,26 +250,37 @@ class ConfController extends BaseController
             if (preg_match('/^https:\/\/((gist\.)?github\.com|raw\.githubusercontent\.com|gitlab\.com)/i', $sourceURL)) {
                 $return = @file_get_contents($sourceURL);
                 if (!$return) {
-                    $return = '// 远程规则加载失败'
-                    . PHP_EOL .
-                    'GEOIP,CN,DIRECT'
-                    . PHP_EOL .
-                    'FINAL,DIRECT,dns-failed';
+                    $return = (
+                        '// 远程规则加载失败'
+                        . PHP_EOL
+                        . 'GEOIP,CN,DIRECT'
+                        . PHP_EOL
+                        . 'FINAL,DIRECT,dns-failed'
+                    );
                 }
             } else {
-                $return = '// 远程规则仅支持 github 以及 gitlab'
-                . PHP_EOL .
-                'GEOIP,CN,DIRECT'
-                . PHP_EOL .
-                'FINAL,DIRECT,dns-failed';
+                $return = (
+                    '// 远程规则仅支持 github 以及 gitlab'
+                    . PHP_EOL
+                    . 'GEOIP,CN,DIRECT'
+                    . PHP_EOL
+                    . 'FINAL,DIRECT,dns-failed'
+                );
             }
         }
         return $return;
     }
 
-    // #------------------------- Clash --------------------------#
-
-    public static function ClashConfs($User, $AllProxys, $SourceContent)
+    /**
+     * 从远端自定义配置文件生成 Clash 配置
+     *
+     * @param object $User          用户
+     * @param array  $AllProxys     全部节点数组
+     * @param string $SourceContent 远程配置内容
+     *
+     * @return string
+     */
+    public static function getClashConfs($User, $AllProxys, $SourceContent)
     {
         try {
             $Configs = Yaml::parse($SourceContent);
@@ -186,15 +297,15 @@ class ConfController extends BaseController
             unset($Proxy['class']);
             $Proxys[] = $Proxy;
         }
-        $tmp = ConfController::ClashConfGeneral($Configs['General']);
+        $tmp = self::getClashConfGeneral($Configs['General']);
         $tmp['Proxy'] = $Proxys;
         if (isset($Configs['ProxyGroup'])) {
-            $tmp['Proxy Group'] = ConfController::ClashConfProxyGroup(
+            $tmp['Proxy Group'] = self::getClashConfProxyGroup(
                 $AllProxys,
                 $Configs['ProxyGroup']
             );
         } else {
-            $tmp['Proxy Group'] = ConfController::ClashConfProxyGroup(
+            $tmp['Proxy Group'] = self::getClashConfProxyGroup(
                 $AllProxys,
                 $Configs['Proxy Group']
             );
@@ -207,12 +318,19 @@ class ConfController extends BaseController
             "\n\n"
             . Yaml::dump($tmp, 4, 2) .
             "\n\nRule:\n"
-            . ConfController::ClashConfRule($Configs['Rule']);
+            . self::getClashConfRule($Configs['Rule']);
 
         return $Conf;
     }
 
-    public static function ClashConfGeneral($General)
+    /**
+     * Clash 配置中的 General
+     *
+     * @param array $General Clash General 定义
+     *
+     * @return array
+     */
+    public static function getClashConfGeneral($General)
     {
         if (count($General) != 0) {
             foreach ($General as $key => $value) {
@@ -240,7 +358,15 @@ class ConfController extends BaseController
         return $General;
     }
 
-    public static function ClashConfProxyGroup($Nodes, $ProxyGroups)
+    /**
+     * Clash 配置中的 ProxyGroup
+     *
+     * @param array $Nodes       全部节点数组
+     * @param array $ProxyGroups Clash 策略组定义
+     *
+     * @return array
+     */
+    public static function getClashConfProxyGroup($Nodes, $ProxyGroups)
     {
         $return = [];
         foreach ($ProxyGroups as $ProxyGroup) {
@@ -306,7 +432,14 @@ class ConfController extends BaseController
         return $return;
     }
 
-    public static function ClashConfRule($Rules)
+    /**
+     * Clash 配置中的 Rule
+     *
+     * @param array $Rules Clash 规则加载地址
+     *
+     * @return string
+     */
+    public static function getClashConfRule($Rules)
     {
         $return = '';
         if (isset($Rules['source']) && $Rules['source'] != '') {
@@ -315,18 +448,22 @@ class ConfController extends BaseController
             if (preg_match('/^https:\/\/((gist\.)?github\.com|raw\.githubusercontent\.com|gitlab\.com)/i', $sourceURL)) {
                 $return = @file_get_contents($sourceURL);
                 if (!$return) {
-                    $return = '// 远程规则加载失败'
-                    . PHP_EOL .
-                    'GEOIP,CN,DIRECT'
-                    . PHP_EOL .
-                    'MATCH,DIRECT';
+                    $return = (
+                        '// 远程规则加载失败'
+                        . PHP_EOL
+                        . 'GEOIP,CN,DIRECT'
+                        . PHP_EOL
+                        . 'MATCH,DIRECT'
+                    );
                 }
             } else {
-                $return = '// 远程规则仅支持 github 以及 gitlab'
-                . PHP_EOL .
-                'GEOIP,CN,DIRECT'
-                . PHP_EOL .
-                'MATCH,DIRECT';
+                $return = (
+                    '// 远程规则仅支持 github 以及 gitlab'
+                    . PHP_EOL
+                    . 'GEOIP,CN,DIRECT'
+                    . PHP_EOL
+                    . 'MATCH,DIRECT'
+                );
             }
         }
         return $return;

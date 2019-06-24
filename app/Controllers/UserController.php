@@ -70,7 +70,7 @@ class UserController extends BaseController
         $Ann = Ann::orderBy('date', 'desc')->first();
 
         return $this->view()
-            ->assign('subInfo', LinkController::GetSubinfo($this->user, 0))
+            ->assign('subInfo', LinkController::getSubinfo($this->user, 0))
             ->assign('ssr_sub_token', $ssr_sub_token)
             ->assign('display_ios_class', Config::get('display_ios_class'))
             ->assign('display_ios_topup', Config::get('display_ios_topup'))
