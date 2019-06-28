@@ -152,7 +152,7 @@ class HomeController extends BaseController
     {
         $user = Auth::getUser();
         if (!$user->isLogin) {
-            return $msg = '!> ₍₍ ◝(・ω・)◟ ⁾⁾ 您没有登录噢，登录之后再刷新就阔以了啦';
+            return $msg = '!> ₍₍ ◝(・ω・)◟ ⁾⁾ 您没有登录噢，[点击此处登录](/auth/login \':ignore target=_blank\') 之后再刷新就阔以了啦';
         } else {
             $subInfo = LinkController::getSubinfo($user, 0);
             switch ($request->getParam('type')) {
