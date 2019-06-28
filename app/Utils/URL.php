@@ -58,14 +58,14 @@ class URL
                     return 2;
                 }
 
-                return 4;//SSR need origin plain
+                return 4; //SSR need origin plain
             }
 
             if (strpos($obfs, '_compatible') === false) {
                 return 1;
             }
 
-            return 5;//SS need plain
+            return 5; //SS need plain
         }
 
         return 3;
@@ -139,7 +139,10 @@ class URL
     }
 
     public static function getAllItems(
-        $user, $is_mu = 0, $is_ss = 0, $getV2rayPlugin = 1
+        $user,
+        $is_mu = 0,
+        $is_ss = 0,
+        $getV2rayPlugin = 1
     ) {
         $return_array = array();
         if ($user->is_admin) {
@@ -155,9 +158,9 @@ class URL
                     }
                 }
             )
-            ->where('type', '1')
-            ->orderBy('name')
-            ->get();
+                ->where('type', '1')
+                ->orderBy('name')
+                ->get();
         } else {
             $nodes = Node::where(
                 static function ($query) use ($getV2rayPlugin) {
@@ -171,16 +174,16 @@ class URL
                     }
                 }
             )
-            ->where(
-                static function ($query) use ($user) {
-                    $query->where('node_group', '=', $user->node_group)
-                        ->orWhere('node_group', '=', 0);
-                }
-            )
-            ->where('type', '1')
-            ->where('node_class', '<=', $user->class)
-            ->orderBy('name')
-            ->get();
+                ->where(
+                    static function ($query) use ($user) {
+                        $query->where('node_group', '=', $user->node_group)
+                            ->orWhere('node_group', '=', 0);
+                    }
+                )
+                ->where('type', '1')
+                ->where('node_class', '<=', $user->class)
+                ->orderBy('name')
+                ->get();
         }
         if ($is_mu) {
             if ($user->is_admin) {
@@ -344,9 +347,9 @@ class URL
                         ->orwhere('sort', 12);
                 }
             )
-            ->where('type', '1')
-            ->orderBy('name')
-            ->get();
+                ->where('type', '1')
+                ->orderBy('name')
+                ->get();
         } else {
             $nodes = Node::where(
                 static function ($query) {
@@ -359,10 +362,10 @@ class URL
                         ->orWhere('node_group', '=', 0);
                 }
             )
-            ->where('type', '1')
-            ->where('node_class', '<=', $user->class)
-            ->orderBy('name')
-            ->get();
+                ->where('type', '1')
+                ->where('node_class', '<=', $user->class)
+                ->orderBy('name')
+                ->get();
         }
         if ($arrout == 0) {
             $result = '';
@@ -400,7 +403,7 @@ class URL
             $plugin_options = 'obfs=tls';
         }
         if ($plugin_options != '') {
-            $array_all['plugin'] = 'simple-obfs';//目前只支持这个
+            $array_all['plugin'] = 'simple-obfs'; //目前只支持这个
             $array_all['plugin_options'] = $plugin_options;
             if ($user->obfs_param != '') {
                 $array_all['plugin_options'] .= ';obfs-host=' . $user->obfs_param;
@@ -443,19 +446,13 @@ class URL
                 $server['encryption'] = $user->method;
                 $server['password'] = $user->passwd;
                 $server['plugin'] = 'v2ray';
-                $server['path'] = (
-                    $server['path'] . '?redirect=' . $user->getMuMd5()
-                );
+                $server['path'] = ($server['path'] . '?redirect=' . $user->getMuMd5());
                 if ($server['tls'] == 'tls' && $server['net'] == 'ws') {
-                    $server['obfs_param'] = (
-                        'mode=ws;security=tls;path=' . $server['path'] .
-                        ';host=' . $return_array['host']
-                    );
+                    $server['obfs_param'] = ('mode=ws;security=tls;path=' . $server['path'] .
+                        ';host=' . $return_array['host']);
                 } else {
-                    $server['obfs_param'] = (
-                        'mode=ws;security=none;path=' . $server['path'] .
-                        ';host=' . $return_array['host']
-                    );
+                    $server['obfs_param'] = ('mode=ws;security=none;path=' . $server['path'] .
+                        ';host=' . $return_array['host']);
                 }
                 $array_server[] = $server;
                 $server_index++;
@@ -507,7 +504,7 @@ class URL
                     $server['port'] = $node_muport->server;
                     $server['encryption'] = $muport_user->method;
                     $server['password'] = $muport_user->passwd;
-                    $server['plugin'] = 'simple-obfs';//目前只支持这个
+                    $server['plugin'] = 'simple-obfs'; //目前只支持这个
                     $plugin_options = '';
                     if (strpos($muport_user->obfs, 'http') != false) {
                         $plugin_options = 'obfs=http';
@@ -615,19 +612,13 @@ class URL
             $return_array['protocol'] = 'origin';
             $return_array['protocol_param'] = '';
             $return_array['obfs'] = 'v2ray';
-            $return_array['path'] = (
-                $return_array['path'] . '?redirect=' . $user->getMuMd5()
-            );
+            $return_array['path'] = ($return_array['path'] . '?redirect=' . $user->getMuMd5());
             if ($return_array['tls'] == 'tls' && $return_array['net'] == 'ws') {
-                $return_array['obfs_param'] = (
-                    'mode=ws;security=tls;path=' . $return_array['path'] .
-                    ';host=' . $return_array['host']
-                );
+                $return_array['obfs_param'] = ('mode=ws;security=tls;path=' . $return_array['path'] .
+                    ';host=' . $return_array['host']);
             } else {
-                $return_array['obfs_param'] = (
-                    'mode=ws;security=none;path=' . $return_array['path'] .
-                    ';host=' . $return_array['host']
-                );
+                $return_array['obfs_param'] = ('mode=ws;security=none;path=' . $return_array['path'] .
+                    ';host=' . $return_array['host']);
             }
         } else {
             $return_array['address'] = $node->server;
@@ -657,7 +648,7 @@ class URL
             if ($user->transfer_enable == 0) {
                 $userTraffic = '剩余流量：0.00%';
             } else {
-                $userTraffic = '剩余流量：' . number_format(($user->transfer_enable - $user->u - $user->d)/$user->transfer_enable*100, 2) . '% ' . $user->unusedTraffic();
+                $userTraffic = '剩余流量：' . number_format(($user->transfer_enable - $user->u - $user->d) / $user->transfer_enable * 100, 2) . '% ' . $user->unusedTraffic();
             }
             $userClassExpire = '过期时间：' . $user->class_expire;
         } else {
@@ -668,19 +659,18 @@ class URL
             case 1: // SSR
                 $getUserTraffic = 'ssr://' . Tools::base64_url_encode('www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=' . Tools::base64_url_encode($userTraffic) . '&group=' . Tools::base64_url_encode($group_name)) . PHP_EOL;
                 $getUserClassExpiration = 'ssr://' . Tools::base64_url_encode('www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=' . Tools::base64_url_encode($userClassExpire) . '&group=' . Tools::base64_url_encode($group_name)) . PHP_EOL;
-            break;
+                break;
             case 2: // SS
                 $getUserTraffic = 'ss://' . Tools::base64_url_encode('chacha20:YnJlYWt3YWxs@www.google.com:2') . '#' . rawurlencode($userTraffic) . PHP_EOL;
                 $getUserClassExpiration = 'ss://' . Tools::base64_url_encode('chacha20:YnJlYWt3YWxs@www.google.com:2') . '#' . rawurlencode($userClassExpire) . PHP_EOL;
-            break;
+                break;
             case 3: // V2
                 $userTrafficArray = ['v' => '2', 'ps' => $userTraffic, 'add' => 'www.google.com', 'port' => '3', 'id' => '2661b5f8-8062-34a5-9371-a44313a75b6b', 'aid' => '16', 'net' => 'tcp', 'type' => 'none', 'host' => '', 'tls' => ''];
                 $userClassExpirationArray = ['v' => '2', 'ps' => $userClassExpire, 'add' => 'www.google.com', 'port' => '3', 'id' => '2661b5f8-8062-34a5-9371-a44313a75b6b', 'aid' => '16', 'net' => 'tcp', 'type' => 'none', 'host' => '', 'tls' => ''];
                 $getUserTraffic = 'vmess://' . base64_encode(json_encode($userTrafficArray, JSON_UNESCAPED_UNICODE)) . PHP_EOL;
                 $getUserClassExpiration = 'vmess://' . base64_encode(json_encode($userClassExpirationArray, JSON_UNESCAPED_UNICODE)) . PHP_EOL;
-            break;
+                break;
         }
         return $getUserTraffic . $getUserClassExpiration;
     }
-
 }

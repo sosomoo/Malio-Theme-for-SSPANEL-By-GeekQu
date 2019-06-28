@@ -43,7 +43,7 @@ class HomeController extends BaseController
             $login_number = '';
         }
 
-        if (Config::get('newIndex')!='true' && Config::get('theme')=='material') {
+        if (Config::get('newIndex') != 'true' && Config::get('theme') == 'material') {
             return $this->view()->display('indexold.tpl');
         } else {
             return $this->view()
@@ -71,8 +71,7 @@ class HomeController extends BaseController
     }
 
     public function down()
-    {
-    }
+    { }
 
     public function tos()
     {
@@ -91,7 +90,7 @@ class HomeController extends BaseController
         if ($token == Config::get('telegram_request_token')) {
             TelegramProcess::process();
         } else {
-            echo('不正确请求！');
+            echo ('不正确请求！');
         }
     }
 
@@ -257,5 +256,4 @@ class HomeController extends BaseController
         }
         return implode(PHP_EOL, $msg);
     }
-
 }
