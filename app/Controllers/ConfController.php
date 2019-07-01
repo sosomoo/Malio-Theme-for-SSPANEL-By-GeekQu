@@ -354,46 +354,40 @@ class ConfController extends BaseController
                 ) {
                     $proxies = $ProxyGroup['content']['left-proxies'];
                 }
-                $AllRemark = [];
-                if (isset($ProxyGroup['content']['class'])) {
-                    foreach ($Nodes as $item) {
-                        if ($item['class'] == $ProxyGroup['content']['class']) {
-                            $AllRemark[] = $item['name'];
-                        }
-                    }
-                } elseif (isset($ProxyGroup['content']['noclass'])) {
-                    foreach ($Nodes as $item) {
-                        if ($item['class'] != $ProxyGroup['content']['noclass']) {
-                            $AllRemark[] = $item['name'];
-                        }
-                    }
-                } else {
-                    foreach ($Nodes as $item) {
-                        $AllRemark[] = $item['name'];
+                foreach ($Nodes as $item) {
+                    switch (true) {
+                        case (isset($ProxyGroup['content']['class'])):
+                            if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['name'], $proxies)) {
+                                if (isset($ProxyGroup['content']['regex']) && preg_match($ProxyGroup['content']['regex'], $item['name'])) {
+                                    $proxies[] = $item['name'];
+                                } else {
+                                    $proxies[] = $item['name'];
+                                }
+                            }
+                            break;
+                        case (isset($ProxyGroup['content']['noclass'])):
+                            if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['name'], $proxies)) {
+                                if (isset($ProxyGroup['content']['regex']) && preg_match($ProxyGroup['content']['regex'], $item['name'])) {
+                                    $proxies[] = $item['name'];
+                                } else {
+                                    $proxies[] = $item['name'];
+                                }
+                            }
+                            break;
+                        case (!isset($ProxyGroup['content']['class'])
+                            && !isset($ProxyGroup['content']['noclass'])
+                            && isset($ProxyGroup['content']['regex'])
+                            && preg_match($ProxyGroup['content']['regex'], $item['name'])
+                            && !in_array($item['name'], $proxies)):
+                            $proxies[] = $item['name'];
+                            break;
+                        default:
+                            continue;
+                            break;
                     }
                 }
-                if (isset($ProxyGroup['content']['regex'])) {
-                    foreach ($AllRemark as $item) {
-                        if (!preg_match($ProxyGroup['content']['regex'], $item)) {
-                            unset($item);
-                        }
-                    }
-                }
-                if (
-                    isset($ProxyGroup['content']['class'])
-                    || isset($ProxyGroup['content']['noclass'])
-                    || isset($ProxyGroup['content']['regex'])
-                ) {
-                    $proxies = array_merge($proxies, $AllRemark);
-                    if (
-                        isset($ProxyGroup['content']['right-proxies'])
-                        && count($ProxyGroup['content']['right-proxies']) != 0
-                    ) {
-                        $proxies = array_merge(
-                            $proxies,
-                            $ProxyGroup['content']['right-proxies']
-                        );
-                    }
+                if (isset($ProxyGroup['content']['right-proxies'])) {
+                    $proxies = array_merge($proxies, $ProxyGroup['content']['right-proxies']);
                 }
                 $tmp = [
                     'name' => $ProxyGroup['name'],
