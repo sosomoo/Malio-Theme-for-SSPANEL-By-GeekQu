@@ -133,68 +133,64 @@ class ConfController extends BaseController
         foreach ($ProxyGroups as $ProxyGroup) {
             $str = '';
             if (in_array($ProxyGroup['type'], ['select', 'url-test', 'fallback'])) {
-                $AllRemark = [];
-                $Remarks = '';
-                if (isset($ProxyGroup['content']['class'])) {
-                    foreach ($Nodes as $item) {
-                        if ($item['obfs'] == 'v2ray') {
+                $proxies = [];
+                if (
+                    isset($ProxyGroup['content']['left-proxies'])
+                    && count($ProxyGroup['content']['left-proxies']) != 0
+                ) {
+                    $proxies = $ProxyGroup['content']['left-proxies'];
+                }
+                foreach ($Nodes as $item) {
+                    switch (true) {
+                        case (isset($ProxyGroup['content']['class'])):
+                            if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['remark'], $proxies)) {
+                                if (isset($ProxyGroup['content']['regex']) && preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
+                                    $proxies[] = $item['remark'];
+                                } else {
+                                    $proxies[] = $item['remark'];
+                                }
+                            }
+                            break;
+                        case (isset($ProxyGroup['content']['noclass'])):
+                            if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['remark'], $proxies)) {
+                                if (isset($ProxyGroup['content']['regex']) && preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
+                                    $proxies[] = $item['remark'];
+                                } else {
+                                    $proxies[] = $item['remark'];
+                                }
+                            }
+                            break;
+                        case (!isset($ProxyGroup['content']['class'])
+                            && !isset($ProxyGroup['content']['noclass'])
+                            && isset($ProxyGroup['content']['regex'])
+                            && preg_match($ProxyGroup['content']['regex'], $item['remark'])
+                            && !in_array($item['remark'], $proxies)):
+                            $proxies[] = $item['remark'];
+                            break;
+                        default:
                             continue;
-                        }
-                        if ($item['class'] == $ProxyGroup['content']['class']) {
-                            $AllRemark[] = $item['remark'];
-                            $Remarks .= ', ' . $item['remark'];
-                        }
+                            break;
                     }
-                } elseif (isset($ProxyGroup['content']['noclass'])) {
-                    foreach ($Nodes as $item) {
-                        if ($item['obfs'] == 'v2ray') {
-                            continue;
-                        }
-                        if ($item['class'] != $ProxyGroup['content']['noclass']) {
-                            $AllRemark[] = $item['remark'];
-                            $Remarks .= ', ' . $item['remark'];
-                        }
-                    }
+                }
+                if (isset($ProxyGroup['content']['right-proxies'])) {
+                    $proxies = array_merge($proxies, $ProxyGroup['content']['right-proxies']);
+                }
+                $Remarks = implode(', ', $proxies);
+                if (in_array($ProxyGroup['type'], ['url-test', 'fallback'])) {
+                    $str .= ($ProxyGroup['name']
+                        . ' = '
+                        . $ProxyGroup['type']
+                        . ', '
+                        . $Remarks
+                        . ', url = ' . $ProxyGroup['url']
+                        . ', interval = ' . $ProxyGroup['interval']);
                 } else {
-                    foreach ($Nodes as $item) {
-                        if ($item['obfs'] == 'v2ray') {
-                            continue;
-                        }
-                        $AllRemark[] = $item['remark'];
-                    }
+                    $str .= ($ProxyGroup['name']
+                        . ' = '
+                        . $ProxyGroup['type']
+                        . ', '
+                        . $Remarks);
                 }
-                if (isset($ProxyGroup['content']['regex'])) {
-                    $Remarks = '';
-                    foreach ($AllRemark as $item) {
-                        if (preg_match($ProxyGroup['content']['regex'], $item)) {
-                            $Remarks .= ', ' . $item;
-                        }
-                    }
-                }
-                $text1 = (isset($ProxyGroup['content']['text1'])
-                    && $ProxyGroup['content']['text1'] != ''
-                    ? ', ' . $ProxyGroup['content']['text1']
-                    : '');
-                $text2 = (isset($ProxyGroup['content']['text2'])
-                    && $ProxyGroup['content']['text2'] != ''
-                    ? ', ' . $ProxyGroup['content']['text2']
-                    : '');
-                $url = (isset($ProxyGroup['url'])
-                    && $ProxyGroup['url'] != ''
-                    ? ', url = ' . $ProxyGroup['url']
-                    : '');
-                $interval = (isset($ProxyGroup['interval'])
-                    && $ProxyGroup['interval'] != ''
-                    ? ', interval = ' . $ProxyGroup['interval']
-                    : '');
-                $str .= ($ProxyGroup['name']
-                    . ' = '
-                    . $ProxyGroup['type']
-                    . $text1
-                    . $Remarks
-                    . $text2
-                    . $url
-                    . $interval);
             } elseif ($ProxyGroup['type'] == 'ssid') {
                 $wifi = '';
                 foreach ($ProxyGroup['content'] as $key => $value) {

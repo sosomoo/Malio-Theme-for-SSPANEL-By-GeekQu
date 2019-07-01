@@ -279,13 +279,10 @@ class LinkController extends BaseController
         $proxy_name = '';
         $proxy_group = '';
         $items = array_merge(
-            URL::getAllItems($user, 0, 1),
-            URL::getAllItems($user, 1, 1)
+            URL::getAllItems($user, 0, 1, 0),
+            URL::getAllItems($user, 1, 1, 0)
         );
         foreach ($items as $item) {
-            if ($item['obfs'] == 'v2ray') {
-                continue;
-            }
             if (in_array($surge, array(1, 3))) {
                 $proxy_group .= ($item['remark']
                     . ' = ss, '
@@ -398,11 +395,8 @@ class LinkController extends BaseController
             } elseif ($quantumult == 3) {
                 $ss_group = '';
                 $ss_name = '';
-                $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
+                $items = array_merge(URL::getAllItems($user, 0, 1, 0), URL::getAllItems($user, 1, 1, 0));
                 foreach ($items as $item) {
-                    if ($item['obfs'] == 'v2ray') {
-                        continue;
-                    }
                     $ss_group .= $item['remark'] . ' = shadowsocks, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', "' . $item['passwd'] . '", upstream-proxy=false, upstream-proxy-auth=false' . URL::getSurgeObfs($item) . ', group=' . Config::get('appName') . PHP_EOL;
                     if (strpos($item['remark'], '回国') or strpos($item['remark'], 'China')) {
                         $back_china_name .= "\n" . $item['remark'];
@@ -467,11 +461,8 @@ class LinkController extends BaseController
         $userapiUrl = $subInfo['surfboard'];
         $ss_name = '';
         $ss_group = '';
-        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
+        $items = array_merge(URL::getAllItems($user, 0, 1, 0), URL::getAllItems($user, 1, 1, 0));
         foreach ($items as $item) {
-            if ($item['obfs'] == 'v2ray') {
-                continue;
-            }
             $ss_group .= $item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . URL::getSurgeObfs($item) . PHP_EOL;
             $ss_name .= ', ' . $item['remark'];
         }
@@ -499,7 +490,7 @@ class LinkController extends BaseController
         $proxy_confs = [];
         $back_china_confs = [];
         // ss
-        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
+        $items = array_merge(URL::getAllItems($user, 0, 1, 1), URL::getAllItems($user, 1, 1, 1));
         foreach ($items as $item) {
             $sss = [
                 'name' => $item['remark'],
@@ -785,8 +776,8 @@ class LinkController extends BaseController
         }
         // ss
         $items = array_merge(
-            URL::getAllItems($user, 0, 1),
-            URL::getAllItems($user, 1, 1)
+            URL::getAllItems($user, 0, 1, 0),
+            URL::getAllItems($user, 1, 1, 0)
         );
         foreach ($items as $item) {
             if ($item['obfs'] == 'plain') {
