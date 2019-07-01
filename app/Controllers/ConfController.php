@@ -144,8 +144,10 @@ class ConfController extends BaseController
                     switch (true) {
                         case (isset($ProxyGroup['content']['class'])):
                             if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['remark'], $proxies)) {
-                                if (isset($ProxyGroup['content']['regex']) && preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
-                                    $proxies[] = $item['remark'];
+                                if (isset($ProxyGroup['content']['regex'])) {
+                                    if (preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
+                                        $proxies[] = $item['remark'];
+                                    }
                                 } else {
                                     $proxies[] = $item['remark'];
                                 }
@@ -153,8 +155,10 @@ class ConfController extends BaseController
                             break;
                         case (isset($ProxyGroup['content']['noclass'])):
                             if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['remark'], $proxies)) {
-                                if (isset($ProxyGroup['content']['regex']) && preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
-                                    $proxies[] = $item['remark'];
+                                if (isset($ProxyGroup['content']['regex'])) {
+                                    if (preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
+                                        $proxies[] = $item['remark'];
+                                    }
                                 } else {
                                     $proxies[] = $item['remark'];
                                 }
@@ -358,8 +362,10 @@ class ConfController extends BaseController
                     switch (true) {
                         case (isset($ProxyGroup['content']['class'])):
                             if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['name'], $proxies)) {
-                                if (isset($ProxyGroup['content']['regex']) && preg_match($ProxyGroup['content']['regex'], $item['name'])) {
-                                    $proxies[] = $item['name'];
+                                if (isset($ProxyGroup['content']['regex'])) {
+                                    if (preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
+                                        $proxies[] = $item['remark'];
+                                    }
                                 } else {
                                     $proxies[] = $item['name'];
                                 }
@@ -367,8 +373,10 @@ class ConfController extends BaseController
                             break;
                         case (isset($ProxyGroup['content']['noclass'])):
                             if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['name'], $proxies)) {
-                                if (isset($ProxyGroup['content']['regex']) && preg_match($ProxyGroup['content']['regex'], $item['name'])) {
-                                    $proxies[] = $item['name'];
+                                if (isset($ProxyGroup['content']['regex'])) {
+                                    if (preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
+                                        $proxies[] = $item['remark'];
+                                    }
                                 } else {
                                     $proxies[] = $item['name'];
                                 }
