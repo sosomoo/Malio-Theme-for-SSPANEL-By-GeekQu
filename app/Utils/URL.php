@@ -449,10 +449,10 @@ class URL
                 $server['path'] = ($server['path'] . '?redirect=' . $user->getMuMd5());
                 if ($server['tls'] == 'tls' && $server['net'] == 'ws') {
                     $server['obfs_param'] = ('mode=ws;security=tls;path=' . $server['path'] .
-                        ';host=' . $return_array['host']);
+                        ';host=' . $server['host']);
                 } else {
                     $server['obfs_param'] = ('mode=ws;security=none;path=' . $server['path'] .
-                        ';host=' . $return_array['host']);
+                        ';host=' . $server['host']);
                 }
                 $array_server[] = $server;
                 $server_index++;

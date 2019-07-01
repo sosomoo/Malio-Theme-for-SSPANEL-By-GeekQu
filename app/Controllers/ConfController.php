@@ -6,7 +6,7 @@
  * PHP version 7.2+
  *
  * @category GeekQu
- * @package  App/Controllers/Controllers
+ * @package  App/Controllers/ConfController
  * @author   GeekQu <iloves@live.com>
  * @license  MIT https://github.com/GeekQu/ss-panel-v3-mod_Uim/blob/dev/LICENSE
  * @link     https://github.com/GeekQu
@@ -23,7 +23,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
  * ConfController
  *
  * @category GeekQu
- * @package  App/Controllers/Controllers
+ * @package  App/Controllers/ConfController
  * @author   GeekQu <iloves@live.com>
  * @license  MIT https://github.com/GeekQu/ss-panel-v3-mod_Uim/blob/dev/LICENSE
  * @link     https://github.com/GeekQu

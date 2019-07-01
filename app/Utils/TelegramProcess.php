@@ -143,7 +143,7 @@ class TelegramProcess
 						/help 获取帮助信息
 						/rss 获取节点订阅';
                     if ($user == null) {
-                        $help_list .= PHP_EOL . '您未绑定本站账号，您可以进入网站的“资料编辑”，在右下方绑定您的账号';
+                        $reply['message'] .= PHP_EOL . '您未绑定本站账号，您可以进入网站的“资料编辑”，在右下方绑定您的账号';
                     }
                     break;
                 default:
