@@ -74,10 +74,10 @@ Proxy Group:
 {/if}
 - { name: "Proxy", type: select, proxies: {json_encode($proxies,320)} }
 - { name: "Domestic", type: select, proxies: ["DIRECT","Proxy"] }
-{$China_media=["Domestic","Proxy"]}
-{if count($back_china_proxies)!=0}{append var='China_media' value='Back_China_Proxy'}{/if}
-- { name: "China_media", type: select, proxies: {json_encode($China_media,320)} }
-- { name: "Global_media", type: select, proxies: ["Proxy"]}
+{$AsianTV=["Domestic","Proxy"]}
+{if count($back_china_proxies)!=0}{append var='AsianTV' value='Back_China_Proxy'}{/if}
+- { name: "AsianTV", type: select, proxies: {json_encode($AsianTV,320)} }
+- { name: "GlobalTV", type: select, proxies: ["Proxy"]}
 - { name: "Others", type: select, proxies: ["Proxy","Domestic"]}
 
 {include file='rule/Rule.yml'}
