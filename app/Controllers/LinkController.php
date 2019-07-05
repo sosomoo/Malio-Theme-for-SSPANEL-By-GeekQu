@@ -499,6 +499,7 @@ class LinkController extends BaseController
                 'port' => $item['port'],
                 'cipher' => $item['method'],
                 'password' => $item['passwd'],
+                'udp' => true
             ];
             if ($item['obfs'] != 'plain') {
                 switch ($item['obfs']) {
@@ -645,7 +646,7 @@ class LinkController extends BaseController
             } else {
                 $tmp = '剩余流量：' . $user->unusedTraffic();
             }
-            $tmp .= ' - 过期时间：';
+            $tmp .= '...过期时间：';
             if ($user->class_expire != '1989-06-04 00:05:00') {
                 $userClassExpire = explode(' ', $user->class_expire);
                 $tmp .= $userClassExpire[0];
@@ -655,9 +656,9 @@ class LinkController extends BaseController
         } else {
             $tmp = '账户已过期，请续费后使用';
         }
-        $return .= ('STATUS=' . rawurlencode($tmp)
+        $return .= ('STATUS=' . $tmp
             . PHP_EOL
-            . 'REMARKS=' . rawurlencode(Config::get('appName'))
+            . 'REMARKS=' . Config::get('appName')
             . PHP_EOL);
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);

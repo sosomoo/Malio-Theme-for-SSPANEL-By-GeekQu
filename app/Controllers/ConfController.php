@@ -297,7 +297,7 @@ class ConfController extends BaseController
             "\n#---------------------------------------------------#" .
             "\n\n"
             . Yaml::dump($tmp, 4, 2) .
-            "\n\nRule:\n"
+            "\n\n"
             . self::getClashConfRule($Configs['Rule']);
 
         return $Conf;
@@ -421,21 +421,32 @@ class ConfController extends BaseController
      */
     public static function getClashConfRule($Rules)
     {
-        $return = '';
+        $return = ('Rule:' . PHP_EOL);
         if (isset($Rules['source']) && $Rules['source'] != '') {
             $sourceURL = trim($Rules['source']);
             // 远程规则仅支持 github 以及 gitlab
             if (preg_match('/^https:\/\/((gist\.)?github\.com|raw\.githubusercontent\.com|gitlab\.com)/i', $sourceURL)) {
-                $return = @file_get_contents($sourceURL);
-                if (!$return) {
-                    $return = ('// 远程规则加载失败'
+                $sourceContent = @file_get_contents($sourceURL);
+                if (!$sourceContent) {
+                    $return .= ('// 远程规则加载失败'
                         . PHP_EOL
                         . 'GEOIP,CN,DIRECT'
                         . PHP_EOL
                         . 'MATCH,DIRECT');
+                } else {
+                    try {
+                        $sourceRule = Yaml::parse($return);
+                    } catch (ParseException $exception) {
+                        $sourceRule = false;
+                    }
+                    if (!$sourceRule || !isset($sourceRule['Rule'])) {
+                        $return .= $sourceContent;
+                    } else {
+                        $return .= Yaml::dump($sourceRule['Rule'], 4, 2);
+                    }
                 }
             } else {
-                $return = ('// 远程规则仅支持 github 以及 gitlab'
+                $return .= ('// 远程规则仅支持 github 以及 gitlab'
                     . PHP_EOL
                     . 'GEOIP,CN,DIRECT'
                     . PHP_EOL
