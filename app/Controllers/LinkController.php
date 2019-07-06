@@ -71,49 +71,33 @@ class LinkController extends BaseController
 
         $opts = $request->getQueryParams();
 
-        $sub = (
-            isset($request->getQueryParams()['sub'])
-            ? (int)$request->getQueryParams()['sub']
-            : 0
-        );
-        $ssd = (
-            isset($request->getQueryParams()['ssd'])
-            ? (int)$request->getQueryParams()['ssd']
-            : 0
-        );
-        $clash = (
-            isset($request->getQueryParams()['clash'])
-            ? (int)$request->getQueryParams()['clash']
-            : 0
-        );
-        $surge = (
-            isset($request->getQueryParams()['surge'])
-            ? (int)$request->getQueryParams()['surge']
-            : 0
-        );
-        $quantumult = (
-            isset($request->getQueryParams()['quantumult'])
-            ? (int)$request->getQueryParams()['quantumult']
-            : 0
-        );
-        $surfboard = (
-            isset($request->getQueryParams()['surfboard'])
-            ? (int)$request->getQueryParams()['surfboard']
-            : 0
-        );
-        $kitsunebi = (
-            isset($request->getQueryParams()['kitsunebi'])
-            ? (int)$request->getQueryParams()['kitsunebi']
-            : 0
-        );
-        $shadowrocket = (
-            isset($request->getQueryParams()['shadowrocket'])
-            ? (int)$request->getQueryParams()['shadowrocket']
-            : 0
-        );
+        $sub = (isset($request->getQueryParams()['sub'])
+            ? (int) $request->getQueryParams()['sub']
+            : 0);
+        $ssd = (isset($request->getQueryParams()['ssd'])
+            ? (int) $request->getQueryParams()['ssd']
+            : 0);
+        $clash = (isset($request->getQueryParams()['clash'])
+            ? (int) $request->getQueryParams()['clash']
+            : 0);
+        $surge = (isset($request->getQueryParams()['surge'])
+            ? (int) $request->getQueryParams()['surge']
+            : 0);
+        $quantumult = (isset($request->getQueryParams()['quantumult'])
+            ? (int) $request->getQueryParams()['quantumult']
+            : 0);
+        $surfboard = (isset($request->getQueryParams()['surfboard'])
+            ? (int) $request->getQueryParams()['surfboard']
+            : 0);
+        $kitsunebi = (isset($request->getQueryParams()['kitsunebi'])
+            ? (int) $request->getQueryParams()['kitsunebi']
+            : 0);
+        $shadowrocket = (isset($request->getQueryParams()['shadowrocket'])
+            ? (int) $request->getQueryParams()['shadowrocket']
+            : 0);
 
         if (isset($request->getQueryParams()['mu'])) {
-            $mu = (int)$request->getQueryParams()['mu'];
+            $mu = (int) $request->getQueryParams()['mu'];
             switch ($mu) {
                 case 0:
                     $sub = 1;
@@ -129,12 +113,13 @@ class LinkController extends BaseController
                     break;
                 case 4:
                     $clash = 1;
-                break;
+                    break;
             }
         }
 
         // 将访问 V2RayNG 订阅的 Quantumult 转到 Quantumult 的 V2Ray 专属订阅
-        if (strpos($_SERVER['HTTP_USER_AGENT'], 'Quantumult') !== false
+        if (
+            strpos($_SERVER['HTTP_USER_AGENT'], 'Quantumult') !== false
             && $sub == 3
         ) {
             $quantumult = 1;
@@ -184,7 +169,8 @@ class LinkController extends BaseController
             );
         } elseif ($shadowrocket == 1) {
             $getBody = self::getBody(
-                $user, $response,
+                $user,
+                $response,
                 self::getShadowrocket($user),
                 'Shadowrocket.txt'
             );
@@ -195,7 +181,6 @@ class LinkController extends BaseController
                 self::getSub($user, $sub, $opts),
                 'node.txt'
             );
-
         }
 
         return $getBody;
@@ -228,12 +213,10 @@ class LinkController extends BaseController
             )
             ->withHeader(
                 'Subscription-Userinfo',
-                (
-                    ' upload=' . $user->u
+                (' upload=' . $user->u
                     . '; download=' . $user->d
                     . '; total=' . $user->transfer_enable
-                    . '; expire=' . strtotime($user->class_expire)
-                )
+                    . '; expire=' . strtotime($user->class_expire))
             );
         $newResponse->getBody()->write($content);
 
@@ -296,16 +279,12 @@ class LinkController extends BaseController
         $proxy_name = '';
         $proxy_group = '';
         $items = array_merge(
-            URL::getAllItems($user, 0, 1),
-            URL::getAllItems($user, 1, 1)
+            URL::getAllItems($user, 0, 1, 0),
+            URL::getAllItems($user, 1, 1, 0)
         );
         foreach ($items as $item) {
-            if ($item['obfs'] == 'v2ray') {
-                continue;
-            }
             if (in_array($surge, array(1, 3))) {
-                $proxy_group .= (
-                    $item['remark']
+                $proxy_group .= ($item['remark']
                     . ' = ss, '
                     . $item['address'] .
                     ', '
@@ -316,11 +295,9 @@ class LinkController extends BaseController
                     . $item['passwd']
                     . URL::getSurgeObfs($item)
                     . ', tfo=true, udp-relay=true'
-                    . PHP_EOL
-                );
+                    . PHP_EOL);
             } else {
-                $proxy_group .= (
-                    $item['remark']
+                $proxy_group .= ($item['remark']
                     . ' = custom, '
                     . $item['address']
                     . ', '
@@ -332,8 +309,7 @@ class LinkController extends BaseController
                     . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module'
                     . URL::getSurgeObfs($item)
                     . ', tfo=true'
-                    . PHP_EOL
-                );
+                    . PHP_EOL);
             }
             $proxy_name .= (', ' . $item['remark']);
         }
@@ -347,7 +323,10 @@ class LinkController extends BaseController
             $SourceContent = @file_get_contents($SourceURL);
             if ($SourceContent) {
                 return ConfController::getSurgeConfs(
-                    $user, $proxy_group, $items, $SourceContent
+                    $user,
+                    $proxy_group,
+                    $items,
+                    $SourceContent
                 );
             } else {
                 return '远程配置下载失败。';
@@ -416,14 +395,11 @@ class LinkController extends BaseController
             } elseif ($quantumult == 3) {
                 $ss_group = '';
                 $ss_name = '';
-                $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
+                $items = array_merge(URL::getAllItems($user, 0, 1, 0), URL::getAllItems($user, 1, 1, 0));
                 foreach ($items as $item) {
-                    if ($item['obfs'] == 'v2ray') {
-                        continue;
-                    }
                     $ss_group .= $item['remark'] . ' = shadowsocks, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', "' . $item['passwd'] . '", upstream-proxy=false, upstream-proxy-auth=false' . URL::getSurgeObfs($item) . ', group=' . Config::get('appName') . PHP_EOL;
                     if (strpos($item['remark'], '回国') or strpos($item['remark'], 'China')) {
-                        $back_china_name .= "\n". $item['remark'];
+                        $back_china_name .= "\n" . $item['remark'];
                     } else {
                         $ss_name .= "\n" . $item['remark'];
                     }
@@ -434,14 +410,14 @@ class LinkController extends BaseController
                 foreach ($ssrs as $item) {
                     $ssr_group .= $item['remark'] . ' = shadowsocksr, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', "' . $item['passwd'] . '", protocol=' . $item['protocol'] . ', protocol_param=' . $item['protocol_param'] . ', obfs=' . $item['obfs'] . ', obfs_param="' . $item['obfs_param'] . '", group=' . Config::get('appName') . PHP_EOL;
                     if (strpos($item['remark'], '回国') or strpos($item['remark'], 'China')) {
-                        $back_china_name .= "\n". $item['remark'];
+                        $back_china_name .= "\n" . $item['remark'];
                     } else {
                         $ssr_name .= "\n" . $item['remark'];
                     }
                 }
                 $quan_proxy_group = base64_encode("🍃 Proxy  :  static, 🏃 Auto\n🏃 Auto\n🚀 Direct\n" . $ss_name . $ssr_name . $v2ray_name);
                 $quan_auto_group = base64_encode("🏃 Auto  :  auto\n" . $ss_name . $ssr_name . $v2ray_name);
-                $quan_domestic_group = base64_encode("🍂 Domestic  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy\n".$back_china_name);
+                $quan_domestic_group = base64_encode("🍂 Domestic  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy\n" . $back_china_name);
                 $quan_others_group = base64_encode("☁️ Others  :   static, 🍃 Proxy\n🚀 Direct\n🍃 Proxy");
                 $quan_apple_group = base64_encode("🍎 Only  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
                 $quan_direct_group = base64_encode("🚀 Direct : static, DIRECT\nDIRECT");
@@ -485,13 +461,10 @@ class LinkController extends BaseController
         $userapiUrl = $subInfo['surfboard'];
         $ss_name = '';
         $ss_group = '';
-        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
+        $items = array_merge(URL::getAllItems($user, 0, 1, 0), URL::getAllItems($user, 1, 1, 0));
         foreach ($items as $item) {
-            if ($item['obfs'] == 'v2ray') {
-                continue;
-            }
             $ss_group .= $item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . URL::getSurgeObfs($item) . PHP_EOL;
-            $ss_name .= ', '.$item['remark'];
+            $ss_name .= ', ' . $item['remark'];
         }
         $render = ConfRender::getTemplateRender();
         $render->assign('user', $user)
@@ -517,7 +490,7 @@ class LinkController extends BaseController
         $proxy_confs = [];
         $back_china_confs = [];
         // ss
-        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
+        $items = array_merge(URL::getAllItems($user, 0, 1, 1), URL::getAllItems($user, 1, 1, 1));
         foreach ($items as $item) {
             $sss = [
                 'name' => $item['remark'],
@@ -526,6 +499,7 @@ class LinkController extends BaseController
                 'port' => $item['port'],
                 'cipher' => $item['method'],
                 'password' => $item['passwd'],
+                'udp' => true
             ];
             if ($item['obfs'] != 'plain') {
                 switch ($item['obfs']) {
@@ -673,7 +647,7 @@ class LinkController extends BaseController
             } else {
                 $tmp = '剩余流量：' . $user->unusedTraffic();
             }
-            $tmp .= ' - 过期时间：';
+            $tmp .= '...过期时间：';
             if ($user->class_expire != '1989-06-04 00:05:00') {
                 $userClassExpire = explode(' ', $user->class_expire);
                 $tmp .= $userClassExpire[0];
@@ -683,12 +657,10 @@ class LinkController extends BaseController
         } else {
             $tmp = '账户已过期，请续费后使用';
         }
-        $return .= (
-            'STATUS=' . rawurlencode($tmp)
+        $return .= ('STATUS=' . $tmp
             . PHP_EOL
-            . 'REMARKS=' . rawurlencode(Config::get('appName'))
-            . PHP_EOL
-        );
+            . 'REMARKS=' . Config::get('appName')
+            . PHP_EOL);
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
@@ -697,36 +669,27 @@ class LinkController extends BaseController
             }
             $obfs = '';
             if ($item['net'] == 'ws') {
-                $obfs .= (
-                    $item['host'] != ''
+                $obfs .= ($item['host'] != ''
                     ? ('&obfsParam=' . $item['host'] .
-                        '&path=' . $item['path'] . '&obfs=websocket'
-                        )
+                        '&path=' . $item['path'] . '&obfs=websocket')
                     : ('&obfsParam=' . $item['add'] .
-                        '&path=' . $item['path'] . '&obfs=websocket'
-                        )
-                );
-                $obfs .= (
-                    $item['tls'] == 'tls'
+                        '&path=' . $item['path'] . '&obfs=websocket'));
+                $obfs .= ($item['tls'] == 'tls'
                     ? '&tls=1'
-                    : '&tls=0'
-                );
+                    : '&tls=0');
             } elseif (($item['net'] == 'tcp' && $item['tls'] == 'tls') || $item['net'] == 'tls') {
                 $obfs .= '&obfs=none';
-                $obfs .= (
-                    $item['tls'] == 'tls'
+                $obfs .= ($item['tls'] == 'tls'
                     ? '&tls=1'
-                    : '&tls=0'
-                );
+                    : '&tls=0');
             } else {
                 $obfs .= '&obfs=none';
             }
             $return .= ('vmess://' . Tools::base64_url_encode(
                 'chacha20-poly1305:' . $item['id'] .
-                '@' . $item['add'] . ':' . $item['port']
+                    '@' . $item['add'] . ':' . $item['port']
             ) . '?remarks=' . rawurlencode($item['ps'])
-            . $obfs . PHP_EOL
-            );
+                . $obfs . PHP_EOL);
         }
         // ss
         $items = array_merge(
@@ -737,7 +700,7 @@ class LinkController extends BaseController
             if ($item['obfs'] == 'v2ray') {
                 $v2rayplugin = [
                     'address' => $item['address'],
-                    'port' => (string)$item['port'],
+                    'port' => (string) $item['port'],
                     'path' => $item['path'],
                     'host' => $item['host'],
                     'mode' => 'websocket',
@@ -745,30 +708,24 @@ class LinkController extends BaseController
                 $v2rayplugin['tls'] = $item['tls'] == 'tls' ? true : false;
                 $return .= ('ss://' . Tools::base64_url_encode(
                     $item['method'] . ':' . $item['passwd'] .
-                    '@' . $item['address'] . ':' . $item['port']
+                        '@' . $item['address'] . ':' . $item['port']
                 ) . '?v2ray-plugin=' . Tools::base64_url_encode(
                     json_encode($v2rayplugin)
-                ) . '#' . rawurlencode($item['remark']) . PHP_EOL
-                );
+                ) . '#' . rawurlencode($item['remark']) . PHP_EOL);
             } elseif (in_array($item['obfs'], ['simple_obfs_http', 'simple_obfs_tls'])) {
-                $obfs = (
-                    $item['method'] == 'simple_obfs_http'
+                $obfs = ($item['method'] == 'simple_obfs_http'
                     ? 'obfs=http;'
-                    : 'obfs=tls;'
-                );
-                $obfs .= (
-                    $item['obfs_param'] != ''
+                    : 'obfs=tls;');
+                $obfs .= ($item['obfs_param'] != ''
                     ? ('obfs-host=' . $item['obfs_param'] . ';')
-                    : 'obfs-host=windowsupdate.windows.com;'
-                );
+                    : 'obfs-host=windowsupdate.windows.com;');
                 $return .= ('ss://' . Tools::base64_url_encode(
                     $item['method'] . ':' . $item['passwd']
                 ) . '@' . $item['address'] . ':' . $item['port'] .
                     '?plugin=simple-obfs;' . $obfs .
                     'obfs-uri=/#' . rawurlencode(
                         Config::get('appName') . ' - ' . $item['remark']
-                    ) . PHP_EOL
-                );
+                    ) . PHP_EOL);
             } elseif ($item['obfs'] == 'plain') {
                 $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
             }
@@ -792,46 +749,37 @@ class LinkController extends BaseController
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
-            $network = (
-                $item['net'] == 'tls'
+            $network = ($item['net'] == 'tls'
                 ? '&network=tcp'
-                : ('&network=' . $item['net'])
-            );
+                : ('&network=' . $item['net']));
             $protocol = '';
             switch ($item['net']) {
                 case 'kcp':
-                    $protocol .= (
-                        '&kcpheader=' . $item['type'] .
+                    $protocol .= ('&kcpheader=' . $item['type'] .
                         '&uplinkcapacity=1' .
-                        '&downlinkcapacity=6'
-                    );
+                        '&downlinkcapacity=6');
                     break;
                 case 'ws':
-                    $protocol .= (
-                        '&wspath=' . $item['path'] .
-                        '&wsHost=' . $item['host']
-                    );
+                    $protocol .= ('&wspath=' . $item['path'] .
+                        '&wsHost=' . $item['host']);
                     break;
             }
-            $tls = (
-                $item['tls'] == 'tls' || $item['net'] == 'tls'
+            $tls = ($item['tls'] == 'tls' || $item['net'] == 'tls'
                 ? '&tls=1'
-                : '&tls=0'
-            );
+                : '&tls=0');
             $mux = '&mux=1&muxConcurrency=8';
             $return .= ('vmess://' . base64_encode(
                 'auto:' . $item['id'] .
-                '@' . $item['add'] . ':' . $item['port']
+                    '@' . $item['add'] . ':' . $item['port']
             ) . '?remark=' . rawurlencode($item['ps']) .
                 $network . $protocol .
                 '&aid=' . $item['aid']
-                . $tls . $mux . PHP_EOL
-            );
+                . $tls . $mux . PHP_EOL);
         }
         // ss
         $items = array_merge(
-            URL::getAllItems($user, 0, 1),
-            URL::getAllItems($user, 1, 1)
+            URL::getAllItems($user, 0, 1, 0),
+            URL::getAllItems($user, 1, 1, 0)
         );
         foreach ($items as $item) {
             if ($item['obfs'] == 'plain') {
