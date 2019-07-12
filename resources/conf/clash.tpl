@@ -43,10 +43,8 @@ dns:
     - 1.2.4.8
     - 223.5.5.5
     - 114.114.114.114
-    - tls://dns.rubyfish.cn:853
   fallback:
     - tls://dns.rubyfish.cn:853
-    - tls://dns.google
 
 # Clash DNS 请求逻辑：
 # (1) 当访问一个域名时， nameserver 与 fallback 列表内的所有服务器并发请求，得到域名对应的 IP 地址。
