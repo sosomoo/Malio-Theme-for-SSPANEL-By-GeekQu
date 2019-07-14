@@ -327,6 +327,7 @@ class ConfController extends BaseController
                         'external-ui',
                         'secret',
                         'experimental',
+                        'authentication',
                         'dns'
                     ]
                 )) {
