@@ -472,7 +472,7 @@ class Tools
                 $item['tls'] = 'tls';
             }
         }
-        if (count($server) >= 6) {
+        if (count($server) >= 6 && $server[5] != '') {
             $item = array_merge($item, URL::parse_args($server[5]));
             if (array_key_exists('server', $item)) {
                 $item['add'] = $item['server'];
@@ -481,6 +481,9 @@ class Tools
             if (array_key_exists('outside_port', $item)) {
                 $item['port'] = (int)$item['outside_port'];
                 unset($item['outside_port']);
+            }
+            if (isset($item['inside_port'])) {
+                unset($item['inside_port']);
             }
         }
         return $item;
