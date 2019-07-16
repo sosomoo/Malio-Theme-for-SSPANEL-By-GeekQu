@@ -313,22 +313,13 @@ class ConfController extends BaseController
     public static function getClashConfGeneral($General)
     {
         if (count($General) != 0) {
-            foreach ($General as $key => $value) {
-                if (!in_array(
+            foreach ($General as $key) {
+                if (in_array(
                     $key,
                     [
-                        'port',
-                        'socks-port',
-                        'redir-port',
-                        'allow-lan',
-                        'mode',
-                        'log-level',
-                        'external-controller',
-                        'external-ui',
-                        'secret',
-                        'experimental',
-                        'authentication',
-                        'dns'
+                        'Proxy',
+                        'Proxy Group',
+                        'Rule'
                     ]
                 )) {
                     unset($key);
