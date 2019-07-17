@@ -196,15 +196,12 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery.nicescroll@3.7.6/jquery.nicescroll.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/moment@2.18.1/min/moment.min.js"></script>
-  <script src="/theme/malio/assets/js/stisla.js"></script>
 
   <!-- JS Libraies -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.25.6/dist/sweetalert2.all.min.js"></script>
 
   <!-- Page Specific JS File -->
-
-  <!-- Template JS File -->
-  <script src="/theme/malio/assets/js/scripts.js"></script>
+  <script src="/theme/malio/js/malio.js"></script>
 
   <script>
     function login() {

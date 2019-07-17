@@ -37,7 +37,7 @@
                   </div>
                 </div>
 
-                <div class="hero text-white hero-bg-image hero-bg-parallax mb-4" data-background="/theme/malio/img/soroush-karimi-crjPrExvShc-unsplash.jpg" style="background-image: url(&quot;/theme/malio/assets/img/soroush-karimi-crjPrExvShc-unsplash.jpg&quot;);">
+                <div class="hero text-white hero-bg-image hero-bg-parallax mb-4" data-background="/theme/malio/img/soroush-karimi-crjPrExvShc-unsplash.jpg" style="background-image: url(&quot;/theme/malio/img/soroush-karimi-crjPrExvShc-unsplash.jpg&quot;);">
                   <div class="hero-inner">
                     <h2>当您邀请朋友注册时</h2>
                     {if $config['code_payback'] > 0}
