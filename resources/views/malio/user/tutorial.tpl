@@ -103,6 +103,8 @@
                 <div class="card card-hero" onclick="location='/user/tutorial?os=ios&client=quantumult'">
                 {else if $malio_config['ios_client'] == 'shadowrocket'}
                 <div class="card card-hero" onclick="location='/user/tutorial?os=ios&client=shadowrocket'">
+                {else if $malio_config['ios_client'] == 'kitsunebi'}
+                <div class="card card-hero" onclick="location='/user/tutorial?os=ios&client=kitsunebi'">
                 {/if}
                   <div class="card-header os-card ios-card">
                     <div class="card-icon">

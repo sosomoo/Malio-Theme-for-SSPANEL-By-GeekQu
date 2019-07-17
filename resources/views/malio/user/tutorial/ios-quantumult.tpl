@@ -154,7 +154,7 @@
                             {else}
                               <p>这是一个付费软件，你需要购买才能使用。</p>
                             {/if}
-                            <a href="https://itunes.apple.com/us/app/quantumult/id1252015438?ls=1&mt=8'" class="btn btn-icon icon-left btn-primary btn-app" target="blank"><i class="fab fa-apple"></i> 打开 App Store 下载</a>
+                            <a href="https://itunes.apple.com/us/app/quantumult/id1252015438?ls=1&mt=8" class="btn btn-icon icon-left btn-primary btn-app" target="blank"><i class="fab fa-apple"></i> 打开 App Store 下载</a>
                             <button id="quantumult-download-qrcode" type="button" class="qrcode-btn btn">
                               <i class="fas fa-qrcode"></i>
                             </button>
