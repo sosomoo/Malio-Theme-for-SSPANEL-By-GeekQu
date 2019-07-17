@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@4.5.0/dist/css/swiper.min.css">
 </head>
 
-{if $malio_config['enable_landing_page']}
+{if $malio_config['enable_landing_page'] == true}
 <body class="">
   <nav class="navbar navbar-reverse navbar-expand-lg">
     <div class="container">
