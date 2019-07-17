@@ -68,7 +68,7 @@
                       {if $config['custom_invite_price']>=0}
                       <a href="##" class="btn btn-primary"  data-toggle="modal" data-target="#custom-invite-modal">定制邀请链接</a>
                       {/if}
-                      <button class="btn btn-primary" data-confirm="提示|确定要要重置邀请链接吗？点击确定后会重置并自动刷新本页。" data-confirm-yes="location.href='/user/inviteurl_reset'">重置邀请链接</button>
+                      <button class="btn btn-primary"  data-toggle="modal" data-target="#reset-invite-modal">重置邀请链接</button>
                     </div>
                   </div>
                 </div>
@@ -170,5 +170,25 @@
   </div>
 </div>
 {/if}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="reset-invite-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">定制邀请链接</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>确定要要重置邀请链接吗？点击确定后会重置并自动刷新本页。</p>
+      </div>
+      <div class="modal-footer bg-whitesmoke br">
+        <a type="button" class="btn btn-primary" href="/user/inviteurl_reset">确定</a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </html>
