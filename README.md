@@ -9,8 +9,10 @@
 
 ## 注意事项
 .malio_config.php 文件里的商品id必须设置好，不然没办法购买。
+
 在.config.php里设置新用户注册等级为-1。
+
 在.config.php里设置用户等级过期时间，建议设置为超过一个月的时间(720小时)。
 
 ## CREDIT
-基于 rico 和
+基于 [rico](https://github.com/rico93) 和 [GeekQu](https://github.com/GeekQu) 维护的 [ss-panel-v3-mod_Uim](https://github.com/GeekQu/ss-panel-v3-mod_Uim) 修改
