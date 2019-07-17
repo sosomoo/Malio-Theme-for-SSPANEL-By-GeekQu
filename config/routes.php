@@ -157,6 +157,9 @@ $app->group('/user', function () {
     // Crypto Payment - BTC, ETH, EOS, BCH, LTC etch
     $this->post('/payment/bitpay/purchase', App\Services\BitPayment::class . ':purchase');
     $this->get('/payment/bitpay/return', App\Services\BitPayment::class . ':returnHTML');
+
+    // Malio
+    $this->post('/money', App\Controllers\UserController::class . ':getmoney');
 })->add(new Auth());
 
 $app->group('/payment', function () {

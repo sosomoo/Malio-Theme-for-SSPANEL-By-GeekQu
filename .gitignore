@@ -33,3 +33,9 @@ storage/*.*
 public/.user.ini
 
 resources/views/material/analytics.tpl
+
+.vscode
+config/.malio_config.php
+public/client-download/
+malio-noobfs.js
+malio.js

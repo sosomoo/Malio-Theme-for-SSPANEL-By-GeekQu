@@ -13,6 +13,7 @@ use App\Models\Coupon;
 use App\Models\Bought;
 use App\Models\Ticket;
 use App\Services\Config;
+use App\Services\MalioConfig;
 use App\Services\Gateway\ChenPay;
 use App\Services\BitPayment;
 use App\Services\Payment;
@@ -69,7 +70,15 @@ class UserController extends BaseController
 
         $Ann = Ann::orderBy('date', 'desc')->first();
 
+        if (!$paybacks_sum = Payback::where("ref_by", $this->user->id)->sum('ref_get')) {
+            $paybacks_sum = 0;
+        }
+
+        $class_left_days = floor((strtotime($this->user->class_expire)-time())/86400)+1;
+
         return $this->view()
+            ->assign('class_left_days', $class_left_days)
+            ->assign('paybacks_sum', $paybacks_sum)
             ->assign('subInfo', LinkController::getSubinfo($this->user, 0))
             ->assign('ssr_sub_token', $ssr_sub_token)
             ->assign('display_ios_class', Config::get('display_ios_class'))
@@ -99,7 +108,15 @@ class UserController extends BaseController
         $pageNum = $request->getQueryParams()['page'] ?? 1;
         $codes = Code::where('type', '<>', '-2')->where('userid', '=', $this->user->id)->orderBy('id', 'desc')->paginate(15, ['*'], 'page', $pageNum);
         $codes->setPath('/user/code');
-        return $this->view()->assign('codes', $codes)->assign('pmw', Payment::purchaseHTML())->assign('bitpay', BitPayment::purchaseHTML())->display('user/code.tpl');
+
+        $bought_pageNum = 1;
+        if (isset($request->getQueryParams()["bought"])) {
+            $bought_pageNum = $request->getQueryParams()["bought"];
+        }
+        $shops = Bought::where("userid", $this->user->id)->orderBy("id", "desc")->paginate(5, ['*'], 'bought', $bought_pageNum);
+        $shops->setPath('/user/code');
+
+        return $this->view()->assign('shops', $shops)->assign('codes', $codes)->assign('pmw', Payment::purchaseHTML())->assign('bitpay', BitPayment::purchaseHTML())->display('user/code.tpl');
     }
 
     public function orderDelete($request, $response, $args)
@@ -310,7 +327,7 @@ class UserController extends BaseController
 
         if ($code == '') {
             $res['ret'] = 0;
-            $res['msg'] = '二维码不能为空';
+            $res['msg'] = '6位验证码不能为空';
             return $response->getBody()->write(json_encode($res));
         }
 
@@ -318,13 +335,15 @@ class UserController extends BaseController
         $rcode = $ga->verifyCode($user->ga_token, $code);
         if (!$rcode) {
             $res['ret'] = 0;
-            $res['msg'] = '测试错误';
+            $res['msg'] = '未成功开启';
             return $response->getBody()->write(json_encode($res));
         }
 
+        $user->ga_enable = 1;
+        $user->save();
 
         $res['ret'] = 1;
-        $res['msg'] = '测试成功';
+        $res['msg'] = '成功开启二步验证';
         return $response->getBody()->write(json_encode($res));
     }
 
@@ -433,7 +452,7 @@ class UserController extends BaseController
 
         $user->ga_token = $secret;
         $user->save();
-        return $response->withStatus(302)->withHeader('Location', '/user/edit');
+        return $response->withStatus(302)->withHeader('Location', '/user/profile');
     }
 
 
@@ -760,8 +779,14 @@ class UserController extends BaseController
             }
         }
 
+        $bind_token = TelegramSessionManager::add_bind_session($this->user);
 
-        return $this->view()->assign('userip', $userip)->assign('userloginip', $userloginip)->assign('paybacks', $paybacks)->display('user/profile.tpl');
+        return $this->view()
+            ->assign('telegram_bot', Config::get('telegram_bot'))
+            ->assign('bind_token', $bind_token)
+            ->assign('userip', $userip)
+            ->assign('userloginip', $userloginip)
+            ->assign('paybacks', $paybacks)->display('user/profile.tpl');
     }
 
 
@@ -775,7 +800,25 @@ class UserController extends BaseController
 
     public function tutorial($request, $response, $args)
     {
-        return $this->view()->display('user/tutorial.tpl');
+        $ssr_sub_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
+        $opts = $request->getQueryParams();
+        if ($opts['os'] == 'faq') {
+            return $this->view()->display('user/tutorial/faq.tpl');
+        }
+        if ($opts['os'] != '' && $opts['client'] != '') {
+            $url = 'user/tutorial/'.$opts['os'].'-'.$opts['client'].'.tpl';
+            return $this->view()
+                ->assign('subInfo', LinkController::getSubinfo($this->user, 0))
+                ->assign('ssr_sub_token', $ssr_sub_token)
+                ->assign('mergeSub', Config::get('mergeSub'))
+                ->assign('subUrl', Config::get('subUrl'))
+                ->assign('user', $this->user)
+                ->registerClass('URL', URL::class)
+                ->assign('baseUrl', Config::get('baseUrl'))
+                ->display($url);
+        } else {
+            return $this->view()->display('user/tutorial.tpl');
+        }
     }
 
 
@@ -1889,4 +1932,11 @@ class UserController extends BaseController
         return $newResponse;
     }
 
+    public function getmoney($request, $response, $args)
+    {
+        $user = $this->user;
+        $res['money'] = $user->money;
+        $res['ret'] = 1;
+        return $this->echoJson($response, $res);
+    }
 }
