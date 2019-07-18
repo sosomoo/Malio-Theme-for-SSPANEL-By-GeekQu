@@ -62,6 +62,7 @@ $Malio_Config['share_account'] = [    // 一个array为一个共享账号
 
 
 // 商店
+$Malio_Config['shop_style'] = 'plans';    // 商店的显示风格， legacy为SSPANEL原版，plans为新版
 $Malio_Config['shop_sub_title'] = '竭尽全力为您提供优质的服务';   // 商店的小标题，可以使用 HTML 标签
 
 $Malio_Config['plan_1_name'] = '标准版';    // 第一个会员计划的名字

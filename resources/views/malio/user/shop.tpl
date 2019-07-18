@@ -59,6 +59,7 @@
     <div class="main-wrapper">
       {include file='user/navbar.tpl'}
 
+      {if $malio_config['shop_style'] == 'plans'}
       <!-- Main Content -->
       <div id="main-page" class="main-content">
         <section class="section">
@@ -293,6 +294,68 @@
             </div>
           </div>
       </div>
+      {elseif $malio_config['shop_style'] == 'legacy'}
+      <div id="main-page" class="main-content">
+        <section class="section">
+          <div class="section-header">
+            <h1>商店</h1>
+          </div>
+          <div class="section-body">
+            <h2 class="section-title">选择合适的会员订阅计划</h2>
+            <p class="section-lead">{$malio_config['shop_sub_title']}</p>
+
+            <div class="row">
+              {foreach $shops as $shop}
+              <div class="col-12 col-md-4 col-lg-4">
+                <div class="pricing pricing-highlight">
+                  <div class="pricing-title">
+                    {$shop->name}
+                  </div>
+                  <div class="pricing-padding">
+                    <div class="pricing-price">
+                      <div>¥{$shop->price}</div>
+                      <div>每月</div>
+                    </div>
+                    <div class="pricing-details">
+                      <div class="pricing-item">
+                        <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                        <div class="pricing-item-label">{$shop->bandwidth()}GB 使用流量</div>
+                      </div>
+                      <div class="pricing-item">
+                        <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                        <div class="pricing-item-label">{$shop->class_expire()}天 会员时长</div>
+                      </div>
+                      {if {$shop->connector()} > '0' }
+                      <div class="pricing-item">
+                        <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                        <div class="pricing-item-label">{$shop->connector()}个 在线客户端</div>
+                      </div>
+                      {/if}
+                      {if {$shop->speedlimit()} == '0' }
+                      <div class="pricing-item">
+                        <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                        <div class="pricing-item-label">{$shop->speedlimit()} 最高速率</div>
+                      </div>
+                      {/if}
+                      {foreach $shop->content_extra() as $service}
+                      <div class="pricing-item">
+                        <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                        <div class="pricing-item-label">{$service[1]}</div>
+                      </div>
+                      {/foreach}
+                    </div>
+                  </div>
+                  <div class="pricing-cta go-to-buy-page">
+                    <a href="#">购买 <i class="fas fa-arrow-right"></i></a>
+                  </div>
+                </div>
+              </div>
+              {/foreach}
+            </div>
+          </div>
+        </section>
+      </div>
+      {/if}
     </div>
     </section>
   </div>
