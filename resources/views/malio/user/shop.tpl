@@ -345,8 +345,8 @@
                       {/foreach}
                     </div>
                   </div>
-                  <div class="pricing-cta go-to-buy-page">
-                    <a href="#">购买 <i class="fas fa-arrow-right"></i></a>
+                  <div class="pricing-cta">
+                    <a href="##" onclick="buyConfirm({$shop->id})">购买 <i class="fas fa-arrow-right"></i></a>
                   </div>
                 </div>
               </div>
@@ -365,6 +365,7 @@
 
   {include file='user/scripts.tpl'}
 
+  {if $malio_config['shop_style'] == 'plans'}
   <script>
     var shop = {
       'plan_1': {
@@ -471,7 +472,7 @@
     updateCheckoutInfo();
 
   </script>
-
+  {/if}
 </body>
 
 {if $config['payment_system'] == 'bitpayx'}
