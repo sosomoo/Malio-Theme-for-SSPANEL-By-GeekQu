@@ -839,7 +839,10 @@ class UserController extends BaseController
 
         $config_service = new Config();
 
+        $ssr_sub_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
+
         return $this->view()
+            ->assign('ssr_sub_token', $ssr_sub_token)
             ->assign('user', $this->user)
             ->assign('schemes', Config::get('user_agreement_scheme'))
             ->assign('themes', $themes)
