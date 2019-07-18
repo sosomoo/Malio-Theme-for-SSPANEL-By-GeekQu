@@ -24,6 +24,7 @@
 </head>
 
 {if $malio_config['enable_landing_page'] == true}
+
 <body class="">
   <nav class="navbar navbar-reverse navbar-expand-lg">
     <div class="container">
@@ -37,6 +38,7 @@
           <li class="nav-item"><a href="#features" class="nav-link">特性</a></li>
           <li class="nav-item"><a href="#purchase" class="nav-link">价格</a></li>
           <li class="nav-item"><a href="#contact-support" class="nav-link">支持</a></li>
+          <li class="nav-item d-lg-none d-md-block"><a href="/auth/login" class="nav-link smooth">登录</a></li>
         </ul>
         <ul class="navbar-nav ml-auto align-items-lg-center d-none d-lg-block">
           <li class="ml-lg-3 nav-item">
@@ -53,16 +55,23 @@
     <div class="hero">
       <div class="container">
         <div class="text text-center text-lg-left">
+          {if $malio_config['index_enable_promotion'] == true}
           <a href="/user/shop" class="headline">
             <div class="badge badge-danger">New</div>
-            年付8折优惠活动，限时进行中 &nbsp; <i class="fas fa-chevron-right"></i>
+            {$malio_config['index_promotion_text']} &nbsp; <i class="fas fa-chevron-right"></i>
           </a>
-          <h1>全球网络中继服务，随时随处尽情使用</h1>
+          {/if}
+          <h1>{$malio_config['index_slogan']}</h1>
           <p class="lead">
-            通过我们的网络访问内容提供商、公司网络和公共云服务。
+            {$malio_config['index_sub_slogan']}
           </p>
           <div class="cta">
             <a class="btn btn-lg btn-warning btn-icon icon-right" href="/auth/register">开始使用 <i class="fas fa-chevron-right"></i></a> &nbsp;
+          </div>
+          <div class="mt-3 text-job d-lg-none">
+            <a href="/auth/login" style="color:rgba(255,255,255,.6);">
+              已有账号？立即登录
+            </a>
           </div>
         </div>
         <div class="image d-none d-lg-block">
@@ -78,19 +87,20 @@
         <div class="h1 mb-0 font-weight-bold mt-1" style="font-size: 2rem;">迄今为止</div>
       </div>
       <div class="col-4 col-md-2 text-center">
-        <div class="h2 font-weight-bold">100+</div>
-        <div class="text-uppercase font-weight-bold ls-2 text-primary">国际节点</div>
+        <div class="h2 font-weight-bold">{$malio_config['index_statistics_1_data']}</div>
+        <div class="text-uppercase font-weight-bold ls-2 text-primary">{$malio_config['index_statistics_1_name']}</div>
       </div>
       <div class="col-4 col-md-2 text-center">
-        <div class="h2 font-weight-bold">25+</div>
-        <div class="text-uppercase font-weight-bold ls-2 text-primary">国家地区</div>
+        <div class="h2 font-weight-bold">{$malio_config['index_statistics_2_data']}</div>
+        <div class="text-uppercase font-weight-bold ls-2 text-primary">{$malio_config['index_statistics_2_name']}</div>
       </div>
       <div class="col-4 col-md-2 text-center">
-        <div class="h2 font-weight-bold">6500+</div>
-        <div class="text-uppercase font-weight-bold ls-2 text-primary">满意用户</div>
+        <div class="h2 font-weight-bold">{$malio_config['index_statistics_3_data']}</div>
+        <div class="text-uppercase font-weight-bold ls-2 text-primary">{$malio_config['index_statistics_3_name']}</div>
       </div>
     </div>
   </div>
+
   <section id="features">
     <div class="container">
       <div class="row mb-5 text-center">
@@ -201,50 +211,21 @@
   <section id="support-us" class="support-us section-design">
     <div class="container">
       <div class="row">
-          <div class="col-lg-8 d-none d-lg-block">
-              <img src="/theme/malio/index/img/waiting_notifications.svg" alt="user flow" class="img-fluid" style="width:30rem">
-            </div>
+        <div class="col-lg-8 d-none d-lg-block">
+          <img src="/theme/malio/index/img/waiting_notifications.svg" alt="user flow" class="img-fluid" style="width:30rem">
+        </div>
         <div class="col-lg-4 col-md-12">
           <h2>不仅仅如此，亦包含以下诸多特性</h2>
           <p class="lead">* 部分特性需要配合第三方客户端与托管规则使用</p>
           <ul class="list-icons">
+            {foreach $malio_config['index_more_features'] as $feature}
             <li>
               <span class="card-icon bg-primary text-white">
-                <i class="fas fa-ad"></i>
+                <i class="{$feature['icon']}"></i>
               </span>
-              <span>过滤常用网站广告、常用视频广告、其他流媒体网站广告</span>
+              <span>{$feature['feature']}</span>
             </li>
-            <li>
-              <span class="card-icon bg-primary text-white">
-                <i class="fas fa-filter"></i>
-              </span>
-              <span>智能分流系统，所有国内网站直线连接，增强用户体验</span>
-            </li>
-            <li>
-              <span class="card-icon bg-primary text-white">
-                <i class="fab fa-apple"></i>
-              </span>
-              <span>Apple服务加速 (App Store、Apple Music、iCloud、iTunes等)</span>
-            </li>
-            <li>
-              <span class="card-icon bg-primary text-white">
-                <i class="fas fa-tachometer-alt"></i>
-              </span>
-              <span>国外常用网站加速 (Google/Youtube/Twitter/Instgram/Github等)
-                </span>
-            </li>
-            <li>
-              <span class="card-icon bg-primary text-white">
-                <i class="fas fa-lock"></i>
-              </span>
-              <span>在传输过程中使用最强的加密方式，保护用户数据和隐私</span>
-            </li>
-            <li>
-              <span class="card-icon bg-primary text-white">
-                <i class="fas fa-fire"></i>
-              </span>
-              <span>与诸多平台上的优秀应用程序兼容，这些应用程序由许多创新公司和开发人员开发</span>
-            </li>
+            {/foreach}
           </ul>
         </div>
       </div>
@@ -367,163 +348,137 @@
         </div>
       </div>
       <div class="row mt-5">
-
-        <div class="col-12 col-md-4 col-lg-4">
+        <div class="col-12 {if $malio_config['enable_plan_2'] == true}col-md-4 col-lg-4{else}col-md-6 col-lg-6{/if}">
           <div class="pricing">
             <div class="pricing-title">
-              标准版
+              {$malio_config['plan_1_name']}
             </div>
             <div class="pricing-padding">
               <div class="pricing-price">
-                <div>¥9.9</div>
+                <div>¥{$malio_config['plan_1_pricing']}</div>
                 <div>每月</div>
               </div>
               <div class="pricing-details">
                 <div class="pricing-item">
                   <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">50GB 使用流量</div>
+                  <div class="pricing-item-label">{$malio_config['plan_1_traffic']}GB 使用流量</div>
                 </div>
                 <div class="pricing-item">
                   <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">2个 在线客户端</div>
+                  <div class="pricing-item-label">{$malio_config['plan_1_online']}个 在线客户端</div>
                 </div>
+                {foreach $malio_config['plan_1_feature'] as $feature}
                 <div class="pricing-item">
+                  {if $feature['support'] == true}
                   <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">工单技术支持</div>
-                </div>
-                <div class="pricing-item">
-                  <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">国际标准节点</div>
-                </div>
-                <div class="pricing-item">
+                  <div class="pricing-item-label">{$feature['name']}</div>
+                  {else}
                   <div class="pricing-item-icon text-white" style="background: #98a6ad"><i class="fas fa-times"></i></div>
-                  <div class="pricing-item-label text-muted"><del>国内中转节点</del></div>
+                  <div class="pricing-item-label text-muted"><del>{$feature['name']}</del></div>
+                  {/if}
                 </div>
-                <div class="pricing-item">
-                  <div class="pricing-item-icon text-white" style="background: #98a6ad"><i class="fas fa-times"></i></div>
-                  <div class="pricing-item-label text-muted"><del>IPLC专线节点</del></div>
-                </div>
+                {/foreach}
               </div>
             </div>
             <div class="pricing-cta go-to-buy-page">
-              <a href="#">订阅 <i class="fas fa-arrow-right"></i></a>
+              <a href="/user/shop">订阅 <i class="fas fa-arrow-right"></i></a>
             </div>
           </div>
         </div>
-        <div class="col-12 col-md-4 col-lg-4">
+        {if $malio_config['enable_plan_2'] == true}
+        <div class="col-12 {if $malio_config['enable_plan_3'] == true}col-md-4 col-lg-4{else}col-md-6 col-lg-6{/if}">
           <div class="pricing">
             <div class="pricing-title">
-              高级版
+              {$malio_config['plan_2_name']}
             </div>
             <div class="pricing-padding">
               <div class="pricing-price">
-                <div>¥19.9</div>
+                <div>¥{$malio_config['plan_2_pricing']}</div>
                 <div>每月</div>
               </div>
               <div class="pricing-details">
                 <div class="pricing-item">
                   <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">100GB 使用流量</div>
+                  <div class="pricing-item-label">{$malio_config['plan_2_traffic']}GB 使用流量</div>
                 </div>
                 <div class="pricing-item">
                   <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">4个 在线客户端</div>
+                  <div class="pricing-item-label">{$malio_config['plan_2_online']}个 在线客户端</div>
                 </div>
+                {foreach $malio_config['plan_2_feature'] as $feature}
                 <div class="pricing-item">
+                  {if $feature['support'] == true}
                   <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">24/7 在线技术支持</div>
-                </div>
-                <div class="pricing-item">
-                  <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">国际标准节点</div>
-                </div>
-                <div class="pricing-item">
-                  <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">国内中转节点</div>
-                </div>
-                <div class="pricing-item">
+                  <div class="pricing-item-label">{$feature['name']}</div>
+                  {else}
                   <div class="pricing-item-icon text-white" style="background: #98a6ad"><i class="fas fa-times"></i></div>
-                  <div class="pricing-item-label text-muted"><del>IPLC专线节点</del></div>
+                  <div class="pricing-item-label text-muted"><del>{$feature['name']}</del></div>
+                  {/if}
                 </div>
+                {/foreach}
               </div>
             </div>
             <div class="pricing-cta go-to-buy-page">
-              <a href="#">订阅 <i class="fas fa-arrow-right"></i></a>
+              <a href="/user/shop">订阅 <i class="fas fa-arrow-right"></i></a>
             </div>
           </div>
         </div>
+        {/if}
+        {if $malio_config['enable_plan_3'] == true}
         <div class="col-12 col-md-4 col-lg-4">
           <div class="pricing">
             <div class="pricing-title">
-              加强版
+              {$malio_config['plan_3_name']}
             </div>
             <div class="pricing-padding">
               <div class="pricing-price">
-                <div>¥29.9</div>
+                <div>¥{$malio_config['plan_3_pricing']}</div>
                 <div>每月</div>
               </div>
               <div class="pricing-details">
                 <div class="pricing-item">
                   <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">200GB 使用流量</div>
+                  <div class="pricing-item-label">{$malio_config['plan_3_traffic']}GB 使用流量</div>
                 </div>
                 <div class="pricing-item">
                   <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">8个 在线客户端</div>
+                  <div class="pricing-item-label">{$malio_config['plan_3_online']}个 在线客户端</div>
                 </div>
+                {foreach $malio_config['plan_3_feature'] as $feature}
                 <div class="pricing-item">
+                  {if $feature['support'] == true}
                   <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">24/7 在线技术支持</div>
+                  <div class="pricing-item-label">{$feature['name']}</div>
+                  {else}
+                  <div class="pricing-item-icon text-white" style="background: #98a6ad"><i class="fas fa-times"></i></div>
+                  <div class="pricing-item-label text-muted"><del>{$feature['name']}</del></div>
+                  {/if}
                 </div>
-                <div class="pricing-item">
-                  <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">国际标准节点</div>
-                </div>
-                <div class="pricing-item">
-                  <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">国内中转节点</div>
-                </div>
-                <div class="pricing-item">
-                  <div class="pricing-item-icon" style="background:#6574f7"><i class="fas fa-check"></i></div>
-                  <div class="pricing-item-label">IPLC专线节点</div>
-                </div>
+                {/foreach}
               </div>
             </div>
             <div class="pricing-cta go-to-buy-page">
-              <a href="#">订阅 <i class="fas fa-arrow-right"></i></a>
+              <a href="/user/shop">订阅 <i class="fas fa-arrow-right"></i></a>
             </div>
           </div>
         </div>
-
+        {/if}
       </div>
-    </div>
   </section>
 
   <section id="try" class="section-dark">
     <div class="container ">
       <div class="swiper-container">
         <div class="swiper-wrapper">
+          {foreach $malio_config['index_user_reviews'] as $review}
           <div class="swiper-slide">
             <div class="col-lg-8 offset-lg-2 text-center">
-              <blockquote>{$config['appName']} 提供的一站式国际数据传输服务不仅方便，更快速稳定，大大降低了企业运维成本。公司即将在海外其他地域拓展服务，也希望能与 {$config['appName']} 进一步合作。</blockquote>
-              <div class="text-name mt-4">某一天天看剧的网友</div>
-              <div class="text-job mt-2"><a href="/">XX公司高级鉴黄师</a> 田所浩二</div>
+              <blockquote>{$review['review']}</blockquote>
+              <div class="text-name mt-4">{$review['user']}</div>
+              <div class="text-job mt-2">{$review['position']}</div>
             </div>
           </div>
-          <div class="swiper-slide">
-            <div class="col-lg-8 offset-lg-2 text-center">
-              <blockquote>使用 {$config['appName']} 产品使我司北京办公室国际互联能力极大提高。114514 是一家全球企业，利用全球网络中继服务，北京办公室的同事也能随时便捷访问 114514 全球资源。</blockquote>
-              <div class="text-name mt-4">某一有钱网友</div>
-              <div class="text-job mt-2"><a href="/">XX公司高级工程师</a> 蔡鹏鲲</div>
-            </div>
-          </div>
-          <div class="swiper-slide">
-            <div class="col-lg-8 offset-lg-2 text-center">
-              <blockquote>我的妈我跟你说真的好用到飞起，我的妈我跟你说真的好用到飞起，我的妈我跟你说真的好用到飞起。素质三连。</blockquote>
-              <div class="text-name mt-4">某一沙雕网友</div>
-              <div class="text-job mt-2"><a href="/">家里蹲大学</a> 学生</div>
-            </div>
-          </div>
+          {/foreach}
         </div>
         <div class="swiper-button-prev" style="color: rgba(255,255,255,.6);background-image: none;"><i class="fas fa-chevron-left" style="font-size:20px;"></i></div>
         <div class="swiper-button-next" style="color: rgba(255,255,255,.6);background-image: none;"><i class="fas fa-chevron-right" style="font-size:20px;"></i></div>

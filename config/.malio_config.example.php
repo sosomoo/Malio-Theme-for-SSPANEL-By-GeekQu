@@ -29,7 +29,6 @@ $Malio_Config['enable_webapi_email_hash'] = true;    // 启用后，当节点通
 $Malio_Config['enable_crisp'] = false;   // 是否启用 Crisp 在线客服系统 https://crisp.chat
 $Malio_Config['crisp_wesite_id'] = '18b46e92-eb21-76d3-bfb7-8f2ae9adba64';    // Crisp 的网站ID，格式为 '18b46e92-eb21-76d3-bfb7-8f2ae9adba64'
 
-
 // 侧边栏
 $Malio_Config['enable_relay'] = false;   // 是否显示中转规则  (这个页面还没写好)
 $Malio_Config['enable_ticket'] = true;   // 是否显示工单系统
@@ -196,3 +195,63 @@ $Malio_Config['android_client'] = 'kitsunebi';    // Android 教程的首选客�
 $Malio_Config['mac_client'] = 'clashx';    // Windows 教程的首选客户端，可选 clashx, shadowsocksx-ng-r
 $Malio_Config['linux_client'] = 'clash';    // Linux 教程的首选客户端，可选 clash, electron-ssr
 $Malio_Config['enable_faq'] = true;    // 是否显示 FAQ 常见问题页面
+
+
+
+// 着陆页设置
+$Malio_Config['index_enable_promotion'] = true;   // 着陆页是否显示促销活动提示
+$Malio_Config['index_promotion_txet'] = '年付8折优惠活动，限时进行中';    // 着陆页促销活动文本
+$Malio_Config['index_promotion_text'] = '年付8折优惠活动，限时进行中';    // 着陆页促销活动文本
+$Malio_Config['index_slogan'] = '全球网络中继服务，随时随处尽情使用';   // 着陆页slogan
+$Malio_Config['index_sub_slogan'] = '通过我们的网络访问内容提供商、公司网络和公共云服务。';   // 着陆页slogan下面那行字
+$Malio_Config['index_statistics_1_data'] = '100+';    // 着陆页的三个统计数据
+$Malio_Config['index_statistics_1_name'] = '国际节点';    // 着陆页的三个统计数据
+$Malio_Config['index_statistics_2_data'] = '25+';    // 着陆页的三个统计数据
+$Malio_Config['index_statistics_2_name'] = '国家地区';    // 着陆页的三个统计数据
+$Malio_Config['index_statistics_3_data'] = '6500+';    // 着陆页的三个统计数据
+$Malio_Config['index_statistics_3_name'] = '满意用户';    // 着陆页的三个统计数据
+
+$Malio_Config['index_more_features'] = [    // 着陆页里的更多特性，一个array为一个特性，icon来自fontawesome，https://fontawesome.com/icons?d=gallery&m=free
+    array(
+        'icon' => 'fas fa-ad',
+        'feature' => '过滤常用网站广告、常用视频广告、其他流媒体网站广告',
+    ),
+    array(
+        'icon' => 'fas fa-filter',
+        'feature' => '智能分流系统，所有国内网站直线连接，增强用户体验',
+    ),
+    array(
+        'icon' => 'fab fa-apple',
+        'feature' => 'Apple服务加速 (App Store、Apple Music、iCloud、iTunes等)',
+    ),
+    array(
+        'icon' => 'fas fa-tachometer-alt',
+        'feature' => '国外常用网站加速 (Google/Youtube/Twitter/Instgram/Github等)',
+    ),
+    array(
+        'icon' => 'fas fa-lock',
+        'feature' => '在传输过程中使用最强的加密方式，保护用户数据和隐私',
+    ),
+    array(
+        'icon' => 'fas fa-fire',
+        'feature' => '与诸多平台上的优秀应用程序兼容，这些应用程序由许多创新公司和开发人员开发',
+    ),
+];
+
+$Malio_Config['index_user_reviews'] = [    // 着陆页评价，一个array为一个评价，可以添加多个 
+    array(
+        'user' => '某一沙雕网友',
+        'position' => '<a href="/">家里蹲大学</a> 学生',
+        'review' => '我的妈我跟你说真的好用到飞起，我的妈我跟你说真的好用到飞起，我的妈我跟你说真的好用到飞起。素质三连。'
+    ),
+    array(
+        'user' => 'CXK',
+        'position' => '<a href="/">XX公司</a>唱跳练习生',
+        'review' => '大家好，我是练习时长两年半的个人练习生，喜欢唱、跳、rap、篮球'
+    ),
+    array(
+        'user' => '用户名',
+        'position' => '职位',
+        'review' => '第三个评价要咋写啊我编不下去了，你们记得改文案啊不然就。这个是占位符占位符🐈🐶'
+    ),
+];

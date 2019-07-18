@@ -314,7 +314,6 @@
                   <div class="pricing-padding">
                     <div class="pricing-price">
                       <div>¥{$shop->price}</div>
-                      <div>每月</div>
                     </div>
                     <div class="pricing-details">
                       <div class="pricing-item">
@@ -325,13 +324,13 @@
                         <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
                         <div class="pricing-item-label">{$shop->class_expire()}天 会员时长</div>
                       </div>
-                      {if {$shop->connector()} > '0' }
+                      {if {$shop->connector()} != '0' }
                       <div class="pricing-item">
                         <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
                         <div class="pricing-item-label">{$shop->connector()}个 在线客户端</div>
                       </div>
                       {/if}
-                      {if {$shop->speedlimit()} == '0' }
+                      {if {$shop->speedlimit()} != '0' }
                       <div class="pricing-item">
                         <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
                         <div class="pricing-item-label">{$shop->speedlimit()} 最高速率</div>
