@@ -172,6 +172,7 @@ $Malio_Config['enable_telegram'] = true;   // 是否显示绑定 Telegram 账号
 
 
 // 节点列表
+$Malio_Config['show_free_nodes'] = true;    // 是否显示免费节点（等级为0的节点）
 $Malio_Config['enable_node_load'] = true;   // 是否显示节点的负载
 $Malio_Config['enable_online_user'] = true;   // 是否显示节点的在线人数
 $Malio_Config['enable_node_traffic_rate'] = true;   // 是否显示节点的流量倍率
