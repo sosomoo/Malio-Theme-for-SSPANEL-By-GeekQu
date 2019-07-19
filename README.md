@@ -9,6 +9,8 @@
 
 将数据库user表里的全部用户的theme列改为malio，可以使用这条SQL语句👉 `UPDATE user SET theme='malio'`
 
+客户端的安装包需要自行下载到 `/public/client-download/` 目录，安装包名字参考 `/resources/views/malio/user/tutorial` 文件夹下的tpl文件内的名字
+
 部署好了之后就可以找我拿js授权文件
 
 ## 注意事项

@@ -32,10 +32,10 @@
 <div class="main-sidebar sidebar-style-2">
   <aside id="sidebar-wrapper">
     <div class="sidebar-brand">
-      <a href="index.html">{$config["appName"]}</a>
+      <a href="/">{$config["appName"]}</a>
     </div>
     <div class="sidebar-brand sidebar-brand-sm">
-      <a href="index.html">{$config["appName"]}</a>
+      <a href="/">{$config["appName"]}</a>
     </div>
     <ul class="sidebar-menu">
       <li><a class="nav-link" href="/user"><i class="fab fa-fort-awesome"></i> <span>首页</span></a></li>
