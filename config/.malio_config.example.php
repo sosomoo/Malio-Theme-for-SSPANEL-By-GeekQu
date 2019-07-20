@@ -31,6 +31,7 @@ $Malio_Config['code_required'] = true;    // 设置为true时，注册时邀请�
 $Malio_Config['enable_crisp'] = false;   // 是否启用 Crisp 在线客服系统 https://crisp.chat
 $Malio_Config['crisp_wesite_id'] = '18b46e92-eb21-76d3-bfb7-8f2ae9adba64';    // Crisp 的网站ID，格式为 '18b46e92-eb21-76d3-bfb7-8f2ae9adba64'
 
+
 // 侧边栏
 $Malio_Config['enable_relay'] = false;   // 是否显示中转规则  (这个页面还没写好)
 $Malio_Config['enable_ticket'] = true;   // 是否显示工单系统
@@ -202,7 +203,7 @@ $Malio_Config['enable_faq'] = true;    // 是否显示 FAQ 常见问题页面
 
 // 着陆页设置
 $Malio_Config['index_enable_promotion'] = true;   // 着陆页是否显示促销活动提示
-$Malio_Config['index_promotion_txet'] = '年付8折优惠活动，限时进行中';    // 着陆页促销活动文本
+$Malio_Config['index_promotion_text'] = '年付8折优惠活动，限时进行中';    // 着陆页促销活动文本
 $Malio_Config['index_slogan'] = '全球网络中继服务，随时随处尽情使用';   // 着陆页slogan
 $Malio_Config['index_sub_slogan'] = '通过我们的网络访问内容提供商、公司网络和公共云服务。';   // 着陆页slogan下面那行字
 $Malio_Config['index_statistics_1_data'] = '100+';    // 着陆页的三个统计数据
