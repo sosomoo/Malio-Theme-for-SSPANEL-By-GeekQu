@@ -55,6 +55,7 @@
                       请填写密码
                     </div>
                   </div>
+                {$geetest_html}
 
                   <div class="form-group">
                     <div class="custom-control custom-checkbox">
@@ -135,6 +136,13 @@
                 </div>
               </div>
 
+
+              {if $geetest_html != null}
+              <div class="form-group">
+                <div id="embed-captcha"></div>
+              </div>
+              {/if}
+
               <div class="form-group">
                 <div class="custom-control custom-checkbox">
                   <input type="checkbox" name="remember" class="custom-control-input" tabindex="3" id="remember-me">
@@ -208,6 +216,18 @@
       if (!$("#password").val() || !$("#email").val()) {
         return false;
       }
+
+      {if $geetest_html != null}
+      if (typeof validate == 'undefined') {
+        swal('请验证身份', '请滑动验证码来完成验证。', 'error');
+        return;
+      }
+      if (!validate) {
+        swal('请验证身份', '请滑动验证码来完成验证。', 'error');
+        return;
+      }
+      {/if}
+
       $.ajax({
         type: "POST",
         url: "/auth/login",
@@ -216,12 +236,18 @@
           email: $("#email").val(),
           passwd: $("#password").val(),
           code: $("#code").val(),
-          remember_me: $("#remember-me:checked").val()
+          remember_me: $("#remember-me:checked").val(){if $geetest_html != null},
+          geetest_challenge: validate.geetest_challenge,
+          geetest_validate: validate.geetest_validate,
+          geetest_seccode: validate.geetest_seccode{/if}
         },
         success: function (data) {
           if (data.ret == 1) {
             window.location.assign('/user')
           } else {
+            {if $geetest_html != null}
+            captcha.refresh();
+            {/if}
             swal('出错了', '密码或邮箱不正确', 'error');
           }
         }
@@ -272,6 +298,26 @@
     el.setAttribute('data-auth-url', '{$base_url}/auth/telegram_oauth')
     el.setAttribute('data-request-access', 'write')
   });
+</script>
+{/if}
+
+{if $geetest_html != null}
+<script src="//static.geetest.com/static/tools/gt.js"></script>
+<script>
+  var handlerEmbed = function (captchaObj) {
+    captchaObj.onSuccess(function () {
+        validate = captchaObj.getValidate();
+    });
+    captchaObj.appendTo("#embed-captcha");
+    captcha = captchaObj;
+  };
+  initGeetest({
+    gt: "{$geetest_html->gt}",
+    challenge: "{$geetest_html->challenge}",
+    product: "embed",
+    width: "100%",
+    offline: {if $geetest_html->success}0{else}1{/if}
+  }, handlerEmbed);
 </script>
 {/if}
 </body>
