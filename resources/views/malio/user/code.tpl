@@ -46,7 +46,7 @@
                     <div class="card-icon">
                       <i class="fas fa-yen-sign "></i>
                     </div>
-                    <h4>¥114.51</h4>
+                    <h4>¥ {$user->money}</h4>
                     <div class="card-description">账号可用余额</div>
                     <div class="mt-4">
                       <a href="##" id="top-up" class="btn btn-outline-white btn-lg btn-icon icon-left">

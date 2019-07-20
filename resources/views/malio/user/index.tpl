@@ -182,6 +182,7 @@
                       {$ann->content}
                     </div>
                   </div>
+
                   <div class="card">
                     <div class="card-header">
                       <h4><i class="fas fa-chart-bar" style="vertical-align: -1px;"></i> 查看最近72小时流量使用情况</h4>
@@ -196,6 +197,7 @@
                     </div>
                   </div>
                 </div>
+                
                 <div class="col-12 col-md-5 col-lg-5">
                   <div class="card">
                     <div class="card-header">
@@ -206,13 +208,13 @@
                     </div>
                   </div>
 
+                  {if $malio_config['enable_share'] == true}
                   <div class="card">
                     <div class="card-header">
                       <h4><i class="fas fa-share"></i> 共享账号</h4>
                     </div>
                     <div class="card-body">
                       <div id="accordion">
-                        {if $malio_config['enable_share'] == true}
                         {$number = 0}
                         {foreach $malio_config['share_account'] as $account}
                         {$number = $number + 1}
@@ -232,6 +234,7 @@
                     </div>
                   </div>
                   {/if}
+
                 </div>
               </div>
         </section>

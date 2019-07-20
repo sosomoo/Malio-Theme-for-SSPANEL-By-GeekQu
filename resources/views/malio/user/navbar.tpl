@@ -89,6 +89,13 @@
         </a>
     </div>
     {/if}
+    {if $can_backtoadmin}
+    <div class="mb-4 mt-4 p-3 hide-sidebar-mini">
+      <a href="/user/backtoadmin" class="btn btn-warning btn-lg btn-block btn-icon-split">
+          <i class="fas fa-tachometer-alt"></i>返回管理员身份
+      </a>
+    </div>
+    {/if}
     {if $user->isAdmin()}
     <div class="mb-4 {if $malio_config['enable_sidebar_button'] != true}mt-4{/if} p-3 hide-sidebar-mini">
         <a href="/admin" class="btn btn-warning btn-lg btn-block btn-icon-split">
