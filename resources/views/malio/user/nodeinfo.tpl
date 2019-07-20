@@ -199,7 +199,7 @@
 
   {include file='user/scripts.tpl'}
 
-  <script src="http://cdn.jsdelivr.net/npm/jquery-qrcode2@1.0.0/dist/jquery-qrcode.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery-qrcode2@1.0.0/dist/jquery-qrcode.min.js"></script>
 
   <script>
     {if URL::SSCanConnect($user, $mu)}
