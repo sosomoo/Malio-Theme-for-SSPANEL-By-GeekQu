@@ -20,9 +20,11 @@ $Malio_Config['login_style'] = 'wallpaper';    // 登录页面的样式，可选
 $Malio_Config['login_slogan'] = '这是一句好听顺嘴而且不长不短刚刚好的Slogan<br>甚至可以写第二行';    // 仅在登录页面样式为 wallpaper 时生效，可使用 HTML 标签
 $Malio_Config['enable_landing_page'] = true;    // 是否启用着陆页用于介绍本站
 
+
 // 面板设置
 $Malio_Config['enable_webapi_ip_verification'] = false;    // 当节点通过 webapi 连接时，不验证节点IP是否与数据库中的IP相同。关闭此选项会降低安全性。
 $Malio_Config['enable_webapi_email_hash'] = true;    // 启用后，当节点通过 webapi 连接时，传出去的邮件地址会经过md5加密。
+$Malio_Config['code_required'] = true;    // 设置为true时，注册时邀请码是必须的。设置为false时，有无邀请码都可以注册，但是可以填邀请码（aff专用）
 
 
 // Crisp 设置

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\InviteCode;
 use App\Services\Config;
+use App\Services\MalioConfig;
 use App\Utils\Check;
 use App\Utils\Tools;
 use App\Utils\Radius;
@@ -360,7 +361,7 @@ class AuthController extends BaseController
 
         //dumplin：1、邀请人等级为0则邀请码不可用；2、邀请人invite_num为可邀请次数，填负数则为无限
         $c = InviteCode::where('code', $code)->first();
-        if ($c == null) {
+        if ($c == null && MalioConfig::get('code_required') == true) {
             if (Config::get('register_mode') === 'invite') {
                 $res['ret'] = 0;
                 $res['msg'] = '邀请码无效';
@@ -374,13 +375,13 @@ class AuthController extends BaseController
                 return $response->getBody()->write(json_encode($res));
             }
 
-            if ($gift_user->class == 0) {
+            if ($gift_user->class == 0 && MalioConfig::get('code_required') == true) {
                 $res['ret'] = 0;
                 $res['msg'] = '邀请人不是VIP';
                 return $response->getBody()->write(json_encode($res));
             }
 
-            if ($gift_user->invite_num == 0) {
+            if ($gift_user->invite_num == 0 && MalioConfig::get('code_required') == true) {
                 $res['ret'] = 0;
                 $res['msg'] = '邀请人可用邀请次数为0';
                 return $response->getBody()->write(json_encode($res));
