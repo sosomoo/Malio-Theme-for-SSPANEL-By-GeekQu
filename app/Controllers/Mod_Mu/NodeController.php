@@ -52,6 +52,7 @@ class NodeController extends BaseController
             ];
             return $this->echoJson($response, $res);
         }
+        $node_server = explode(';', $node->server);
         $res = [
             'ret' => 1,
             'data' => [
@@ -61,7 +62,7 @@ class NodeController extends BaseController
                 'traffic_rate' => $node->traffic_rate,
                 'mu_only' => $node->mu_only,
                 'sort' => $node->sort,
-                'server' => $node->server,
+                'server' => $node_server[0],
                 'type' => 'ss-panel-v3-mod_Uim'
             ],
         ];
@@ -74,7 +75,8 @@ class NodeController extends BaseController
             static function ($query) {
                 $query->where('sort', '=', 0)
                     ->orWhere('sort', '=', 10)
-                    ->orWhere('sort', '=', 12);
+                    ->orWhere('sort', '=', 12)
+                    ->orWhere('sort', '=', 13);
             }
         )->get();
         $res = [
