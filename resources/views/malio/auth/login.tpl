@@ -74,7 +74,7 @@
                 <div class="text-job text-muted">或者</div>
               </div>
               <div class="form-group">
-                <button type="submit" class="btn btn-info btn-lg btn-block" tabindex="4" style="box-shadow:none;">
+                <button data-toggle="modal" data-target="#telegram-modal" class="btn btn-info btn-lg btn-block" tabindex="4" style="box-shadow:none;">
                   <i class="fab fa-telegram-plane"></i> 使用 Telegram 登录
                 </button>
               </div>
@@ -149,7 +149,7 @@
                 </a>
                 {/if}
                 {if $malio_config['enable_telegram'] == true}
-                <a href="##" class="float-left mt-3">
+                <a href="##" data-toggle="modal" data-target="#telegram-modal" class="float-left mt-3">
                   Telegram 登录
                 </a>
                 {/if}
@@ -237,6 +237,43 @@
     });
   </script>
 
+{if $malio_config['enable_telegram'] == true}
+<div class="modal fade" tabindex="-1" role="dialog" id="telegram-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Telegram 一键登录</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mt-4" id="telegram-login-box"></div>
+        <div class="text-center mt-4 mb-3">
+          <div class="text-job text-muted">或者添加机器人账号 <a href="https://t.me/{$telegram_bot}">@{$telegram_bot}</a>，发送下面的数字给它</div>
+        </div>
+        <div class="text-center">
+            <h2><code id="code_number" style="color: #6777ef">{$login_number}</code></h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    var el = document.createElement('script');
+    document.getElementById('telegram-login-box').append(el);
+    el.onload = function () {
+      $('#telegram-alert').remove()
+    }
+    el.src = 'https://telegram.org/js/telegram-widget.js?4';
+    el.setAttribute('data-size', 'large')
+    el.setAttribute('data-telegram-login', '{$telegram_bot}')
+    el.setAttribute('data-auth-url', '{$base_url}/auth/telegram_oauth')
+    el.setAttribute('data-request-access', 'write')
+  });
+</script>
+{/if}
 </body>
 
 </html>
