@@ -71,7 +71,7 @@
                     <div class="card-body">
                       <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
                         <li class="media">
-                          <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if substr($node['name'],0,6) == '美国'}us{elseif substr($node['name'],0,6) == '香港'}hk{elseif substr($node['name'],0,6) == '新加'}sg{elseif substr($node['name'],0,6) == '日本'}jp{elseif substr($node['name'],0,6) == '回国'}cn{elseif substr($node['name'],0,6) == '中国'}cn{elseif substr($node['name'],0,6) == '台湾'}cn{elseif substr($node['name'],0,6) == '菲律'}ph{elseif substr($node['name'],0,6) == '俄罗'}ru{/if}.svg">
+                          <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if substr($node['name'],0,6) == '美国'}us{elseif substr($node['name'],0,6) == '香港'}hk{elseif substr($node['name'],0,6) == '新加'}sg{elseif substr($node['name'],0,6) == '日本'}jp{elseif substr($node['name'],0,6) == '回国'}cn{elseif substr($node['name'],0,6) == '中国'}cn{elseif substr($node['name'],0,6) == '台湾'}cn{elseif substr($node['name'],0,6) == '菲律'}ph{elseif substr($node['name'],0,6) == '俄罗'}ru{elseif substr($node['name'],0,6) == '韩国'}kr{elseif substr($node['name'],0,6) == '德国'}de{elseif substr($node['name'],0,6) == '澳大'}au{/if}.svg">
                           <div class="media-body">
                             <div class="media-title node-status {if $node['online']==" 1"}node-is-online"{elseif $node['online']=='0' }node-is-offline"{else}flash_off{/if}>{current(explode(" - ", $node['name']))}</div>
                             <div class=" text-job text-muted">{$node['info']}</div>
@@ -126,7 +126,7 @@
                       <div class="card-body">
                         <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
                           <li class="media">
-                            <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if substr($node['name'],0,6) == '美国'}us{elseif substr($node['name'],0,6) == '香港'}hk{elseif substr($node['name'],0,6) == '新加'}sg{elseif substr($node['name'],0,6) == '日本'}jp{elseif substr($node['name'],0,6) == '回国'}cn{elseif substr($node['name'],0,6) == '中国'}cn{elseif substr($node['name'],0,6) == '台湾'}cn{elseif substr($node['name'],0,6) == '菲律'}ph{elseif substr($node['name'],0,6) == '俄罗'}ru{/if}.svg">
+                            <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if substr($node['name'],0,6) == '美国'}us{elseif substr($node['name'],0,6) == '香港'}hk{elseif substr($node['name'],0,6) == '新加'}sg{elseif substr($node['name'],0,6) == '日本'}jp{elseif substr($node['name'],0,6) == '回国'}cn{elseif substr($node['name'],0,6) == '中国'}cn{elseif substr($node['name'],0,6) == '台湾'}cn{elseif substr($node['name'],0,6) == '菲律'}ph{elseif substr($node['name'],0,6) == '俄罗'}ru{elseif substr($node['name'],0,6) == '韩国'}kr{elseif substr($node['name'],0,6) == '德国'}de{/if}.svg">
                             <div class="media-body">
                               <div class="media-title node-status {if $node['online']==" 1"}node-is-online"{elseif $node['online']=='0' }node-is-offline"{else}flash_off{/if}>{current(explode(" - ", $node['name']))}</div>
                           <div class=" text-job text-muted">{$node['info']}</div>
@@ -181,7 +181,7 @@
                         <div class="card-body">
                           <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
                             <li class="media">
-                              <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if substr($node['name'],0,6) == '美国'}us{elseif substr($node['name'],0,6) == '香港'}hk{elseif substr($node['name'],0,6) == '新加'}sg{elseif substr($node['name'],0,6) == '日本'}jp{elseif substr($node['name'],0,6) == '回国'}cn{elseif substr($node['name'],0,6) == '中国'}cn{elseif substr($node['name'],0,6) == '台湾'}cn{elseif substr($node['name'],0,6) == '菲律'}ph{elseif substr($node['name'],0,6) == '俄罗'}ru{/if}.svg">
+                              <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if substr($node['name'],0,6) == '美国'}us{elseif substr($node['name'],0,6) == '香港'}hk{elseif substr($node['name'],0,6) == '新加'}sg{elseif substr($node['name'],0,6) == '日本'}jp{elseif substr($node['name'],0,6) == '回国'}cn{elseif substr($node['name'],0,6) == '中国'}cn{elseif substr($node['name'],0,6) == '台湾'}cn{elseif substr($node['name'],0,6) == '菲律'}ph{elseif substr($node['name'],0,6) == '俄罗'}ru{elseif substr($node['name'],0,6) == '韩国'}kr{elseif substr($node['name'],0,6) == '德国'}de{/if}.svg">
                               <div class="media-body">
                                 <div class="media-title node-status {if $node['online']==" 1"}node-is-online"{elseif $node['online']=='0' }node-is-offline"{else}flash_off{/if}>{current(explode(" - ", $node['name']))}</div>
                           <div class=" text-job text-muted">{$node['info']}</div>
@@ -236,7 +236,7 @@
                           <div class="card-body">
                             <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
                               <li class="media">
-                                <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if substr($node['name'],0,6) == '美国'}us{elseif substr($node['name'],0,6) == '香港'}hk{elseif substr($node['name'],0,6) == '新加'}sg{elseif substr($node['name'],0,6) == '日本'}jp{elseif substr($node['name'],0,6) == '回国'}cn{elseif substr($node['name'],0,6) == '中国'}cn{elseif substr($node['name'],0,6) == '台湾'}cn{elseif substr($node['name'],0,6) == '菲律'}ph{elseif substr($node['name'],0,6) == '俄罗'}ru{/if}.svg">
+                                <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if substr($node['name'],0,6) == '美国'}us{elseif substr($node['name'],0,6) == '香港'}hk{elseif substr($node['name'],0,6) == '新加'}sg{elseif substr($node['name'],0,6) == '日本'}jp{elseif substr($node['name'],0,6) == '回国'}cn{elseif substr($node['name'],0,6) == '中国'}cn{elseif substr($node['name'],0,6) == '台湾'}cn{elseif substr($node['name'],0,6) == '菲律'}ph{elseif substr($node['name'],0,6) == '俄罗'}ru{elseif substr($node['name'],0,6) == '韩国'}kr{elseif substr($node['name'],0,6) == '德国'}de{/if}.svg">
                                 <div class="media-body">
                                   <div class="media-title node-status {if $node['online']==" 1"}node-is-online"{elseif $node['online']=='0' }node-is-offline"{else}flash_off{/if}>{current(explode(" - ", $node['name']))}</div>
                           <div class=" text-job text-muted">{$node['info']}</div>
