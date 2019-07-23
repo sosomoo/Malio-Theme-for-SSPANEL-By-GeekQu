@@ -124,7 +124,7 @@
                         <tr>
                           <th>商品名称</th>
                           <th>价格</th>
-                          <th>续费时间</th>
+                          <th>购买时间</th>
                         </tr>
                       </thead>
                       <tbody>
