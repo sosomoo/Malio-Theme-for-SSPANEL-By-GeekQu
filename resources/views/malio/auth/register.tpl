@@ -115,11 +115,13 @@
                   {if $config['register_mode'] == 'invite' && $enable_email_verify == 'false'}
                   <div class="row">
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="code" class="d-block">邀请码</label>
-                      <input id="code" type="text" class="form-control" name="code" required>
+                      <label for="code" class="d-block">邀请码 {if $malio_config['code_required'] == false}(选填){/if}</label>
+                      <input id="code" type="text" class="form-control" name="code" {if $malio_config['code_required'] == true}required{/if}>
+                      {if $malio_config['code_required'] == true}
                       <div class="invalid-feedback">
                         请填写邀请码
                       </div>
+                      {/if}
                     </div>
                   </div>
                   {/if}
