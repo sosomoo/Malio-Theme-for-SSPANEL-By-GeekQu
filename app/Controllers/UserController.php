@@ -475,9 +475,6 @@ class UserController extends BaseController
             if ($node->sort == 13) {
                 $server = Tools::ssv2Array($node->server);
                 $array_node['server'] = $server['add'];
-            } elseif (in_array($node->sort, [0, 10])) {
-                $node_server = explode(';', $node->server);
-                $array_node['server'] = $node_server[0];
             } else {
                 $array_node['server'] = $node->server;
             }

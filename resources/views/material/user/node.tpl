@@ -1,4 +1,4 @@
-﻿{include file='user/main.tpl'}
+{include file='user/main.tpl'}
 
 <script src="//cdn.jsdelivr.net/gh/SuicidalCat/canvasjs.js@v2.3.1/canvasjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1"></script>
@@ -169,7 +169,7 @@
                                                    onClick="urlChange('{$node['id']}',{$single_muport['server']->server},{if $relay_rule != null}{$relay_rule->id}{else}0{/if})">{$node['name']}
                                                     {if $relay_rule != null} - {$relay_rule->dist_node()->name}{/if} -
                                                     单端口 Shadowsocks - 
-                                                    {if strpos($node->server, ';') !== false}{$node_tmp=$tools->OutPort($node, $single_muport)}{$node_tmp['port']}{else}{$single_muport['server']->server}{/if}
+                                                    {if strpos($node->server, ';') !== false}{assign var='node_tmp' value=$tools->OutPort($node['server'], $node['name'], $single_muport['server']->server)}{$node_tmp['port']}{else}{$single_muport['server']->server}{/if}
                                                      端口
                                                 </a>
                                             </div>
@@ -308,7 +308,7 @@
                                                                                    onClick="urlChange('{$node['id']}',{$single_muport['server']->server},{if $relay_rule != null}{$relay_rule->id}{else}0{/if})">{$node['name']}
                                                                                     {if $relay_rule != null} - {$relay_rule->dist_node()->name}{/if}
                                                                                     - 单端口 Shadowsocks -
-                                                                                    {if strpos($node->server, ';') !== false}{$node_tmp=$tools->OutPort($node, $single_muport)}{$node_tmp['port']}{else}{$single_muport['server']->server}{/if}
+                                                                                    {if strpos($node->server, ';') !== false}{assign var='node_tmp' value=$tools->OutPort($node['server'], $node['name'], $single_muport['server']->server)}{$node_tmp['port']}{else}{$single_muport['server']->server}{/if}
                                                                                     端口</a><span
                                                                                         class="label label-brand-accent">←点击节点查看配置信息</span>
                                                                             </p>

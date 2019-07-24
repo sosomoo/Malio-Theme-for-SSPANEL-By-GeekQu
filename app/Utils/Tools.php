@@ -537,9 +537,9 @@ class Tools
         return $item;
     }
 
-    public static function OutPort($node, $mu_port)
+    public static function OutPort($server, $node_name,$mu_port)
     {
-        $node_server = explode(';', $node->server);
+        $node_server = explode(';', $server);
         $node_port = $mu_port;
         if (strpos($node_server[1], 'port') !== false) {
             $item = URL::parse_args($node_server[1]);
@@ -562,7 +562,7 @@ class Tools
         }
 
         return [
-            'name' => ($node->name . ' - ' . $node_port . ' 单端口'),
+            'name' => ($node_name . ' - ' . $node_port . ' 单端口'),
             'address' => $node_server[0],
             'port' => $node_port
         ];
