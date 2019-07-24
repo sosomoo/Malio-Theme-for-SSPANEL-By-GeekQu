@@ -451,6 +451,7 @@ class Tools
             $item['port'] = 443;
         } else {
             $item['port'] = (int)$server[1];
+
         }
         $item['aid'] = (int)$server[2];
         $item['net'] = 'tcp';

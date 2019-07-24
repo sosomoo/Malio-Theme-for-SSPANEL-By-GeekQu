@@ -21,7 +21,7 @@ mode: Rule
 
 # 设置日志输出级别 (默认级别：silent，即不输出任何内容，以避免因日志内容过大而导致程序内存溢出）。
 # 5 个级别：silent / info / warning / error / debug。级别越高日志输出量越大，越倾向于调试，若需要请自行开启。
-log-level: {if array_key_exists("log-level",$opts)}{$opts['log-level']}{else}silent{/if} 
+log-level: {if array_key_exists("log-level",$opts)}{$opts['log-level']}{else}silent{/if}
 
 # Clash 的 RESTful API
 external-controller: '0.0.0.0:9090'
@@ -34,7 +34,7 @@ secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}{/if}'
 # external-ui: folder
 
 {if array_key_exists("dns",$opts) && $opts['dns']==1}
-dns:
+  dns:
   enable: true
   ipv6: false
   # listen: 0.0.0.0:53
@@ -46,14 +46,14 @@ dns:
   fallback:
     - tls://dns.rubyfish.cn:853
 
-# Clash DNS 请求逻辑：
-# (1) 当访问一个域名时， nameserver 与 fallback 列表内的所有服务器并发请求，得到域名对应的 IP 地址。
-# (2) clash 将选取 nameserver 列表内，解析最快的结果。
-# (3) 若解析结果中，IP 地址属于 国外，那么 Clash 将选择 fallback 列表内，解析最快的结果。
+  # Clash DNS 请求逻辑：
+  # (1) 当访问一个域名时， nameserver 与 fallback 列表内的所有服务器并发请求，得到域名对应的 IP 地址。
+  # (2) clash 将选取 nameserver 列表内，解析最快的结果。
+  # (3) 若解析结果中，IP 地址属于 国外，那么 Clash 将选择 fallback 列表内，解析最快的结果。
 
-# 注意：
-# (1) 如果您为了确保 DNS 解析结果无污染，请仅保留列表内以 tls:// 开头的 DNS 服务器，但是通常对于国内没有太大必要。
-# (2) 如果您不在乎可能解析到污染的结果，更加追求速度。请将 nameserver 列表的服务器插入至 fallback 列表内，并移除重复项。
+  # 注意：
+  # (1) 如果您为了确保 DNS 解析结果无污染，请仅保留列表内以 tls:// 开头的 DNS 服务器，但是通常对于国内没有太大必要。
+  # (2) 如果您不在乎可能解析到污染的结果，更加追求速度。请将 nameserver 列表的服务器插入至 fallback 列表内，并移除重复项。
 {/if}
 
 Proxy:

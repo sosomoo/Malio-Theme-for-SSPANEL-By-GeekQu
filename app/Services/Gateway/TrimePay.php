@@ -27,7 +27,7 @@ class TrimePay extends AbstractPayment
     public function __construct($appSecret)
     {
         $this->appSecret = $appSecret;
-        $this->gatewayUri = 'https://api.Trimepay.com/gateway/';
+        $this->gatewayUri = 'https://api.payease.io/gateway/';
     }
 
 

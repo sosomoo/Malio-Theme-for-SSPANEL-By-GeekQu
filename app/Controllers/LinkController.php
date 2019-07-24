@@ -518,6 +518,7 @@ class LinkController extends BaseController
                         }
                         $sss['plugin-opts']['host'] = $item['host'];
                         $sss['plugin-opts']['path'] = $item['path'];
+                        $sss['plugin-opts']['skip-cert-verify'] = true;
                         break;
                 }
                 if ($item['obfs'] != 'v2ray') {
