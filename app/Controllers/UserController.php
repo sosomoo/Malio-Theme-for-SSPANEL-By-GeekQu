@@ -688,7 +688,25 @@ class UserController extends BaseController
         switch ($node->sort) {
             case 0:
                 if ((($user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin) && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
-                    return $this->view()->assign('node', $node)->assign('user', $user)->assign('mu', $mu)->assign('relay_rule_id', $relay_rule_id)->registerClass('URL', URL::class)->display('user/nodeinfo.tpl');
+                    $nodes_muport = array();
+                    if($node->mu_only != -1) {
+                        $nodes = Node::where('type', 1)->orderBy('node_class')->orderBy('name')->get();
+                        foreach($nodes as $node){
+                            if ($node->sort == 9) {
+                                $mu_user = User::where('port', '=', $node->server)->first();
+                                $mu_user->obfs_param = $this->user->getMuMd5();
+                                $nodes_muport[] = array('server' => $node, 'user' => $mu_user);
+                            }
+                        }
+                    }
+                    return $this->view()
+                        ->assign('nodes_muport', $nodes_muport)
+                        ->assign('node', $node)
+                        ->assign('user', $user)
+                        ->assign('mu', $mu)
+                        ->assign('relay_rule_id', $relay_rule_id)
+                        ->registerClass('URL', URL::class)
+                        ->display('user/nodeinfo.tpl');
                 }
                 break;
             case 1:

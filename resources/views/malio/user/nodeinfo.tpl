@@ -15,6 +15,18 @@
         <li class="nav-item">
           <a class="nav-link active" id="ssr-tab" data-toggle="tab" href="#ssr" role="tab" aria-controls="ssr" aria-selected="true">ShadowrsocksR</a>
         </li>
+        {foreach $nodes_muport as $single_muport}
+          {if !($single_muport['server']->node_class <= $user->class && ($single_muport['server']->node_group == 0 || $single_muport['server']->node_group == $user->node_group))}
+              {continue}
+          {/if}
+
+          {if !($single_muport['user']->class >= $node['class'] && ($node['group'] == 0 || $single_muport['user']->node_group == $node['group']))}
+              {continue}
+          {/if}
+          <li class="nav-item">
+            <a class="nav-link" id="ssr-{$single_muport['server']->server}-tab" data-toggle="tab" href="#ssr-{$single_muport['server']->server}" role="tab" aria-controls="ss-{$single_muport['server']->server}" aria-selected="false">ShadowrsocksR ({$single_muport['server']->server}单端口)</a>
+          </li>
+        {/foreach}
         <li class="nav-item">
           <a class="nav-link" id="ss-tab" data-toggle="tab" href="#ss" role="tab" aria-controls="ss" aria-selected="false">Shadowsocks</a>
         </li>
@@ -193,33 +205,159 @@
             {/if}
           </div>
         </div>
+        {foreach $nodes_muport as $single_muport}
+          {if !($single_muport['server']->node_class <= $user->class && ($single_muport['server']->node_group == 0 || $single_muport['server']->node_group == $user->node_group))}
+              {continue}
+          {/if}
+
+          {if !($single_muport['user']->class >= $node['class'] && ($node['group'] == 0 || $single_muport['user']->node_group == $node['group']))}
+              {continue}
+          {/if}
+        
+          <div class="tab-pane fade" id="ssr-{$single_muport['server']->server}" role="tabpanel" aria-labelledby="ssr-{$single_muport['server']->server}-tab">
+              <div class="row mt-2">
+                {if URL::SSRCanConnect($user, $mu)}
+                <div class="col-12 col-sm-3 col-md-3">
+                  <ul class="nav nav-pills flex-column" id="myTab4" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" id="ssr-{$single_muport['server']->server}-info-tab" data-toggle="tab" href="#ssr-{$single_muport['server']->server}-info" role="tab" aria-controls="ssr-{$single_muport['server']->server}-info" aria-selected="true">信息</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="ssr-{$single_muport['server']->server}-qrcode-tab" data-toggle="tab" href="#ssr-{$single_muport['server']->server}-qrcode" role="tab" aria-controls="ssr-{$single_muport['server']->server}-qrcode" aria-selected="false">二维码</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="ssr-{$single_muport['server']->server}-link-tab" data-toggle="tab" href="#ssr-{$single_muport['server']->server}-link" role="tab" aria-controls="ssr-{$single_muport['server']->server}-link" aria-selected="false">链接</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="ssr-{$single_muport['server']->server}-json-tab" data-toggle="tab" href="#ssr-{$single_muport['server']->server}-json" role="tab" aria-controls="ssr-{$single_muport['server']->server}-json" aria-selected="false">JSON</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-12 col-sm-9 col-md-9">
+                  <div class="tab-content no-padding" id="myTab2Content">
+                    <div class="tab-pane fade active show" id="ssr-{$single_muport['server']->server}-info" role="tabpanel" aria-labelledby="ssr-{$single_muport['server']->server}-info-tab">
+                      {$ssr_item_mu_only = URL::getItem($user, $node, {$single_muport['server']->server}, $relay_rule_id, 0)}
+                      {if $ssr_item_mu_only['obfs']=="v2ray"}
+                      <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                        页面修改后再来查看此处。</p>
+                      {else}
+                      <p>服务器地址：<code>{$ssr_item_mu_only['address']}</code><br>
+                        服务器端口：<code>{$ssr_item_mu_only['port']}</code><br>
+                        加密方式：<code>{$ssr_item_mu_only['method']}</code><br>
+                        密码：<code>{$ssr_item_mu_only['passwd']}</code><br>
+                        协议：<code>{$ssr_item_mu_only['protocol']}</code><br>
+                        协议参数：<code>{$ssr_item_mu_only['protocol_param']}</code><br>
+                        混淆：<code>{$ssr_item_mu_only['obfs']}</code><br>
+                        混淆参数：<code>{$ssr_item_mu_only['obfs_param']}</code><br></p>
+                      {/if}
+                    </div>
+                    <div class="tab-pane fade" id="ssr-{$single_muport['server']->server}-qrcode" role="tabpanel" aria-labelledby="ssr-{$single_muport['server']->server}-qrcode-tab">
+                      {if $ssr_item_mu_only['obfs']=="v2ray"}
+                      <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                        页面修改后再来查看此处。</p>
+                      {else}
+                      <div id="ssr-{$single_muport['server']->server}-qrcode-img"></div>
+                      {/if}
+                    </div>
+                    <div class="tab-pane fade" id="ssr-{$single_muport['server']->server}-link" role="tabpanel" aria-labelledby="ssr-{$single_muport['server']->server}-link-tab">
+                      {if $ssr_item_mu_only['obfs']=="v2ray"}
+                      <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                        页面修改后再来查看此处。</p>
+                      {else}
+                      <p><a href="##" class="copy-text" data-clipboard-text="{URL::getItemUrl($ssr_item_mu_only, 0)}">点我复制配置链接</a>
+                      </p>
+                      <p><a href="{URL::getItemUrl($ssr_item_mu_only, 0)}">iOS 上用 Safari
+                          打开点我即可直接添加</a></p>
+                      {/if}
+                    </div>
+                    <div class="tab-pane fade" id="ssr-{$single_muport['server']->server}-json" role="tabpanel" aria-labelledby="ssr-{$single_muport['server']->server}-json-tab">
+                      {if $ssr_item_mu_only['obfs']=="v2ray"}
+                      <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                        页面修改后再来查看此处。</p>
+                      {else}
+                      <pre style="color:#e83e8c">
+    {
+      "server": "{$ssr_item_mu_only['address']}",
+      "local_address": "127.0.0.1",
+      "local_port": 1080,
+      "timeout": 300,
+      "workers": 1,
+      "server_port": {$ssr_item_mu_only['port']},
+      "password": "{$ssr_item_mu_only['passwd']}",
+      "method": "{$ssr_item_mu_only['method']}",
+      "obfs": "{$ssr_item_mu_only['obfs']}",
+      "obfs_param": "{$ssr_item_mu_only['obfs_param']}",
+      "protocol": "{$ssr_item_mu_only['protocol']}",
+      "protocol_param": "{$ssr_item_mu_only['protocol_param']}"
+    }
+    </pre>
+                      {/if}
+                    </div>
+                  </div>
+                </div>
+                {else}
+                <p>您好，您目前的 加密方式，混淆，或者协议设置在 ShadowsocksR 客户端下无法连接。请您选用 Shadowsocks
+                  客户端来连接，或者到 资料编辑 页面修改后再来查看此处。</p>
+                <p>同时, ShadowsocksR 单端口多用户的连接不受您设置的影响,您可以在此使用相应的客户端进行连接~</p>
+                {/if}
+              </div>
+            </div>
+        {/foreach}
       </div>
     </div>
   </div>
 
   {include file='user/scripts.tpl'}
 
-  <script src="//cdn.jsdelivr.net/npm/jquery-qrcode2@1.0.0/dist/jquery-qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/kjua@0.1.2/dist/kjua.min.js"></script>
 
   <script>
     {if URL::SSCanConnect($user, $mu)}
-    var text_qrcode = '{URL::getItemUrl($ss_item, 1)}',
-    text_qrcode_win = '{URL::getItemUrl($ss_item, 2)}';
-
-    jQuery('#ss-qr').qrcode({
-      "text": '{URL::getItemUrl($ss_item, 1)}'
-    });
-
-    jQuery('#ss-qr-win').qrcode({
-      "text": '{URL::getItemUrl($ss_item, 2)}'
-    });
+    $('#ss-qr').html(
+      kjua({
+        text: '{URL::getItemUrl($ss_item, 1)}',
+        render: 'image',
+        size: 256
+      })
+    );
+    $('#ss-qr-win').html(
+      kjua({
+        text: '{URL::getItemUrl($ss_item, 2)}',
+        render: 'image',
+        size: 256
+      })
+    );
     {/if}
 
     {if URL::SSRCanConnect($user, $mu)}
-    jQuery('#ssr-qrcode-img').qrcode({
-      "text": '{URL::getItemUrl($ssr_item, 0)}'
-    });
+    $('#ssr-qrcode-img').html(
+      kjua({
+        text: '{URL::getItemUrl($ssr_item, 0)}',
+        render: 'image',
+        size: 256
+      })
+    );
     {/if}
+
+    {foreach $nodes_muport as $single_muport}
+      {if !($single_muport['server']->node_class <= $user->class && ($single_muport['server']->node_group == 0 || $single_muport['server']->node_group == $user->node_group))}
+          {continue}
+      {/if}
+
+      {if !($single_muport['user']->class >= $node['class'] && ($node['group'] == 0 || $single_muport['user']->node_group == $node['group']))}
+          {continue}
+      {/if}
+
+      {$ssr_item_mu_only = URL::getItem($user, $node, {$single_muport['server']->server}, $relay_rule_id, 0)}
+
+      $('#ssr-{$single_muport['server']->server}-qrcode-img').html(
+        kjua({
+          text: '{URL::getItemUrl($ssr_item_mu_only, 0)}',
+          render: 'image',
+          size: 256
+        })
+      );
+    {/foreach}
   </script>
 
 </body>
