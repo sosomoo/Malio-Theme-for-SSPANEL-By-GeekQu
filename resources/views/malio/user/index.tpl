@@ -22,6 +22,42 @@
     .wizard-step-active {
       cursor: pointer;
     }
+
+    .btn-quantumult {
+      background: linear-gradient(to right, black, black) !important;
+      color: white !important;
+      border-color: black;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.38);
+      margin-bottom: 16px;
+    }
+    .btn-shadowrocket {
+      background: linear-gradient(to right, #3671b9, #3671b9) !important;
+      color: white !important;
+      border-color: #3671b9;
+      box-shadow: 0 2px 6px #3671b99a;
+      margin-bottom: 16px;
+    }
+    .btn-kitsunebi {
+      background: linear-gradient(to right, #f2885b, #e83c9a) !important;
+      color: white !important;
+      border-color: #f2885b;
+      box-shadow: 0 2px 4px #ff567885;
+      margin-bottom: 16px;
+    }
+    .btn-ssr {
+      background: linear-gradient(to right, #e780a3, #e780a3) !important;
+      color: white !important;
+      border-color: #e780a3;
+      box-shadow: 0 2px 6px #e780a2b0;
+      margin-bottom: 16px;
+    }
+    .btn-v2ray {
+      background: linear-gradient(to right, #df268f, #a73178) !important;
+      color: white !important;
+      border-color: #df268f;
+      box-shadow: 0 2px 6px #df268f63;
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 
@@ -235,6 +271,23 @@
                   </div>
                   {/if}
 
+                  {if $malio_config['enable_index_subinfo'] == true}
+                  <div class="card">
+                    <div class="card-header">
+                      <h4><i class="fas fa-bolt"></i> 便捷导入</h4>
+                    </div>
+                    <div class="card-body">
+                      <div class="buttons">
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-quantumult btn-lg btn-round" onclick="importSublink('quantumult')"><i class="malio-quantumult"></i> 一键导入 Quantumult 配置</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-shadowrocket btn-lg btn-round" onclick="importSublink('shadowrocket')"><i class="malio-shadowrocket"></i> 一键导入 Shadowrocket 配置</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-kitsunebi copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-ssr copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-v2ray btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}"><i class="malio-v2rayng"></i> 复制 V2Ray 订阅链接</a>
+                      </div>
+                    </div>
+                  </div>
+                  {/if}
+
                 </div>
               </div>
         </section>
@@ -296,21 +349,36 @@
   <script src="https://cdn.jsdelivr.net/npm/waypoints@4.0.0/lib/jquery.waypoints.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/counterup@1.0.2/jquery.counterup.min.js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/bowser@1.9.4/bowser.min.js"></script>
+
   <!-- C3 Chart -->
   <script src="https://cdn.jsdelivr.net/npm/d3@3.5.0/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/c3@0.4.10/c3.min.js"></script>
-  <script>trafficDountChat(
-    '{$user->LastusedTraffic()}',
-    '{$user->TodayusedTraffic()}',
-    '{$user->unusedTraffic()}',
-    '{number_format($user->last_day_t/$user->transfer_enable*100,2)}',
-    '{number_format(($user->u+$user->d-$user->last_day_t)/$user->transfer_enable*100,2)}',
-    '{number_format(($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100,2)}'
+  <script>
+    trafficDountChat(
+      '{$user->LastusedTraffic()}',
+      '{$user->TodayusedTraffic()}',
+      '{$user->unusedTraffic()}',
+      '{number_format($user->last_day_t/$user->transfer_enable*100,2)}',
+      '{number_format(($user->u+$user->d-$user->last_day_t)/$user->transfer_enable*100,2)}',
+      '{number_format(($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100,2)}'
     )
+
     $('.counter').counterUp({
       delay: 10,
       time: 1000
     });
+
+    function importSublink(client) {
+      if (client == 'quantumult') {
+        oneclickImport('quantumult', '{if $malio_cofig["ios_sub_type"] == v2ray}{$subInfo["v2ray"]}{else}{$subInfo["ssr"]}{/if}');
+      }
+      if (client == 'shadowrocket') {
+        oneclickImport('shadowrocket','{if $malio_cofig["ios_sub_type"] == v2ray}{$subInfo["v2ray"]}{else}{$subInfo["ssr"]}{/if}')
+      };
+    }
+
+    setTimeout(loadTrafficChart(), 3000);
 </script>
 </body>
 

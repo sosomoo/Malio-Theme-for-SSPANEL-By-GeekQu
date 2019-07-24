@@ -44,6 +44,7 @@ $Malio_Config['telegram_group_class'] = 0;   // 显示底部 Telegram 按钮的�
 
 // 首页
 $Malio_Config['enable_share'] = true;   // 是否显示共享账号
+$Malio_Config['enable_index_subinfo'] = true;    // 是否在首页显示订阅链接复制或一键导入等按钮
 $Malio_Config['share_account'] = [    // 一个array为一个共享账号
     array(
         'name' => 'Netflix',
