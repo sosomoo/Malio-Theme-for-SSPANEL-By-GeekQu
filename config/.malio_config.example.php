@@ -13,6 +13,10 @@ __    __     ______     __         __     ______
 */
 
 
+// 版本信息说明（请勿更改）
+$Malio_Config['config_migrate_notice'] = '';
+$Malio_Config['version'] = '1';
+
 // 通用设置
 $Malio_Config['theme_color'] = 'purple';    // 主题颜色，可选值为 purple, blue, darkblue, orange, pink TODO:
 $Malio_Config['google_analytics_code'] = 'UA-123456789-1';    // Google 统计代码，留空为不开启，code格式为 'UA-123456789-1'
