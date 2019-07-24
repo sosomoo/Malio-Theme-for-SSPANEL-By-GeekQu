@@ -294,7 +294,7 @@ class LinkController extends BaseController
                     . ', password='
                     . $item['passwd']
                     . URL::getSurgeObfs($item)
-                    . ', tfo=true, udp-relay=true'
+                    . ', udp-relay=true'
                     . PHP_EOL);
             } else {
                 $proxy_group .= ($item['remark']
@@ -308,7 +308,6 @@ class LinkController extends BaseController
                     . $item['passwd']
                     . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module'
                     . URL::getSurgeObfs($item)
-                    . ', tfo=true'
                     . PHP_EOL);
             }
             $proxy_name .= (', ' . $item['remark']);

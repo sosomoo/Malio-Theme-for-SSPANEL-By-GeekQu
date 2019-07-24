@@ -40,13 +40,11 @@ secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}{/if}'
   # listen: 0.0.0.0:53
   # enhanced-mode: redir-host
   nameserver:
-  - 1.2.4.8
-  - 223.5.5.5
-  - 114.114.114.114
-  - tls://dns.rubyfish.cn:853
+    - 1.2.4.8
+    - 223.5.5.5
+    - 114.114.114.114
   fallback:
-  - tls://dns.rubyfish.cn:853
-  - tls://dns.google
+    - tls://dns.rubyfish.cn:853
 
   # Clash DNS 请求逻辑：
   # (1) 当访问一个域名时， nameserver 与 fallback 列表内的所有服务器并发请求，得到域名对应的 IP 地址。
