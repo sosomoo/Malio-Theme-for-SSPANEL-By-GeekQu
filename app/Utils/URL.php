@@ -652,6 +652,7 @@ class URL
                     $return_array['port'] = ($return_array['port'] + (int) $item['port']);
                 }
             }
+            $node_name = ($node->name . ' - ' . $return_array['port'] . ' 单端口');
         }
         $return_array['remark'] = $node_name;
         $return_array['class'] = $node->node_class;
