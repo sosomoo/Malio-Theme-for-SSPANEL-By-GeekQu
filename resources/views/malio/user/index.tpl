@@ -26,38 +26,64 @@
     .btn-quantumult {
       background: linear-gradient(to right, black, black) !important;
       color: white !important;
-      border-color: black;
+      border-color: transparent;
+      border: none;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.38);
       margin-bottom: 16px;
     }
     .btn-shadowrocket {
       background: linear-gradient(to right, #3671b9, #3671b9) !important;
       color: white !important;
-      border-color: #3671b9;
+      border-color: transparent;
+      border: none;
       box-shadow: 0 2px 6px #3671b99a;
       margin-bottom: 16px;
     }
     .btn-kitsunebi {
       background: linear-gradient(to right, #f2885b, #e83c9a) !important;
       color: white !important;
-      border-color: #f2885b;
+      border-color: transparent;
+      border: none;
       box-shadow: 0 2px 4px #ff567885;
       margin-bottom: 16px;
     }
     .btn-ssr {
       background: linear-gradient(to right, #e780a3, #e780a3) !important;
       color: white !important;
-      border-color: #e780a3;
+      border-color: transparent;
+      border: none;
       box-shadow: 0 2px 6px #e780a2b0;
       margin-bottom: 16px;
     }
     .btn-v2ray {
       background: linear-gradient(to right, #df268f, #a73178) !important;
       color: white !important;
-      border-color: #df268f;
+      border-color: transparent;
+      border: none;
       box-shadow: 0 2px 6px #df268f63;
       margin-bottom: 16px;
     }
+    .btn-ss {
+      background: linear-gradient(to right, #187abb, #187abb) !important;
+      color: white !important;
+      border-color: transparent;
+      border: none;
+      box-shadow: 0 2px 6px #3671b99a;
+      margin-bottom: 16px;
+    }
+    .btn-surge {
+      background: linear-gradient(to right, #5c97f0, #b769f3) !important;
+      color: white !important;
+      border-color: transparent;
+      border: none;
+      box-shadow: 0 2px 6px #8d7cfab2;
+      margin-bottom: 16px;
+    }
+    {if $malio_config['index_subinfo_buttons_align'] == true}
+    .buttons a {
+      width: 230px;
+    }
+    {/if}
   </style>
 </head>
 
@@ -280,8 +306,9 @@
                       <div class="buttons">
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-quantumult btn-lg btn-round" onclick="importSublink('quantumult')"><i class="malio-quantumult"></i> 一键导入 Quantumult 配置</a>
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-shadowrocket btn-lg btn-round" onclick="importSublink('shadowrocket')"><i class="malio-shadowrocket"></i> 一键导入 Shadowrocket 配置</a>
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-kitsunebi copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
+                        <a href="surge:///install-config?url={$subInfo['surge']}" class="btn btn-icon icon-left btn-primary btn-surge btn-lg btn-round"><i class="malio-surge"></i> 一键导入 Surge 配置</a> <a href="##" class="btn btn-icon icon-left btn-primary btn-kitsunebi copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-ssr copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-ss copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ss']}"><i class="malio-ssr"></i> 复制 SS 订阅链接</a>  
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-v2ray btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}"><i class="malio-v2rayng"></i> 复制 V2Ray 订阅链接</a>
                       </div>
                     </div>
