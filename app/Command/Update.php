@@ -124,7 +124,7 @@ class Update
 
         echo (PHP_EOL);
 
-        self::update_malio_config($xcat)
+        self::update_malio_config($xcat);
 
         echo ('开始升级composer依赖...' . PHP_EOL);
         system('php ' . BASE_PATH . '/composer.phar selfupdate');
@@ -145,7 +145,7 @@ class Update
 
     public static function update_malio_config($xcat)
     {
-        echo('----------开始.malio_config.php迁移工作-----------');
+        echo ('----------开始.malio_config.php迁移工作-----------');
         global $Malio_Config;
         $copy_result = copy(BASE_PATH . '/config/.malio_config.php', BASE_PATH . '/config/.malio_config.php.bak');
         if ($copy_result == true) {
