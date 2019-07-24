@@ -124,7 +124,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">1.</label>
                             <p>下载 SSR 客户端。</p>
-                            <a href="/client-download/ssr.apk" class="btn btn-icon icon-left btn-primary btn-app" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
+                            <a href="/client-download/ssr.apk" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic hide-on-mobie">
@@ -140,7 +140,7 @@
                             <label class="step-no">2.</label>
                             <p>打开 ShadowsocksR(R) 点击左上角的「ShadowsocksR」进入配置文件管理页面。
                               <br>点击右下角的加号按钮，在弹出的选项中选择「添加/升级 SSR 订阅」。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text" data-clipboard-text="{$subInfo[" ssr"]}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="{$subInfo[" ssr"]}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">

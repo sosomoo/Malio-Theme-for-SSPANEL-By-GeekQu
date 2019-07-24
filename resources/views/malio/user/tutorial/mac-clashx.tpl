@@ -122,7 +122,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">1.</label>
                             <p>下载 ClashX 客户端，安装后运行 ClashX。</p>
-                            <a href="/client-download/clashx.dmg" class="btn btn-icon icon-left btn-primary btn-app" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
+                            <a href="/client-download/clashx.dmg" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic hide-on-mobie">
@@ -137,7 +137,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>点击屏幕右上角 ClashX 图标，选择 “配置” > “托管配置” > “设置地址”，粘贴托管配置链接。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text" data-clipboard-text="{$subInfo["clash"]}"><i class="fas fa-download"></i> 复制 Clash 托管配置链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="{$subInfo["clash"]}"><i class="fas fa-download"></i> 复制 Clash 托管配置链接</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">

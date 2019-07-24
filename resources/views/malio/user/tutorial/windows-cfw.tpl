@@ -126,7 +126,7 @@
                             <p>安装时请选择 为使用这台电脑的任何人安装（所有用户）<br>
                               运行时请右键，以管理员身份运行
                             </p>
-                            <a href="/client-download/Clash.for.Windows.exe" class="btn btn-icon icon-left btn-primary btn-app" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
+                            <a href="/client-download/Clash.for.Windows.exe" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic hide-on-mobie">
@@ -141,7 +141,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>点击这个按钮 👇👇👇，打开客户端的侧边栏的 Profiles，粘贴托管配置链接到左下角，点击 Direct Mode。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text" data-clipboard-text="{$subInfo["clash"]}"><i class="malio-clash"></i> 复制 Clash 托管配置链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="{$subInfo["clash"]}"><i class="malio-clash"></i> 复制 Clash 托管配置链接</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">

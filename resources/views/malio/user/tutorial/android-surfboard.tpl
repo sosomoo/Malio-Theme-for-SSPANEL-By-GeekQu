@@ -144,7 +144,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">1.</label>
                             <p>下载 Surfboard 客户端。</p>
-                            <a href="/client-download/surfboard.apk" class="btn btn-icon icon-left btn-primary btn-app" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
+                            <a href="/client-download/surfboard.apk" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
                             <button id="surfboard-download-qrcode" type="button" class="qrcode-btn btn">
                               <i class="fas fa-qrcode"></i>
                             </button>
@@ -162,7 +162,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>点击这个按钮 👇👇👇</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app" onclick="importSublink()"><i class="malio-surfboard"></i> 一键导入 Surfboard 配置</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" onclick="importSublink()"><i class="malio-surfboard"></i> 一键导入 Surfboard 配置</a>
                             <button id="surfboard-qrcode" type="button" class="qrcode-btn btn">
                               <i class="fas fa-qrcode"></i>
                             </button>

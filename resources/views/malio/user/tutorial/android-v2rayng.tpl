@@ -124,7 +124,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">1.</label>
                             <p>下载 v2rayNG 客户端。</p>
-                            <a href="/client-download/v2rayng.apk" class="btn btn-icon icon-left btn-primary btn-app" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
+                            <a href="/client-download/v2rayng.apk" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic hide-on-mobie">
@@ -139,7 +139,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>打开 V2rayNG 点击左上角的菜单图标打开侧边栏，随后点击 订阅设置。点击右上角的加号按钮，在新页面的备注中填写本站名称，地址输入框中粘贴订阅链接并点击右上角的 <i class="fas fa-check"></i>。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app" data-clipboard-text="{$subInfo["v2ray"]}"><i class="malio-v2rayng"></i> 复制 V2Ray 订阅链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" data-clipboard-text="{$subInfo["v2ray"]}"><i class="malio-v2rayng"></i> 复制 V2Ray 订阅链接</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">

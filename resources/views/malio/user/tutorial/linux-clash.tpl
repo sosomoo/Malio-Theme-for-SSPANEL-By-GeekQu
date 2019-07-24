@@ -120,7 +120,7 @@
                             <p>执行 <code>cd && mkdir clash</code> 在用户目录下创建 clash 文件夹。</p>
                             <p>下载适合的 Clash 二进制文件并解压重命名为 <code>clash</code></p>
                             <p>一般个人的64位电脑下载 clash-linux-amd64.tar.gz 即可。</p>
-                            <a href="https://github.com/Dreamacro/clash/releases" class="btn btn-icon icon-left btn-primary btn-app" target="blank"><i class="fab fa-github"></i> 下载客户端</a>
+                            <a href="https://github.com/Dreamacro/clash/releases" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fab fa-github"></i> 下载客户端</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic hide-on-mobie">
@@ -135,7 +135,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>在终端 <code>cd</code> 到 Clash 二进制文件所在的目录，执行 <code>wget -O config.yml {$baseUrl}/link/{$sub_token}?type=clash&log-level=info</code> 下载 Clash 配置文件</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text" data-clipboard-text="wget -O config.yml {$baseUrl}/link/{$sub_token}?type=clash&log-level=info"><i class="malio-clash"></i> 复制 wget 命令</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="wget -O config.yml {$baseUrl}/link/{$sub_token}?type=clash&log-level=info"><i class="malio-clash"></i> 复制 wget 命令</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">

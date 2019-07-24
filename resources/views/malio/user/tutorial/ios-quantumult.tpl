@@ -154,7 +154,7 @@
                             {else}
                               <p>这是一个付费软件，你需要购买才能使用。</p>
                             {/if}
-                            <a href="https://itunes.apple.com/us/app/quantumult/id1252015438?ls=1&mt=8" class="btn btn-icon icon-left btn-primary btn-app" target="blank"><i class="fab fa-apple"></i> 打开 App Store 下载</a>
+                            <a href="https://itunes.apple.com/us/app/quantumult/id1252015438?ls=1&mt=8" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fab fa-apple"></i> 打开 App Store 下载</a>
                             <button id="quantumult-download-qrcode" type="button" class="qrcode-btn btn">
                               <i class="fas fa-qrcode"></i>
                             </button>
@@ -172,7 +172,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>点击这个按钮 👇👇👇，如图所示，Server 不为0就是导入成功了。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app" onclick="importSublink('quantumult')"><i class="malio-quantumult"></i> 一键导入 Quantumult 配置</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" onclick="importSublink('quantumult')"><i class="malio-quantumult"></i> 一键导入 Quantumult 配置</a>
                             <button id="quantumult-qrcode" type="button" class="qrcode-btn btn">
                               <i class="fas fa-qrcode"></i>
                             </button>
