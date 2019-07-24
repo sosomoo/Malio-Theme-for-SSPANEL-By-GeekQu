@@ -631,28 +631,10 @@ class URL
         $return_array['passwd'] = $user->passwd;
         $return_array['method'] = $user->method;
         if (strpos($node->server, ';') !== false && $node->sort != 13) {
-            $node_server = explode(';', $node->server);
-            $return_array['address'] = $node_server[0];
-            if (strpos($node_server[1], 'port') !== false) {
-                $item = self::parse_args($node_server[1]);
-                if (strpos($item['port'], '#') !== false) { // 端口偏移，指定端口，格式：8.8.8.8;port=80#1080
-                    if (strpos($item['port'], '+') !== false) { // 多个单端口节点，格式：8.8.8.8;port=80#1080+443#8443
-                        $args_explode = explode('+', $item['port']);
-                        foreach ($args_explode as $arg) {
-                            if ((int) substr($arg, 0, strpos($arg, '#')) == $mu_port) {
-                                $return_array['port'] = (int) substr($arg, strpos($arg, '#') + 1);
-                            }
-                        }
-                    } else {
-                        if ((int) substr($item['port'], 0, strpos($item['port'], '#')) == $mu_port) {
-                            $return_array['port'] = (int) substr($item['port'], strpos($item['port'], '#') + 1);
-                        }
-                    }
-                } else { // 端口偏移，偏移端口，格式：8.8.8.8;port=1000 or 8.8.8.8;port=-1000
-                    $return_array['port'] = ($return_array['port'] + (int) $item['port']);
-                }
-            }
-            $node_name = ($node->name . ' - ' . $return_array['port'] . ' 单端口');
+            $node_tmp = Tools::OutPort($node, $mu_port);
+            $return_array['address'] = $node_tmp['address'];
+            $return_array['port'] = $node_tmp['port'];
+            $node_name = $node_tmp['name'];
         }
         $return_array['remark'] = $node_name;
         $return_array['class'] = $node->node_class;
