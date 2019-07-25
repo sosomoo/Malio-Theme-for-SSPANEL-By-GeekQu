@@ -691,11 +691,11 @@ class UserController extends BaseController
                     $nodes_muport = array();
                     if($node->mu_only != -1) {
                         $nodes = Node::where('type', 1)->orderBy('node_class')->orderBy('name')->get();
-                        foreach($nodes as $node){
-                            if ($node->sort == 9) {
-                                $mu_user = User::where('port', '=', $node->server)->first();
+                        foreach($nodes as $node_mu){
+                            if ($node_mu->sort == 9) {
+                                $mu_user = User::where('port', '=', $node_mu->server)->first();
                                 $mu_user->obfs_param = $this->user->getMuMd5();
-                                $nodes_muport[] = array('server' => $node, 'user' => $mu_user);
+                                $nodes_muport[] = array('server' => $node_mu, 'user' => $mu_user);
                             }
                         }
                     }
@@ -1957,6 +1957,19 @@ class UserController extends BaseController
     {
         $user = $this->user;
         $res['money'] = $user->money;
+        $res['ret'] = 1;
+        return $this->echoJson($response, $res);
+    }
+    
+    public function getPlanInfo($request, $response, $args)
+    {
+        $plan_time = $request->getQueryParams()['time'];
+        $plan_num = $request->getQueryParams()['num'];
+        $shop_id = (MalioConfig::get('plan_shop_id'))[$plan_num][$plan_time];
+        $shop = Shop::where('id', $shop_id)->first();
+        $res['id'] = $shop_id;
+        $res['name'] = $shop->name;
+        $res['price'] = $shop->price;
         $res['ret'] = 1;
         return $this->echoJson($response, $res);
     }
