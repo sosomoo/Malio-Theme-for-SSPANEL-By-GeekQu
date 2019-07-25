@@ -627,15 +627,17 @@ class URL
             $return_array['protocol_param'] = $user->protocol_param;
             $return_array['obfs'] = $user->obfs;
             $return_array['obfs_param'] = $user->obfs_param;
+            if (strpos($node->server, ';') !== false) {
+                $node_tmp = Tools::OutPort($node->server, $node->name, $mu_port);
+                if ($mu_port != 0) {
+                    $return_array['port'] = $node_tmp['port'];
+                    $node_name = $node_tmp['name'];
+                }
+                $return_array['address'] = $node_tmp['address'];
+            }
         }
         $return_array['passwd'] = $user->passwd;
         $return_array['method'] = $user->method;
-        if (strpos($node->server, ';') !== false && $node->sort != 13 && $mu_port != 0) {
-            $node_tmp = Tools::OutPort($node->server, $node->name, $mu_port);
-            $return_array['address'] = $node_tmp['address'];
-            $return_array['port'] = $node_tmp['port'];
-            $node_name = $node_tmp['name'];
-        }
         $return_array['remark'] = $node_name;
         $return_array['class'] = $node->node_class;
         $return_array['group'] = Config::get('appName');
