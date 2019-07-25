@@ -630,7 +630,7 @@ class URL
         }
         $return_array['passwd'] = $user->passwd;
         $return_array['method'] = $user->method;
-        if (strpos($node->server, ';') !== false && $node->sort != 13) {
+        if (strpos($node->server, ';') !== false && $node->sort != 13 && $mu_port != 0) {
             $node_tmp = Tools::OutPort($node->server, $node->name, $mu_port);
             $return_array['address'] = $node_tmp['address'];
             $return_array['port'] = $node_tmp['port'];
