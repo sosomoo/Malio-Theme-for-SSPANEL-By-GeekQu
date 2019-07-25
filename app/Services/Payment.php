@@ -34,6 +34,8 @@ class Payment
                 return new TrimePay(Config::get('trimepay_secret'));
             case ('bitpayx'):
                 return new BitPayX(Config::get('bitpay_secret'));
+            case ('payjs'):
+                return new PAYJS(Config::get('payjs_key'));
             default:
                 return null;
         }
