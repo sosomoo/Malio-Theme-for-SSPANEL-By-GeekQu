@@ -23,6 +23,7 @@ $Malio_Config['google_analytics_code'] = 'UA-123456789-1';    // Google 统计�
 $Malio_Config['login_style'] = 'wallpaper';    // 登录页面的样式，可选 simple 和 wallpaper
 $Malio_Config['login_slogan'] = '这是一句好听顺嘴而且不长不短刚刚好的Slogan<br>甚至可以写第二行';    // 仅在登录页面样式为 wallpaper 时生效，可使用 HTML 标签
 $Malio_Config['enable_landing_page'] = true;    // 是否启用着陆页用于介绍本站
+$Malio_Config['malio_js_version'] = 'v1';    // 可以随便写，每次改变这个值，用户浏览器就会请求最新的js授权文件，不会出现缓存的问题
 
 
 // 面板设置
@@ -72,6 +73,7 @@ $Malio_Config['share_account'] = [    // 一个array为一个共享账号
 // 商店
 $Malio_Config['shop_style'] = 'plans';    // 商店的显示风格， legacy为SSPANEL原版，plans为新版
 $Malio_Config['shop_sub_title'] = '竭尽全力为您提供优质的服务';   // 商店的小标题，可以使用 HTML 标签
+$Malio_Config['shop_enable_autorenew'] = true;   // 商店是否显示自动续费的选项
 
 $Malio_Config['plan_1_name'] = '标准版';    // 第一个会员计划的名字
 $Malio_Config['plan_1_pricing'] = 9.9;    // 第一个会员计划的价格

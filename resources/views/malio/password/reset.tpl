@@ -73,7 +73,7 @@
 
   <!-- Page Specific JS File -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.25.6/dist/sweetalert2.all.min.js"></script>
-  <script src="/theme/malio/js/malio.js"></script>
+  <script src="/theme/malio/js/malio.js?{$malio_config['malio_js_version']}"></script>
   <script>
     function reset() {
       $("#reset").attr('disabled', 'disabled');
