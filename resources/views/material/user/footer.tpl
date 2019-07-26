@@ -46,5 +46,6 @@
         src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1.0.1"></script>
 
 <script>console.log('数据库查询 {count($queryLog)} 次 | 执行时间 {$optTime} ms');</script>
+
 </body>
 </html>

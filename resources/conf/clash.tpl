@@ -58,7 +58,7 @@ secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}{/if}'
 
 Proxy:
 {foreach $confs as $conf}
-  - {json_encode($conf,320)}
+    - {json_encode($conf,320)}
 {/foreach}
 
 Proxy Group:
