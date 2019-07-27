@@ -137,6 +137,11 @@
                           <th>商品名称</th>
                           <th>价格</th>
                           <th>购买时间</th>
+                          {if $malio_config['shop_enable_autorenew'] == true}
+                          <th>续费时间</th>
+                          <th>续费时重置流量</th>
+                          <th>操作</th>
+                          {/if}
                         </tr>
                       </thead>
                       <tbody>
@@ -150,6 +155,21 @@
                             <td>{$shop->shop()->name}</td>
                             <td>¥{$shop->price}</td>
                             <td>{date('Y-m-d H:i:s', $shop->datetime)}</td>
+                            {if $malio_config['shop_enable_autorenew'] == true}
+                            {if $shop->renew==0}
+                            <td>不自动续费</td>
+                            {else}
+                              <td>在 {$shop->renew_date()} 续费</td>
+                            {/if}
+                            {if $shop->shop()->auto_reset_bandwidth==0}
+                              <td>不自动重置</td>
+                            {else}
+                              <td>自动重置</td>
+                            {/if}
+                            <td>
+                              <a href="##" onclick="stopAutorenew({$shop->id})" type="button" class="btn btn-primary {if $shop->renew==0}disabled{/if}">关闭自动续费</a>
+                            </td>
+                            {/if}
                         </tr>
                         {/foreach}
                         {/if}
