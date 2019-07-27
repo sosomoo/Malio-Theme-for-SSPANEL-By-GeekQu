@@ -620,8 +620,8 @@
         </div>
       </div>
       <div class="modal-footer bg-whitesmoke br">
-        <button id="update-coupon" type="button" data-dismiss="modal" class="btn btn-primary">使用</button>
-        <button id="cancel-coupon" type="button" class="btn btn-secondary" data-dismiss="modal">取消使用</button>
+        <button onclick="updateCoupon()" type="button" data-dismiss="modal" class="btn btn-primary">使用</button>
+        <button onclick="cancelCoupon()" type="button" class="btn btn-secondary" data-dismiss="modal">取消使用</button>
       </div>
     </div>
   </div>
