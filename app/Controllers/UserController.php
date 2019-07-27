@@ -1965,6 +1965,10 @@ class UserController extends BaseController
     {
         $plan_time = $request->getQueryParams()['time'];
         $plan_num = $request->getQueryParams()['num'];
+        if (empty($plan_num) || empty($plan_time)) {
+            $res['ret'] = 0;
+            return $this->echoJson($response, $res); 
+        }
         $shop_id = (MalioConfig::get('plan_shop_id'))[$plan_num][$plan_time];
         $shop = Shop::where('id', $shop_id)->first();
         $res['id'] = $shop_id;
@@ -1972,5 +1976,48 @@ class UserController extends BaseController
         $res['price'] = $shop->price;
         $res['ret'] = 1;
         return $this->echoJson($response, $res);
+    }
+
+    public function buyTrafficPackage($request, $response, $args)
+    {
+        $shopId = $request->getParam('shopid');
+        $shop = Shop::where('id', $shopId)->where('status', 1)->first();
+        if ($shop == null) {
+            $res['ret'] = 0;
+            $res['msg'] = '非法请求';
+            return $response->getBody()->write(json_encode($res));
+        }
+
+        $price = $shop->price;
+        $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+        if (bccomp($user->money, $price, 2) == -1) {
+            $res['ret'] = 0;
+            $res['msg'] = '喵喵喵~ 当前余额不足，总价为' . $price . '元。</br><a href="/user/code">点击进入充值界面</a>';
+            return $response->getBody()->write(json_encode($res));
+        }
+
+        $user->money = bcsub($user->money, $price, 2);
+        $traffic = $shop->bandwidth();
+        $user->transfer_enable += $traffic * 1024 * 1024 * 1024;
+        $user->save();
+
+        $bought = new Bought();
+        $bought->userid = $user->id;
+        $bought->shopid = $shop->id;
+        $bought->datetime = time();
+        $bought->coupon = '';
+        $bought->renew = 0;
+        $bought->price = $price;
+        $bought->save();
+
+        $res['ret'] = 1;
+        $res['msg'] = '购买成功';
+
+        return $response->getBody()->write(json_encode($res));
     }
 }

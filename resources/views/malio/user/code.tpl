@@ -24,6 +24,13 @@
       color: #fff;
       z-index: 1;
     }
+
+    .qqpay:focus+.selectgroup-button,
+    .qqpay:checked+.selectgroup-button {
+      background-color: #11b7f5;
+      color: #fff;
+      z-index: 1;
+    }
   </style>
 </head>
 
@@ -188,7 +195,7 @@
                             <input type="radio" name="payment" value="alipay" class="selectgroup-input alipay" checked="">
                             <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-alipay mr-1"></i>支付宝</span>
                           </label>
-                          {if $config['payment_system'] != 'f2fpay'}
+                          {if $config['payment_system'] != 'f2fpay' && $config['payment_system'] != 'spay'}
                           <label class="selectgroup-item">
                             <input type="radio" name="payment" value="wechat" class="selectgroup-input wechat-pay">
                             <span class="selectgroup-button selectgroup-button-icon"><i class="malio-wechat-pay mr-1" style="vertical-align: -1px"></i>微信支付</span>
@@ -198,6 +205,12 @@
                           <label class="selectgroup-item">
                             <input type="radio" name="payment" value="crypto" class="selectgroup-input">
                             <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-btc mr-1"></i>加密货币</span>
+                          </label>
+                          {/if}
+                          {if $config['payment_system'] == 'codepay' || $config['payment_system'] == 'flyfoxpay'}
+                          <label class="selectgroup-item">
+                            <input type="radio" name="payment" value="qqpay" class="selectgroup-input qqpay">
+                            <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-qq mr-1"></i>QQ支付</span>
                           </label>
                           {/if}
                         </div>
@@ -268,6 +281,38 @@
       </div>
     </div>
   </div>
+  {/if}
+
+  {if $config['payment_system'] == 'spay'}
+  <script>
+    $('#topup-confirm').click(function () {
+      spay(parseFloat($("#amount").val()));
+    })
+  </script>
+  {/if}
+
+  {if $config['payment_system'] == 'codepay'}
+  <script>
+    $('#topup-confirm').click(function () {
+      codepay($('input:radio:checked').val(),parseFloat($("#amount").val()));
+    })
+  </script>
+  {/if}
+
+  {if $config['payment_system'] == 'tomatopay'}
+  <script>
+    $('#topup-confirm').click(function () {
+      tmtpay($('input:radio:checked').val(),parseFloat($("#amount").val()));
+    })
+  </script>
+  {/if}
+
+  {if $config['payment_system'] == 'flyfoxpay'}
+  <script>
+    $('#topup-confirm').click(function () {
+      flyfox($('input:radio:checked').val(),parseFloat($("#amount").val()));
+    })
+  </script>
   {/if}
 
 </body>

@@ -73,7 +73,51 @@ $Malio_Config['share_account'] = [    // 一个array为一个共享账号
 // 商店
 $Malio_Config['shop_style'] = 'plans';    // 商店的显示风格， legacy为SSPANEL原版，plans为新版
 $Malio_Config['shop_sub_title'] = '竭尽全力为您提供优质的服务';   // 商店的小标题，可以使用 HTML 标签
+
 $Malio_Config['shop_enable_autorenew'] = true;   // 商店是否显示自动续费的选项
+$Malio_Config['shop_enable_coupon'] = true;    // 商店是否显示试用优惠券选项
+
+$Malio_Config['shop_enable_trail_plan'] = true;   // 商店是否显示新用户试用选项
+$Malio_Config['shop_trail_plan_shopid'] = '12';   // 新用户试用的商品ID
+$Malio_Config['plan_trail_traffic'] = 50;    // 新用户试用的流量
+$Malio_Config['plan_trail_online'] = 2;    // 新用户试用的在线客户端数量
+$Malio_Config['plan_trail_feature'] = [    // 新用户试用的特性，一个array为一个特性，support设置为false的话就是不支持
+    array(
+        'name' => '工单技术支持',
+        'support' => true
+    ),
+    array(
+        'name' => '国际标准节点',
+        'support' => true
+    ),
+    array(
+        'name' => '国内中转节点',
+        'support' => true
+    ),
+    array(
+        'name' => 'IPLC专线节点',
+        'support' => true
+    ),
+];
+
+$Malio_Config['shop_enable_traffic_package'] = true;   // 商店是否显示流量叠加包的选项（仅在用户购买会员计划后才会显示）
+$Malio_Config['shop_traffic_packages'] = [ // 商店流量叠加包的详细信息，一个array为一个流量叠加包
+    array(
+        'shopid' => 13, // 流量叠加包的商品ID
+        'traffic' => 10, // 单位为GB
+        'price' => 5 
+    ),
+    array(
+        'shopid' => 14,
+        'traffic' => 20,
+        'price' => 9 
+    ),
+    array(
+        'shopid' => 15,
+        'traffic' => 30,
+        'price' => 15 
+    ),
+];
 
 $Malio_Config['plan_1_name'] = '标准版';    // 第一个会员计划的名字
 $Malio_Config['plan_1_pricing'] = 9.9;    // 第一个会员计划的价格

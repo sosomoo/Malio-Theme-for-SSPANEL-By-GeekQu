@@ -79,6 +79,22 @@
       box-shadow: 0 2px 6px #8d7cfab2;
       margin-bottom: 16px;
     }
+    .btn-clash {
+      background: linear-gradient(to right, #49BCFC, #3B92F8) !important;
+      color: white !important;
+      border-color: transparent;
+      border: none;
+      box-shadow: 0 2px 6px rgba(73, 189, 252, 0.521);
+      margin-bottom: 16px;
+    }
+    .btn-surfboard {
+      background: linear-gradient(to right, #303030, #303030) !important;
+      color: white !important;
+      border-color: transparent;
+      border: none;
+      box-shadow: 0 2px 6px #3030306e;
+      margin-bottom: 16px;
+    }
     {if $malio_config['index_subinfo_buttons_align'] == true}
     .buttons a {
       width: 230px;
@@ -304,12 +320,16 @@
                     </div>
                     <div class="card-body">
                       <div class="buttons">
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-quantumult btn-lg btn-round" onclick="importSublink('quantumult')"><i class="malio-quantumult"></i> 一键导入 Quantumult 配置</a>
+                        <a href="##" id="quan_sub" class="btn btn-icon icon-left btn-primary btn-quantumult btn-lg btn-round copy-config" onclick="Copyconfig(&quot;https://malio.osoeco.xyz/link/ueGNLBzqxSvU1TUf?quantumult=2&quot;,&quot;#quan_sub&quot;,&quot;quantumult://settings?configuration=clipboard&quot;)"><i class="malio-quantumult"></i> 一键导入 Quantumult 配置</a>
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-shadowrocket btn-lg btn-round" onclick="importSublink('shadowrocket')"><i class="malio-shadowrocket"></i> 一键导入 Shadowrocket 配置</a>
-                        <a href="surge:///install-config?url={$subInfo['surge']}" class="btn btn-icon icon-left btn-primary btn-surge btn-lg btn-round"><i class="malio-surge"></i> 一键导入 Surge 配置</a> <a href="##" class="btn btn-icon icon-left btn-primary btn-kitsunebi copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-surge btn-lg btn-round" onclick="importSublink('surge')"><i class="malio-surge"></i> 一键导入 Surge 配置</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-surfboard btn-lg btn-round" onclick="importSublink('surfboard')"><i class="malio-surfboard"></i> 一键导入 Surfboard 配置</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-clash copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['clash']}"><i class="malio-clash"></i> 复制 Clash 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-kitsunebi copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-ssr copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-ss copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ss']}"><i class="malio-ssr"></i> 复制 SS 订阅链接</a>  
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-v2ray btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}"><i class="malio-v2rayng"></i> 复制 V2Ray 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-quantumult copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssd']}"><i class="malio-ssr"></i> 复制 SSD 订阅链接</a> 
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-v2ray copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}"><i class="malio-v2rayng"></i> 复制 V2Ray 订阅链接</a>
                       </div>
                     </div>
                   </div>
@@ -337,7 +357,7 @@
                             <i class="fas fa-shopping-cart"></i>
                           </div>
                           <div class="wizard-step-label">
-                            前往商店购买会员订阅计划
+                            前往商店购买会员订阅计划或免费试用
                           </div>
                         </div>
                         <div class="wizard-step wizard-step-active" onclick="location='/user/tutorial'">
@@ -398,14 +418,65 @@
 
     function importSublink(client) {
       if (client == 'quantumult') {
-        oneclickImport('quantumult', '{if $malio_cofig["ios_sub_type"] == v2ray}{$subInfo["v2ray"]}{else}{$subInfo["ssr"]}{/if}');
+        oneclickImport('quantumult', '{$subInfo["v2ray_ss_ssr"]}');
       }
       if (client == 'shadowrocket') {
-        oneclickImport('shadowrocket','{if $malio_cofig["ios_sub_type"] == v2ray}{$subInfo["v2ray"]}{else}{$subInfo["ssr"]}{/if}')
+        oneclickImport('shadowrocket','{$subInfo["shadowrocket"]}')
+      };
+      if (client == 'surfboard') {
+        oneclickImport('surfboard','{$subInfo["surfboard"]}')
+      };
+      if (client == 'surge') {
+        oneclickImport('surge','{$subInfo["surge"]}')
       };
     }
 
     setTimeout(loadTrafficChart(), 3000);
+</script>
+<script>
+  function Copyconfig(url, id, jumpurl = "") {
+    $.ajax({
+      url: url,
+      type: 'get',
+      async: false,
+      success: function (res) {
+        if (res) {
+          $("#result").modal();
+          $("#msg").html("获取成功");
+          $(id).data('data', res);
+          console.log(res);
+        } else {
+          $("#result").modal();
+          $("#msg").html("获取失败，请稍后再试");
+        }
+      }
+    });
+    const clipboard = new ClipboardJS('.copy-config', {
+      text: function () {
+        return $(id).data('data');
+      }
+    });
+    clipboard.on('success', function (e) {
+      swal({
+        type: 'success',
+        title: '复制成功，即将跳转到 APP',
+        showConfirmButton: false,
+        timer: 1500,
+        onClose: () => {
+          if (jumpurl != "") {
+            window.setTimeout(function () {
+              window.location.href = jumpurl;
+            }, 1000);
+          }
+        }
+      })
+    });
+    clipboard.on("error", function (e) {
+      console.error('Action:', e.action);
+      console.error('Trigger:', e.trigger);
+      console.error('Text:', e.text);
+    });
+  }
 </script>
 </body>
 

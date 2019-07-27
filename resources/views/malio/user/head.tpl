@@ -23,7 +23,6 @@
 </script>
 {/if}
 {if $config["sspanelAnalysis"] == 'true'}
-{literal}
 <!-- Google Analytics -->
 <script>
     window.ga = window.ga || function () {
@@ -49,7 +48,6 @@
 </script>
 <script async src="https://www.google-analytics.com/analytics.js"></script>
 <!-- End Google Analytics -->
-{/literal}
 {/if}
 {if $malio_config['enable_crisp'] == true}
 <!-- Crisp Chat  -->

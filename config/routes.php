@@ -159,7 +159,9 @@ $app->group('/user', function () {
     $this->get('/payment/bitpay/return', App\Services\BitPayment::class . ':returnHTML');
 
     // Malio
-    $this->post('/money', App\Controllers\UserController::class . ':getmoney');
+    $this->get('/money', App\Controllers\UserController::class . ':getmoney');
+    $this->get('/shop/getplaninfo', App\Controllers\UserController::class . ':getPlanInfo');
+    $this->post('/shop/buytrafficpackage', App\Controllers\UserController::class . ':buyTrafficPackage');
 })->add(new Auth());
 
 $app->group('/payment', function () {
@@ -406,6 +408,16 @@ $app->group('/doc', function () {
 });
 $app->get('/sublink', App\Controllers\HomeController::class . ':getSubLink');
 //doc end
+
+// tmtpay
+$app->post('/tomato_back/{type}', 'App\Services\Payment:notify');
+$app->get('/tomato_back/{type}', 'App\Services\Payment:notify');
+// end of tmtpay
+
+// flyfoxpay
+$app->post('/flyfoxpay_back/{type}', 'App\Services\Payment:notify');
+$app->get('/flyfoxpay_back/{type}', 'App\Services\Payment:notify');
+// end of flyfox
 
 // Run Slim Routes for App
 $app->run();
