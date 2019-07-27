@@ -134,7 +134,7 @@
               您的会员计划已过期，请及时续费。您的账号将会在会员计划过期60天后被删除。
             </div>
             {/if}
-            {if substr($user->unusedTraffic(),0,-2) <= 5 and substr($user->unusedTraffic(),0,-2) > 0}
+            {if substr($user->unusedTraffic(),0,-2) <= 5 && substr($user->unusedTraffic(),0,-2) > 0 && {substr($user->unusedTraffic(),-2)} == 'GB'}
               <div class="alert alert-primary">
                 您的可用流量不足5GB，如需更多流量，可前往会员商店购买 5元/10GB流量叠加包。
               </div>
