@@ -59,6 +59,11 @@
                       <a href="##" id="top-up" class="btn btn-outline-white btn-lg btn-icon icon-left">
                         <i class="fas fa-piggy-bank"></i> 充值
                       </a>
+                      {if $malio_config['enable_topup_code'] == true}
+                      <a href="##" class="btn btn-outline-white btn-lg btn-icon icon-left ml-2" data-toggle="modal" data-target="#code-topup-modal">
+                        使用充值码
+                      </a>
+                      {/if}
                     </div>
                   </div>
                 </div>
@@ -313,6 +318,31 @@
       flyfox($('input:radio:checked').val(),parseFloat($("#amount").val()));
     })
   </script>
+  {/if}
+
+  {if $malio_config['enable_topup_code'] == true}
+  <div class="modal fade" tabindex="-1" role="dialog" id="code-topup-modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">使用充值码</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>请输入充值码</label>
+            <input id="topup-code" type="text" class="form-control">
+          </div>
+        </div>
+        <div class="modal-footer bg-whitesmoke br">
+          <button type="button" class="btn btn-primary" onclick="codeTopup()">充值</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
   {/if}
 
 </body>

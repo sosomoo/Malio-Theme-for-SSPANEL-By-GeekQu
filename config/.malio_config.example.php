@@ -219,6 +219,10 @@ $Malio_Config['buyer_reading'] = '
 ';
 
 
+// 我的钱包
+$Malio_Config['enable_topup_code'] = true;   // 是否在我的钱包页面显示充值码充值按钮
+
+
 // 我的账号
 $Malio_Config['enable_2fa'] = true;   // 是否显示二步验证的选项
 $Malio_Config['enable_delete'] = true;   // 是否显示删除账号的选项
