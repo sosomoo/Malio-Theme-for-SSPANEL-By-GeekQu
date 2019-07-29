@@ -23,7 +23,7 @@ class TelegramProcess
         '?clash=1' => 'Clash',
         '?surfboard=1' => 'Surfboard',
         '?quantumult=3' => 'Quantumult(完整配置)'
-        ];
+    ];
 
     private static function callback_bind_method($bot, $message, $command)
     {
@@ -31,7 +31,7 @@ class TelegramProcess
         $user = User::where('telegram_id', $message->getFrom()->getId())->first();
         $reply_message = '？？？';
         if ($user != null) {
-            switch (true){
+            switch (true) {
                 case $command == '?quantumult=3':
                     $ssr_sub_token = LinkController::GenerateSSRSubCode($user->id, 0);
                     $baseUrl = Config::get('baseUrl');
@@ -42,16 +42,16 @@ class TelegramProcess
                             ]
                         ]
                     );
-                    $bot->sendMessage($user->get_user_attributes('telegram_id'), "两种方法:\n 方法一:\n  1.点击打开以下配置文件\n  2. 选择分享->拷贝到\"Quantumult\"\n  3.选择更新配置\n 方法二:\n  1.长按配置文件\n  2. 选择更多->分享->拷贝\n  3.点击跳转APP,到Quan中保存", $parseMode = null, $disablePreview = false, $replyToMessageId = null, $replyMarkup=$keyboard);
+                    $bot->sendMessage($user->get_user_attributes('telegram_id'), "两种方法:\n 方法一:\n  1.点击打开以下配置文件\n  2. 选择分享->拷贝到\"Quantumult\"\n  3.选择更新配置\n 方法二:\n  1.长按配置文件\n  2. 选择更多->分享->拷贝\n  3.点击跳转APP,到Quan中保存", $parseMode = null, $disablePreview = false, $replyToMessageId = null, $replyMarkup = $keyboard);
                     $filepath = '/tmp/tg_' . $ssr_sub_token . '.txt';
                     $fh = fopen($filepath, 'w+');
                     $string = LinkController::GetQuantumult($user, 3);
                     fwrite($fh, $string);
                     fclose($fh);
-                    $bot->sendDocument($user->get_user_attributes('telegram_id'), new \CURLFile($filepath, '' ,'quantumult_' . $ssr_sub_token . '.conf'));
+                    $bot->sendDocument($user->get_user_attributes('telegram_id'), new \CURLFile($filepath, '', 'quantumult_' . $ssr_sub_token . '.conf'));
                     unlink($filepath);
                     break;
-                case (strpos($command, 'sub') or strpos($command, 'surge') or strpos($command, 'clash') or strpos($command, 'surfboard')) :
+                case (strpos($command, 'sub') or strpos($command, 'surge') or strpos($command, 'clash') or strpos($command, 'surfboard')):
                     $ssr_sub_token = LinkController::GenerateSSRSubCode($user->id, 0);
                     $subUrl = Config::get('subUrl');
                     $reply_message = self::$all_rss[$command] . ': ' . $subUrl . $ssr_sub_token . $command . PHP_EOL;
@@ -143,7 +143,7 @@ class TelegramProcess
 						/help 获取帮助信息
 						/rss 获取节点订阅';
                     if ($user == null) {
-                        $help_list .= PHP_EOL . '您未绑定本站账号，您可以进入网站的“资料编辑”，在右下方绑定您的账号';
+                        $reply['message'] .= PHP_EOL . '您未绑定本站账号，您可以进入网站的“资料编辑”，在右下方绑定您的账号';
                     }
                     break;
                 default:

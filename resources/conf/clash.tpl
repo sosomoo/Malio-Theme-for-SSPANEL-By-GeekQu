@@ -40,13 +40,11 @@ secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}{/if}'
   # listen: 0.0.0.0:53
   # enhanced-mode: redir-host
   nameserver:
-  - 1.2.4.8
-  - 223.5.5.5
-  - 114.114.114.114
-  - tls://dns.rubyfish.cn:853
+    - 1.2.4.8
+    - 223.5.5.5
+    - 114.114.114.114
   fallback:
-  - tls://dns.rubyfish.cn:853
-  - tls://dns.google
+    - tls://dns.rubyfish.cn:853
 
   # Clash DNS 请求逻辑：
   # (1) 当访问一个域名时， nameserver 与 fallback 列表内的所有服务器并发请求，得到域名对应的 IP 地址。
@@ -60,7 +58,7 @@ secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}{/if}'
 
 Proxy:
 {foreach $confs as $conf}
-  - {json_encode($conf,320)}
+    - {json_encode($conf,320)}
 {/foreach}
 
 Proxy Group:
@@ -74,10 +72,10 @@ Proxy Group:
 {/if}
 - { name: "Proxy", type: select, proxies: {json_encode($proxies,320)} }
 - { name: "Domestic", type: select, proxies: ["DIRECT","Proxy"] }
-{$China_media=["Domestic","Proxy"]}
-{if count($back_china_proxies)!=0}{append var='China_media' value='Back_China_Proxy'}{/if}
-- { name: "China_media", type: select, proxies: {json_encode($China_media,320)} }
-- { name: "Global_media", type: select, proxies: ["Proxy"]}
+{$AsianTV=["Domestic","Proxy"]}
+{if count($back_china_proxies)!=0}{append var='AsianTV' value='Back_China_Proxy'}{/if}
+- { name: "AsianTV", type: select, proxies: {json_encode($AsianTV,320)} }
+- { name: "GlobalTV", type: select, proxies: ["Proxy"]}
 - { name: "Others", type: select, proxies: ["Proxy","Domestic"]}
 
 {include file='rule/Rule.yml'}

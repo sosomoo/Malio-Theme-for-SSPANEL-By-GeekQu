@@ -6,6 +6,7 @@ namespace App\Controllers\Mod_Mu;
 use App\Controllers\BaseController;
 use App\Models\NodeInfoLog;
 use App\Models\Node;
+use App\Services\Config;
 
 class NodeController extends BaseController
 {
@@ -51,6 +52,12 @@ class NodeController extends BaseController
             ];
             return $this->echoJson($response, $res);
         }
+        if (in_array($node->sort, [0, 10])) {
+            $node_explode = explode(';', $node->server);
+            $node_server = $node_explode[0];
+        } else {
+            $node_server = $node->server;
+        }
         $res = [
             'ret' => 1,
             'data' => [
@@ -60,7 +67,7 @@ class NodeController extends BaseController
                 'traffic_rate' => $node->traffic_rate,
                 'mu_only' => $node->mu_only,
                 'sort' => $node->sort,
-                'server' => $node->server,
+                'server' => $node_server,
                 'type' => 'ss-panel-v3-mod_Uim'
             ],
         ];
@@ -73,7 +80,8 @@ class NodeController extends BaseController
             static function ($query) {
                 $query->where('sort', '=', 0)
                     ->orWhere('sort', '=', 10)
-                    ->orWhere('sort', '=', 12);
+                    ->orWhere('sort', '=', 12)
+                    ->orWhere('sort', '=', 13);
             }
         )->get();
         $res = [
@@ -81,5 +89,38 @@ class NodeController extends BaseController
             'data' => $nodes
         ];
         return $this->echoJson($response, $res);
+    }
+
+    public function getConfig($request, $response, $args)
+    {
+        $data = $request->getParsedBody();
+        switch ($data['type']) {
+            case ('database'):
+                $db_config = Config::getDbConfig();
+                $db_config['host'] = $this->getServerIP();
+                $res = [
+                    'ret' => 1,
+                    'data' => $db_config,
+                ];
+                break;
+            case ('webapi'):
+                $webapiConfig = [];
+                #todo
+        }
+        return $this->echoJson($response, $res);
+    }
+
+    private function getServerIP()
+    {
+        if (isset($_SERVER)) {
+            if ($_SERVER['SERVER_ADDR']) {
+                $serverIP = $_SERVER['SERVER_ADDR'];
+            } else {
+                $serverIP = $_SERVER['LOCAL_ADDR'];
+            }
+        } else {
+            $serverIP = getenv('SERVER_ADDR');
+        }
+        return $serverIP;
     }
 }

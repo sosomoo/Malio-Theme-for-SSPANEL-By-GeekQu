@@ -6,7 +6,7 @@
  * PHP version 7.2+
  *
  * @category GeekQu
- * @package  App/Controllers/Controllers
+ * @package  App/Controllers/ConfController
  * @author   GeekQu <iloves@live.com>
  * @license  MIT https://github.com/GeekQu/ss-panel-v3-mod_Uim/blob/dev/LICENSE
  * @link     https://github.com/GeekQu
@@ -23,7 +23,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
  * ConfController
  *
  * @category GeekQu
- * @package  App/Controllers/Controllers
+ * @package  App/Controllers/ConfController
  * @author   GeekQu <iloves@live.com>
  * @license  MIT https://github.com/GeekQu/ss-panel-v3-mod_Uim/blob/dev/LICENSE
  * @link     https://github.com/GeekQu
@@ -49,11 +49,9 @@ class ConfController extends BaseController
             return printf('无法解析 YAML 字符串: %s', $exception->getMessage());
         }
         $General = self::getSurgeConfGeneral($Configs['General']);
-        $Proxys = (
-            isset($Configs['Proxy'])
+        $Proxys = (isset($Configs['Proxy'])
             ? self::getSurgeConfProxy($Configs['Proxy'])
-            : ''
-        );
+            : '');
         if (isset($Configs['ProxyGroup'])) {
             $ProxyGroup = self::getSurgeConfProxyGroup(
                 $Nodes,
@@ -135,97 +133,83 @@ class ConfController extends BaseController
         foreach ($ProxyGroups as $ProxyGroup) {
             $str = '';
             if (in_array($ProxyGroup['type'], ['select', 'url-test', 'fallback'])) {
-                $AllRemark = [];
-                $Remarks = '';
-                if (isset($ProxyGroup['content']['class'])) {
-                    foreach ($Nodes as $item) {
-                        if ($item['obfs'] == 'v2ray') {
+                $proxies = [];
+                if (
+                    isset($ProxyGroup['content']['left-proxies'])
+                    && count($ProxyGroup['content']['left-proxies']) != 0
+                ) {
+                    $proxies = $ProxyGroup['content']['left-proxies'];
+                }
+                foreach ($Nodes as $item) {
+                    switch (true) {
+                        case (isset($ProxyGroup['content']['class'])):
+                            if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['remark'], $proxies)) {
+                                if (isset($ProxyGroup['content']['regex'])) {
+                                    if (preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
+                                        $proxies[] = $item['remark'];
+                                    }
+                                } else {
+                                    $proxies[] = $item['remark'];
+                                }
+                            }
+                            break;
+                        case (isset($ProxyGroup['content']['noclass'])):
+                            if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['remark'], $proxies)) {
+                                if (isset($ProxyGroup['content']['regex'])) {
+                                    if (preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
+                                        $proxies[] = $item['remark'];
+                                    }
+                                } else {
+                                    $proxies[] = $item['remark'];
+                                }
+                            }
+                            break;
+                        case (!isset($ProxyGroup['content']['class'])
+                            && !isset($ProxyGroup['content']['noclass'])
+                            && isset($ProxyGroup['content']['regex'])
+                            && preg_match($ProxyGroup['content']['regex'], $item['remark'])
+                            && !in_array($item['remark'], $proxies)):
+                            $proxies[] = $item['remark'];
+                            break;
+                        default:
                             continue;
-                        }
-                        if ($item['class'] == $ProxyGroup['content']['class']) {
-                            $AllRemark[] = $item['remark'];
-                            $Remarks .= ', ' . $item['remark'];
-                        }
+                            break;
                     }
-                } elseif (isset($ProxyGroup['content']['noclass'])) {
-                    foreach ($Nodes as $item) {
-                        if ($item['obfs'] == 'v2ray') {
-                            continue;
-                        }
-                        if ($item['class'] != $ProxyGroup['content']['noclass']) {
-                            $AllRemark[] = $item['remark'];
-                            $Remarks .= ', ' . $item['remark'];
-                        }
-                    }
+                }
+                if (isset($ProxyGroup['content']['right-proxies'])) {
+                    $proxies = array_merge($proxies, $ProxyGroup['content']['right-proxies']);
+                }
+                $Remarks = implode(', ', $proxies);
+                if (in_array($ProxyGroup['type'], ['url-test', 'fallback'])) {
+                    $str .= ($ProxyGroup['name']
+                        . ' = '
+                        . $ProxyGroup['type']
+                        . ', '
+                        . $Remarks
+                        . ', url = ' . $ProxyGroup['url']
+                        . ', interval = ' . $ProxyGroup['interval']);
                 } else {
-                    foreach ($Nodes as $item) {
-                        if ($item['obfs'] == 'v2ray') {
-                            continue;
-                        }
-                        $AllRemark[] = $item['remark'];
-                    }
+                    $str .= ($ProxyGroup['name']
+                        . ' = '
+                        . $ProxyGroup['type']
+                        . ', '
+                        . $Remarks);
                 }
-                if (isset($ProxyGroup['content']['regex'])) {
-                    $Remarks = '';
-                    foreach ($AllRemark as $item) {
-                        if (preg_match($ProxyGroup['content']['regex'], $item)) {
-                            $Remarks .= ', ' . $item;
-                        }
-                    }
-                }
-                $text1 = (
-                    isset($ProxyGroup['content']['text1'])
-                    && $ProxyGroup['content']['text1'] != ''
-                    ? ', ' . $ProxyGroup['content']['text1']
-                    : ''
-                );
-                $text2 = (
-                    isset($ProxyGroup['content']['text2'])
-                    && $ProxyGroup['content']['text2'] != ''
-                    ? ', ' . $ProxyGroup['content']['text2']
-                    : ''
-                );
-                $url = (
-                    isset($ProxyGroup['url'])
-                    && $ProxyGroup['url'] != ''
-                    ? ', url = ' . $ProxyGroup['url']
-                    : ''
-                );
-                $interval = (
-                    isset($ProxyGroup['interval'])
-                    && $ProxyGroup['interval'] != ''
-                    ? ', interval = ' . $ProxyGroup['interval']
-                    : ''
-                );
-                $str .= (
-                    $ProxyGroup['name']
-                    . ' = '
-                    . $ProxyGroup['type']
-                    . $text1
-                    . $Remarks
-                    . $text2
-                    . $url
-                    . $interval
-                );
             } elseif ($ProxyGroup['type'] == 'ssid') {
                 $wifi = '';
                 foreach ($ProxyGroup['content'] as $key => $value) {
                     $wifi .= ', "' . $key . '" = ' . $value;
                 }
-                $cellular = (
-                    isset($ProxyGroup['cellular'])
+                $cellular = (isset($ProxyGroup['cellular'])
                     ? ', cellular = ' . $ProxyGroup['cellular']
-                    : ''
-                );
-                $str .= (
-                    $ProxyGroup['name']
+                    : '');
+                $str .= ($ProxyGroup['name']
                     . ' = '
                     . $ProxyGroup['type']
                     . ', default = '
                     . $ProxyGroup['default']
                     . $cellular
-                    . $wifi
-                );
+                    . $wifi);
             } else {
                 $str .= '';
             }
@@ -250,22 +234,18 @@ class ConfController extends BaseController
             if (preg_match('/^https:\/\/((gist\.)?github\.com|raw\.githubusercontent\.com|gitlab\.com)/i', $sourceURL)) {
                 $return = @file_get_contents($sourceURL);
                 if (!$return) {
-                    $return = (
-                        '// 远程规则加载失败'
+                    $return = ('// 远程规则加载失败'
                         . PHP_EOL
                         . 'GEOIP,CN,DIRECT'
                         . PHP_EOL
-                        . 'FINAL,DIRECT,dns-failed'
-                    );
+                        . 'FINAL,DIRECT,dns-failed');
                 }
             } else {
-                $return = (
-                    '// 远程规则仅支持 github 以及 gitlab'
+                $return = ('// 远程规则仅支持 github 以及 gitlab'
                     . PHP_EOL
                     . 'GEOIP,CN,DIRECT'
                     . PHP_EOL
-                    . 'FINAL,DIRECT,dns-failed'
-                );
+                    . 'FINAL,DIRECT,dns-failed');
             }
         }
         return $return;
@@ -317,7 +297,7 @@ class ConfController extends BaseController
             "\n#---------------------------------------------------#" .
             "\n\n"
             . Yaml::dump($tmp, 4, 2) .
-            "\n\nRule:\n"
+            "\n\n"
             . self::getClashConfRule($Configs['Rule']);
 
         return $Conf;
@@ -333,24 +313,15 @@ class ConfController extends BaseController
     public static function getClashConfGeneral($General)
     {
         if (count($General) != 0) {
-            foreach ($General as $key => $value) {
-                if (!in_array(
+            foreach ($General as $key) {
+                if (in_array(
                     $key,
                     [
-                        'port',
-                        'socks-port',
-                        'redir-port',
-                        'allow-lan',
-                        'mode',
-                        'log-level',
-                        'external-controller',
-                        'external-ui',
-                        'secret',
-                        'experimental',
-                        'dns'
+                        'Proxy',
+                        'Proxy Group',
+                        'Rule'
                     ]
-                )
-                ) {
+                )) {
                     unset($key);
                 }
             }
@@ -373,49 +344,50 @@ class ConfController extends BaseController
             $tmp = [];
             if (in_array($ProxyGroup['type'], ['select', 'url-test', 'fallback', 'load-balance'])) {
                 $proxies = [];
-                if (isset($ProxyGroup['content']['left-proxies'])
+                if (
+                    isset($ProxyGroup['content']['left-proxies'])
                     && count($ProxyGroup['content']['left-proxies']) != 0
                 ) {
                     $proxies = $ProxyGroup['content']['left-proxies'];
                 }
-                $AllRemark = [];
-                if (isset($ProxyGroup['content']['class'])) {
-                    foreach ($Nodes as $item) {
-                        if ($item['class'] == $ProxyGroup['content']['class']) {
-                            $AllRemark[] = $item['name'];
-                        }
-                    }
-                } elseif (isset($ProxyGroup['content']['noclass'])) {
-                    foreach ($Nodes as $item) {
-                        if ($item['class'] != $ProxyGroup['content']['noclass']) {
-                            $AllRemark[] = $item['name'];
-                        }
-                    }
-                } else {
-                    foreach ($Nodes as $item) {
-                        $AllRemark[] = $item['name'];
+                foreach ($Nodes as $item) {
+                    switch (true) {
+                        case (isset($ProxyGroup['content']['class'])):
+                            if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['name'], $proxies)) {
+                                if (isset($ProxyGroup['content']['regex'])) {
+                                    if (preg_match($ProxyGroup['content']['regex'], $item['name'])) {
+                                        $proxies[] = $item['name'];
+                                    }
+                                } else {
+                                    $proxies[] = $item['name'];
+                                }
+                            }
+                            break;
+                        case (isset($ProxyGroup['content']['noclass'])):
+                            if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['name'], $proxies)) {
+                                if (isset($ProxyGroup['content']['regex'])) {
+                                    if (preg_match($ProxyGroup['content']['regex'], $item['name'])) {
+                                        $proxies[] = $item['name'];
+                                    }
+                                } else {
+                                    $proxies[] = $item['name'];
+                                }
+                            }
+                            break;
+                        case (!isset($ProxyGroup['content']['class'])
+                            && !isset($ProxyGroup['content']['noclass'])
+                            && isset($ProxyGroup['content']['regex'])
+                            && preg_match($ProxyGroup['content']['regex'], $item['name'])
+                            && !in_array($item['name'], $proxies)):
+                            $proxies[] = $item['name'];
+                            break;
+                        default:
+                            continue;
+                            break;
                     }
                 }
-                if (isset($ProxyGroup['content']['regex'])) {
-                    foreach ($AllRemark as $item) {
-                        if (!preg_match($ProxyGroup['content']['regex'], $item)) {
-                            unset($item);
-                        }
-                    }
-                }
-                if (isset($ProxyGroup['content']['class'])
-                    || isset($ProxyGroup['content']['noclass'])
-                    || isset($ProxyGroup['content']['regex'])
-                ) {
-                    $proxies = array_merge($proxies, $AllRemark);
-                    if (isset($ProxyGroup['content']['right-proxies'])
-                        && count($ProxyGroup['content']['right-proxies']) != 0
-                    ) {
-                        $proxies = array_merge(
-                            $proxies,
-                            $ProxyGroup['content']['right-proxies']
-                        );
-                    }
+                if (isset($ProxyGroup['content']['right-proxies'])) {
+                    $proxies = array_merge($proxies, $ProxyGroup['content']['right-proxies']);
                 }
                 $tmp = [
                     'name' => $ProxyGroup['name'],
@@ -441,29 +413,36 @@ class ConfController extends BaseController
      */
     public static function getClashConfRule($Rules)
     {
-        $return = '';
+        $return = ('Rule:' . PHP_EOL);
         if (isset($Rules['source']) && $Rules['source'] != '') {
             $sourceURL = trim($Rules['source']);
             // 远程规则仅支持 github 以及 gitlab
             if (preg_match('/^https:\/\/((gist\.)?github\.com|raw\.githubusercontent\.com|gitlab\.com)/i', $sourceURL)) {
-                $return = @file_get_contents($sourceURL);
-                if (!$return) {
-                    $return = (
-                        '// 远程规则加载失败'
+                $sourceContent = @file_get_contents($sourceURL);
+                if (!$sourceContent) {
+                    $return .= ('// 远程规则加载失败'
                         . PHP_EOL
                         . 'GEOIP,CN,DIRECT'
                         . PHP_EOL
-                        . 'MATCH,DIRECT'
-                    );
+                        . 'MATCH,DIRECT');
+                } else {
+                    try {
+                        $sourceRule = Yaml::parse($return);
+                    } catch (ParseException $exception) {
+                        $sourceRule = false;
+                    }
+                    if (!$sourceRule || !isset($sourceRule['Rule'])) {
+                        $return .= $sourceContent;
+                    } else {
+                        $return .= Yaml::dump($sourceRule['Rule'], 4, 2);
+                    }
                 }
             } else {
-                $return = (
-                    '// 远程规则仅支持 github 以及 gitlab'
+                $return .= ('// 远程规则仅支持 github 以及 gitlab'
                     . PHP_EOL
                     . 'GEOIP,CN,DIRECT'
                     . PHP_EOL
-                    . 'MATCH,DIRECT'
-                );
+                    . 'MATCH,DIRECT');
             }
         }
         return $return;

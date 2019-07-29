@@ -431,25 +431,18 @@
 
                                <script src="/assets/js/canvasjs.min.js"> </script>
                                 <script type="text/javascript">
-                                    var chart = new CanvasJS.Chart("traffic_chart",
-
-
-
-                                    {
-                                 theme: "light1",
-
-
-                                        title:{
+                                    var chart = new CanvasJS.Chart("traffic_chart", {
+                                        theme: "light1",
+                                        title: {
                                             text: "流量使用情况",
                                             fontFamily: "Impact",
                                             fontWeight: "normal"
-                                            },
-                                        legend:{
+                                        },
+                                        legend: {
                                             verticalAlign: "bottom",
                                             horizontalAlign: "center"
                                         },
-                                        data: [
-                                        {
+                                        data: [{
                                             startAngle: -15,
                                             indexLabelFontSize: 20,
                                             indexLabelFontFamily: "Garamond",
@@ -482,41 +475,43 @@
                                 <div class="progressbar">
                                     <div class="before"></div>
                                     <div class="bar tuse color3"
-                                         style="width:calc({($user->transfer_enable==0)?0:($user->u+$user->d-$user->last_day_t)/$user->transfer_enable*100}%);">
-                                        <span></span></div>
+                                         style="width:calc({($user->transfer_enable==0)?0:($user->u+$user->d-$user->last_day_t)/$user->transfer_enable*100}%);"></div>
                                     <div class="label-flex">
                                         <div class="label la-top">
-                                            <div class="bar ard color3"><span></span></div>
-                                            <span class="traffic-info">今日已用</span><code
-                                                    class="card-tag tag-red">{$user->TodayusedTraffic()}</code></div>
+                                            <div class="bar ard color3"></div>
+                                            <span class="traffic-info">今日已用</span>
+                                            <code class="card-tag tag-red">{$user->TodayusedTraffic()}</code>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="progressbar">
                                     <div class="before"></div>
                                     <div class="bar ard color2"
                                          style="width:calc({($user->transfer_enable==0)?0:$user->last_day_t/$user->transfer_enable*100}%);">
-                                        <span></span></div>
+                                        <span></span>
+                                    </div>
                                     <div class="label-flex">
                                         <div class="label la-top">
                                             <div class="bar ard color2"><span></span></div>
                                             <span class="traffic-info">过去已用</span><code
-                                                    class="card-tag tag-orange">{$user->LastusedTraffic()}</code></div>
+                                                    class="card-tag tag-orange">{$user->LastusedTraffic()}</code>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="progressbar">
                                     <div class="before"></div>
                                     <div class="bar remain color"
                                          style="width:calc({($user->transfer_enable==0)?0:($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100}%);">
-                                        <span></span></div>
+                                        <span></span>
+                                    </div>
                                     <div class="label-flex">
                                         <div class="label la-top">
                                             <div class="bar ard color"><span></span></div>
-                                            <span class="traffic-info">剩余流量</span><code class="card-tag tag-green"
-                                                                                        id="remain">{$user->unusedTraffic()}</code>
+                                            <span class="traffic-info">剩余流量</span>
+                                            <code class="card-tag tag-green" id="remain">{$user->unusedTraffic()}</code>
                                         </div>
                                     </div>
                                 </div>
-
 
                             </div>
 
@@ -587,8 +582,8 @@
     });
 
     $(".copy-text").click(function () {
-	    $("#result").modal();
-	    $("#msg").html("已拷贝订阅链接，请您继续接下来的操作");
+        $("#result").modal();
+        $$.getElementById('msg').innerHTML = '已拷贝订阅链接，请您继续接下来的操作';
     });
 
     function AddSub(url,jumpurl="") {
@@ -642,7 +637,7 @@
 {if $user->transfer_enable-($user->u+$user->d) == 0}
     window.onload = function () {
         $("#result").modal();
-        $("#msg").html("您的流量已经用完或账户已经过期了，如需继续使用，请进入商店选购新的套餐~");
+        $$.getElementById('msg').innerHTML = '您的流量已经用完或账户已经过期了，如需继续使用，请进入商店选购新的套餐~';
     };
 {/if}
 
@@ -654,7 +649,8 @@
             threshold: 15
         });
         myShakeEvent.start();
-        CountDown()
+        CountDown();
+
         window.addEventListener('shake', shakeEventDidOccur, false);
         function shakeEventDidOccur() {
             if ("vibrate" in navigator) {
@@ -667,22 +663,25 @@
                 data: {
                     recaptcha: grecaptcha.getResponse()
                 },{/if}
-                success: function (data) {
+                success: (data) => {
                     if (data.ret) {
-                        $("#checkin-msg").html(data.msg);
-                        $("#checkin-btn").html(checkedmsgGE);
+
+                        $$.getElementById('checkin-msg').innerHTML = data.msg;
+                        $$.getElementById('checkin-btn').innerHTML = checkedmsgGE;
                         $("#result").modal();
-                        $("#msg").html(data.msg);
-                        $('#remain').html(data.traffic);
+                        $$.getElementById('msg').innerHTML = data.msg;
+                        $$.getElementById('remain').innerHTML = data.traffic;
                         $('.bar.remain.color').css('width', (data.unflowtraffic - ({$user->u}+{$user->d})) / data.unflowtraffic * 100 + '%');
                     } else {
                         $("#result").modal();
-                        $("#msg").html(data.msg);
+                        $$.getElementById('msg').innerHTML = data.msg;
                     }
                 },
-                error: function (jqXHR) {
+                error: (jqXHR) => {
                     $("#result").modal();
-                    $("#msg").html("发生错误：" + jqXHR.status);
+                    $$.getElementById('msg').innerHTML = `发生错误：${
+                            jqXHR.status
+                            }`;
                 }
             });
         }
@@ -697,22 +696,24 @@
                 data: {
                     recaptcha: grecaptcha.getResponse()
                 },{/if}
-                success: function (data) {
+                success: (data) => {
                     if (data.ret) {
-                        $("#checkin-msg").html(data.msg);
-                        $("#checkin-btn").html(checkedmsgGE);
+                        $$.getElementById('checkin-msg').innerHTML = data.msg;
+                        $$.getElementById('checkin-btn').innerHTML = checkedmsgGE;
                         $("#result").modal();
-                        $("#msg").html(data.msg);
-                        $('#remain').html(data.traffic);
+                        $$.getElementById('msg').innerHTML = data.msg;
+                        $$.getElementById('remain').innerHTML = data.traffic;
                         $('.bar.remain.color').css('width', (data.unflowtraffic - ({$user->u}+{$user->d})) / data.unflowtraffic * 100 + '%');
                     } else {
                         $("#result").modal();
-                        $("#msg").html(data.msg);
+                        $$.getElementById('msg').innerHTML = data.msg;
                     }
                 },
-                error: function (jqXHR) {
+                error: (jqXHR) => {
                     $("#result").modal();
-                    $("#msg").html("发生错误：" + jqXHR.status);
+                    $$.getElementById('msg').innerHTML = `发生错误：${
+                            jqXHR.status
+                            }`;
                 }
             })
         })
@@ -748,22 +749,24 @@
                     geetest_validate: validate.geetest_validate,
                     geetest_seccode: validate.geetest_seccode
                 },
-                success: function (data) {
+                success: (data) => {
                     if (data.ret) {
-                        $("#checkin-msg").html(data.msg);
-                        $("#checkin-btn").html(checkedmsgGE);
+                        $$.getElementById('checkin-msg').innerHTML = data.msg;
+                        $$.getElementById('checkin-btn').innerHTML = checkedmsgGE;
                         $("#result").modal();
-                        $("#msg").html(data.msg);
-                        $('#remain').html(data.traffic);
+                        $$.getElementById('msg').innerHTML = data.msg;
+                        $$.getElementById('remain').innerHTML = data.traffic;
                         $('.bar.remain.color').css('width', (data.unflowtraffic - ({$user->u}+{$user->d})) / data.unflowtraffic * 100 + '%');
                     } else {
                         $("#result").modal();
-                        $("#msg").html(data.msg);
+                        $$.getElementById('msg').innerHTML = data.msg;
                     }
                 },
-                error: function (jqXHR) {
+                error: (jqXHR) => {
                     $("#result").modal();
-                    $("#msg").html("发生错误：" + jqXHR.status);
+                    $$.getElementById('msg').innerHTML = `发生错误：${
+                            jqXHR.status
+                            }`;
                 }
             });
         });

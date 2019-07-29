@@ -1,4 +1,4 @@
-﻿{include file='user/main.tpl'}
+{include file='user/main.tpl'}
 
 <script src="//cdn.jsdelivr.net/gh/SuicidalCat/canvasjs.js@v2.3.1/canvasjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1"></script>
@@ -168,7 +168,9 @@
                                                 <a href="javascript:void(0);"
                                                    onClick="urlChange('{$node['id']}',{$single_muport['server']->server},{if $relay_rule != null}{$relay_rule->id}{else}0{/if})">{$node['name']}
                                                     {if $relay_rule != null} - {$relay_rule->dist_node()->name}{/if} -
-                                                    单端口 Shadowsocks - {$single_muport['server']->server} 端口
+                                                    单端口 Shadowsocks - 
+                                                    {if strpos($node['server'], ';') !== false}{assign var='node_tmp' value=$tools->OutPort($node['server'], $node['name'], $single_muport['server']->server)}{$node_tmp['port']}{else}{$single_muport['server']->server}{/if}
+                                                     端口
                                                 </a>
                                             </div>
                                         {/foreach}
@@ -218,15 +220,15 @@
                                                             {$node['name']}
 														</span>
                                                         |
-                                                        <span class="node-icon"><i
-                                                                    class="icon icon-lg">flight_takeoff</i></span>
+                                                        <span class="node-icon">
+                                                            <i class="icon icon-lg">flight_takeoff</i></span>
                                                         <strong><b><span
                                                                         class="node-alive">{if $node['online_user'] == -1}N/A{else}{$node['online_user']}{/if}</span></b></strong>
-                                                        | <span class="node-icon"><i
-                                                                    class="icon icon-lg">cloud</i></span>
+                                                        | <span class="node-icon">
+                                                            <i class="icon icon-lg">cloud</i></span>
                                                         <span class="node-load">负载：{if $node['latest_load'] == -1}N/A{else}{$node['latest_load']}%{/if}</span>
-                                                        | <span class="node-icon"><i
-                                                                    class="icon icon-lg">import_export</i></span>
+                                                        | <span class="node-icon">
+                                                            <i class="icon icon-lg">import_export</i></span>
                                                         <span class="node-mothed">{$node['bandwidth']}</span>
                                                         | <span class="node-icon"><i class="icon icon-lg">equalizer</i></span>
                                                         {if $node['traffic_limit']>0}
@@ -234,8 +236,8 @@
                                                         {else}
                                                             {$node['traffic_used']}GB
                                                         {/if}
-                                                        | <span class="node-icon"><i
-                                                                    class="icon icon-lg">network_check</i></span>
+                                                        | <span class="node-icon">
+                                                            <i class="icon icon-lg">network_check</i></span>
                                                         <span class="node-tr">{$node['traffic_rate']} 倍率</span>
                                                         | <span class="node-icon"><i class="icon icon-lg">notifications_none</i></span>
                                                         <span class="node-status">{$node['status']}</span>
@@ -306,7 +308,7 @@
                                                                                    onClick="urlChange('{$node['id']}',{$single_muport['server']->server},{if $relay_rule != null}{$relay_rule->id}{else}0{/if})">{$node['name']}
                                                                                     {if $relay_rule != null} - {$relay_rule->dist_node()->name}{/if}
                                                                                     - 单端口 Shadowsocks -
-                                                                                    {$single_muport['server']->server}
+                                                                                    {if strpos($node['server'], ';') !== false}{assign var='node_tmp' value=$tools->OutPort($node['server'], $node['name'], $single_muport['server']->server)}{$node_tmp['port']}{else}{$single_muport['server']->server}{/if}
                                                                                     端口</a><span
                                                                                         class="label label-brand-accent">←点击节点查看配置信息</span>
                                                                             </p>
@@ -380,7 +382,13 @@
 <script>
 
     function urlChange(id, is_mu, rule_id) {
-        var site = './node/' + id + '?ismu=' + is_mu + '&relay_rule=' + rule_id;
+        var site = `./node/${
+                id
+                }?ismu=${
+                is_mu
+                }&relay_rule=${
+                rule_id
+                }`;
         if (id == 'guide') {
             var doc = document.getElementById('infoifram').contentWindow.document;
             doc.open();
@@ -397,7 +405,7 @@
     });
     $(".copy-text").click(function () {
         $("#result").modal();
-        $("#msg").html("已复制，请进入软件添加。");
+        $$.getElementById('msg').innerHTML = '已复制，请进入软件添加。';
     });
 
     {literal}
