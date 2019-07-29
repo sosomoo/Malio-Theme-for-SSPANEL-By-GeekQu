@@ -55,7 +55,12 @@
                       请填写密码
                     </div>
                   </div>
-                {$geetest_html}
+
+                  {if $geetest_html != null}
+                  <div class="form-group">
+                    <div id="embed-captcha"></div>
+                  </div>
+                  {/if}
 
                   <div class="form-group">
                     <div class="custom-control custom-checkbox">
@@ -207,6 +212,7 @@
 
   <!-- JS Libraies -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.25.6/dist/sweetalert2.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 
   <!-- Page Specific JS File -->
   <script src="/theme/malio/js/malio.js?{$malio_config['malio_js_version']}"></script>
