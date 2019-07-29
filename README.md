@@ -18,8 +18,8 @@
 
 在.config.php里设置新用户注册等级为-1，如果不设置为-1的话，就没有新手引导教程，同时需要在.config.php里设置用户等级过期时间，建议设置为超过一个月的时间(720小时)。
 
-## TG群
-[https://t.me/joinchat/DM2_FxStXAbYZ2DzVfZjcw](https://t.me/joinchat/DM2_FxStXAbYZ2DzVfZjcw)
+## Telegram
+[TG群](https://t.me/joinchat/DM2_FxStXAbYZ2DzVfZjcw) [TG频道](https://t.me/malio_for_sspanel) 
 
 ## CREDIT
 基于 [rico](https://github.com/rico93) 和 [GeekQu](https://github.com/GeekQu) 维护的 [ss-panel-v3-mod_Uim](https://github.com/rico93/ss-panel-v3-mod_Uim) 修改
