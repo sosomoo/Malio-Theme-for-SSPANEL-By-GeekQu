@@ -230,7 +230,7 @@
                         <div id="manual-import" class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
                           <h6>Shadowrocket 无法一键导入，如何手动导入配置？</h6>
                           <p class="mb-4 font-13">
-                            <a href="##" class="copy-text" data-clipboard-text="{$baseUrl}/link/{$sub_token}?type=ss">点此复制 SS 订阅链接</a>，打开 Shadowrocket 首页，点击右上角的加号，再次点击第一行的「类型」，选择 Subscribe。在「备注」中输入{$config['appName']}，随后在「URL」中粘贴订阅链接。
+                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['shadowrocket']}">点此复制 Shadowrocket 订阅链接</a>，打开 Shadowrocket 首页，点击右上角的加号，再次点击第一行的「类型」，选择 Subscribe。在「备注」中输入{$config['appName']}，随后在「URL」中粘贴订阅链接。
                           </p>
                         </div>
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
@@ -259,10 +259,10 @@
 
   <script>
     function importSublink() {
-      oneclickImport('shadowrocket','{if $malio_cofig["ios_sub_type"] == v2ray}{$subInfo["v2ray"]}{else}{$subInfo["ssr"]}{/if}')
+      oneclickImport('shadowrocket','{$subInfo["shadowrocket"]}')
     }
     createQRCode('shadowrocket-download-qrcode', 'https://itunes.apple.com/us/app/shadowrocket/id932747118','扫描二维码下载客户端')
-    createQRCode('shadowrocket-qrcode', "shadowrocket://add/sub://" + btoa("{if $malio_cofig['ios_sub_type'] == v2ray}{$subInfo['v2ray']}{else}{$subInfo['ssr']}{/if}") + "?remarks={$config[appName]}", '打开手机相机，扫描二维码导入')
+    createQRCode('shadowrocket-qrcode', "shadowrocket://add/sub://" + btoa('{$subInfo["shadowrocket"]}') + "?remarks={$config[appName]}", '打开手机相机，扫描二维码导入')
   </script>
 </body>
 

@@ -32,6 +32,12 @@ $Malio_Config['enable_webapi_email_hash'] = true;    // 启用后，当节点通
 $Malio_Config['code_required'] = true;    // 设置为true时，注册时邀请码是必须的。设置为false时，有无邀请码都可以注册，但是可以填邀请码（aff专用）
 
 
+// 订阅设置
+$Malio_Config['support_sub_type'] = ['ss','ssr','v2ray'];    // 选择网站支持的代理协议，会影响复制订阅链接和一键导入按钮的显示。比如删除这个参数里的ss，则 Surge 订阅按钮不会显示再首页上，教程里也不会显示Surge教程
+$Malio_Config['quantumult_mode'] = 'single';   // quantumult 一键导入按钮的模式，可选 "single"或"all"。选择single的话只能导入一种订阅（比如只能导入SSR订阅）。选择all的话可以一次性导入全部订阅类型（SS+SSR+V2RAY），但是导入后需要用户手动更新订阅才会出现节点。
+$Malio_Config['quantumult_sub_type'] = 'v2ray';    // quanmutult 的一键导入的订阅类型，可选 ss、ssr、v2ray
+
+
 // Crisp 设置
 $Malio_Config['enable_crisp'] = false;   // 是否启用 Crisp 在线客服系统 https://crisp.chat
 $Malio_Config['crisp_wesite_id'] = '18b46e92-eb21-76d3-bfb7-8f2ae9adba64';    // Crisp 的网站ID，格式为 '18b46e92-eb21-76d3-bfb7-8f2ae9adba64'
@@ -101,7 +107,7 @@ $Malio_Config['plan_trail_feature'] = [    // 新用户试用的特性，一个a
 ];
 
 $Malio_Config['shop_enable_traffic_package'] = true;   // 商店是否显示流量叠加包的选项（仅在用户购买会员计划后才会显示）
-$Malio_Config['shop_traffic_packages'] = [ // 商店流量叠加包的详细信息，一个array为一个流量叠加包
+$Malio_Config['shop_traffic_packages'] = [ // 商店流量叠加包的详细信息，一个array为一个流量叠加包。在商品列表添加流量包时只需要填写名称、价格、流量，其他参数默认即可
     array(
         'shopid' => 13, // 流量叠加包的商品ID
         'traffic' => 10, // 单位为GB

@@ -458,6 +458,7 @@
   </div>
 
   {include file='user/scripts.tpl'}
+  <script src="https://cdn.jsdelivr.net/npm/kjua@0.1.2/dist/kjua.min.js"></script>
 
   {if $malio_config['shop_style'] == 'plans'}
   <script>
@@ -474,14 +475,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">支付</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="modal-body">
         <div style="text-align: center">
           点击“继续支付”打开支付页面支付<br>
-          支付到账需要一段时间，请勿关闭此页面和对话框</div>
+          支付到账需要一段时间，请勿关闭或刷新此页面</div>
       </div>
       <div class="modal-footer bg-whitesmoke br">
         <a id="to-bitpayx" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
@@ -496,12 +494,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">打开支付宝，扫码支付</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="modal-body">
-        <p>支付到账需要一段时间，请勿关闭此页面和对话框</p>
+        <p>支付到账需要一段时间，请勿关闭或刷新此页面</p>
         <div id="f2fpay-qr" style="text-align: center"></div>
       </div>
       <div class="modal-footer bg-whitesmoke br">
@@ -517,14 +512,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">支付</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="modal-body">
         <div style="text-align: center">
           点击“继续支付”打开支付页面支付<br>
-          支付到账需要一段时间，请勿关闭此页面和对话框</div>
+          支付到账需要一段时间，请勿关闭或刷新此页面</div>
       </div>
       <div class="modal-footer bg-whitesmoke br">
         <a id="to-spay" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
@@ -540,14 +532,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">支付</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="modal-body">
         <div style="text-align: center">
           点击“继续支付”打开支付页面支付<br>
-          支付到账需要一段时间，请勿关闭此页面和对话框</div>
+          支付到账需要一段时间，请勿关闭或刷新此页面</div>
       </div>
       <div class="modal-footer bg-whitesmoke br">
         <a id="to-codepay" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
@@ -563,14 +552,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">支付</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="modal-body">
         <div style="text-align: center">
           点击“继续支付”打开支付页面支付<br>
-          支付到账需要一段时间，请勿关闭此页面和对话框</div>
+          支付到账需要一段时间，请勿关闭或刷新此页面</div>
       </div>
       <div class="modal-footer bg-whitesmoke br">
         <a id="to-tmtpay" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
@@ -586,14 +572,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">支付</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="modal-body">
         <div style="text-align: center">
           点击“继续支付”打开支付页面支付<br>
-          支付到账需要一段时间，请勿关闭此页面和对话框</div>
+          支付到账需要一段时间，请勿关闭或刷新此页面</div>
       </div>
       <div class="modal-footer bg-whitesmoke br">
         <a id="to-flyfox" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
@@ -609,9 +592,6 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">使用优惠码</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="modal-body">
         <div class="form-group">
@@ -634,9 +614,6 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">请选择流量叠加包</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="modal-body">
         <div class="form-group">
