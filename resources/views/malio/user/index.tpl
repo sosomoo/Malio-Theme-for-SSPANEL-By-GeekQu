@@ -155,7 +155,11 @@
                         <h4>会员时长</h4>
                       </div>
                       <div class="card-body">
+                        {if $user->class_expire!="1989-06-04 00:05:00"}
                         <span class="counter">{$class_left_days}</span> 天
+                        {else}
+                        永久
+                        {/if}
                       </div>
                     </div>
                     <div class="card-stats">
