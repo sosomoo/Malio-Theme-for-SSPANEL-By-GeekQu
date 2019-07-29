@@ -128,6 +128,14 @@
                   </div>
                   {/if}
 
+                  {if $geetest_html != null}
+                      <div class="rowtocol">
+                          <div class="form-group form-group-label">
+                              <div id="embed-captcha"></div>
+                          </div>
+                      </div>
+                  {/if}
+
                   <div class="form-group">
                     <div class="custom-control custom-checkbox">
                       <input type="checkbox" name="agree" class="custom-control-input" id="agree" checked="checked">
@@ -195,9 +203,7 @@
               remember_me: 1
           },
           success: function (data) {
-            if (data.ret == 1) {
-              window.location.assign('/user')
-            }
+            window.location.assign('/user')
           }
       });
     }
@@ -214,11 +220,23 @@
         return false
       };
       // eof vaildation
+      
+      {if $geetest_html != null}
+      if (typeof validate == 'undefined') {
+        swal('请验证身份', '请滑动验证码来完成验证。', 'error');
+        return;
+      }
+      if (!validate) {
+        swal('请验证身份', '请滑动验证码来完成验证。', 'error');
+        return;
+      }
+      {/if}
+
       code = $("#code").val();
       {if $config['register_mode'] != 'invite'}
       code = 0;
       if ((getCookie('code')) != '') {
-          code = getCookie('code');
+        code = getCookie('code');
       }
       {/if}
       $.ajax({
@@ -231,7 +249,11 @@
               passwd: $("#passwd").val(),
               repasswd: $("#repasswd").val(),
               code: code{if $enable_email_verify == 'true'},
-              emailcode: $("#email_code").val(){/if}
+              emailcode: $("#email_code").val(){/if}{if $geetest_html != null},
+              geetest_challenge: validate.geetest_challenge,
+              geetest_validate: validate.geetest_validate,
+              geetest_seccode: validate.geetest_seccode
+              {/if}
           },
           success: function (data) {
               if (data.ret == 1) {
@@ -245,14 +267,17 @@
                 })
               } else {
                 $('#register-confirm').removeAttr("disabled","disabled")
+                setCookie('code', '', 0);
+                $("#code").val(getCookie('code'));
+                {if $geetest_html != null}
+                captcha.refresh();
+                {/if}
                 swal({
                   type: 'error',
                   title: '提示',
                   showCloseButton: true,
                   text: data.msg
                 })
-                  //setCookie('code', '', 0);
-                  //$("#code").val(getCookie('code'));
               }
           }
       });
@@ -319,6 +344,26 @@
         }
       })
     })
+  </script>
+  {/if}
+
+  {if $geetest_html != null}
+  <script src="//static.geetest.com/static/tools/gt.js"></script>
+  <script>
+    var handlerEmbed = function (captchaObj) {
+      captchaObj.onSuccess(function () {
+          validate = captchaObj.getValidate();
+      });
+      captchaObj.appendTo("#embed-captcha");
+      captcha = captchaObj;
+    };
+    initGeetest({
+      gt: "{$geetest_html->gt}",
+      challenge: "{$geetest_html->challenge}",
+      product: "embed",
+      width: "100%",
+      offline: {if $geetest_html->success}0{else}1{/if}
+    }, handlerEmbed);
   </script>
   {/if}
 
