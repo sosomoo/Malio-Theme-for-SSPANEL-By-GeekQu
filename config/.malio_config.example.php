@@ -250,6 +250,7 @@ $Malio_Config['enable_reset_port'] = true;   // 是否显示重置端口设置
 
 
 // 下载和使用
+$Malio_Config['display_more_app_button'] = true;   // 教程页面是否显示”其他客户端按钮“
 $Malio_Config['windows_client'] = 'cfw';    // Windows 教程的首选客户端，可选 cfw, ssr
 $Malio_Config['ios_client'] = 'quantumult';    // iOS 教程的首选客户端，可选 quantumult, shadowrocket, kitsunebi
 $Malio_Config['ios_sub_type'] = 'v2ray';    // iOS 客户端的一键导入的订阅类型，可选ssr、v2ray
