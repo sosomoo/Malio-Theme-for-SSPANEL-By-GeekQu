@@ -451,7 +451,7 @@
       };
     }
 
-    $appName = "{$config['appName']}";
+    appName = "{$config['appName']}";
 
     setTimeout(loadTrafficChart(), 3000);
 </script>
