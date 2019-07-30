@@ -546,7 +546,7 @@
 </div>
 {/if}
 
-{if $config['payment_system'] == 'tmtpay'}
+{if $config['payment_system'] == 'tomatopay'}
 <div class="modal fade" tabindex="-1" role="dialog" id="tmtpay-modal">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
