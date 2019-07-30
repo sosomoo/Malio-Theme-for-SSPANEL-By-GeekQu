@@ -345,7 +345,7 @@
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-surfboard btn-lg btn-round" onclick="importSublink('surfboard')"><i class="malio-surfboard"></i> 一键导入 Surfboard 配置</a>
                         {/if}
                         {if (in_array("ssr",$malio_config['support_sub_type']))}
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-ssr copy-text btn-lg btn-round" data-clipboard-text="{if $malio_config['']}{$subInfo['ssr']}{/if}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-ssr copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
                         {/if}
                       </div>
                     </div>
