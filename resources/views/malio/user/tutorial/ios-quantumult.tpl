@@ -252,11 +252,14 @@
   <script src="https://cdn.jsdelivr.net/npm/kjua@0.1.2/dist/kjua.min.js"></script>
 
   <script>
-    function importSublink() {
-      oneclickImport('quantumult', '{if $malio_config["quantumult_sub_type"]=="v2ray"}{$subInfo["v2ray"]}{elseif $malio_config["quantumult_sub_type"]=="ss"}{$subInfo["ss"]}{elseif $malio_config["quantumult_sub_type"]=="ssr"}{$subInfo["ssr"]}{/if}')
+    function importSublink(client) {
+      if (client == 'quantumult') {
+        oneclickImport('quantumult', '{if $malio_config["quantumult_sub_type"]=="v2ray"}{$subInfo["v2ray"]}{elseif $malio_config["quantumult_sub_type"]=="ss"}{$subInfo["ss"]}{elseif $malio_config["quantumult_sub_type"]=="ssr"}{$subInfo["ssr"]}{/if}');
+      }
     }
-    createQRCode('quantumult-qrcode',"quantumult://configuration?server=" + btoa("{if $malio_cofig['ios_sub_type'] == v2ray}{$subInfo['v2ray']}{else}{$subInfo['ssr']}{/if}").replace(/=/g, '') + '&filter=YUhSMGNITTZMeTl0ZVM1dmMyOWxZMjh1ZUhsNkwzSjFiR1Z6TDNGMVlXNTBkVzExYkhRdVkyOXVaZw', '打开手机相机，扫描二维码导入')
-    createQRCode('quantumult-download-qrcode', 'https://itunes.apple.com/us/app/quantumult/id1252015438','扫描二维码下载客户端')
+    createQRCode('quantumult-qrcode',"quantumult://configuration?server=" + btoa('{if $malio_config["quantumult_sub_type"]=="v2ray"}{$subInfo["v2ray"]}{elseif $malio_config["quantumult_sub_type"]=="ss"}{$subInfo["ss"]}{elseif $malio_config["quantumult_sub_type"]=="ssr"}{$subInfo["ssr"]}{/if}').replace(/=/g, '') + '&filter=YUhSMGNITTZMeTl0ZVM1dmMyOWxZMjh1ZUhsNkwzSjFiR1Z6TDNGMVlXNTBkVzExYkhRdVkyOXVaZw', '打开手机相机，扫描二维码导入');
+    createQRCode('quantumult-download-qrcode', 'https://itunes.apple.com/us/app/quantumult/id1252015438','扫描二维码下载客户端');
+    var appName = '{$config["appName"]}';
   </script>
   <script>
       function Copyconfig(url, id, jumpurl = "") {

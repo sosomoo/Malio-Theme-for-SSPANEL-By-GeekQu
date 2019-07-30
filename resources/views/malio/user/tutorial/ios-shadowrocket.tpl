@@ -156,7 +156,7 @@
                             {else}
                               <p>这是一个付费软件，你需要购买才能使用。</p>
                             {/if}
-                            <a href="https://apps.apple.com/us/app/shadowrocket/id932747118'" class="btn btn-icon icon-left btn-primary btn-app" target="blank"><i class="fab fa-apple"></i> 打开 App Store 下载</a>
+                            <a href="https://apps.apple.com/us/app/shadowrocket/id932747118'" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fab fa-apple"></i> 打开 App Store 下载</a>
                             <button id="shadowrocket-download-qrcode" type="button" class="qrcode-btn btn">
                               <i class="fas fa-qrcode"></i>
                             </button>
@@ -174,7 +174,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>点击这个按钮 👇👇👇，会自动跳转添加订阅。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app" onclick="importSublink()"><i class="malio-shadowrocket"></i> 一键导入 Shadowrocket 配置</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" onclick="importSublink('shadowrocket')"><i class="malio-shadowrocket"></i> 一键导入 Shadowrocket 配置</a>
                             <button id="shadowrocket-qrcode" type="button" class="qrcode-btn btn">
                               <i class="fas fa-qrcode"></i>
                             </button>
@@ -194,7 +194,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">3.</label>
                             <p>点击底栏的配置，选择添加配置，粘贴配置链接，下载。随后点击 远程文件 中新增的配置文件地址，在弹出的菜单中选择第二个「使用配置」，此时 APP 会自动开始下载配置并应用配置。回到首页，点击进入「全局路由」将其更改为 配置。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text" data-clipboard-text="https://raw.githubusercontent.com/Hackl0us/Surge-Rule-Snippets/master/LAZY_RULES/Shadowrocket.conf"><i class="fas fa-download"></i> 复制配置链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="https://raw.githubusercontent.com/Hackl0us/Surge-Rule-Snippets/master/LAZY_RULES/Shadowrocket.conf"><i class="far fa-copy"></i> 复制配置链接</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">
@@ -260,11 +260,14 @@
   <script src="https://cdn.jsdelivr.net/npm/kjua@0.1.2/dist/kjua.min.js"></script>
 
   <script>
-    function importSublink() {
-      oneclickImport('shadowrocket','{$subInfo["shadowrocket"]}')
+    function importSublink(client) {
+      if (client == 'shadowrocket') {
+        oneclickImport('shadowrocket','{$subInfo["shadowrocket"]}')
+      };
     }
     createQRCode('shadowrocket-download-qrcode', 'https://itunes.apple.com/us/app/shadowrocket/id932747118','扫描二维码下载客户端')
     createQRCode('shadowrocket-qrcode', "shadowrocket://add/sub://" + btoa('{$subInfo["shadowrocket"]}') + "?remarks={$config[appName]}", '打开手机相机，扫描二维码导入')
+    var appName = '{$config["appName"]}';
   </script>
 </body>
 
