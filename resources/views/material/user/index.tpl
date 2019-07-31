@@ -278,7 +278,8 @@
 														<hr/>
 														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/yichengchen/clashX/releases"><i class="material-icons">save_alt</i> GET</a> ClashX - [ SS/VMess ]：</p>
 															<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/ClashX"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
+															<p>使用方式：<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clash"])}"><i class="material-icons icon-sm">how_to_vote</i>ClashX 一键导入</a></p>
+
 													</div>
 
 													<div class="tab-pane fade" id="sub_center_ios">
