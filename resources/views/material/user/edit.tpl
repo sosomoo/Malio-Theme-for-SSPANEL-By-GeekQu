@@ -48,29 +48,30 @@
 								<div class="cardbtn-edit">
 
 									<div class="card-heading">切换协议配置</div>
-										<button class="btn btn-flat" id="user_agreement_scheme-update"><span class="icon">check</span>&nbsp;</button>
-									</div>
-									<p>当前配置：
-										{foreach $schemes as $scheme}
-											{if $scheme['method'] == $user->method && $scheme['protocol'] == $user->protocol && $scheme['obfs'] == $user->obfs}
-												<code>{$scheme['name']}</code>
-											{/if}
-										{/foreach}
-									</p>
-									<div class="form-group form-group-label control-highlight-custom dropdown">
-										<button id="agreement_scheme" type="button" class="form-control maxwidth-edit" data-toggle="dropdown" value="0">请选择配置方案</button>
-										<ul class="dropdown-menu" aria-labelledby="agreement_scheme">
-											{foreach $schemes as $scheme}
-											<li><a href="#" class="dropdown-option" onclick="return false;" val="{$scheme['id']}" data="agreement_scheme">{$scheme['name']}</a></li>
-											{/foreach}
-										</ul>
-									</div>
-
+									<button class="btn btn-flat" id="user_agreement_scheme-update"><span class="icon">check</span>&nbsp;</button>
 								</div>
+								<p>当前配置：
+								{foreach $schemes as $scheme}
+									{if $scheme['method'] == $user->method && $scheme['protocol'] == $user->protocol && $scheme['obfs'] == $user->obfs}
+										<code>{$scheme['name']}</code>
+									{/if}
+								{/foreach}
+								</p>
+								<div class="form-group form-group-label control-highlight-custom dropdown">
+									<button id="agreement_scheme" type="button" class="form-control maxwidth-edit" data-toggle="dropdown" value="0">请选择配置方案</button>
+									<ul class="dropdown-menu" aria-labelledby="agreement_scheme">
+									{foreach $schemes as $scheme}
+										<li><a href="#" class="dropdown-option" onclick="return false;" val="{$scheme['id']}" data="agreement_scheme">{$scheme['name']}</a></li>
+									{/foreach}
+									</ul>
+								</div>
+
 							</div>
 						</div>
 					</div>
+
                 </div>
+
 
 {else}
 
@@ -176,12 +177,11 @@
 							<div class="card-inner">
 								<div class="cardbtn-edit">
 									<div class="card-heading">重置订阅链接</div>
-										<div class="reset-flex">
-											<a class="reset-link btn btn-brand-accent btn-flat" ><i class="icon">autorenew</i>&nbsp;</a>
-										</div>
+									<div class="reset-flex">
+										<a class="reset-link btn btn-brand-accent btn-flat" ><i class="icon">autorenew</i>&nbsp;</a>
 									</div>
-                                    <p>点击会重置您的订阅链接，此操作不可逆，请谨慎。</p>
 								</div>
+                                <p>点击会重置您的订阅链接，此操作不可逆，请谨慎。</p>
 							</div>
 						</div>
 					</div>
@@ -490,6 +490,8 @@
                         </div>
                     </div>
                 </div>
+
+            </div>
 
                 {include file='dialog.tpl'}
 
