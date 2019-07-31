@@ -326,10 +326,11 @@
                       <div class="buttons">
                         {if (in_array("ss",$malio_config['support_sub_type'])) || (in_array("v2ray",$malio_config['support_sub_type']))}
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-clash copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['clash']}"><i class="malio-clash"></i> 复制 Clash 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-clash btn-lg btn-round" onclick="importSublink('clash')"><i class="malio-clash"></i> 一键导入订阅到 ClashX</a>
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-kitsunebi copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
                         {/if}
                         {if $malio_config['quantumult_mode'] == 'single'}
-                        <a href="##" id="quan_sub" class="btn btn-icon icon-left btn-primary btn-quantumult btn-lg btn-round copy-config"  onclick="importSublink('quantumult')"><i class="malio-quantumult"></i> 一键导入 Quantumult 配置</a>
+                        <a href="##" id="quan_sub" class="btn btn-icon icon-left btn-primary btn-quantumult btn-lg btn-round copy-config" onclick="importSublink('quantumult')"><i class="malio-quantumult"></i> 一键导入 Quantumult 配置</a>
                         {elseif $malio_config['quantumult_mode'] == 'all'}
                         <a href="##" id="quan_sub" class="btn btn-icon icon-left btn-primary btn-quantumult btn-lg btn-round copy-config" onclick="Copyconfig(&quot;{$subInfo['quantumult_sub']}&quot;,&quot;#quan_sub&quot;,&quot;quantumult://settings?configuration=clipboard&quot;)"><i class="malio-quantumult"></i> 一键导入 Quantumult 配置</a>
                         {/if}
@@ -448,6 +449,9 @@
       };
       if (client == 'surge3') {
         oneclickImport('surge3','{$subInfo["surge3"]}')
+      };
+      if (client == 'clash') {
+        oneclickImport('clash','{$subInfo["clash"]}')
       };
     }
 
