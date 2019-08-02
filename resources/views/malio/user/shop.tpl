@@ -89,7 +89,7 @@
             <p class="section-lead">{$malio_config['shop_sub_title']}</p>
 
             <div class="row">
-              {if $malio_config['shop_enable_trail_plan'] == true}
+              {if $malio_config['shop_enable_trail_plan'] == true && $user->class < 0}
               <div class="col-12 col-md-3 col-lg-3">
                 <div class="pricing {if $malio_config['shop_enable_trail_plan'] == true}pricing-highlight{/if}">
                   <div class="pricing-title">
@@ -401,6 +401,9 @@
 
             <div class="row">
               {foreach $shops as $shop}
+              {if $malio_config['shop_trail_plan_shopid'] == $shop->id && $user->class > 0}
+              {continue}
+              {/if}
               <div class="col-12 col-md-4 col-lg-4">
                 <div class="pricing pricing-highlight">
                   <div class="pricing-title">
