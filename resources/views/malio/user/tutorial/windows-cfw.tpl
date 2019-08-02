@@ -143,7 +143,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>点击这个按钮 👇👇👇</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" onclick="importSublink('clash')"><i class="malio-clash"></i> 一键导入配置到 Clash for Windows</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" onclick="importSublink('clash')"><i class="malio-clash"></i> 一键导入托管配置到 Clash for Windows</a>
                             <p class="text-muted" style="font-size: 13px">一键导入不成功？<a href="#manual-import" class="text-muted "><u>试试手动导入</u> →</a></p>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">

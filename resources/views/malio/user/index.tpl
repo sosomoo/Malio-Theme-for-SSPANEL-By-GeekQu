@@ -325,7 +325,7 @@
                     <div class="card-body">
                       <div class="buttons">
                         {if (in_array("ss",$malio_config['support_sub_type'])) || (in_array("v2ray",$malio_config['support_sub_type']))}
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-clash btn-lg btn-round" onclick="importSublink('clash')"><i class="malio-clash"></i> 一键导入订阅到 ClashX / CFW</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-clash btn-lg btn-round" onclick="importSublink('clash')"><i class="malio-clash"></i> 一键导入托管配置到 ClashX / CFW</a>
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-kitsunebi copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
                         {/if}
                         {if $malio_config['quantumult_mode'] == 'single'}
