@@ -73,54 +73,52 @@
                     <h4>充值记录</h4>
                   </div>
                   <div class="card-body">
-                    <table class="table table-striped">
-                      <thead>
+                    <div class="table-responsive">
+                      <table class="table table-striped table-md">
                         <tr>
                           <th scope="col">代码</th>
                           <th scope="col">类型</th>
                           <th scope="col">操作</th>
                           <th scope="col">使用时间</th>
                         </tr>
-                      </thead>
-                      <tbody>
                         {if count($codes) == 0}
                         <tr>
                           <td colspan="4"><strong>无充值记录</strong></td>
                         </tr>
                         {else}
-                          {foreach $codes as $code}
-                            {if $code->type!=-2}
-                            <tr>
-                              <td>{$code->code}</td>
-                              {if $code->type==-1}
-                              <td>金额充值</td>
-                              {/if}
-                              {if $code->type==10001}
-                              <td>流量充值</td>
-                              {/if}
-                              {if $code->type==10002}
-                              <td>用户续期</td>
-                              {/if}
-                              {if $code->type>=1&&$code->type<=10000} <td>等级续期 - 等级{$code->type}</td>
-                                {/if}
-                                {if $code->type==-1}
-                                <td>充值 {$code->number} 元</td>
-                                {/if}
-                                {if $code->type==10001}
-                                <td>充值 {$code->number} GB 流量</td>
-                                {/if}
-                                {if $code->type==10002}
-                                <td>延长账户有效期 {$code->number} 天</td>
-                                {/if}
-                                {if $code->type>=1&&$code->type<=10000} <td>延长等级有效期 {$code->number} 天</td>
-                                  {/if}
-                                  <td>{$code->usedatetime}</td>
-                            </tr>
+                        {foreach $codes as $code}
+                        {if $code->type!=-2}
+                        <tr>
+                          <td>{$code->code}</td>
+                          {if $code->type==-1}
+                          <td>金额充值</td>
+                          {/if}
+                          {if $code->type==10001}
+                          <td>流量充值</td>
+                          {/if}
+                          {if $code->type==10002}
+                          <td>用户续期</td>
+                          {/if}
+                          {if $code->type>=1&&$code->type<=10000} <td>等级续期 - 等级{$code->type}</td>
                             {/if}
-                          {/foreach}
+                            {if $code->type==-1}
+                            <td>充值 {$code->number} 元</td>
+                            {/if}
+                            {if $code->type==10001}
+                            <td>充值 {$code->number} GB 流量</td>
+                            {/if}
+                            {if $code->type==10002}
+                            <td>延长账户有效期 {$code->number} 天</td>
+                            {/if}
+                            {if $code->type>=1&&$code->type<=10000} <td>延长等级有效期 {$code->number} 天</td>
+                              {/if}
+                              <td>{$code->usedatetime}</td>
+                        </tr>
                         {/if}
-                      </tbody>
-                    </table>
+                        {/foreach}
+                        {/if}
+                      </table>
+                    </div>
                     <div class="pagination-render float-right">
                       {$codes->render()}
                     </div>
@@ -131,8 +129,8 @@
                     <h4>购买记录</h4>
                   </div>
                   <div class="card-body">
-                    <table class="table table-striped">
-                      <thead>
+                    <div class="table-responsive">
+                      <table class="table table-striped table-md">
                         <tr>
                           <th>商品名称</th>
                           <th>价格</th>
@@ -143,8 +141,6 @@
                           <th>操作</th>
                           {/if}
                         </tr>
-                      </thead>
-                      <tbody>
                         {if count($shops) == 0}
                         <tr>
                           <td colspan="3"><strong>无购买记录</strong></td>
@@ -152,29 +148,32 @@
                         {else}
                         {foreach $shops as $shop}
                         <tr>
-                            <td>{$shop->shop()->name}</td>
-                            <td>¥{$shop->price}</td>
-                            <td>{date('Y-m-d H:i:s', $shop->datetime)}</td>
-                            {if $malio_config['shop_enable_autorenew'] == true}
-                            {if $shop->renew==0}
-                            <td>不自动续费</td>
-                            {else}
-                              <td>在 {$shop->renew_date()} 续费</td>
-                            {/if}
-                            {if $shop->shop()->auto_reset_bandwidth==0}
-                              <td>不自动重置</td>
-                            {else}
-                              <td>自动重置</td>
-                            {/if}
-                            <td>
-                              <a href="##" onclick="stopAutorenew({$shop->id})" type="button" class="btn btn-primary {if $shop->renew==0}disabled{/if}">关闭自动续费</a>
-                            </td>
-                            {/if}
+                          <td>{$shop->shop()->name}</td>
+                          <td>¥{$shop->price}</td>
+                          <td>{date('Y-m-d H:i:s', $shop->datetime)}</td>
+                          {if $malio_config['shop_enable_autorenew'] == true}
+
+                          {if $shop->renew==0}
+                          <td>不自动续费</td>
+                          {else}
+                          <td>在 {$shop->renew_date()} 续费</td>
+                          {/if}
+
+                          {if $shop->shop()->auto_reset_bandwidth==0}
+                          <td>不自动重置</td>
+                          {else}
+                          <td>自动重置</td>
+                          {/if}
+
+                          <td>
+                            <a href="##" onclick="stopAutorenew({$shop->id})" type="button" class="btn btn-primary {if $shop->renew==0}disabled{/if}">关闭自动续费</a>
+                          </td>
+                          {/if}
                         </tr>
                         {/foreach}
                         {/if}
-                      </tbody>
-                    </table>
+                      </table>
+                    </div>
                     <div class="pagination-render float-right">
                       {$shops->render()}
                     </div>
@@ -260,6 +259,7 @@
   </div>
 
   {include file='user/scripts.tpl'}
+  <script src="https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js"></script>
 
   <script>
     $('#top-up').click(function(){
