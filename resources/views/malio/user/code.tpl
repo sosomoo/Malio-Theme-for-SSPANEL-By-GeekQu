@@ -259,7 +259,6 @@
   </div>
 
   {include file='user/scripts.tpl'}
-  <script src="https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js"></script>
 
   <script>
     $('#top-up').click(function(){

@@ -165,7 +165,7 @@
               </div>
               {if $malio_config['enable_plan_2'] == true}
               <div class="col-12 {if $malio_config['shop_enable_trail_plan'] == true && $user->class < 0}col-md-3 col-lg-3{else}col-md-4 col-lg-4{/if}">
-                <div class="pricing {if $malio_config['shop_enable_trail_plan'] == false}pricing-highlight{/if}">
+                <div class="pricing {if $malio_config['shop_enable_trail_plan'] == false || $user->class >= 0}pricing-highlight{/if}">
                   <div class="pricing-title">
                     {$malio_config['plan_2_name']}
                   </div>

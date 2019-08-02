@@ -138,8 +138,9 @@
                         <div class="row">
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
-                            <p>点击屏幕右上角 ClashX 图标，选择 “配置” > “托管配置” > “设置地址”，粘贴托管配置链接。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="{$subInfo["clash"]}"><i class="fas fa-download"></i> 复制 Clash 托管配置链接</a>
+                            <p>点击这个按钮 👇👇👇</p>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" onclick="importSublink('clash')"><i class="malio-clash"></i> 一键导入配置到 ClashX</a>
+                            <p class="text-muted" style="font-size: 13px">一键导入不成功？<a href="#manual-import" class="text-muted "><u>试试手动导入</u> →</a></p>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">
@@ -172,6 +173,12 @@
                   <div class="card-body">
                     <div class="faq">
                       <div class="row mt-2">
+                        <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6" id="manual-import">
+                          <h6>ClashX 无法一键导入，如何手动导入配置？</h6>
+                          <p class="mb-4 font-13">
+                              <a href="##" class="copy-text" data-clipboard-text="{$subInfo['clash']}">点此复制 Clash 订阅链接</a>，点击屏幕右上角 ClashX 图标，选择 “配置” > “托管配置” > “设置地址”，粘贴托管配置链接。
+                          </p>
+                        </div>
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
                           <h6>ClashX 如何切换节点？</h6>
                           <p class="mb-4 font-13">
@@ -181,7 +188,7 @@
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
                           <h6>ClashX 如何更新节点？</h6>
                           <p class="mb-4 font-13">
-                              点击 ClashX 图标，选择“配置” > “托管配置” > “更新”，即可更新节点。
+                            点击 ClashX 图标，选择“配置” > “托管配置” > “更新”，即可更新节点。
                           </p>
                         </div>
                       </div>
@@ -199,6 +206,14 @@
 
   {include file='user/scripts.tpl'}
 
+  <script>
+    function importSublink(client) {
+      if (client == 'clash') {
+        oneclickImport('clash','{$subInfo["clash"]}')
+      };
+    }
+    appName = "{$config['appName']}";
+  </script>
 </body>
 
 </html>

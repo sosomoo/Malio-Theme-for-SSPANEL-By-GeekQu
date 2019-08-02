@@ -142,8 +142,9 @@
                         <div class="row">
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
-                            <p>点击这个按钮 👇👇👇，打开客户端的侧边栏的 Profiles，粘贴托管配置链接到左下角，点击 Direct Mode。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="{$subInfo["clash"]}"><i class="malio-clash"></i> 复制 Clash 托管配置链接</a>
+                            <p>点击这个按钮 👇👇👇</p>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" onclick="importSublink('clash')"><i class="malio-clash"></i> 一键导入配置到 Clash for Windows</a>
+                            <p class="text-muted" style="font-size: 13px">一键导入不成功？<a href="#manual-import" class="text-muted "><u>试试手动导入</u> →</a></p>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">
@@ -175,7 +176,13 @@
                 <div class="card">
                   <div class="card-body">
                     <div class="faq">
-                      <div class="row mt-2">
+                      <div class="row mt-2 mb-2">
+                        <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
+                          <h6>Clash for Windows 无法一键导入，如何手动导入配置？</h6>
+                          <p class="mb-4 font-13">
+                              <a href="##" class="copy-text" data-clipboard-text="{$subInfo['clash']}">点此复制 Clash 订阅链接</a>，打开客户端的侧边栏的 Profiles，粘贴托管配置链接到左下角，点击 Direct Mode。
+                          </p>
+                        </div>
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
                           <h6>启用 System Proxy 后，UWP 应用无法使用？</h6>
                           <p class="mb-4 font-13">
@@ -222,6 +229,14 @@
 
   {include file='user/scripts.tpl'}
 
+  <script>
+    function importSublink(client) {
+      if (client == 'clash') {
+        oneclickImport('clash','{$subInfo["clash"]}')
+      };
+    }
+    appName = "{$config['appName']}";
+  </script>
 </body>
 
 </html>
