@@ -25,6 +25,7 @@ $Malio_Config['login_style'] = 'wallpaper';    // 登录页面的样式，可选
 $Malio_Config['login_slogan'] = '这是一句好听顺嘴而且不长不短刚刚好的Slogan<br>甚至可以写第二行';    // 仅在登录页面样式为 wallpaper 时生效，可使用 HTML 标签
 $Malio_Config['enable_landing_page'] = true;    // 是否启用着陆页用于介绍本站
 $Malio_Config['malio_js_version'] = 'v1';    // 可以随便写，每次改变这个值，用户浏览器就会请求最新的js授权文件，不会出现缓存的问题
+$Malio_Config['small_brand'] = 'ML';    // 侧边栏在缩小状态下显示的 logo 名称，建议写两个英文字母或一个中文汉字
 
 
 // 面板设置

@@ -35,7 +35,7 @@
       <a href="/">{$config["appName"]}</a>
     </div>
     <div class="sidebar-brand sidebar-brand-sm">
-      <a href="/">{$config["appName"]}</a>
+      <a href="/">{$malio_config["small_brand"]}</a>
     </div>
     <ul class="sidebar-menu">
       <li><a class="nav-link" href="/user"><i class="fab fa-fort-awesome"></i> <span>首页</span></a></li>
