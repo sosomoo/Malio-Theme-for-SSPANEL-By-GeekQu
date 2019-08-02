@@ -50,6 +50,10 @@
     <div class="main-wrapper">
       {include file='user/navbar.tpl'}
 
+      {if $malio_config['flag_mode'] == 'node-name'}
+      {assign var=flags value=['美国'=>'us','香港'=>'hk','新加'=>'sg','日本'=>'jp','回国'=>'cn','中国'=>'cn','台湾'=>$malio_config['taiwan_flag'],'菲律'=>'ph','俄罗'=>'ru','韩国'=>'kr','德国'=>'de','英国'=>'gb','法国'=>'fr','越南'=>'vn','印度'=>'in','印尼'=>'id','澳门'=>'mo','马来'=>'my','荷兰'=>'nl','罗马'=>'ro','澳大'=>'au']}
+      {/if}
+
       <!-- Main Content -->
       <div class="main-content">
         <section class="section">
@@ -68,13 +72,13 @@
                   {else}
                   <div class="card" {if $user->class >= 0}onclick="urlChange('{$node['id']}',0,{if $relay_rule != null}{$relay_rule->id}{else}0{/if})"{/if}>
                     {/if}
+                    {$region = substr($node['name'],0,6)}
                     <div class="card-body">
                       <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
                         <li class="media">
-                          {$region = substr($node['name'],0,6)}
-                          <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $region == '美国'}us{elseif $region == '香港'}hk{elseif $region == '新加'}sg{elseif $region == '日本'}jp{elseif $region == '回国'}cn{elseif $region == '中国'}cn{elseif $region == '台湾'}cn{elseif $region == '菲律'}ph{elseif $region == '俄罗'}ru{elseif $region == '韩国'}kr{elseif $region == '德国'}de{elseif $region == '英国'}gb{elseif $region == '法国'}fr{elseif $region == '越南'}vn{elseif $region == '印度'}in{elseif $region == '印尼'}id{elseif $region == '澳门'}mo{elseif $region == '马来'}my{elseif $region == '荷兰'}nl{elseif $region == '罗马'}ro{elseif $region == '澳大'}au{else}un{/if}.svg">
+                          <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $malio_config['flag_mode']=='node-name'}{if $flags[$region] != ''}{$flags[$region]}{else}un{/if}{else}{$node['status']}{/if}.svg">
                           <div class="media-body">
-                            <div class="media-title node-status {if $node['online']==" 1"}node-is-online"{elseif $node['online']=='0' }node-is-offline"{else}flash_off{/if}>{current(explode(" - ", $node['name']))}</div>
+                            <div class="media-title node-status {if $node['online']=='1'}node-is-online{elseif $node['online']=='0'}node-is-offline{/if}">{current(explode(" - ", $node['name']))}</div>
                             <div class=" text-job text-muted">{$node['info']}</div>
                           </div>
                           <div class="media-items">
@@ -128,9 +132,9 @@
                         <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
                           <li class="media">
                             {$region = substr($node['name'],0,6)}
-                            <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $region == '美国'}us{elseif $region == '香港'}hk{elseif $region == '新加'}sg{elseif $region == '日本'}jp{elseif $region == '回国'}cn{elseif $region == '中国'}cn{elseif $region == '台湾'}cn{elseif $region == '菲律'}ph{elseif $region == '俄罗'}ru{elseif $region == '韩国'}kr{elseif $region == '德国'}de{elseif $region == '英国'}gb{elseif $region == '法国'}fr{elseif $region == '越南'}vn{elseif $region == '印度'}in{elseif $region == '印尼'}id{elseif $region == '澳门'}mo{elseif $region == '马来'}my{elseif $region == '荷兰'}nl{elseif $region == '罗马'}ro{elseif $region == '澳大'}au{else}un{/if}.svg">
+                            <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $malio_config['flag_mode']=='node-name'}{if $flags[$region] != ''}{$flags[$region]}{else}un{/if}{else}{$node['status']}{/if}.svg">
                             <div class="media-body">
-                              <div class="media-title node-status {if $node['online']==" 1"}node-is-online"{elseif $node['online']=='0' }node-is-offline"{else}flash_off{/if}>{current(explode(" - ", $node['name']))}</div>
+                              <div class="media-title node-status {if $node['online']=='1'}node-is-online{elseif $node['online']=='0'}node-is-offline{/if}">{current(explode(" - ", $node['name']))}</div>
                           <div class=" text-job text-muted">{$node['info']}</div>
                             </div>
                             <div class="media-items">
@@ -184,9 +188,9 @@
                           <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
                             <li class="media">
                               {$region = substr($node['name'],0,6)}
-                              <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $region == '美国'}us{elseif $region == '香港'}hk{elseif $region == '新加'}sg{elseif $region == '日本'}jp{elseif $region == '回国'}cn{elseif $region == '中国'}cn{elseif $region == '台湾'}cn{elseif $region == '菲律'}ph{elseif $region == '俄罗'}ru{elseif $region == '韩国'}kr{elseif $region == '德国'}de{elseif $region == '英国'}gb{elseif $region == '法国'}fr{elseif $region == '越南'}vn{elseif $region == '印度'}in{elseif $region == '印尼'}id{elseif $region == '澳门'}mo{elseif $region == '马来'}my{elseif $region == '荷兰'}nl{elseif $region == '罗马'}ro{elseif $region == '澳大'}au{else}un{/if}.svg">
+                              <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $malio_config['flag_mode']=='node-name'}{if $flags[$region] != ''}{$flags[$region]}{else}un{/if}{else}{$node['status']}{/if}.svg">
                               <div class="media-body">
-                                <div class="media-title node-status {if $node['online']==" 1"}node-is-online"{elseif $node['online']=='0' }node-is-offline"{else}flash_off{/if}>{current(explode(" - ", $node['name']))}</div>
+                                <div class="media-title node-status {if $node['online']=='1'}node-is-online{elseif $node['online']=='0'}node-is-offline{/if}">{current(explode(" - ", $node['name']))}</div>
                           <div class=" text-job text-muted">{$node['info']}</div>
                               </div>
                               <div class="media-items">
@@ -240,9 +244,9 @@
                             <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
                               <li class="media">
                                 {$region = substr($node['name'],0,6)}
-                                <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $region == '美国'}us{elseif $region == '香港'}hk{elseif $region == '新加'}sg{elseif $region == '日本'}jp{elseif $region == '回国'}cn{elseif $region == '中国'}cn{elseif $region == '台湾'}cn{elseif $region == '菲律'}ph{elseif $region == '俄罗'}ru{elseif $region == '韩国'}kr{elseif $region == '德国'}de{elseif $region == '英国'}gb{elseif $region == '法国'}fr{elseif $region == '越南'}vn{elseif $region == '印度'}in{elseif $region == '印尼'}id{elseif $region == '澳门'}mo{elseif $region == '马来'}my{elseif $region == '荷兰'}nl{elseif $region == '罗马'}ro{elseif $region == '澳大'}au{else}un{/if}.svg">
+                                <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $malio_config['flag_mode']=='node-name'}{if $flags[$region] != ''}{$flags[$region]}{else}un{/if}{else}{$node['status']}{/if}.svg">
                                 <div class="media-body">
-                                  <div class="media-title node-status {if $node['online']==" 1"}node-is-online"{elseif $node['online']=='0' }node-is-offline"{else}flash_off{/if}>{current(explode(" - ", $node['name']))}</div>
+                                  <div class="media-title node-status {if $node['online']=='1'}node-is-online{elseif $node['online']=='0'}node-is-offline{/if}">{current(explode(" - ", $node['name']))}</div>
                           <div class=" text-job text-muted">{$node['info']}</div>
                                 </div>
                                 <div class="media-items">

@@ -17,6 +17,7 @@ __    __     ______     __         __     ______
 $Malio_Config['config_migrate_notice'] = '';
 $Malio_Config['version'] = '1';
 
+
 // 通用设置
 $Malio_Config['theme_color'] = 'purple';    // 主题颜色，可选值为 purple, blue, darkblue, orange, pink TODO:
 $Malio_Config['google_analytics_code'] = 'UA-123456789-1';    // Google 统计代码，留空为不开启，code格式为 'UA-123456789-1'
@@ -241,6 +242,8 @@ $Malio_Config['enable_node_load'] = true;   // 是否显示节点的负载
 $Malio_Config['enable_online_user'] = true;   // 是否显示节点的在线人数
 $Malio_Config['enable_node_traffic_rate'] = true;   // 是否显示节点的流量倍率
 $Malio_Config['enable_node_speedlimit'] = true;   // 是否显示节点的限速
+$Malio_Config['flag_mode'] = 'node-name';   // 节点列表的国旗取值方式。node-name 为从节点名字前两个字取值（比如美国Vultr取值为美国）。node-info 为从节点状态取值，在节点列表里编辑节点，填写节点状态为 us 则显示美国国旗。us这个是国家ISO 3166码，不懂就谷歌。
+$Malio_Config['taiwan_flag'] = 'cn';   //  台湾的旗显示方式，cn为中国国旗，tw为台湾区旗
 
 
 // 节点设置 -> 连接设置
