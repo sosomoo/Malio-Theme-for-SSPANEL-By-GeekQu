@@ -78,18 +78,16 @@
                     <h4>返利记录</h4>
                   </div>
                   <div class="card-body">
-                    <table class="table table-striped">
-                      <thead>
+                    <div class="table-responsive">
+                      <table class="table table-striped table-md">
                         <tr>
                           <th scope="col">ID</th>
                           <th scope="col">被邀请用户ID</th>
                           <th scope="col">获得返利</th>
                         </tr>
-                      </thead>
-                      <tbody>
                         {if count($paybacks) == 0}
                         <tr>
-                            <td colspan="3"><strong>无返利记录</strong></td>
+                          <td colspan="3"><strong>无返利记录</strong></td>
                         </tr>
                         {else}
                         {foreach $paybacks as $payback}
@@ -100,8 +98,8 @@
                         </tr>
                         {/foreach}
                         {/if}
-                      </tbody>
-                    </table>
+                      </table>
+                    </div>
                     <div class="pagination-render float-right">
                       {$paybacks->render()}
                     </div>
