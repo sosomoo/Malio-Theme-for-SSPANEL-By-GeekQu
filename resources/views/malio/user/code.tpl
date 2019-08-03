@@ -166,7 +166,11 @@
                           {/if}
 
                           <td>
-                            <a href="##" onclick="stopAutorenew({$shop->id})" type="button" class="btn btn-primary {if $shop->renew==0}disabled{/if}">关闭自动续费</a>
+                            {if $shop->renew==0}
+                            无操作
+                            {else}
+                            <a href="#" onclick="stopAutorenew({$shop->id})" class="btn btn-primary">关闭自动续费</a>
+                            {/if}
                           </td>
                           {/if}
                         </tr>

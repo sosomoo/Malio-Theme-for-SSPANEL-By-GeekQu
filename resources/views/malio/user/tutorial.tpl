@@ -119,7 +119,7 @@
                 {if $malio_config['mac_client'] == 'clashx'}
                 <div class="card card-hero" onclick="location='/user/tutorial?os=mac&client=clashx'">
                 {else if $malio_config['mac_client'] == 'shadowsocksx-ng-r'}
-                <div class="card card-hero" onclick="location='/user/tutorial?os=mac&client=shadowsocksx-ng-r'">
+                <div class="card card-hero" onclick="location='/user/tutorial?os=mac&client=ssxgr'">
                 {/if}
                   <div class="card-header os-card mac-card">
                     <div class="card-icon">
