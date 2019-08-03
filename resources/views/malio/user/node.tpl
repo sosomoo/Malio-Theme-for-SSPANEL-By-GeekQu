@@ -61,6 +61,7 @@
             <h1>节点列表</h1>
           </div>
 
+          {if $malio_config['show_free_nodes'] == true}
           <div class="section-body">
             <h2 class="section-title">免费节点</h2>
             <div class="row">
@@ -116,6 +117,7 @@
                 {/foreach}
               </div>
             </div>
+          {/if}
 
             <div class="section-body">
               <h2 class="section-title">{$malio_config['plan_1_name']}节点</h2>
@@ -174,7 +176,9 @@
               </div>
 
               <div class="section-body">
+                {if $malio_config['enable_plan_2'] == true}
                 <h2 class="section-title">{$malio_config['plan_2_name']}节点</h2>
+                {/if}
                 <div class="row">
                   {foreach $nodes as $node}
                   {if $node['class'] == 2}
@@ -230,7 +234,9 @@
                 </div>
 
                 <div class="section-body">
+                  {if $malio_config['enable_plan_3'] == true}
                   <h2 class="section-title">{$malio_config['plan_3_name']}节点</h2>
+                  {/if}
                   <div class="row">
                     {foreach $nodes as $node}
                     {if $node['class'] == 3}
