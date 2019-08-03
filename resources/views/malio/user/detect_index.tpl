@@ -32,8 +32,8 @@
                     <h4>规则</h4>
                   </div>
                   <div class="card-body">
-                    <table class="table table-striped">
-                      <thead>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
                         <tr>
                           <th>ID</th>
                           <th>名称</th>
@@ -41,8 +41,6 @@
                           <th>正则表达式</th>
                           <th>类型</th>
                         </tr>
-                      </thead>
-                      <tbody>
                         {foreach $rules as $rule}
                         <tr>
                           <td>#{$rule->id}</td>
@@ -57,8 +55,8 @@
                           {/if}
                         </tr>
                         {/foreach}
-                      </tbody>
-                    </table>
+                      </table>
+                    </div>
                     <div class="pagination-render float-right">
                       {$rules->render()}
                     </div>
