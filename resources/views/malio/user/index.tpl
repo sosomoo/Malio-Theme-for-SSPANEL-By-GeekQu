@@ -307,7 +307,7 @@
                           <div class="accordion-body collapse" id="panel-body-{$number}" data-parent="#accordion">
                             <p class="mb-0">
                               账号: <a href="##" class="copy-text" data-clipboard-text="{$account['account']}">{$account['account']}</a><br>
-                              密码: <a href="##" class="copy-text" data-clipboard-text="{$account['password']}">*********(点击复制)</a>
+                              密码: <a href="##" class="copy-text" data-clipboard-text="{$account['passwd']}">*********(点击复制)</a>
                             </p>
                           </div>
                         </div>
