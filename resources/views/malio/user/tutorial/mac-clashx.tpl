@@ -116,7 +116,7 @@
           <div class="section-body">
             <div class="row mt-sm-4">
               <div class="col-12">
-                {if !URL::SSCanConnect($user, $mu) && !(in_array("v2ray",$malio_config['support_sub_type'])}
+                {if !URL::SSCanConnect($user, $mu) && !(in_array("v2ray",$malio_config['support_sub_type']))}
                 <div class="alert alert-warning alert-has-icon">
                   <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
                   <div class="alert-body">

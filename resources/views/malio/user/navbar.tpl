@@ -11,7 +11,6 @@
         <div class="d-sm-none d-lg-inline-block">Hi, {$user->user_name}</div>
       </a>
       <div class="dropdown-menu dropdown-menu-right">
-        <div class="dropdown-title">{$user->email}</div>
         <a href="/user/profile" class="dropdown-item has-icon">
           <i class="fas fa-user"></i> 我的账号
         </a>
