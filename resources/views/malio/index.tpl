@@ -38,13 +38,23 @@
           <li class="nav-item"><a href="#features" class="nav-link">特性</a></li>
           <li class="nav-item"><a href="#purchase" class="nav-link">价格</a></li>
           <li class="nav-item"><a href="#contact-support" class="nav-link">支持</a></li>
+          {if $user->isLogin}
+          <li class="nav-item d-lg-none d-md-block"><a href="/user" class="nav-link smooth">用户中心</a></li>
+          {else}
           <li class="nav-item d-lg-none d-md-block"><a href="/auth/login" class="nav-link smooth">登录</a></li>
+          {/if}
         </ul>
         <ul class="navbar-nav ml-auto align-items-lg-center d-none d-lg-block">
           <li class="ml-lg-3 nav-item">
+            {if $user->isLogin}
+            <a href="/user" class="btn btn-round smooth btn-icon icon-left">
+              <i class="fab fa-fort-awesome"></i> 用户中心
+            </a>
+            {else}
             <a href="/auth/login" class="btn btn-round smooth btn-icon icon-left">
               <i class="fas fa-sign-in-alt"></i> 登录
             </a>
+            {/if}
           </li>
         </ul>
       </div>
@@ -68,11 +78,19 @@
           <div class="cta">
             <a class="btn btn-lg btn-warning btn-icon icon-right" href="/auth/register">开始使用 <i class="fas fa-chevron-right"></i></a> &nbsp;
           </div>
+          {if $user->isLogin}
+          <div class="mt-3 text-job d-lg-none">
+              <a href="/user" style="color:rgba(255,255,255,.6);">
+                进入用户中心
+              </a>
+            </div>
+          {else}
           <div class="mt-3 text-job d-lg-none">
             <a href="/auth/login" style="color:rgba(255,255,255,.6);">
               已有账号？立即登录
             </a>
           </div>
+          {/if}
         </div>
         <div class="image d-none d-lg-block">
           <img src="/theme/malio/index/landing/ill.svg" alt="img">
@@ -348,7 +366,7 @@
         </div>
       </div>
       <div class="row mt-5">
-        <div class="col-12 {if $malio_config['enable_plan_2'] == true}col-md-4 col-lg-4{else}col-md-6 col-lg-6{/if}">
+        <div class="col-12 {if $malio_config['enable_plan_3'] == true}col-md-4 col-lg-4{else}col-md-6 col-lg-6{/if}">
           <div class="pricing">
             <div class="pricing-title">
               {$malio_config['plan_1_name']}
