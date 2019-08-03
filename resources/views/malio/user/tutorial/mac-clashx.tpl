@@ -104,7 +104,7 @@
             <div class="section-header-breadcrumb">
               <div class="btn-group dropleft">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                其他客户端
+                  其他客户端
                 </button>
                 <div class="dropdown-menu dropleft">
                   <a class="dropdown-item has-icon" href="/user/tutorial?os=mac&client=ssxgr"><i class="malio-ssr"></i>ShadowsocksX-NG-R8</a>
@@ -116,6 +116,15 @@
           <div class="section-body">
             <div class="row mt-sm-4">
               <div class="col-12">
+                {if !URL::SSCanConnect($user, $mu) && !(in_array("v2ray",$malio_config['support_sub_type'])}
+                <div class="alert alert-warning alert-has-icon">
+                  <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                  <div class="alert-body">
+                    <div class="alert-title">无法使用此客户端</div>
+                    您的加密、混淆和协议不兼容 SS 客户端。如需使用，请在 <a href="/user/edit"><u>连接设置</u></a> 页面更改 “加密方式”、“混淆和协议” 为 SS 可连接的选项。
+                  </div>
+                </div>
+                {/if}
                 <div class="card">
                   <div class="card-body">
                     <ul class="steps">
@@ -124,7 +133,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">1.</label>
                             <p>下载 ClashX 客户端，安装后运行 ClashX。</p>
-                            <a href="/client-download/clashx.dmg" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
+                            <a href="/client-download/ClashX.dmg" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic hide-on-mobie">
@@ -176,7 +185,7 @@
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6" id="manual-import">
                           <h6>ClashX 无法一键导入，如何手动导入配置？</h6>
                           <p class="mb-4 font-13">
-                              <a href="##" class="copy-text" data-clipboard-text="{$subInfo['clash']}">点此复制 Clash 订阅链接</a>，点击屏幕右上角 ClashX 图标，选择 “配置” > “托管配置” > “设置地址”，粘贴托管配置链接。
+                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['clash']}">点此复制 Clash 托管配置链接</a>，点击屏幕右上角 ClashX 图标，选择 “配置” > “托管配置” > “管理”，点击 “添加”，粘贴托管配置链接到 Url，Config Name 可留空。
                           </p>
                         </div>
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
@@ -209,7 +218,7 @@
   <script>
     function importSublink(client) {
       if (client == 'clash') {
-        oneclickImport('clash','{$subInfo["clash"]}')
+        oneclickImport('clash', '{$subInfo["clash"]}')
       };
     }
     appName = "{$config['appName']}";

@@ -11,7 +11,7 @@
       background: linear-gradient(to right, #303030, #303030) !important;
       color: white !important;
       border-color: #303030;
-      box-shadow: 0 2px 6px #303030;
+      box-shadow: 0 2px 6px #30303063;
       margin-bottom: 16px;
     }
 
@@ -124,7 +124,7 @@
             <div class="section-header-breadcrumb">
               <div class="btn-group dropleft">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                其他客户端
+                  其他客户端
                 </button>
                 <div class="dropdown-menu dropleft">
                   <a class="dropdown-item has-icon" href="/user/tutorial?os=android&client=ssr"><i class="malio-ssr"></i>SSR</a>
@@ -138,6 +138,15 @@
           <div class="section-body">
             <div class="row mt-sm-4">
               <div class="col-12">
+                {if !URL::SSCanConnect($user, $mu)}
+                <div class="alert alert-warning alert-has-icon">
+                  <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                  <div class="alert-body">
+                    <div class="alert-title">无法使用此客户端</div>
+                    您的加密、混淆和协议不兼容 SS 客户端。如需使用，请在 <a href="/user/edit"><u>连接设置</u></a> 页面更改 “加密方式”、“混淆和协议” 为 SS 可连接的选项。
+                  </div>
+                </div>
+                {/if}
                 <div class="card">
                   <div class="card-body">
                     <ul class="steps">
@@ -240,7 +249,7 @@
 
   <script>
     function importSublink() {
-      oneclickImport('surfboard','{$subInfo["surfboard"]}')
+      oneclickImport('surfboard', '{$subInfo["surfboard"]}')
     }
     createQRCode('surfboard-download-qrcode', '{$config["baseUrl"]}/client-download/surfboard.apk', '扫描二维码下载客户端')
     createQRCode('surfboard-qrcode', 'surfboard:///install-config?url=' + encodeURIComponent('{$subInfo["surfboard"]}'), '打开Surfboard 👉Profile 👉右下角红色添加按钮 👉Scan qrcode')

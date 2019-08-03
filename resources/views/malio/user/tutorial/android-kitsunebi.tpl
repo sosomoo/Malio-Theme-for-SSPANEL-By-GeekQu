@@ -126,7 +126,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">1.</label>
                             <p>下载 Kitsunebi 客户端。</p>
-                            <a href="/client-download/kitsunebi.apk" class="btn btn-icon icon-left btn-primary btn-app" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
+                            <a href="/client-download/kitsunebi.apk" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic hide-on-mobie">
@@ -141,7 +141,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>点击右上角 <i class="fas fa-plus"></i> 按钮，选择 “订阅”，再点击右上角 <i class="fas fa-plus"></i> 按钮，备注填写为 “{$config['appName']}”，粘贴 Kitsunebi 订阅链接到URL，然后右上角保存。点击 <i class="fas fa-history" style="transform: rotateY(180deg);"></i> 按钮更新节点列表。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text" data-clipboard-text="{$subInfo["v2ray"]}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo["v2ray"]}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">
@@ -156,7 +156,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">3.</label>
                             <p>返回主界面，点击右上角 <i class="fas fa-plus"></i> 按钮，选择 “规则集”。再点击右上角 <i class="fas fa-plus"></i> 按钮，选择 “新建”，点击列表第一个的 <i class="fas fa-pen"></i> 按钮，点击右上角 <i class="fas fa-plus"></i> 按钮，选择 “设置更新URL”，粘贴远程规则集链接。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text" data-clipboard-text="https://raw.githubusercontent.com/ConnersHua/Profiles/master/Kitsunebi/Basic.conf"><i class="malio-kitsunebi"></i> 复制远程规则集链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="https://raw.githubusercontent.com/ConnersHua/Profiles/master/Kitsunebi/Basic.conf"><i class="malio-kitsunebi"></i> 复制远程规则集链接</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">
