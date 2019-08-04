@@ -12,9 +12,13 @@
   <div id="app">
     <div class="main-wrapper">
       <ul class="nav nav-tabs" id="myTab" role="tablist">
+        {if (in_array("ssr",$malio_config['support_sub_type']))}
+        {if $node->mu_only != 1}
         <li class="nav-item">
           <a class="nav-link active" id="ssr-tab" data-toggle="tab" href="#ssr" role="tab" aria-controls="ssr" aria-selected="true">ShadowrsocksR</a>
         </li>
+        {/if}
+        {$first_mu_node_one = true}
         {foreach $nodes_muport as $single_muport}
           {if !($single_muport['server']->node_class <= $user->class && ($single_muport['server']->node_group == 0 || $single_muport['server']->node_group == $user->node_group))}
               {continue}
@@ -24,15 +28,18 @@
               {continue}
           {/if}
           <li class="nav-item">
-            <a class="nav-link" id="ssr-{$single_muport['server']->server}-tab" data-toggle="tab" href="#ssr-{$single_muport['server']->server}" role="tab" aria-controls="ss-{$single_muport['server']->server}" aria-selected="false">ShadowrsocksR ({$single_muport['server']->server}单端口)</a>
+            <a class="nav-link {if $node->mu_only == 1 and $first_mu_node_one == ture}active{/if}" id="ssr-{$single_muport['server']->server}-tab" data-toggle="tab" href="#ssr-{$single_muport['server']->server}" role="tab" aria-controls="ss-{$single_muport['server']->server}" aria-selected="{if $node->mu_only == 1 and $first_mu_node_one == ture}ture{$first_mu_node_one = false}{else}false{/if}">ShadowrsocksR ({$single_muport['server']->server}单端口)</a>
           </li>
         {/foreach}
+        {/if}
+        {if (in_array("ss",$malio_config['support_sub_type']))}
         <li class="nav-item">
           <a class="nav-link" id="ss-tab" data-toggle="tab" href="#ss" role="tab" aria-controls="ss" aria-selected="false">Shadowsocks</a>
         </li>
+        {/if}
       </ul>
       <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade active show" id="ssr" role="tabpanel" aria-labelledby="ssr-tab">
+        <div class="tab-pane fade {if $node->mu_only != 1}active show{/if}" id="ssr" role="tabpanel" aria-labelledby="ssr-tab">
           <div class="row mt-2">
             {if URL::SSRCanConnect($user, $mu)}
             <div class="col-12 col-sm-3 col-md-3">
@@ -205,6 +212,7 @@
             {/if}
           </div>
         </div>
+        {$first_mu_node = true}
         {foreach $nodes_muport as $single_muport}
           {if !($single_muport['server']->node_class <= $user->class && ($single_muport['server']->node_group == 0 || $single_muport['server']->node_group == $user->node_group))}
               {continue}
@@ -214,7 +222,7 @@
               {continue}
           {/if}
         
-          <div class="tab-pane fade" id="ssr-{$single_muport['server']->server}" role="tabpanel" aria-labelledby="ssr-{$single_muport['server']->server}-tab">
+          <div class="tab-pane fade {if $node->mu_only == 1 and $first_mu_node == true}active show{$first_mu_node = false}{/if}" id="ssr-{$single_muport['server']->server}" role="tabpanel" aria-labelledby="ssr-{$single_muport['server']->server}-tab">
               <div class="row mt-2">
                 {if URL::SSRCanConnect($user, $mu)}
                 <div class="col-12 col-sm-3 col-md-3">
