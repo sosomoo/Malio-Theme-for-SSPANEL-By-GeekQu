@@ -117,9 +117,9 @@
             <div class="section-header-breadcrumb">
               <div id="checkin-div" class="breadcrumb-item active">
                 {if $user->isAbleToCheckin() }
-                <a href="#" onclick="checkin()" class="btn btn-icon icon-left btn-primary"><i class="far fa-edit"></i> 每日签到</a>
+                <a href="#" onclick="checkin()" class="btn btn-icon icon-left btn-primary"><i class="far fa-calendar-check"></i> 每日签到</a>
                 {else}
-                <a href="#" class="btn btn-icon disabled icon-left btn-primary"><i class="far fa-edit"></i> 已签到</a>
+                <a href="#" class="btn btn-icon disabled icon-left btn-primary"><i class="far fa-calendar-check"></i> 已签到</a>
                 {/if}
               </div>
             </div>

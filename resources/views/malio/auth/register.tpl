@@ -379,6 +379,12 @@
       }
     }
 
+    {if $malio_config['enable_register_email_restrict'] == true}
+    var email = $("#email").val()+$("#email_postfix").val()
+    {else}
+    var email = $("#email").val()
+    {/if}
+
     $("#email_verify").click(function () {
       time($("#email_verify"));
 
@@ -387,7 +393,7 @@
         url: "send",
         dataType: "json",
         data: {
-          email: $("#email").val()
+          email: email
         },
         success: function (data) {
           if (data.ret) {
