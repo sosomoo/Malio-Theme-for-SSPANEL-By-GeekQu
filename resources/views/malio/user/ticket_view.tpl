@@ -39,22 +39,23 @@
                     <div class="tickets">
                       <div class="ticket-content">
 
+                        {if $ticket_status==1}
                         <div class="ticket-form">
-                            <div class="form-group">
-                              <textarea class="summernote form-control" placeholder="Type a reply ..."></textarea>
-                            </div>
-                            <div class="form-group text-right">
-                              <button id="ticket-reply" onclick="replyTicket({$id})" class="btn btn-primary btn-lg mr-2">
-                                回复
-                              </button>
-                              <button id="close_directly" onclick="closeTicket({$id})" class="btn btn-warning btn-lg">
-                                关闭工单
-                              </button>
-                            </div>
+                          <div class="form-group">
+                            <textarea class="summernote form-control" placeholder="Type a reply ..."></textarea>
+                          </div>
+                          <div class="form-group text-right">
+                            <button id="ticket-reply" onclick="replyTicket({$id})" class="btn btn-primary btn-lg mr-2">
+                              回复
+                            </button>
+                            <button id="close_directly" onclick="closeTicket({$id})" class="btn btn-warning btn-lg">
+                              关闭工单
+                            </button>
+                          </div>
                         </div>
+                        {/if}
 
                         {foreach $ticketset as $ticket}
-                        <div class="ticket-divider"></div>
                         <div class="ticket-header mt-4">
                           <div class="ticket-sender-picture img-shadow">
                             <img src="{$ticket->User()->gravatar}" alt="image">
@@ -71,6 +72,7 @@
                         <div class="ticket-description">
                           {$ticket->content}
                         </div>
+                        <div class="ticket-divider"></div>
                         {/foreach}
                       </div>
                     </div>

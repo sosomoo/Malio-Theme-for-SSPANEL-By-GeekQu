@@ -42,6 +42,7 @@
                             <th>标题</th>
                             <th>创建时间</th>
                             <th>状态</th>
+                            <th>操作</th>
                           </tr>
                           {foreach $tickets as $ticket}
                           <tr>
@@ -55,6 +56,14 @@
                               {else}
                               <div class="badge badge-secondary">已关闭</div>
                               {/if}
+                            </td>
+                            <td>
+                                {if $ticket->status==1}
+                                <a href="/user/ticket/{$ticket->id}/view" class="btn btn-primary">回复</a>
+                                <a href="##" onclick="closeTicket({$ticket->id})" class="btn btn-secondary ml-1">关闭工单</a>
+                                {else}
+                                <a href="/user/ticket/{$ticket->id}/view" class="btn btn-secondary">查看工单</a>
+                                {/if}
                             </td>
                           </tr>
                           {/foreach}
