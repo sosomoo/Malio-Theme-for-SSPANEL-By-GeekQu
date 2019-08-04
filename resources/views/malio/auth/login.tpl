@@ -62,6 +62,12 @@
                   </div>
                   {/if}
 
+                  {if $recaptcha_sitekey != null}
+                      <div class="form-group">
+                        <div class="g-recaptcha" data-sitekey="{$recaptcha_sitekey}"></div>
+                      </div>
+                  {/if}
+
                   <div class="form-group">
                     <div class="custom-control custom-checkbox">
                       <input type="checkbox" name="remember" class="custom-control-input" tabindex="3" id="remember-me">
@@ -146,6 +152,12 @@
               <div class="form-group">
                 <div id="embed-captcha"></div>
               </div>
+              {/if}
+
+              {if $recaptcha_sitekey != null}
+                <div class="form-group">
+                  <div class="g-recaptcha" data-sitekey="{$recaptcha_sitekey}"></div>
+                </div>
               {/if}
 
               <div class="form-group">
@@ -241,7 +253,8 @@
         data: {
           email: $("#email").val(),
           passwd: $("#password").val(),
-          code: $("#code").val(),
+          code: $("#code").val(),{if $recaptcha_sitekey != null}
+          recaptcha: grecaptcha.getResponse(),{/if}
           remember_me: $("#remember-me:checked").val(){if $geetest_html != null},
           geetest_challenge: validate.geetest_challenge,
           geetest_validate: validate.geetest_validate,
@@ -325,6 +338,9 @@
     offline: {if $geetest_html->success}0{else}1{/if}
   }, handlerEmbed);
 </script>
+{/if}
+{if $recaptcha_sitekey != null}
+    <script src="https://recaptcha.net/recaptcha/api.js" async defer></script>
 {/if}
 </body>
 

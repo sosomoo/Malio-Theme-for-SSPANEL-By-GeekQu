@@ -184,6 +184,12 @@
                       </div>
                   {/if}
 
+                  {if $recaptcha_sitekey != null}
+                    <div class="form-group">
+                      <div class="g-recaptcha" data-sitekey="{$recaptcha_sitekey}"></div>
+                    </div>
+                  {/if}
+
                   <div class="form-group">
                     <div class="custom-control custom-checkbox">
                       <input type="checkbox" name="agree" class="custom-control-input" id="agree" checked="checked">
@@ -229,6 +235,7 @@
   <script src="/theme/malio/assets/modules/jquery-pwstrength/jquery.pwstrength.min.js"></script>
   <script src="/theme/malio/assets/modules/selectric/public/jquery.selectric.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.25.6/dist/sweetalert2.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 
   <!-- Page Specific JS File -->
   <script src="/theme/malio/js/malio.js?{$malio_config['malio_js_version']}"></script>
@@ -304,6 +311,9 @@
               passwd: $("#passwd").val(),
               repasswd: $("#repasswd").val(),
               code: code{if $enable_email_verify == 'true'},
+              {if $recaptcha_sitekey != null}
+              recaptcha: grecaptcha.getResponse(),
+              {/if}
               emailcode: $("#email_code").val(){/if}{if $geetest_html != null},
               geetest_challenge: validate.geetest_challenge,
               geetest_validate: validate.geetest_validate,
@@ -322,11 +332,10 @@
                 })
               } else {
                 $('#register-confirm').removeAttr("disabled","disabled")
-                setCookie('code', '', 0);
-                $("#code").val(getCookie('code'));
                 {if $geetest_html != null}
                 captcha.refresh();
                 {/if}
+                $("#code").val(code);
                 swal({
                   type: 'error',
                   title: '提示',
@@ -420,6 +429,10 @@
       offline: {if $geetest_html->success}0{else}1{/if}
     }, handlerEmbed);
   </script>
+  {/if}
+
+  {if $recaptcha_sitekey != null}
+    <script src="https://recaptcha.net/recaptcha/api.js" async defer></script>
   {/if}
 
 <script>
