@@ -47,13 +47,37 @@
                       </div>
                     </div>
                     {if $enable_email_verify == 'false'}
-                    <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="email">邮箱</label>
-                      <input id="email" type="email" class="form-control" name="email" required>
-                      <div class="invalid-feedback">
-                        请填写邮箱
+                      {if $malio_config['enable_register_email_restrict'] == true}
+                      <div class="form-group col-lg-6 col-sm-12 col-xs-12">
+                        <label for="email">邮箱</label>
+                        <div class="input-group">
+                          <input type="text" id="email" class="form-control col-7" required>
+                          <select class="custom-select input-group-append col-5" id="email_postfix" required style="border-top-right-radius: .25rem;
+                          border-bottom-right-radius: .25rem;">
+                            {$email_first = true}
+                            {foreach $malio_config['register_email_white_list'] as $email}
+                            {if $email_first == true}
+                            <option value="{$email}" selected="">{$email}</option>
+                            {$email_first = false}
+                            {else}
+                            <option value="{$email}">{$email}</option>
+                            {/if}
+                            {/foreach}
+                          </select>
+                          <div class="invalid-feedback">
+                              请填写邮箱
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                      {else}
+                      <div class="form-group col-lg-6 col-sm-12 col-xs-12">
+                        <label for="email">邮箱</label>
+                        <input id="email" type="email" class="form-control" name="email" required>
+                        <div class="invalid-feedback">
+                          请填写邮箱
+                        </div>
+                      </div>
+                      {/if}
                     {/if}
 
                     {if $enable_email_verify == 'true' && $config['register_mode'] == 'invite'}
@@ -71,6 +95,29 @@
 
                   {if $enable_email_verify == 'true'}
                   <div class="row">
+                    {if $malio_config['enable_register_email_restrict'] == true}
+                    <div class="form-group col-lg-6 col-sm-12 col-xs-12">
+                      <label for="email">邮箱</label>
+                      <div class="input-group">
+                        <input type="text" id="email" class="form-control col-7" required>
+                        <select class="custom-select input-group-append col-5" id="email_postfix" required style="border-top-right-radius: .25rem;
+                          border-bottom-right-radius: .25rem;">
+                          {$email_first = true}
+                          {foreach $malio_config['register_email_white_list'] as $email}
+                          {if $email_first == true}
+                          <option value="{$email}" selected="">{$email}</option>
+                          {$email_first = false}
+                          {else}
+                          <option value="{$email}">{$email}</option>
+                          {/if}
+                          {/foreach}
+                        </select>
+                        <div class="invalid-feedback">
+                          请填写邮箱
+                        </div>
+                      </div>
+                    </div>
+                    {else}
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
                       <label for="email">邮箱</label>
                       <input id="email" type="email" class="form-control" name="email" required>
@@ -78,6 +125,7 @@
                         请填写邮箱
                       </div>
                     </div>
+                    {/if}
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
                       <label for="email">邮箱验证码</label>
                       <div class="input-group mb-3">
@@ -239,12 +287,19 @@
         code = getCookie('code');
       }
       {/if}
+
+      {if $malio_config['enable_register_email_restrict'] == true}
+      var email = $("#email").val()+$("#email_postfix").val()
+      {else}
+      var email = $("#email").val()
+      {/if}
+
       $.ajax({
           type: "POST",
           url: "/auth/register",
           dataType: "json",
           data: {
-              email: $("#email").val(),
+              email: email,
               name: $("#name").val(),
               passwd: $("#passwd").val(),
               repasswd: $("#repasswd").val(),

@@ -231,7 +231,6 @@ class AuthController extends BaseController
             }
         }
 
-
         return $this->view()
             ->assign('geetest_html', $GtSdk)
             ->assign('enable_email_verify', Config::get('enable_email_verify'))

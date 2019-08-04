@@ -32,6 +32,9 @@ $Malio_Config['small_brand'] = 'ML';    // 侧边栏在缩小状态下显示的 
 $Malio_Config['enable_webapi_ip_verification'] = false;    // 当节点通过 webapi 连接时，不验证节点IP是否与数据库中的IP相同。关闭此选项会降低安全性。
 $Malio_Config['enable_webapi_email_hash'] = true;    // 启用后，当节点通过 webapi 连接时，传出去的邮件地址会经过md5加密。
 $Malio_Config['code_required'] = true;    // 设置为true时，注册时邀请码是必须的。设置为false时，有无邀请码都可以注册，但是可以填邀请码（aff专用）
+$Malio_Config['reset_bandwidth_and_expire_date_when_change_class'] = false;    // 设置为true时，当用户购买与用户当前等级不同的套餐时，重置流量和过期时间。（定制功能）
+$Malio_Config['enable_register_email_restrict'] = true;    // 设置为true时，会限制注册时使用的邮箱后缀
+$Malio_Config['register_email_white_list'] = ['@gmail.com','@qq.com','@outlook.com','@163.com','@126.com','@yeah.net','@foxmail.com'];   // 注册时的邮箱后缀白名单，仅在上面的设置为true时生效
 
 
 // 订阅设置
