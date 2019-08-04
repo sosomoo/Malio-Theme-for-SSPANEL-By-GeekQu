@@ -1,4 +1,5 @@
 # 请勿泄露源码给他人
+# 不能删除页面底部的 Powered by SSPANEL. Theme by editXY
 ## 安装
 在网站目录下 
 `git clone -b malio https://gitlab.com/maxitio/malio-theme-for-sspanel.git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard`

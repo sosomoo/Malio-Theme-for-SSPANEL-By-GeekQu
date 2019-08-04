@@ -49,7 +49,7 @@ $Malio_Config['crisp_wesite_id'] = '18b46e92-eb21-76d3-bfb7-8f2ae9adba64';    //
 
 
 // 侧边栏
-$Malio_Config['enable_relay'] = false;   // 是否显示中转规则  (这个页面还没写好)
+$Malio_Config['enable_relay'] = true;   // 是否显示中转规则
 $Malio_Config['enable_ticket'] = true;   // 是否显示工单系统
 $Malio_Config['enable_detect'] = true;   // 是否显示审计系统
 $Malio_Config['enable_invite'] = true;   // 是否显示邀请注册

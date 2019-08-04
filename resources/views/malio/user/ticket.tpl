@@ -23,7 +23,7 @@
           <div class="section-header">
             <h1>工单列表</h1>
             <div class="section-header-breadcrumb">
-              <a href="/user/ticket/create" class="btn btn-primary">新建工单</a>
+              <a href="/user/ticket/create" class="btn btn-primary btn-icon icon-left"><i class="fas fa-plus"></i> 新建工单</a>
             </div>
           </div>
           <div class="section-body">

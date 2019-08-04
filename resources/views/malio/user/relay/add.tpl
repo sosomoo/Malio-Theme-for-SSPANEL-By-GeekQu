@@ -33,35 +33,35 @@
                   <div class="card-body">
                     <div class="form-group">
                       <label>起源节点</label>
-                      <select class="form-control form-control-sm">
+                      <select class="form-control form-control-sm" id="source_node">
                         {foreach $source_nodes as $source_node}
-                        <option>{$source_node->name}</option>
+                        <option value="{$source_node->id}">{$source_node->name}</option>
                         {/foreach}
                       </select>
                     </div>
                     <div class="form-group">
                       <label>目标节点</label>
-                      <select class="form-control form-control-sm">
+                      <select class="form-control form-control-sm" id="dist_node">
                         {foreach $dist_nodes as $dist_node}
-                        <option>{$dist_node->name}</option>
+                        <option value="{$dist_node->id}">{$dist_node->name}</option>
                         {/foreach}
                       </select>
                     </div>
                     <div class="form-group">
                       <label>端口</label>
-                      <select class="form-control form-control-sm">
+                      <select class="form-control form-control-sm" id="port">
                         {foreach $ports as $port}
-                        <option>{$port}</option>
+                        <option value="{$port}">{$port}</option>
                         {/foreach}
                       </select>
                     </div>
                     <div class="form-group">
                       <label>优先级</label>
-                      <input type="text" class="form-control">
+                      <input type="number" value="0" class="form-control" id="priority">
                     </div>
                   </div>
                   <div class="card-footer bg-whitesmoke text-md-right">
-                    <button class="btn btn-primary" id="save-btn">确定添加</button>
+                    <button class="btn btn-primary" id="add-relay-rule">确定添加</button>
                   </div>
                 </div>
               </div>
@@ -74,10 +74,6 @@
   </div>
 
   {include file='user/scripts.tpl'}
-
-  <!-- JS Libraies -->
-  <script src="/theme/malio/assets/modules/summernote/summernote-bs4.js"></script>
-
 </body>
 
 </html>
