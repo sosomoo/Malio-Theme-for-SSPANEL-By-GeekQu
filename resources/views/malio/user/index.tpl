@@ -139,7 +139,7 @@
                 您的可用流量不足5GB，如需更多流量，可前往会员商店购买流量叠加包。
               </div>
               {/if}
-              {if $user->lastSsTime() == '从未使用喵' and $user->class>0}
+              {if ($user->lastSsTime() == '从未使用喵' and $user->class>0) || $malio_config['index_show_alert_to_tutorial'] == true}
               <div class="alert alert-primary">
                 <a href="/user/tutorial" class="alert-link" style="font-weight:400">新手上路？<b>点我下载客户端</b>，轻松上手！</a>
               </div>

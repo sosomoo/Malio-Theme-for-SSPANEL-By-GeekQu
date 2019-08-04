@@ -59,9 +59,11 @@ $Malio_Config['telegram_group_class'] = 0;   // 显示底部 Telegram 按钮的�
 
 
 // 首页
-$Malio_Config['enable_share'] = true;   // 是否显示共享账号
 $Malio_Config['enable_index_subinfo'] = true;    // 是否在首页显示订阅链接复制或一键导入等按钮
 $Malio_Config['index_subinfo_buttons_align'] = false;   // 是否开启首页订阅链接按钮的对齐
+$Malio_Config['index_show_alert_to_tutorial'] = false;   // 首页是否一直显示进入教程的横幅 （此项设置为false后，新用户的首页依旧会显示引导进入教程的横幅）
+
+$Malio_Config['enable_share'] = true;   // 是否显示共享账号
 $Malio_Config['share_account'] = [    // 一个array为一个共享账号
     array(
         'name' => 'Netflix',
