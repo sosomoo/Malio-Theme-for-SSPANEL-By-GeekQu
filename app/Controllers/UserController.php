@@ -1094,7 +1094,7 @@ class UserController extends BaseController
 
         if ($coupon == null) {
             $res['ret'] = 0;
-            $res['msg'] = '优惠码无效';
+            $res['msg'] = '此优惠码无效';
             return $response->getBody()->write(json_encode($res));
         }
 
@@ -1116,7 +1116,9 @@ class UserController extends BaseController
 
         $res['ret'] = 1;
         $res['name'] = $shop->name;
-        $res['credit'] = $coupon->credit . ' %';
+        $res['credit'] = $coupon->credit;
+        $res['onetime'] = $coupon->onetime;
+        $res['shop'] = $coupon->shop;
         $res['total'] = $shop->price * ((100 - $coupon->credit) / 100) . '元';
 
         return $response->getBody()->write(json_encode($res));
@@ -1201,13 +1203,10 @@ class UserController extends BaseController
         } else {
             $bought->renew = time() + $shop->auto_renew * 86400;
         }
-
-        $bought->coupon = $code;
-
-
         if (isset($onetime)) {
-            $price = $shop->price;
+            $bought->renew = 0;
         }
+        $bought->coupon = $code;
         $bought->price = $price;
         $bought->save();
 

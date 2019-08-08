@@ -172,7 +172,7 @@
                               {if $user->class == 3}{$malio_config['plan_3_name']}{/if}
                               {if $user->class == 0}已过期{/if}
                               : 
-                              {if $user->class_expire!="1989-06-04 00:05:00"}{substr($user->class_expire, 0, 10)}{else}永久{/if}
+                              {if $user->class_expire!="1989-06-04 00:05:00"}{substr($user->class_expire, 0, 10)} 到期{else}永久{/if}
                             </li>
                           </ol>
                         </nav>

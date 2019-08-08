@@ -267,7 +267,7 @@ $Malio_Config['enable_ios_apple_id'] = true;    //  是否在 iOS 教程页面�
 $Malio_Config['ios_apple_id'] = 'malio@icloud.com';   //  iOS 教程页面的 Apple ID 账号
 $Malio_Config['ios_apple_id_password'] = '1UPBOY~~';    // iOS 教程页面的 Apple ID 密码
 $Malio_Config['android_client'] = 'kitsunebi';    // Android 教程的首选客户端，可选 ssr, kitsunebi, v2rayng, surfboard
-$Malio_Config['mac_client'] = 'clashx';    // Windows 教程的首选客户端，可选 clashx, shadowsocksx-ng-r
+$Malio_Config['mac_client'] = 'clashx';    // Mac 教程的首选客户端，可选 clashx, shadowsocksx-ng-r
 $Malio_Config['linux_client'] = 'clash';    // Linux 教程的首选客户端，可选 clash, electron-ssr
 $Malio_Config['enable_faq'] = true;    // 是否显示 FAQ 常见问题页面
 

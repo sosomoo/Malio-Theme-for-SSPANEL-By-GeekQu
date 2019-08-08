@@ -353,16 +353,20 @@
                     </div>
                     <div class="invoice-detail-item">
                       <div class="invoice-detail-name">总价</div>
-                      <div id="total" class="invoice-detail-value">¥ 0</div>
+                      <div id="total" class="invoice-detail-value">Null</div>
+                    </div>
+                    <div id="coupon-row" class="invoice-detail-item" style="display: none">
+                      <div class="invoice-detail-name">优惠码</div>
+                      <div id="coupon-money" class="invoice-detail-value">Null</div>
                     </div>
                     <div class="invoice-detail-item">
-                      <div class="invoice-detail-name">账号余额</div>
-                      <div id="account-money" class="invoice-detail-value">¥ {$user->money}</div>
+                      <div class="invoice-detail-name">余额支付</div>
+                      <div id="account-money" class="invoice-detail-value">¥ -{$user->money}</div>
                     </div>
                     <hr class="mt-2 mb-2">
                     <div class="invoice-detail-item">
                       <div class="invoice-detail-name">还需要支付</div>
-                      <div id="pay-amount" class="invoice-detail-value invoice-detail-value-lg">¥ 0</div>
+                      <div id="pay-amount" class="invoice-detail-value invoice-detail-value-lg">Null</div>
                     </div>
                   </div>
                 </div>
@@ -470,6 +474,31 @@
     updateCheckoutInfo();
   </script>
   {/if}
+
+  {if $malio_config['shop_enable_coupon'] == true}
+  <div class="modal fade" tabindex="-1" role="dialog" id="coupon-modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">使用优惠码</h5>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>请输入优惠码</label>
+            <input id="coupon-code" type="text" class="form-control" onclick="hideFeedback('coupon-feedback')">
+            <div id="coupon-feedback" class="invalid-feedback">
+              feedback
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer bg-whitesmoke br">
+          <button onclick="updateCoupon()" type="button" class="btn btn-primary">使用</button>
+          <button onclick="cancelCoupon()" type="button" class="btn btn-secondary" data-dismiss="modal">取消使用</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {/if}
 </body>
 
 {if $config['payment_system'] == 'bitpayx'}
@@ -491,6 +520,7 @@
   </div>
 </div>
 {/if}
+
 {if $config['payment_system'] == 'f2fpay'}
 <div class="modal fade" tabindex="-1" role="dialog" id="f2fpay-modal">
   <div class="modal-dialog" role="document">
@@ -583,28 +613,6 @@
       </div>
       <div class="modal-footer bg-whitesmoke br">
         <a id="to-flyfox" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
-      </div>
-    </div>
-  </div>
-</div>
-{/if}
-
-{if $malio_config['shop_enable_coupon'] == true}
-<div class="modal fade" tabindex="-1" role="dialog" id="coupon-modal">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">使用优惠码</h5>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label>请输入优惠码</label>
-          <input id="coupon-code" type="text" class="form-control">
-        </div>
-      </div>
-      <div class="modal-footer bg-whitesmoke br">
-        <button onclick="updateCoupon()" type="button" data-dismiss="modal" class="btn btn-primary">使用</button>
-        <button onclick="cancelCoupon()" type="button" class="btn btn-secondary" data-dismiss="modal">取消使用</button>
       </div>
     </div>
   </div>
