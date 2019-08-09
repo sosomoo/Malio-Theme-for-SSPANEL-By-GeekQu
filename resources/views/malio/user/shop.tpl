@@ -673,13 +673,15 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">提示</h5>
+        <h5 class="modal-title">订单确认</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <p>确定购买此套餐？</p>
+        <p id="legacy-shop-name">商品名称: </p>
+        <p id="legacy-discount">优惠额度: </p>
+        <p id="legacy-total">折后总价: </p>
         {if $malio_config['shop_enable_autorenew'] == true}
         <div class="custom-control custom-checkbox">
           <input type="checkbox" class="custom-control-input" id="legacy-autorenew">
