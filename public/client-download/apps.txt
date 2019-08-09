@@ -13,3 +13,4 @@ v2rayng.apk
 kitsunebi.apk
 surfboard.apk
 ssr.7z
+netch.7z

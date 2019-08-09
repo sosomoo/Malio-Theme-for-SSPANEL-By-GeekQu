@@ -125,7 +125,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">1.</label>
                             <p>下载 Netch 客户端，解压后以管理员身份运行 Netch.exe。若系统提示需要安装 .NET Framework，请<a href="https://www.microsoft.com/net/download/dotnet-framework-runtime" target="blank">点此</a>访问微软官网下载安装。</p>
-                            <a href="/client-download/ssr.7z" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
+                            <a href="/client-download/netch.7z" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fas fa-download"></i> 下载客户端</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic hide-on-mobie">
@@ -154,7 +154,15 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>粘贴订阅链接到左下角的链接，备注填写为，点击添加，然后点击保存</p>
+                            {if (in_array("ssr",$malio_config['support_sub_type']))}
                             <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
+                            {/if}
+                            {if (in_array("v2ray",$malio_config['support_sub_type']))}
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}"><i class="malio-v2ray"></i> 复制 V2Ray 订阅链接</a>
+                            {/if}
+                            {if (in_array("ss",$malio_config['support_sub_type']))}
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ss']}"><i class="malio-ssr"></i> 复制 SS 订阅链接</a>
+                            {/if}
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">
