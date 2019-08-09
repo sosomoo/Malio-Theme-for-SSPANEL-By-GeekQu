@@ -100,8 +100,14 @@
               <a href="/user/tutorial" class="btn btn-icon"><i class="fas fa-arrow-left"></i></a>
             </div>
             <h1>Windows 使用教程</h1>
-            {if $malio_config['display_more_app_button'] == true}
+            {if $malio_config['display_more_app_button'] == true || $malio_config['enable_windows_gaming_tutorial'] == true}
             <div class="section-header-breadcrumb">
+              {if $malio_config['enable_windows_gaming_tutorial'] == true}
+              <div id="checkin-div" class="breadcrumb-item active">
+                <a href="/user/tutorial?os=windows&client=netch" class="btn btn-icon icon-left btn-primary {if $malio_config['display_more_app_button'] == true}mr-2{/if}"><i class="fas fa-gamepad"></i> 游戏加速教程</a>
+              </div>
+              {/if}
+              {if $malio_config['display_more_app_button'] == true}
               <div class="btn-group dropleft">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   其他客户端
@@ -111,6 +117,7 @@
                   <a class="dropdown-item has-icon" href="/user/tutorial?os=windows&client=ssd"><i class="malio-ssr"></i>SSD</a>
                 </div>
               </div>
+              {/if}
             </div>
             {/if}
           </div>

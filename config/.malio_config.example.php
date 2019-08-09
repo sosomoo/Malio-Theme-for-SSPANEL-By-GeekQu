@@ -283,7 +283,7 @@ $Malio_Config['android_client'] = 'kitsunebi';    // Android 教程的首选客�
 $Malio_Config['mac_client'] = 'clashx';    // Mac 教程的首选客户端，可选 clashx, shadowsocksx-ng-r
 $Malio_Config['linux_client'] = 'clash';    // Linux 教程的首选客户端，可选 clash, electron-ssr
 $Malio_Config['enable_faq'] = true;    // 是否显示 FAQ 常见问题页面
-
+$Malio_Config['enable_windows_gaming_tutorial'] = true;    // 是否启用 Windows 游戏教程 （netch教程）
 
 
 // 着陆页设置

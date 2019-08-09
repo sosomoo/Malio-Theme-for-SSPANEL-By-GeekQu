@@ -679,15 +679,16 @@
         </button>
       </div>
       <div class="modal-body">
-        <p id="legacy-shop-name">商品名称: </p>
-        <p id="legacy-discount">优惠额度: </p>
-        <p id="legacy-total">折后总价: </p>
+        <p id="legacy-shop-name" style="display: none">商品名称: </p>
+        <p id="legacy-discount" style="display: none">优惠额度: </p>
+        <p id="legacy-total" style="display: none">折后总价: </p>
         {if $malio_config['shop_enable_autorenew'] == true}
         <div class="custom-control custom-checkbox">
           <input type="checkbox" class="custom-control-input" id="legacy-autorenew">
           <label class="custom-control-label" for="legacy-autorenew">开启自动续费</label>
         </div>
         {/if}
+        <p>确定购买此商品？</p>
       </div>
       <div class="modal-footer bg-whitesmoke br">
         <button onclick="legacyBuy()" type="button" target="blank" class="btn btn-primary"  data-dismiss="modal">确定</button>

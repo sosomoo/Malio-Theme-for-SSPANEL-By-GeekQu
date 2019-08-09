@@ -30,6 +30,7 @@
           </div>
           <div class="section-body">
             <div class="row">
+              {if $user->class > 0}
               {foreach $malio_config['share_account'] as $class_name => $class}
               <div class="col-12 col-md-6 col-lg-3">
                 <div class="card">
@@ -48,6 +49,18 @@
                 </div>
               </div>
               {/foreach}
+              {else}
+              <div class="col-12 col-md-6 col-lg-3">
+                <div class="card">
+                  <div class="card-header">
+                    <h4>账号权限不足</h4>
+                  </div>
+                  <div class="card-body">
+                    <p>购买会员计划后才能使用共享账号</p>
+                  </div>
+                </div>
+              </div>
+              {/if}
             </div>
           </div>
         </section>
