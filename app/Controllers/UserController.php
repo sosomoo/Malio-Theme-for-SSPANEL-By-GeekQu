@@ -2036,4 +2036,9 @@ class UserController extends BaseController
 
         return $response->getBody()->write(json_encode($res));
     }
+
+    public function share_account($request, $response, $args)
+    {
+        return $this->view()->display('user/share_account.tpl'); 
+    } 
 }

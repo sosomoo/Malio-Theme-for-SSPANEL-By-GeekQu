@@ -383,6 +383,7 @@
             </div>
           </div>
       </div>
+      
       {elseif $malio_config['shop_style'] == 'legacy'}
       <div id="main-page" class="main-content">
         <section class="section">
@@ -390,9 +391,6 @@
             <h1>商店</h1>
             <div class="section-header-breadcrumb">
               <div class="breadcrumb-item active">
-                {if $malio_config['shop_enable_coupon'] == true}
-                <a id="coupon-btn" href="#" class="btn btn-icon icon-left btn-primary" data-toggle="modal" data-target="#coupon-modal"><i class="fas fa-tag"></i> 使用优惠码</a>
-                {/if}
                 {if $malio_config['shop_enable_traffic_package'] == true && $user->class > 0}
                 <a href="#" class="btn btn-icon icon-left btn-primary" data-toggle="modal" data-target="#traffic-package-modal"><i class="fas fa-gas-pump"></i> 购买流量叠加包</a>
                 {/if}
@@ -416,6 +414,7 @@
                   <div class="pricing-padding">
                     <div class="pricing-price">
                       <div>¥{$shop->price}</div>
+                      <div>{$shop->expire()}天</div>
                     </div>
                     <div class="pricing-details">
                       <div class="pricing-item">
@@ -447,7 +446,7 @@
                     </div>
                   </div>
                   <div class="pricing-cta">
-                    <a href="##" data-toggle="modal" data-target="#legacy-modal" onclick="legacySelect({$shop->id})">购买 <i class="fas fa-arrow-right"></i></a>
+                    <a href="##" data-toggle="modal" data-target="#legacy-modal-1" onclick="legacySelect({$shop->id})">购买 <i class="fas fa-arrow-right"></i></a>
                   </div>
                 </div>
               </div>
@@ -499,7 +498,6 @@
     </div>
   </div>
   {/if}
-</body>
 
 {if $config['payment_system'] == 'bitpayx'}
 <div class="modal fade" tabindex="-1" role="dialog" id="bitpayx-modal">
@@ -646,7 +644,32 @@
 {/if}
 
 {if $malio_config['shop_style'] == 'legacy'}
-<div class="modal fade" tabindex="-1" role="dialog" id="legacy-modal">
+<div class="modal fade" tabindex="-1" role="dialog" id="legacy-modal-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">提示</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>是否有优惠码？没有请直接点下一步</p>
+        <div class="form-group">
+          <input id="legacy-coupon" type="text" class="form-control" placeholder="有的话请在这里输入" onclick="hideFeedback('legacy-coupon-feedback')">
+          <div id="legacy-coupon-feedback" class="invalid-feedback">
+            feedback
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-whitesmoke br">
+        <button onclick="legacyModalNext()" type="button" target="blank" class="btn btn-primary">下一步</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="legacy-modal-2">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -657,17 +680,21 @@
       </div>
       <div class="modal-body">
         <p>确定购买此套餐？</p>
+        {if $malio_config['shop_enable_autorenew'] == true}
         <div class="custom-control custom-checkbox">
           <input type="checkbox" class="custom-control-input" id="legacy-autorenew">
           <label class="custom-control-label" for="legacy-autorenew">开启自动续费</label>
         </div>
+        {/if}
       </div>
       <div class="modal-footer bg-whitesmoke br">
-        <button onclick="legacyBuy()" type="button" target="blank" class="btn btn-primary" data-dismiss="modal">确定</button>
+        <button onclick="legacyBuy()" type="button" target="blank" class="btn btn-primary"  data-dismiss="modal">确定</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
       </div>
     </div>
   </div>
 </div>
 {/if}
+
+</body>
 </html>

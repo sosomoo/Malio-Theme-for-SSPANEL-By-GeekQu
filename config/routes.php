@@ -162,6 +162,7 @@ $app->group('/user', function () {
     $this->get('/money', App\Controllers\UserController::class . ':getmoney');
     $this->get('/shop/getplaninfo', App\Controllers\UserController::class . ':getPlanInfo');
     $this->post('/shop/buytrafficpackage', App\Controllers\UserController::class . ':buyTrafficPackage');
+    $this->get('/share-account', App\Controllers\UserController::class . ':share_account');
 })->add(new Auth());
 
 $app->group('/payment', function () {

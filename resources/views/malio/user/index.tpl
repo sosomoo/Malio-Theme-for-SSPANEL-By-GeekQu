@@ -297,18 +297,18 @@
                     </div>
                     <div class="card-body">
                       <div id="accordion">
-                        {$number = 0}
-                        {foreach $malio_config['share_account'] as $account}
-                        {$number = $number + 1}
+                        {foreach $malio_config['share_account'] as $class_name => $class}
                         <div class="accordion">
-                          <div class="accordion-header collapsed" role="button" data-toggle="collapse" data-target="#panel-body-{$number}" aria-expanded="false">
-                            <h4>{$account['name']}</h4>
+                          <div class="accordion-header collapsed" role="button" data-toggle="collapse" data-target="#panel-body-{$class_name}" aria-expanded="false">
+                            <h4>{$class_name}</h4>
                           </div>
-                          <div class="accordion-body collapse" id="panel-body-{$number}" data-parent="#accordion">
-                            <p class="mb-0">
+                          <div class="accordion-body collapse" id="panel-body-{$class_name}" data-parent="#accordion">
+                            {foreach $class as $account}
+                            <p class="mb-2">
                               账号: <a href="##" class="copy-text" data-clipboard-text="{$account['account']}">{$account['account']}</a><br>
                               密码: <a href="##" class="copy-text" data-clipboard-text="{$account['passwd']}">*********(点击复制)</a>
                             </p>
+                            {/foreach}
                           </div>
                         </div>
                         {/foreach}

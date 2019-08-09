@@ -32,7 +32,7 @@
           </li>
         {/foreach}
         {/if}
-        {if (in_array("ss",$malio_config['support_sub_type']))}
+        {if (in_array("ss",$malio_config['support_sub_type'])) && $node->mu_only != 1}
         <li class="nav-item">
           <a class="nav-link" id="ss-tab" data-toggle="tab" href="#ss" role="tab" aria-controls="ss" aria-selected="false">Shadowsocks</a>
         </li>
