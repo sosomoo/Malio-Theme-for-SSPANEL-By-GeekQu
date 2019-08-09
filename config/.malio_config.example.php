@@ -35,6 +35,7 @@ $Malio_Config['code_required'] = true;    // 设置为true时，注册时邀请�
 $Malio_Config['reset_bandwidth_and_expire_date_when_change_class'] = false;    // 设置为true时，当用户购买与用户当前等级不同的套餐时，重置流量和过期时间。（定制功能）
 $Malio_Config['enable_register_email_restrict'] = true;    // 设置为true时，会限制注册时使用的邮箱后缀
 $Malio_Config['register_email_white_list'] = ['@gmail.com','@qq.com','@outlook.com','@163.com','@126.com','@yeah.net','@foxmail.com'];   // 注册时的邮箱后缀白名单，仅在上面的设置为true时生效
+$Malio_Config['force_user_to_bind_tg_when_join_group'] = true;   // 设置为true时，限制只有绑定了tg的用户才能加入群组，如未绑定将会被踢出群组。.config.php 需要设置群组id，机器人在群组中不回应设为false才能用。机器人需要在群里组设定为管理员才能踢人。(定制功能)
 
 
 // 订阅设置
@@ -53,6 +54,7 @@ $Malio_Config['enable_relay'] = true;   // 是否显示中转规则
 $Malio_Config['enable_ticket'] = true;   // 是否显示工单系统
 $Malio_Config['enable_detect'] = true;   // 是否显示审计系统
 $Malio_Config['enable_invite'] = true;   // 是否显示邀请注册
+$Malio_Config['enable_share_account_page'] = true;  // 是否在侧边栏显示共享账号页面 (定制功能)
 $Malio_Config['enable_sidebar_button'] = true;    // 是否显示底部 Telegram 按钮
 $Malio_Config['telegram_group'] = 'https://t.me/SSUnion';   // Telegram 按钮的链接
 $Malio_Config['telegram_group_class'] = 0;   // 显示底部 Telegram 按钮的用户最低等级，用户等级小于这个数字的将不会显示 Telegram 按钮
@@ -65,21 +67,32 @@ $Malio_Config['index_show_alert_to_tutorial'] = false;   // 首页是否一直�
 
 $Malio_Config['enable_share'] = true;   // 是否显示共享账号
 $Malio_Config['share_account'] = [    // 一个array为一个共享账号
-    array(
-        'name' => 'Netflix',
-        'account' => 'malio@nintendo.jp',
-        'passwd' => 'yahaha~'
-    ),
-    array(
-        'name' => 'HBO',
-        'account' => 'malio@nintendo.jp',
-        'passwd' => 'yahaha~'
-    ),
-    array(
-        'name' => 'Hulu',
-        'account' => 'malio@nintendo.jp',
-        'passwd' => 'yahaha~'
-    ),
+    'Netflix' => [  // 这个是账号分类
+        array(
+            'name' => 'Netflix 1',
+            'account' => 'malio@nintendo.jp',
+            'passwd' => 'yahaha~'
+        ),
+        array(
+            'name' => 'Netflix 2',
+            'account' => 'malio22222@nintendo.jp',
+            'passwd' => 'yahaha~'
+        )
+    ],
+    'HBO' => [
+        array(
+            'name' => 'HBO 1',
+            'account' => 'malio@nintendo.jp',
+            'passwd' => 'yahaha~'
+        )
+    ],
+    'Hulu' => [
+        array(
+            'name' => 'Hulu 1',
+            'account' => 'malio@nintendo.jp',
+            'passwd' => 'yahaha~'
+        )
+    ],
 ];
 
 
