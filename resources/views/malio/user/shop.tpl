@@ -7,53 +7,95 @@
   <title>商店 &mdash; {$config["appName"]}</title>
 
   <style>
+    [type=reset], [type=submit], button, html [type=button] {
+      -webkit-appearance: none;
+    }
     .colors .active {
       background-color: #6777ef !important;
       color: white !important;
       box-shadow: 0 2px 6px #acb5f6;
+      border: 2px solid #6777ef !important;
+    }
+
+    .colors .color:hover {
+      border: 2px solid #6777ef;
+      transition: 0.3s ease;
     }
 
     .colors .color {
-      color: #6777ef;
+      color: #282B43;
       background-color: transparent;
       background-image: none;
       cursor: pointer;
-      border: 1px solid #6777ef;
+      border: 2px solid #f1f2f5;
       border-radius: 4px;
       font-size: 1rem;
+      font-weight: 500;
     }
 
     #payment-selection #alipay {
       color: #029de3;
-      border: 1px solid #029de3;
+      border: 2px solid #f1f2f5;
+      transition: 0.3s ease;
     }
 
     #payment-selection #wechat {
       color: #00b235;
-      border: 1px solid #00b235;
+      border: 2px solid #f1f2f5;
     }
 
     #payment-selection #qqpay {
       color: #11b7f5;
-      border: 1px solid #11b7f5;
+      border: 2px solid #f1f2f5;
+    }
+
+    #payment-selection #crypto {
+      color: #ffa425;
+      border: 2px solid #f1f2f5;
+    }
+
+    #payment-selection #alipay:hover {
+      color: #029de3;
+      border: 2px solid #029de3;
+    }
+
+    #payment-selection #wechat:hover {
+      color: #00b235;
+      border: 2px solid #00b235;
+    }
+
+    #payment-selection #qqpay:hover {
+      color: #11b7f5;
+      border: 2px solid #11b7f5;
+    }
+
+    #payment-selection #crypto:hover {
+      color: #ffa425;
+      border: 2px solid #ffa425;
     }
 
     #payment-selection #alipay[class*="active"] {
       background: #029de3 !important;
       box-shadow: 0 2px 6px #029ce370;
-      border: 1px solid #029de3;
+      border: 2px solid #029de3 !important;
     }
 
     #payment-selection #wechat[class*="active"] {
       background: #00b235 !important;
       box-shadow: 0 2px 6px #00b23570;
-      border: 1px solid #00b235;
+      border: 2px solid #00b235 !important;
     }
 
     #payment-selection #qqpay[class*="active"] {
       background: #11b7f5 !important;
       box-shadow: 0 2px 6px #11b8f570;
-      border: 1px solid #11b7f5;
+      border: 2px solid #11b7f5 !important;
+    }
+
+    #payment-selection #crypto[class*="active"] {
+      background: #ffa425 !important;
+      box-shadow: 0 2px 6px #ffa42580;
+      border: 2px solid #ffa425 !important;
     }
 
     #payment-selection .fas,
@@ -61,6 +103,39 @@
     .fab,
     .fal {
       font-size: 1rem;
+    }
+
+    .colors .color {
+      height: auto !important;
+    }
+
+    .color .pricing-inside {
+      display: block;
+      font-weight: bold;
+      font-size: 2.8em;
+    }
+
+    .color .pricing-super {
+      vertical-align: super;
+      padding-right: 3px;
+      font-size: 0.5em;
+      margin-left: 6px;
+      margin-right: 0px;
+      font-weight: 500;
+    }
+
+    .color .per-month {
+      position: relative;
+      color: #B1C1CA;
+      font-weight: 500;
+      font-size: 0.2em;
+      top: -0.1em;
+      left: -1.6em;
+    }
+
+    #plan-selection .color[class*="active"] .badge {
+      background: #fff;
+      color: #6777ef;
     }
   </style>
 </head>
@@ -260,16 +335,19 @@
                     <div class="section-title" style="margin-top: 0;">选择会员订阅计划</div>
                     <div class="colors">
                       <div id="plan_1" class="color col-12 col-md-2 col-lg-2 active" onclick="selectItem('plan','plan_1')">
-                        {$malio_config['plan_1_name']}
+                          <span class="pricing-inside"><span class="pricing-super">¥</span>{intval($malio_config['plan_1_pricing'])}<span class="pricing-super">{substr($malio_config['plan_1_pricing'],-2)}</span><span class="per-month">/月</span></span>
+                          <span class="badge badge-primary">{$malio_config['plan_1_name']}</span>
                       </div>
                       {if $malio_config['enable_plan_2'] == true}
                       <div id="plan_2" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('plan','plan_2')">
-                        {$malio_config['plan_2_name']}
+                          <span class="pricing-inside"><span class="pricing-super">¥</span>{intval($malio_config['plan_2_pricing'])}<span class="pricing-super">{substr($malio_config['plan_2_pricing'],-2)}</span><span class="per-month">/月</span></span>
+                          <span class="badge badge-primary">{$malio_config['plan_2_name']}</span>
                       </div>
                       {/if}
                       {if $malio_config['enable_plan_3'] == true}
                       <div id="plan_3" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('plan','plan_3')">
-                        {$malio_config['plan_3_name']}
+                          <span class="pricing-inside"><span class="pricing-super">¥</span>{intval($malio_config['plan_3_pricing'])}<span class="pricing-super">{substr($malio_config['plan_3_pricing'],-2)}</span><span class="per-month">/月</span></span>
+                          <span class="badge badge-primary">{$malio_config['plan_3_name']}</span>
                       </div>
                       {/if}
                     </div>
