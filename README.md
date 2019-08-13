@@ -4,7 +4,7 @@
 在网站目录下 
 `git clone -b malio https://gitlab.com/maxitio/malio-theme-for-sspanel.git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard`
 
-根据sspanel的wiki安装后，将config目录下的.malio_config.example.php 复制一份命名为 .malio_config.php
+根据sspanel的wiki安装后，将config目录下的.malio_config.example.php 复制一份命名为 .malio_config.php，可以用这个命令 `cp config/.malio_config.example.php config/.malio_config.php`
 
 修改.config.php里的默认主题为malio
 
