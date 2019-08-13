@@ -1,181 +1,172 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
 <head>
-    <meta name="viewport" content="width=device-width"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Billing e.g. invoices and receipts</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Malio</title>
+  <link href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700&display=swap" rel="stylesheet">
+  <style type="text/css">
+    html {
+      -webkit-text-size-adjust: none;
+      -ms-text-size-adjust: none;
+    }
 
+    @media only screen and (min-device-width: 750px) {
+      .table750 {
+        width: 750px !important;
+      }
+    }
 
-    <style type="text/css">
-        img {
-            max-width: 100%;
-        }
+    @media only screen and (max-device-width: 750px),
+    only screen and (max-width: 750px) {
+      table[class="table750"] {
+        width: 100% !important;
+      }
 
-        body {
-            -webkit-font-smoothing: antialiased;
-            -webkit-text-size-adjust: none;
-            width: 100% !important;
-            height: 100%;
-            line-height: 1.6em;
-        }
+      .mob_b {
+        width: 93% !important;
+        max-width: 93% !important;
+        min-width: 93% !important;
+      }
 
-        body {
-            background-color: #f6f6f6;
-        }
+      .mob_b1 {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+      }
 
-        @media only screen and (max-width: 640px) {
-            body {
-                padding: 0 !important;
-            }
+      .mob_left {
+        text-align: left !important;
+      }
 
-            h1 {
-                font-weight: 800 !important;
-                margin: 20px 0 5px !important;
-            }
+      .mob_soc {
+        width: 50% !important;
+        max-width: 50% !important;
+        min-width: 50% !important;
+      }
 
-            h2 {
-                font-weight: 800 !important;
-                margin: 20px 0 5px !important;
-            }
+      .mob_menu {
+        width: 50% !important;
+        max-width: 50% !important;
+        min-width: 50% !important;
+        box-shadow: inset -1px -1px 0 0 rgba(255, 255, 255, 0.2);
+      }
 
-            h3 {
-                font-weight: 800 !important;
-                margin: 20px 0 5px !important;
-            }
+      .mob_center {
+        text-align: center !important;
+      }
 
-            h4 {
-                font-weight: 800 !important;
-                margin: 20px 0 5px !important;
-            }
+      .top_pad {
+        height: 15px !important;
+        max-height: 15px !important;
+        min-height: 15px !important;
+      }
 
-            h1 {
-                font-size: 22px !important;
-            }
+      .mob_pad {
+        width: 15px !important;
+        max-width: 15px !important;
+        min-width: 15px !important;
+      }
 
-            h2 {
-                font-size: 18px !important;
-            }
+      .mob_div {
+        display: block !important;
+      }
+    }
 
-            h3 {
-                font-size: 16px !important;
-            }
+    @media only screen and (max-device-width: 550px),
+    only screen and (max-width: 550px) {
+      .mod_div {
+        display: block !important;
+      }
+    }
 
-            .container {
-                padding: 0 !important;
-                width: 100% !important;
-            }
-
-            .content {
-                padding: 0 !important;
-            }
-
-            .content-wrap {
-                padding: 10px !important;
-            }
-
-            .invoice {
-                width: 100% !important;
-            }
-        }
-    </style>
+    .table750 {
+      width: 750px;
+    }
+  </style>
 </head>
 
-<body itemscope itemtype="http://schema.org/EmailMessage"
-      style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6em; background-color: #f6f6f6; margin: 0;"
-      bgcolor="#f6f6f6">
+<body style="margin: 0; padding: 0;">
 
-<table class="body-wrap"
-       style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; background-color: #f6f6f6; margin: 0;"
-       bgcolor="#f6f6f6">
-    <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-        <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;"
-            valign="top"></td>
-        <td class="container" width="600"
-            style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto;"
-            valign="top">
-            <div class="content"
-                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; max-width: 600px; display: block; margin: 0 auto; padding: 20px;">
-                <table class="main" width="100%" cellpadding="0" cellspacing="0"
-                       style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; border-radius: 3px; background-color: #fff; margin: 0; border: 1px solid #e9e9e9;"
-                       bgcolor="#fff">
-                    <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                        <td class="content-wrap aligncenter"
-                            style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; text-align: center; margin: 0; padding: 20px;"
-                            align="center" valign="top">
-                            <table width="100%" cellpadding="0" cellspacing="0"
-                                   style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                                <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                                    <td class="content-block"
-                                        style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
-                                        valign="top">
-                                        <h1 class="aligncenter"
-                                            style="font-family: 'Helvetica Neue',Helvetica,Arial,'Lucida Grande',sans-serif; box-sizing: border-box; font-size: 32px; color: #000; line-height: 1.2em; font-weight: 500; text-align: center; margin: 40px 0 0;"
-                                            align="center">{$config["appName"]}</h1>
-                                    </td>
-                                </tr>
-                                <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                                    <td class="content-block"
-                                        style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
-                                        valign="top">
-                                        <h2 class="aligncenter"
-                                            style="font-family: 'Helvetica Neue',Helvetica,Arial,'Lucida Grande',sans-serif; box-sizing: border-box; font-size: 24px; color: #000; line-height: 1.2em; font-weight: 400; text-align: center; margin: 40px 0 0;"
-                                            align="center">需要您的注意</h2>
-                                    </td>
-                                </tr>
-                                <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                                    <td class="content-block aligncenter"
-                                        style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; text-align: center; margin: 0; padding: 0 0 20px;"
-                                        align="center" valign="top">
-                                        <table class="invoice"
-                                               style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; text-align: left; width: 80%; margin: 40px auto;">
-                                            <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                                                <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 5px 0;"
-                                                    valign="top">Hi, {$user->user_name}<br
-                                                            style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;"/>邮箱: {$user->email}
-                                                </td>
-                                            </tr>
-                                            <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                                                <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 5px 0;"
-                                                    valign="top">{$text}
-                                                </td>
-                                            </tr>
+  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #f3f3f3; min-width: 350px; font-size: 1px; line-height: normal;">
+    <tr>
+      <td align="center" valign="top">
+        <!--[if (gte mso 9)|(IE)]>
+         <table border="0" cellspacing="0" cellpadding="0">
+         <tr><td align="center" valign="top" width="750"><![endif]-->
+        <table cellpadding="0" cellspacing="0" border="0" width="750" class="table750" style="width: 100%; max-width: 750px; min-width: 350px; background: #f3f3f3;">
+          <tr>
+            <td class="mob_pad" width="25" style="width: 25px; max-width: 25px; min-width: 25px;">&nbsp;</td>
+            <td align="center" valign="top" style="background: #ffffff;">
 
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                                    <td class="content-block aligncenter"
-                                        style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; text-align: center; margin: 0; padding: 0 0 20px;"
-                                        align="center" valign="top">
-                                        <a href="{$config["baseUrl"]}"
-                                           style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #348eda; text-decoration: underline; margin: 0;">{$config["appName"]}</a>
-                                    </td>
-                                </tr>
-                                <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                                    <td class="content-block aligncenter"
-                                        style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; text-align: center; margin: 0; padding: 0 0 20px;"
-                                        align="center" valign="top">
-                                    </td>
-                                </tr>
-                            </table>
+              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100% !important; min-width: 100%; max-width: 100%; background: #f3f3f3;">
+                <tr>
+                  <td align="right" valign="top">
+                    <div class="top_pad" style="height: 25px; line-height: 25px; font-size: 23px;">&nbsp;</div>
+                  </td>
+                </tr>
+              </table>
+
+              <table cellpadding="0" cellspacing="0" border="0" width="88%" style="width: 88% !important; min-width: 88%; max-width: 88%;">
+                <tr>
+                  <td align="left" valign="top">
+                    <div style="height: 39px; line-height: 39px; font-size: 37px;">&nbsp;</div>
+                    <font class="mob_title1" face="'Source Sans Pro', sans-serif" color="#1a1a1a" style="font-size: 52px; line-height: 55px; font-weight: 300; letter-spacing: -1.5px;">
+                      <a href="{$config['baseUrl']}" style="text-decoration:none"><span class="mob_title1" style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #6777ef; font-size: 48px; line-height: 55px; font-weight: 700; letter-spacing: -1.5px;">{$config['appName']}</span></a>
+                    </font>
+                    <div style="height: 73px; line-height: 73px; font-size: 71px;">&nbsp;</div>
+                  </td>
+                </tr>
+              </table>
+
+              <table cellpadding="0" cellspacing="0" border="0" width="88%" style="width: 88% !important; min-width: 88%; max-width: 88%;">
+                <tr>
+                  <td align="left" valign="top">
+                    <font face="'Nunito', sans-serif" color="#1a1a1a" style="font-size: 52px; line-height: 60px; font-weight: 300; letter-spacing: -1.5px;">
+                      <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #1a1a1a; font-size: 52px; line-height: 60px; font-weight: 300; letter-spacing: -1.5px;">Hi, {$user->user_name}</span>
+                    </font>
+                    <div style="height: 33px; line-height: 33px; font-size: 31px;">&nbsp;</div>
+                    <font face="'Nunito', sans-serif" color="#585858" style="font-size: 24px; line-height: 32px;">
+                      <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #585858; font-size: 24px; line-height: 32px;">{$text}</span>
+                    </font>
+                    <div style="height: 75px; line-height: 75px; font-size: 73px;">&nbsp;</div>
+                  </td>
+                </tr>
+              </table>
+
+              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100% !important; min-width: 100%; max-width: 100%; background: #f3f3f3;">
+                <tr>
+                  <td align="center" valign="top">
+                    <div style="height: 34px; line-height: 34px; font-size: 32px;">&nbsp;</div>
+                    <table cellpadding="0" cellspacing="0" border="0" width="88%" style="width: 88% !important; min-width: 88%; max-width: 88%;">
+                      <tr>
+                        <td align="center" valign="top">
+                          <div style="height:12px; line-height: 34px; font-size: 32px;">&nbsp;</div>
+                          <font face="'Nunito', sans-serif" color="#868686" style="font-size: 17px; line-height: 20px;">
+                            <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #868686; font-size: 17px; line-height: 20px;">2019 © Malio. All&nbsp;Rights&nbsp;Reserved.</span>
+                          </font>
+                          <div style="height: 3px; line-height: 3px; font-size: 1px;">&nbsp;</div>
+                          <font face="'Nunito', sans-serif" color="#1a1a1a" style="font-size: 17px; line-height: 20px;">
+                            <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #1a1a1a; font-size: 17px; line-height: 20px;"><a href="{$config['baseUrl']}" target="_blank" style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #1a1a1a; font-size: 17px; line-height: 20px; text-decoration: none;">访问官网</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="{$config['baseUrl']}/user/" target="_blank" style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #1a1a1a; font-size: 17px; line-height: 20px; text-decoration: none;">用户中心</a></span>
+                          </font>
+                          <div style="height: 35px; line-height: 35px; font-size: 33px;">&nbsp;</div>
                         </td>
-                    </tr>
-                </table>
-                <div class="footer"
-                     style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; clear: both; color: #999; margin: 0; padding: 20px;">
-                    <table width="100%"
-                           style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                        <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                        </tr>
+                      </tr>
                     </table>
-                </div>
-            </div>
-        </td>
-        <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;"
-            valign="top"></td>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+            <td class="mob_pad" width="25" style="width: 25px; max-width: 25px; min-width: 25px;">&nbsp;</td>
+          </tr>
+        </table>
+        <!--[if (gte mso 9)|(IE)]>
+         </td></tr>
+         </table><![endif]-->
+      </td>
     </tr>
-</table>
+  </table>
 </body>
+
 </html>
