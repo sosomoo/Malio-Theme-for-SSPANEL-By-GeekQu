@@ -646,7 +646,7 @@ class LinkController extends BaseController
             } else {
                 $tmp = '剩余流量：' . $user->unusedTraffic();
             }
-            $tmp .= '...过期时间：';
+            $tmp .= '.♥.过期时间：';
             if ($user->class_expire != '1989-06-04 00:05:00') {
                 $userClassExpire = explode(' ', $user->class_expire);
                 $tmp .= $userClassExpire[0];
@@ -711,20 +711,8 @@ class LinkController extends BaseController
                 ) . '?v2ray-plugin=' . Tools::base64_url_encode(
                     json_encode($v2rayplugin)
                 ) . '#' . rawurlencode($item['remark']) . PHP_EOL);
-            } elseif (in_array($item['obfs'], ['simple_obfs_http', 'simple_obfs_tls'])) {
-                $obfs = ($item['method'] == 'simple_obfs_http'
-                    ? 'obfs=http;'
-                    : 'obfs=tls;');
-                $obfs .= ($item['obfs_param'] != ''
-                    ? ('obfs-host=' . $item['obfs_param'] . ';')
-                    : 'obfs-host=windowsupdate.windows.com;');
-                $return .= ('ss://' . Tools::base64_url_encode(
-                    $item['method'] . ':' . $item['passwd']
-                ) . '@' . $item['address'] . ':' . $item['port'] .
-                    '?plugin=simple-obfs;' . $obfs .
-                    'obfs-uri=/#' . rawurlencode(
-                        Config::get('appName') . ' - ' . $item['remark']
-                    ) . PHP_EOL);
+            } elseif (in_array($item['obfs'], Config::getSupportParam('ss_obfs'))) {
+                $return .= (URL::getItemUrl($item, 1) . PHP_EOL);
             } elseif ($item['obfs'] == 'plain') {
                 $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
             }
