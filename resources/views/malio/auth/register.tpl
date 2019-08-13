@@ -310,10 +310,10 @@
               name: $("#name").val(),
               passwd: $("#passwd").val(),
               repasswd: $("#repasswd").val(),
-              code: code{if $enable_email_verify == 'true'},
               {if $recaptcha_sitekey != null}
               recaptcha: grecaptcha.getResponse(),
               {/if}
+              code: code{if $enable_email_verify == 'true'},
               emailcode: $("#email_code").val(){/if}{if $geetest_html != null},
               geetest_challenge: validate.geetest_challenge,
               geetest_validate: validate.geetest_validate,
@@ -331,7 +331,7 @@
                   }
                 })
               } else {
-                $('#register-confirm').removeAttr("disabled","disabled")
+                $('#register-confirm').removeAttr("disabled")
                 {if $geetest_html != null}
                 captcha.refresh();
                 {/if}
