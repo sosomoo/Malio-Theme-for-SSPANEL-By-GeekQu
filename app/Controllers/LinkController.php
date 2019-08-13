@@ -712,17 +712,7 @@ class LinkController extends BaseController
                     json_encode($v2rayplugin)
                 ) . '#' . rawurlencode($item['remark']) . PHP_EOL);
             } elseif (in_array($item['obfs'], Config::getSupportParam('ss_obfs'))) {
-                $obfs = (strpos($item['obfs'], 'http') !== false
-                    ? 'obfs=http;'
-                    : 'obfs=tls;');
-                $obfs .= ($item['obfs_param'] != ''
-                    ? ('obfs-host=' . $item['obfs_param'] . ';')
-                    : 'obfs-host=windowsupdate.windows.com;');
-                $return .= ('ss://' . Tools::base64_url_encode(
-                    $item['method'] . ':' . $item['passwd']
-                ) . '@' . $item['address'] . ':' . $item['port'] .
-                    '?plugin=simple-obfs;' . $obfs .
-                    'obfs-uri=/#' . rawurlencode($item['remark']) . PHP_EOL);
+                $return .= (URL::getItemUrl($item, 1) . PHP_EOL);
             } elseif ($item['obfs'] == 'plain') {
                 $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
             }
