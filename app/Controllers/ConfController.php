@@ -448,5 +448,38 @@ class ConfController extends BaseController
         return $return;
     }
 
+    /**
+     * Clash ProxyGroup 去除无用策略组
+     *
+     * @param array $ProxyGroups 策略组
+     * @param array $checks      要检查的策略组名
+     *
+     * @return array
+     */
+    public static function fixClashProxyGroup($ProxyGroups, $checks)
+    {
+        $index = 0;
+        $arrays = [];
+        foreach ($checks as $check) {
+            foreach ($ProxyGroups as $key => $value) {
+                if ($value['name'] == $check || count($value['proxies']) == 0) {
+                    unser($ProxyGroups[$key]);
+                    $arrays[] = $check;
+                    ++ $index;
+                }
+                if ($value['name'] != $check) {
+                    if ($index != 0) {
+                        foreach ($arrays as $array) {
+                            unser($value['proxies'][$array]);
+                        }
+                    }
+                }
+                continue;
+            }
+        }
+
+        return $ProxyGroups;
+    }
+
     // 待续 Quantumult...
 }
