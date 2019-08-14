@@ -795,6 +795,13 @@ class LinkController extends BaseController
         $extend = isset($opts['extend']) ? $opts['extend'] : 0;
         $getV2rayPlugin = 1;
         $return_url = '';
+        
+        // Quantumult 则不显示账户到期以及流量信息
+        if (strpos($_SERVER['HTTP_USER_AGENT'], 'Quantumult') !== false) {
+            $extend = 0;
+        }
+
+        // 如果是 Kitsunebi 不输出 SS V2rayPlugin 节点
         if (strpos($_SERVER['HTTP_USER_AGENT'], 'Kitsunebi') !== false) {
             $getV2rayPlugin = 0;
         }
