@@ -145,7 +145,7 @@ class ConfController extends BaseController
                         case (isset($ProxyGroup['content']['class'])):
                             if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['remark'], $proxies)) {
                                 if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/gi', $item['remark'])) {
+                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['remark'])) {
                                         $proxies[] = $item['remark'];
                                     }
                                 } else {
@@ -156,7 +156,7 @@ class ConfController extends BaseController
                         case (isset($ProxyGroup['content']['noclass'])):
                             if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['remark'], $proxies)) {
                                 if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/gi', $item['remark'])) {
+                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['remark'])) {
                                         $proxies[] = $item['remark'];
                                     }
                                 } else {
@@ -167,7 +167,7 @@ class ConfController extends BaseController
                         case (!isset($ProxyGroup['content']['class'])
                             && !isset($ProxyGroup['content']['noclass'])
                             && isset($ProxyGroup['content']['regex'])
-                            && preg_match('/' . $ProxyGroup['content']['regex'] . '/gi', $item['remark'])
+                            && preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['remark'])
                             && !in_array($item['remark'], $proxies)):
                             $proxies[] = $item['remark'];
                             break;
@@ -355,7 +355,7 @@ class ConfController extends BaseController
                         case (isset($ProxyGroup['content']['class'])):
                             if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['name'], $proxies)) {
                                 if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/gi', $item['name'])) {
+                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['name'])) {
                                         $proxies[] = $item['name'];
                                     }
                                 } else {
@@ -366,7 +366,7 @@ class ConfController extends BaseController
                         case (isset($ProxyGroup['content']['noclass'])):
                             if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['name'], $proxies)) {
                                 if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/gi', $item['name'])) {
+                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['name'])) {
                                         $proxies[] = $item['name'];
                                     }
                                 } else {
@@ -377,7 +377,7 @@ class ConfController extends BaseController
                         case (!isset($ProxyGroup['content']['class'])
                             && !isset($ProxyGroup['content']['noclass'])
                             && isset($ProxyGroup['content']['regex'])
-                            && preg_match('/' . $ProxyGroup['content']['regex'] . '/gi', $item['name'])
+                            && preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['name'])
                             && !in_array($item['name'], $proxies)):
                             $proxies[] = $item['name'];
                             break;

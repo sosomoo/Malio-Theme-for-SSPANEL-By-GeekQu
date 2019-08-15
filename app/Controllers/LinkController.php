@@ -578,7 +578,7 @@ class LinkController extends BaseController
                 return '远程配置下载失败。';
             }
         } else {
-            if (isset($opts['profiles']) && in_array((string) $opts['profiles'], Config::get('clash_Profiles'))) {
+            if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(Config::get('clash_Profiles')))) {
                 $Profiles = (string) trim($opts['profiles']);
             } else {
                 $Profiles = 'lhie1';
@@ -587,7 +587,6 @@ class LinkController extends BaseController
             $ProxyGroups = ConfController::fixClashProxyGroup($ProxyGroups, Config::get('clash_Profiles')[$Profiles]['Checks']);
             $ProxyGroups = ConfController::getClashProxyGroup2String($ProxyGroups);
         }
-        $Profiles .= '.yaml';
 
         $render = ConfRender::getTemplateRender();
         $render->assign('user', $user)

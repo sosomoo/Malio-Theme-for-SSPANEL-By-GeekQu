@@ -405,7 +405,7 @@ $System_Config['clash_Profiles'] = [
                 'interval' => 3600
             ],
             [
-                'name' => 'PROXY',
+                'name' => 'Proxy',
                 'type' => 'select',
                 'content' => [
                     'left-proxies' => ['香港', '日本', '坡坡', '台湾', '美国', '韩国', '中继']
