@@ -714,6 +714,11 @@ class LinkController extends BaseController
     public static function getKitsunebi($user, $opts)
     {
         $return = '';
+
+        // 账户到期时间以及流量信息
+        $extend = isset($opts['extend']) ? (int) $opts['extend'] : 0;
+        $return .= $extend == 0 ? '' : URL::getUserTraffic($user, 2) . PHP_EOL;
+        
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
@@ -754,10 +759,6 @@ class LinkController extends BaseController
                 $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
             }
         }
-
-        // 账户到期时间以及流量信息
-        $extend = isset($opts['extend']) ? (int) $opts['extend'] : 0;
-        $return .= $extend == 0 ? '' : URL::getUserTraffic($user, 2) . PHP_EOL;
 
         return base64_encode($return);
     }
