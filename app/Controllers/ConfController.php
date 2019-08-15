@@ -427,11 +427,11 @@ class ConfController extends BaseController
                         . 'MATCH,DIRECT');
                 } else {
                     try {
-                        $sourceRule = Yaml::parse($return);
+                        $sourceRule = Yaml::parse($sourceContent);
                     } catch (ParseException $exception) {
-                        $sourceRule = false;
+                        $sourceRule['error'] = printf('无法解析 YAML 字符串: %s', $exception->getMessage());
                     }
-                    if (!$sourceRule || !isset($sourceRule['Rule'])) {
+                    if (isset($sourceRule['error']) || !isset($sourceRule['Rule'])) {
                         $return .= $sourceContent;
                     } else {
                         $return .= Yaml::dump($sourceRule['Rule'], 4, 2);
@@ -458,27 +458,33 @@ class ConfController extends BaseController
      */
     public static function fixClashProxyGroup($ProxyGroups, $checks)
     {
-        $index = 0;
-        $arrays = [];
-        foreach ($checks as $check) {
-            foreach ($ProxyGroups as $key => $value) {
-                if ($value['name'] == $check || count($value['proxies']) == 0) {
-                    unser($ProxyGroups[$key]);
-                    $arrays[] = $check;
-                    ++ $index;
-                }
-                if ($value['name'] != $check) {
-                    if ($index != 0) {
-                        foreach ($arrays as $array) {
-                            unser($value['proxies'][$array]);
+        $clean_names = [];
+        $newProxyGroups = [];
+        foreach ($ProxyGroups as $ProxyGroup) {
+            if (in_array($ProxyGroup['name'], $checks) && count($ProxyGroup['proxies']) == 0) {
+                $clean_names[] = $ProxyGroup['name'];
+                continue;
+            }
+            $newProxyGroups[] = $ProxyGroup;
+        }
+        if (count($clean_names) >= 1) {
+            $ProxyGroups = $newProxyGroups;
+            $newProxyGroups = [];
+            foreach ($ProxyGroups as $ProxyGroup) {
+                if (!in_array($ProxyGroup['name'], $checks)) {
+                    $newProxies = [];
+                    foreach ($ProxyGroup['proxies'] as $proxie) {
+                        if (!in_array($proxie, $clean_names)) {
+                            $newProxies[] = $proxie;
                         }
                     }
+                    $ProxyGroup['proxies'] = $newProxies;
                 }
-                continue;
+                $newProxyGroups[] = $ProxyGroup;
             }
         }
 
-        return $ProxyGroups;
+        return $newProxyGroups;
     }
 
     // 待续 Quantumult...
