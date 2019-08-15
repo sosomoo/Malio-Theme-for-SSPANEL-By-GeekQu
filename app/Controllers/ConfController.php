@@ -145,7 +145,7 @@ class ConfController extends BaseController
                         case (isset($ProxyGroup['content']['class'])):
                             if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['remark'], $proxies)) {
                                 if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
+                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['remark'])) {
                                         $proxies[] = $item['remark'];
                                     }
                                 } else {
@@ -156,7 +156,7 @@ class ConfController extends BaseController
                         case (isset($ProxyGroup['content']['noclass'])):
                             if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['remark'], $proxies)) {
                                 if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match($ProxyGroup['content']['regex'], $item['remark'])) {
+                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['remark'])) {
                                         $proxies[] = $item['remark'];
                                     }
                                 } else {
@@ -167,7 +167,7 @@ class ConfController extends BaseController
                         case (!isset($ProxyGroup['content']['class'])
                             && !isset($ProxyGroup['content']['noclass'])
                             && isset($ProxyGroup['content']['regex'])
-                            && preg_match($ProxyGroup['content']['regex'], $item['remark'])
+                            && preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['remark'])
                             && !in_array($item['remark'], $proxies)):
                             $proxies[] = $item['remark'];
                             break;
@@ -355,7 +355,7 @@ class ConfController extends BaseController
                         case (isset($ProxyGroup['content']['class'])):
                             if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['name'], $proxies)) {
                                 if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match($ProxyGroup['content']['regex'], $item['name'])) {
+                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['name'])) {
                                         $proxies[] = $item['name'];
                                     }
                                 } else {
@@ -366,7 +366,7 @@ class ConfController extends BaseController
                         case (isset($ProxyGroup['content']['noclass'])):
                             if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['name'], $proxies)) {
                                 if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match($ProxyGroup['content']['regex'], $item['name'])) {
+                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['name'])) {
                                         $proxies[] = $item['name'];
                                     }
                                 } else {
@@ -377,7 +377,7 @@ class ConfController extends BaseController
                         case (!isset($ProxyGroup['content']['class'])
                             && !isset($ProxyGroup['content']['noclass'])
                             && isset($ProxyGroup['content']['regex'])
-                            && preg_match($ProxyGroup['content']['regex'], $item['name'])
+                            && preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['name'])
                             && !in_array($item['name'], $proxies)):
                             $proxies[] = $item['name'];
                             break;
@@ -427,11 +427,11 @@ class ConfController extends BaseController
                         . 'MATCH,DIRECT');
                 } else {
                     try {
-                        $sourceRule = Yaml::parse($return);
+                        $sourceRule = Yaml::parse($sourceContent);
                     } catch (ParseException $exception) {
-                        $sourceRule = false;
+                        $sourceRule['error'] = printf('无法解析 YAML 字符串: %s', $exception->getMessage());
                     }
-                    if (!$sourceRule || !isset($sourceRule['Rule'])) {
+                    if (isset($sourceRule['error']) || !isset($sourceRule['Rule'])) {
                         $return .= $sourceContent;
                     } else {
                         $return .= Yaml::dump($sourceRule['Rule'], 4, 2);
@@ -446,6 +446,60 @@ class ConfController extends BaseController
             }
         }
         return $return;
+    }
+
+    /**
+     * Clash ProxyGroup 去除无用策略组
+     *
+     * @param array $ProxyGroups 策略组
+     * @param array $checks      要检查的策略组名
+     *
+     * @return array
+     */
+    public static function fixClashProxyGroup($ProxyGroups, $checks)
+    {
+        if (count($checks) == 0) {
+            return $ProxyGroups;
+        }
+        $clean_names = [];
+        $newProxyGroups = [];
+        foreach ($ProxyGroups as $ProxyGroup) {
+            if (in_array($ProxyGroup['name'], $checks) && count($ProxyGroup['proxies']) == 0) {
+                $clean_names[] = $ProxyGroup['name'];
+                continue;
+            }
+            $newProxyGroups[] = $ProxyGroup;
+        }
+        if (count($clean_names) >= 1) {
+            $ProxyGroups = $newProxyGroups;
+            $newProxyGroups = [];
+            foreach ($ProxyGroups as $ProxyGroup) {
+                if (!in_array($ProxyGroup['name'], $checks)) {
+                    $newProxies = [];
+                    foreach ($ProxyGroup['proxies'] as $proxie) {
+                        if (!in_array($proxie, $clean_names)) {
+                            $newProxies[] = $proxie;
+                        }
+                    }
+                    $ProxyGroup['proxies'] = $newProxies;
+                }
+                $newProxyGroups[] = $ProxyGroup;
+            }
+        }
+
+        return $newProxyGroups;
+    }
+
+    /**
+     * Clash ProxyGroup 转字符串
+     *
+     * @param array $ProxyGroups ProxyGroup
+     *
+     * @return string
+     */
+    public static function getClashProxyGroup2String($ProxyGroups)
+    {
+        return Yaml::dump($ProxyGroups, 4, 2);
     }
 
     // 待续 Quantumult...

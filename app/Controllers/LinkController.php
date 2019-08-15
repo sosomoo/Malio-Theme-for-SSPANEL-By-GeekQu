@@ -164,7 +164,7 @@ class LinkController extends BaseController
             $getBody = self::getBody(
                 $user,
                 $response,
-                self::getKitsunebi($user),
+                self::getKitsunebi($user, $opts),
                 'Kitsunebi.txt'
             );
         } elseif ($shadowrocket == 1) {
@@ -462,7 +462,7 @@ class LinkController extends BaseController
         $ss_group = '';
         $items = array_merge(URL::getAllItems($user, 0, 1, 0), URL::getAllItems($user, 1, 1, 0));
         foreach ($items as $item) {
-            $ss_group .= $item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . URL::getSurgeObfs($item) . PHP_EOL;
+            $ss_group .= ($item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item) . PHP_EOL);
             $ss_name .= ', ' . $item['remark'];
         }
         $render = ConfRender::getTemplateRender();
@@ -485,9 +485,7 @@ class LinkController extends BaseController
     {
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
-        $confs = [];
-        $proxy_confs = [];
-        $back_china_confs = [];
+        $Proxys = [];
         // ss
         $items = array_merge(URL::getAllItems($user, 0, 1, 1), URL::getAllItems($user, 1, 1, 1));
         foreach ($items as $item) {
@@ -532,12 +530,7 @@ class LinkController extends BaseController
             if (isset($opts['source']) && $opts['source'] != '') {
                 $sss['class'] = $item['class'];
             }
-            if (strpos($sss['name'], '回国') or strpos($sss['name'], 'China')) {
-                $back_china_confs[] = $sss;
-            } else {
-                $proxy_confs[] = $sss;
-            }
-            $confs[] = $sss;
+            $Proxys[] = $sss;
         }
         // v2
         $items = URL::getAllVMessUrl($user, 1);
@@ -569,12 +562,7 @@ class LinkController extends BaseController
             if (isset($opts['source']) && $opts['source'] != '') {
                 $v2rays['class'] = $item['class'];
             }
-            if (strpos($v2rays['name'], '回国') or strpos($v2rays['name'], 'China')) {
-                $back_china_confs[] = $v2rays;
-            } else {
-                $proxy_confs[] = $v2rays;
-            }
-            $confs[] = $v2rays;
+            $Proxys[] = $v2rays;
         }
 
         if (isset($opts['source']) && $opts['source'] != '') {
@@ -585,35 +573,28 @@ class LinkController extends BaseController
             }
             $SourceContent = @file_get_contents($SourceURL);
             if ($SourceContent) {
-                return ConfController::getClashConfs($user, $confs, $SourceContent);
+                return ConfController::getClashConfs($user, $Proxys, $SourceContent);
             } else {
                 return '远程配置下载失败。';
             }
+        } else {
+            if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(Config::get('clash_Profiles')))) {
+                $Profiles = (string) trim($opts['profiles']);
+            } else {
+                $Profiles = 'lhie1';
+            }
+            $ProxyGroups = ConfController::getClashConfProxyGroup($Proxys, Config::get('clash_Profiles')[$Profiles]['ProxyGroup']);
+            $ProxyGroups = ConfController::fixClashProxyGroup($ProxyGroups, Config::get('clash_Profiles')[$Profiles]['Checks']);
+            $ProxyGroups = ConfController::getClashProxyGroup2String($ProxyGroups);
         }
 
         $render = ConfRender::getTemplateRender();
         $render->assign('user', $user)
             ->assign('userapiUrl', $userapiUrl)
             ->assign('opts', $opts)
-            ->assign('confs', $confs)
-            ->assign(
-                'proxies',
-                array_map(
-                    static function ($conf) {
-                        return $conf['name'];
-                    },
-                    $proxy_confs
-                )
-            )
-            ->assign(
-                'back_china_proxies',
-                array_map(
-                    static function ($conf) {
-                        return $conf['name'];
-                    },
-                    $back_china_confs
-                )
-            );
+            ->assign('Proxys', $Proxys)
+            ->assign('ProxyGroups', $ProxyGroups)
+            ->assign('Profiles', $Profiles);
 
         return $render->fetch('clash.tpl');
     }
@@ -730,9 +711,14 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getKitsunebi($user)
+    public static function getKitsunebi($user, $opts)
     {
         $return = '';
+
+        // 账户到期时间以及流量信息
+        $extend = isset($opts['extend']) ? (int) $opts['extend'] : 0;
+        $return .= $extend == 0 ? '' : URL::getUserTraffic($user, 2) . PHP_EOL;
+        
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
@@ -791,6 +777,13 @@ class LinkController extends BaseController
         $extend = isset($opts['extend']) ? $opts['extend'] : 0;
         $getV2rayPlugin = 1;
         $return_url = '';
+
+        // Quantumult 则不显示账户到期以及流量信息
+        if (strpos($_SERVER['HTTP_USER_AGENT'], 'Quantumult') !== false) {
+            $extend = 0;
+        }
+
+        // 如果是 Kitsunebi 不输出 SS V2rayPlugin 节点
         if (strpos($_SERVER['HTTP_USER_AGENT'], 'Kitsunebi') !== false) {
             $getV2rayPlugin = 0;
         }
