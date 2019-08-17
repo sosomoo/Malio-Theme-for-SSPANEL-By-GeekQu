@@ -15,7 +15,7 @@ class SubscribeLogController extends AdminController
         $table_config['total_column'] = array('id' => 'ID', 'user_name' => '用户名',
             'user_id' => '用户ID', 'email' => '用户邮箱', 'subscribe_type' => '类型',
             'request_ip' => 'IP', 'location' => '归属地', 'request_time' => '时间',
-            'request_user_agent' => '归属地');
+            'request_user_agent' => 'User-Agent');
         $table_config['default_show_column'] = array();
         foreach ($table_config['total_column'] as $column => $value) {
             $table_config['default_show_column'][] = $column;
