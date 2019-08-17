@@ -274,6 +274,10 @@ $app->group('/admin', function () {
     $this->post('/login/ajax', App\Controllers\Admin\IpController::class . ':ajax_login');
     $this->post('/alive/ajax', App\Controllers\Admin\IpController::class . ':ajax_alive');
 
+    // Subscribe Log Mange
+    $this->get('/subscribe', App\Controllers\Admin\SubscribeLogController::class . ':index');
+    $this->post('/subscribe/ajax', App\Controllers\Admin\SubscribeLogController::class . ':ajax_subscribe_log');
+
     // Code Mange
     $this->get('/code', App\Controllers\Admin\CodeController::class . ':index');
     $this->get('/code/create', App\Controllers\Admin\CodeController::class . ':create');

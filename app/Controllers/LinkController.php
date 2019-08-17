@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Models\Link;
 use App\Models\User;
+use App\Models\UserSubscribeLog;
 use App\Models\Smartline;
 use App\Utils\ConfRender;
 use App\Utils\Tools;
@@ -125,6 +126,8 @@ class LinkController extends BaseController
             $quantumult = 1;
         }
 
+        $subscribe_type = '';
+
         if (in_array($quantumult, array(1, 2, 3))) {
             $getBody = self::getBody(
                 $user,
@@ -132,6 +135,7 @@ class LinkController extends BaseController
                 self::getQuantumult($user, $quantumult),
                 'Quantumult.conf'
             );
+            $subscribe_type = 'Quantumult';
         } elseif (in_array($surge, array(1, 2, 3))) {
             $getBody = self::getBody(
                 $user,
@@ -139,6 +143,7 @@ class LinkController extends BaseController
                 self::getSurge($user, $surge, $opts),
                 'Surge.conf'
             );
+            $subscribe_type = 'Surge';
         } elseif ($surfboard == 1) {
             $getBody = self::getBody(
                 $user,
@@ -146,6 +151,7 @@ class LinkController extends BaseController
                 self::getSurfboard($user),
                 'Surfboard.conf'
             );
+            $subscribe_type = 'Surfboard';
         } elseif ($clash == 1) {
             $getBody = self::getBody(
                 $user,
@@ -153,6 +159,7 @@ class LinkController extends BaseController
                 self::getClash($user, $opts),
                 'config.yaml'
             );
+            $subscribe_type = 'Clash';
         } elseif ($ssd == 1) {
             $getBody = self::getBody(
                 $user,
@@ -160,6 +167,7 @@ class LinkController extends BaseController
                 self::getSSD($user),
                 'SSD.txt'
             );
+            $subscribe_type = 'SSD';
         } elseif ($kitsunebi == 1) {
             $getBody = self::getBody(
                 $user,
@@ -167,6 +175,7 @@ class LinkController extends BaseController
                 self::getKitsunebi($user, $opts),
                 'Kitsunebi.txt'
             );
+            $subscribe_type = 'Kitsunebi';
         } elseif ($shadowrocket == 1) {
             $getBody = self::getBody(
                 $user,
@@ -174,16 +183,53 @@ class LinkController extends BaseController
                 self::getShadowrocket($user),
                 'Shadowrocket.txt'
             );
+            $subscribe_type = 'Shadowrocket';
         } else {
+            if ($sub == 0 || $sub >= 6) {
+                $sub = 1;
+            }
             $getBody = self::getBody(
                 $user,
                 $response,
                 self::getSub($user, $sub, $opts),
                 'node.txt'
             );
+            $sub_type = [
+                1 => 'SSR',
+                2 => 'SS',
+                3 => 'V2Ray',
+                4 => 'V2Ray + SS',
+                5 => 'V2Ray + SS + SSR'
+            ];
+            $subscribe_type = $sub_type[$sub];
         }
 
+        // 记录订阅日志
+        self::Subscribe_log($user, $subscribe_type, $request->getHeaders('User-Agent'));
+
         return $getBody;
+    }
+
+    /**
+     * 记录订阅日志
+     *
+     * @param object $user 用户
+     * @param string $type 订阅类型
+     * @param string $ua   UA
+     *
+     */
+    private static function Subscribe_log($user, $type, $ua)
+    {
+        $log = new UserSubscribeLog();
+
+        $log->user_name = $user->user_name;
+        $log->user_id = $user->id;
+        $log->email = $user->email;
+        $log->subscribe_type = $type;
+        $log->request_ip = $_SERVER['REMOTE_ADDR'];
+        $log->request_time = date('Y-m-d H:i:s');
+        $log->request_user_agent = $ua;
+        $log->save();
     }
 
     /**
@@ -718,7 +764,7 @@ class LinkController extends BaseController
         // 账户到期时间以及流量信息
         $extend = isset($opts['extend']) ? (int) $opts['extend'] : 0;
         $return .= $extend == 0 ? '' : URL::getUserTraffic($user, 2) . PHP_EOL;
-        
+
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
