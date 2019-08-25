@@ -143,8 +143,8 @@
                         <div class="row">
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
-                            <p>在终端 <code>cd</code> 到 Clash 二进制文件所在的目录，执行 <code>wget -O config.yml {$baseUrl}/link/{$sub_token}?type=clash&log-level=info</code> 下载 Clash 配置文件</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="wget -O config.yml {$baseUrl}/link/{$sub_token}?type=clash&log-level=info"><i class="malio-clash"></i> 复制 wget 命令</a>
+                            <p>在终端 <code>cd</code> 到 Clash 二进制文件所在的目录，执行 <code>wget -O config.yml {$subInfo["clash"]}&log-level=info</code> 下载 Clash 配置文件</p>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="wget -O config.yml {$subInfo['clash']}&log-level=info"><i class="malio-clash"></i> 复制 wget 命令</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">
