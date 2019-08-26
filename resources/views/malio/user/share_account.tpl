@@ -30,7 +30,6 @@
           </div>
           <div class="section-body">
             <div class="row">
-              {if $user->class > 0}
               {foreach $malio_config['share_account'] as $class_name => $class}
               <div class="col-12 col-md-6 col-lg-3">
                 <div class="card">
@@ -40,27 +39,17 @@
                   <div class="card-body">
                       {foreach $class as $account}
                       <div class="netfix-title section-title mt-0">{$account['name']}</div>
-                      <p class="mb-0">
-                        账号: <a href="##" class="copy-text" data-clipboard-text="{$account['account']}">{$account['account']}</a><br>
-                        密码: <a href="##" class="copy-text" data-clipboard-text="{$account['passwd']}">******</a>
-                      </p>
+                      {if $user->class >= $account['class']}
+                      账号: <a href="##" class="copy-text" data-clipboard-text="{$account['account']}">{$account['account']}</a><br>
+                      密码: <a href="##" class="copy-text" data-clipboard-text="{$account['passwd']}">*********(点击复制)</a>
+                      {else}
+                      您目前订阅的会员计划无法查看此共享账号，请升级会员计划。
+                      {/if}
                       {/foreach}
                   </div>
                 </div>
               </div>
               {/foreach}
-              {else}
-              <div class="col-12 col-md-6 col-lg-3">
-                <div class="card">
-                  <div class="card-header">
-                    <h4>账号权限不足</h4>
-                  </div>
-                  <div class="card-body">
-                    <p>购买会员计划后才能使用共享账号</p>
-                  </div>
-                </div>
-              </div>
-              {/if}
             </div>
           </div>
         </section>

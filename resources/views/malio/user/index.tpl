@@ -305,8 +305,13 @@
                           <div class="accordion-body collapse" id="panel-body-{$class_name}" data-parent="#accordion">
                             {foreach $class as $account}
                             <p class="mb-2">
+                              <p class="lead"><b>{$account['name']}</b></p>
+                              {if $user->class >= $account['class']}
                               账号: <a href="##" class="copy-text" data-clipboard-text="{$account['account']}">{$account['account']}</a><br>
                               密码: <a href="##" class="copy-text" data-clipboard-text="{$account['passwd']}">*********(点击复制)</a>
+                              {else}
+                              您目前订阅的会员计划无法查看此共享账号，请升级会员计划。
+                              {/if}
                             </p>
                             {/foreach}
                           </div>
@@ -346,6 +351,17 @@
                         {/if}
                         {if (in_array("ssr",$malio_config['support_sub_type']))}
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-ssr copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
+                        {/if}
+                        {if $malio_config['enable_copy_urls_to_clipboard'] == true}
+                        {if (in_array("ss",$malio_config['support_sub_type']))}
+                        <a href="##" id="ss-all-urls" class="btn btn-icon icon-left btn-primary btn-ss copy-config btn-lg btn-round" onclick="Copyconfig('/user/getUserAllURL?type=ss','#ss-all-urls','')"><i class="malio-ssr"></i> 批量复制 SS 链接</a>
+                        {/if}
+                        {if (in_array("ssr",$malio_config['support_sub_type']))}
+                        <a href="##" id="ssr-all-urls" class="btn btn-icon icon-left btn-primary btn-ssr copy-config btn-lg btn-round" onclick="Copyconfig('/user/getUserAllURL?type=ssr','#ssr-all-urls','')"><i class="malio-ssr"></i> 批量复制 SSR 链接</a>
+                        {/if}
+                        {if (in_array("v2ray",$malio_config['support_sub_type']))}
+                        <a href="##" id="v2ray-all-urls" class="btn btn-icon icon-left btn-primary btn-v2ray copy-config btn-lg btn-round" onclick="Copyconfig('/user/getUserAllURL?type=v2ray','#v2ray-all-urls','')"><i class="malio-v2rayng"></i> 批量复制 V2Ray 链接</a>
+                        {/if}
                         {/if}
                       </div>
                     </div>
@@ -458,6 +474,7 @@
 
     setTimeout(loadTrafficChart(), 3000);
 </script>
+
 <script>
   function Copyconfig(url, id, jumpurl = "") {
     $.ajax({
@@ -482,9 +499,13 @@
       }
     });
     clipboard.on('success', function (e) {
+      var title = '已复制到您的剪贴板';
+      if (jumpurl != '') {
+        title = '复制成功，即将跳转到 APP';
+      }
       swal({
         type: 'success',
-        title: '复制成功，即将跳转到 APP',
+        title: title,
         showConfirmButton: false,
         timer: 1500,
         onClose: () => {
