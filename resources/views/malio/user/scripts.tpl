@@ -1,4 +1,3 @@
-
 <!-- General JS Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
@@ -15,11 +14,29 @@
 <script src="/theme/malio/js/malio.js?{$malio_config['malio_js_version']}"></script>
 
 <script>
-    var isWeixin = function () {
-      var ua = navigator.userAgent.toLowerCase();
-      return ua.match(/MicroMessenger/i) == "micromessenger";
-    };
-    if (isWeixin() == true) {
-      $('body').html('<h5 style="margin:20px">不支持在微信内访问<br>请点击右上角菜单<br>选择浏览器打开</h5>')
-    }
-  </script>
+  var isWeixin = function () {
+    var ua = navigator.userAgent.toLowerCase();
+    return ua.match(/MicroMessenger/i) == "micromessenger";
+  };
+  if (isWeixin() == true) {
+    $('body').html('<h5 style="margin:20px">不支持在微信内访问<br>请点击右上角菜单<br>选择浏览器打开</h5>')
+  }
+  function joinTelegramGroup() {
+    {if $malio_config['force_user_to_bind_tg_when_join_group'] == true}
+    Swal.fire({
+      title: '提示',
+      html: '加入群组之前需要在 <a href="/user/profile">我的账号</a> 页面绑定 Telegram 账号，未绑定则无法加入群组。',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '确定加入',
+      cancelButtonText: '取消'
+    }).then((result) => {
+      if (result.value) {
+        window.open("{$malio_config['telegram_group']}")
+      }
+    })
+    {else}
+    window.open("{$malio_config['telegram_group']}")
+    {/if}
+  }
+</script>

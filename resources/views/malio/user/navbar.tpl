@@ -86,7 +86,7 @@
 
     {if $malio_config['enable_sidebar_button'] == true && $user->class >= $malio_config['telegram_group_class']}
     <div class="mt-4 {if !$user->isAdmin()}mb-4{/if} p-3 hide-sidebar-mini">
-        <a href="{$malio_config['telegram_group']}" target="blank" class="btn btn-primary btn-lg btn-block btn-icon-split">
+        <a href="##" onclick="joinTelegramGroup()" class="btn btn-primary btn-lg btn-block btn-icon-split">
             <i class="fab fa-telegram-plane"></i>加入 Telegram 群组
         </a>
     </div>
