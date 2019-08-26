@@ -50,18 +50,7 @@
 <!-- End Google Analytics -->
 {/if}
 {if $malio_config['enable_crisp'] == true}
-<!-- Crisp Chat  -->
-<script type="text/javascript">
-  window.$crisp = [];
-  window.CRISP_WEBSITE_ID = "{$malio_config['crisp_wesite_id']}";
-  (function () {
-    d = document;
-    s = d.createElement("script");
-    s.src = "https://client.crisp.chat/l.js";
-    s.async = 1;
-    d.getElementsByTagName("head")[0].appendChild(s);
-  })();
-</script>
+{include file='crisp.tpl'}
 <script>
   function sendData() {
     $crisp.push(["set", "user:email", "{$user->email}"], ["set", "user:nickname", "{$user->user_name}"]);
