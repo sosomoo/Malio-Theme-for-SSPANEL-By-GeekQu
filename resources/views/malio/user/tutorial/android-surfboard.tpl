@@ -248,6 +248,7 @@
   <script src="https://cdn.jsdelivr.net/npm/kjua@0.1.2/dist/kjua.min.js"></script>
 
   <script>
+    var appName = "{$config['appName']}";
     function importSublink() {
       oneclickImport('surfboard', '{$subInfo["surfboard"]}')
     }
