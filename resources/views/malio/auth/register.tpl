@@ -281,12 +281,10 @@
       // eof vaildation
       
       {if $geetest_html != null}
-      if (typeof validate == 'undefined') {
-        swal('请验证身份', '请滑动验证码来完成验证。', 'error');
-        return;
-      }
-      if (!validate) {
-        swal('请验证身份', '请滑动验证码来完成验证。', 'error');
+      validate = captcha.getValidate();
+      if (typeof validate === 'undefined' || !validate) {
+        swal('请验证身份', '请滑动验证码来完成验证。', 'info');
+        $('#register-confirm').removeAttr("disabled","disabled")
         return;
       }
       {/if}
@@ -337,7 +335,7 @@
               } else {
                 $('#register-confirm').removeAttr("disabled")
                 {if $geetest_html != null}
-                captcha.refresh();
+                captcha.reset();
                 {/if}
                 $("#code").val(code);
                 swal({

@@ -233,6 +233,27 @@
   <!-- Page Specific JS File -->
   <script src="/theme/malio/js/malio.js?{$malio_config['malio_js_version']}"></script>
 
+  {if $geetest_html != null}
+  <script src="//static.geetest.com/static/tools/gt.js"></script>
+  <script>
+    captcha = '';
+    var handlerEmbed = function (captchaObj) {
+      captchaObj.onSuccess(function () {
+          validate = captchaObj.getValidate();
+      });
+      captchaObj.appendTo("#embed-captcha");
+      captcha = captchaObj;
+    };
+    initGeetest({
+      gt: "{$geetest_html->gt}",
+      challenge: "{$geetest_html->challenge}",
+      product: "embed",
+      width: "100%",
+      offline: {if $geetest_html->success}0{else}1{/if}
+    }, handlerEmbed);
+  </script>
+  {/if}
+
   <script>
     function login() {
       if (!$("#password").val() || !$("#email").val()) {
@@ -240,12 +261,9 @@
       }
 
       {if $geetest_html != null}
-      if (typeof validate == 'undefined') {
-        swal('请验证身份', '请滑动验证码来完成验证。', 'error');
-        return;
-      }
-      if (!validate) {
-        swal('请验证身份', '请滑动验证码来完成验证。', 'error');
+      validate = captcha.getValidate();
+      if (typeof validate === 'undefined' || !validate) {
+        swal('请验证身份', '请滑动验证码来完成验证。', 'info');
         return;
       }
       {/if}
@@ -269,7 +287,8 @@
             window.location.assign('/user')
           } else {
             {if $geetest_html != null}
-            captcha.refresh();
+            console.log(captcha)
+            captcha.reset();
             {/if}
             swal('出错了', '密码或邮箱不正确', 'error');
           }
@@ -378,25 +397,6 @@
 </script>
 {/if}
 
-{if $geetest_html != null}
-<script src="//static.geetest.com/static/tools/gt.js"></script>
-<script>
-  var handlerEmbed = function (captchaObj) {
-    captchaObj.onSuccess(function () {
-        validate = captchaObj.getValidate();
-    });
-    captchaObj.appendTo("#embed-captcha");
-    captcha = captchaObj;
-  };
-  initGeetest({
-    gt: "{$geetest_html->gt}",
-    challenge: "{$geetest_html->challenge}",
-    product: "embed",
-    width: "100%",
-    offline: {if $geetest_html->success}0{else}1{/if}
-  }, handlerEmbed);
-</script>
-{/if}
 {if $recaptcha_sitekey != null}
     <script src="https://recaptcha.net/recaptcha/api.js" async defer></script>
 {/if}
