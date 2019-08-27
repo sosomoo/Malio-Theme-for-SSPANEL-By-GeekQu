@@ -37,7 +37,7 @@
               <form action="javascript:void(0);" method="POST" class="needs-validation" novalidate="">
 
                 <div class="card-body">
-                  <div class="form-group">
+                  <div class="form-group login-form-item">
                     <label for="email">邮箱</label>
                     <input id="email" type="email" class="form-control" name="email" tabindex="1" required autofocus>
                     <div class="invalid-feedback">
@@ -45,7 +45,7 @@
                     </div>
                   </div>
 
-                  <div class="form-group">
+                  <div class="form-group login-form-item">
                     <div class="d-block">
                       <label for="password" class="control-label">密码</label>
                       <div class="float-right">
@@ -57,6 +57,14 @@
                     <input id="password" type="password" class="form-control" name="password" tabindex="2" required>
                     <div class="invalid-feedback">
                       请填写密码
+                    </div>
+                  </div>
+
+                  <div id="2fa-form" class="form-group" style="display: none;">
+                    <label for="2fa-code">二步验证</label>
+                    <input id="2fa-code" type="number" class="form-control" name="2fa-code" tabindex="1" maxlength="6" placeholder="请输入6位验证码" required>
+                    <div class="invalid-feedback">
+                      请输入验证码
                     </div>
                   </div>
 
@@ -72,7 +80,7 @@
                       </div>
                   {/if}
 
-                  <div class="form-group">
+                  <div class="form-group login-form-item">
                     <div class="custom-control custom-checkbox">
                       <input type="checkbox" name="remember" class="custom-control-input" tabindex="3" id="remember-me">
                       <label class="custom-control-label" for="remember-me">七天内免登录</label>
@@ -86,10 +94,10 @@
                   </div>
               </form>
               {if $malio_config['enable_telegram'] == true}
-              <div class="text-center mt-4 mb-3">
+              <div class="text-center mt-4 mb-3 login-form-item">
                 <div class="text-job text-muted">或者</div>
               </div>
-              <div class="form-group">
+              <div class="form-group login-form-item">
                 <button data-toggle="modal" id="telegram-login-button" data-target="#telegram-modal" class="btn btn-info btn-lg btn-block" tabindex="4" style="box-shadow:none;">
                   <i class="fab fa-telegram-plane"></i> 使用 Telegram 登录
                 </button>
@@ -303,9 +311,9 @@
           if (data.ret == 1) {
             window.location.assign('/user')
           } else if(data.ret == 2) {
-            $('.login-form-item').hide();
+            $('.login-form-item').hide('fast');
             $('form').removeClass('was-validated');
-            $('#2fa-form').show();
+            $('#2fa-form').show('fast');
             {if $geetest_html != null}
             captcha.reset();
             {/if}
