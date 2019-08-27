@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="/theme/malio/assets/css/style.css">
   <link rel="stylesheet" href="/theme/malio/assets/css/components.css">
 
-  {if $malio_config['enable_crisp'] == true $malio_config['enable_crisp_outside'] == true}
+  {if $malio_config['enable_crisp'] == true && $malio_config['enable_crisp_outside'] == true}
   {include file='crisp.tpl'}
   {/if}
 </head>
