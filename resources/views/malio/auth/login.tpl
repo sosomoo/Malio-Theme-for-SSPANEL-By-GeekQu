@@ -13,6 +13,7 @@
   <!-- Template CSS -->
   <link rel="stylesheet" href="/theme/malio/assets/css/style.css">
   <link rel="stylesheet" href="/theme/malio/assets/css/components.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css">
 
   {if $malio_config['enable_crisp'] == true && $malio_config['enable_crisp_outside'] == true}
   {include file='crisp.tpl'}
@@ -106,7 +107,7 @@
 
             </div>
           </div>
-          <div class="mt-5 text-muted text-center">
+          <div class="mt-5 text-muted text-center login-form-item">
             还没有账号？ <a href="/auth/register">马上注册 👉</a>
           </div>
           <div class="simple-footer">
@@ -311,7 +312,9 @@
           if (data.ret == 1) {
             window.location.assign('/user')
           } else if(data.ret == 2) {
-            $('.login-form-item').hide('fast');
+            
+            $('.login-form-item').addClass('animated fadeOut faster')
+            $('.login-form-item').hide('300');
             $('form').removeClass('was-validated');
             $('#2fa-form').show('fast');
             {if $geetest_html != null}
