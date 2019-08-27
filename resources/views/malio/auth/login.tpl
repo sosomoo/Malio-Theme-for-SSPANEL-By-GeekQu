@@ -62,7 +62,7 @@
 
                   {if $geetest_html != null}
                   <div class="form-group">
-                    <div id="embed-captcha"></div>
+                    <div class="embed-captcha"></div>
                   </div>
                   {/if}
 
@@ -75,13 +75,13 @@
                   <div class="form-group">
                     <div class="custom-control custom-checkbox">
                       <input type="checkbox" name="remember" class="custom-control-input" tabindex="3" id="remember-me">
-                      <label class="custom-control-label" for="remember-me">记住我</label>
+                      <label class="custom-control-label" for="remember-me">七天内免登录</label>
                     </div>
                   </div>
 
                   <div class="form-group">
-                    <button type="submit" id="login" class="btn btn-primary btn-lg btn-block" tabindex="4">
-                      芝麻开门
+                    <button type="submit" class="btn btn-primary btn-lg btn-block login" tabindex="4">
+                      登录
                     </button>
                   </div>
               </form>
@@ -125,36 +125,46 @@
             <img src="/theme/malio/assets/img/stisla-fill.svg" alt="logo" width="80" class="shadow-light rounded-circle mb-5 mt-2">
             <h4 class="text-dark font-weight-normal">欢迎使用 <span class="font-weight-bold">{$config["appName"]}</span></h4>
             <p class="text-muted">{$malio_config['login_slogan']}</p>
+
             <form action="javascript:void(0);" method="POST" class="needs-validation" novalidate="">
-              <div class="form-group">
-                <label for="email">邮箱</label>
-                <input id="email" type="email" class="form-control" name="email" tabindex="1" required autofocus>
-                <div class="invalid-feedback">
-                  请填写邮箱
-                </div>
-              </div>
-
-              <div class="form-group">
-                <div class="d-block">
-                  <label for="password" class="control-label">密码</label>
-                  {if $malio_config['enable_telegram'] == true}
-                  <div class="float-right">
-                    <a href="/password/reset" class="text-small">
-                      忘记密码？
-                    </a>
+              <div class="login-form-item">
+                <div class="form-group">
+                  <label for="email">邮箱</label>
+                  <input id="email" type="email" class="form-control" name="email" tabindex="1" required autofocus>
+                  <div class="invalid-feedback">
+                    请填写邮箱
                   </div>
-                  {/if}
                 </div>
-                <input id="password" type="password" class="form-control" name="password" tabindex="2" required>
-                <div class="invalid-feedback">
-                  请填写密码
+
+                <div class="form-group">
+                  <div class="d-block">
+                    <label for="password" class="control-label">密码</label>
+                    {if $malio_config['enable_telegram'] == true}
+                    <div class="float-right">
+                      <a href="/password/reset" class="text-small">
+                        忘记密码？
+                      </a>
+                    </div>
+                    {/if}
+                  </div>
+                  <input id="password" type="password" class="form-control" name="password" tabindex="2" required>
+                  <div class="invalid-feedback">
+                    请填写密码
+                  </div>
                 </div>
               </div>
 
+              <div id="2fa-form" class="form-group" style="display: none;">
+                <label for="2fa-code">二步验证</label>
+                <input id="2fa-code" type="number" class="form-control" name="2fa-code" tabindex="1" maxlength="6" placeholder="请输入6位验证码" required>
+                <div class="invalid-feedback">
+                  请输入验证码
+                </div>
+              </div>
 
               {if $geetest_html != null}
               <div class="form-group">
-                <div id="embed-captcha"></div>
+                <div class="embed-captcha"></div>
               </div>
               {/if}
 
@@ -164,33 +174,33 @@
                 </div>
               {/if}
 
-              <div class="form-group">
+              <div class="form-group login-form-item">
                 <div class="custom-control custom-checkbox">
                   <input type="checkbox" name="remember" class="custom-control-input" tabindex="3" id="remember-me">
-                  <label class="custom-control-label" for="remember-me">记住我</label>
+                  <label class="custom-control-label" for="remember-me">七天内免登录</label>
                 </div>
               </div>
 
               <div class="form-group text-right">
                 {if $malio_config['enable_telegram'] == false}
-                <a href="/password/reset" class="float-left mt-3">
+                <a href="/password/reset" class="float-left mt-3 login-form-item">
                   忘记密码？
                 </a>
                 {/if}
                 {if $malio_config['enable_telegram'] == true}
-                <a href="##" id="telegram-login-button" data-toggle="modal" data-target="#telegram-modal" class="float-left mt-3">
+                <a href="##" id="telegram-login-button" data-toggle="modal" data-target="#telegram-modal" class="float-left mt-3 login-form-item">
                   Telegram 登录
                 </a>
                 {/if}
-                <button id="login" type="submit" class="btn btn-primary btn-lg btn-icon icon-right" tabindex="4">
-                  芝麻开门
+                <button type="submit" class="btn btn-primary btn-lg btn-icon icon-right login" tabindex="4">
+                  登录
                 </button>
               </div>
-
-              <div class="mt-5 text-center">
-                还没有账号？ <a href="/auth/register">马上注册 👉</a>
-              </div>
             </form>
+
+            <div class="mt-5 text-center login-form-item">
+              还没有账号？ <a href="/auth/register">马上注册 👉</a>
+            </div>
 
             <div class="text-center mt-5 text-small">
               Copyright &copy; 2019 {$config["appName"]}
@@ -241,7 +251,7 @@
       captchaObj.onSuccess(function () {
           validate = captchaObj.getValidate();
       });
-      captchaObj.appendTo("#embed-captcha");
+      captchaObj.appendTo(".embed-captcha");
       captcha = captchaObj;
     };
     initGeetest({
@@ -255,6 +265,7 @@
   {/if}
 
   <script>
+    var twoFA = false;
     function login() {
       if (!$("#password").val() || !$("#email").val()) {
         return false;
@@ -268,6 +279,12 @@
       }
       {/if}
 
+      if (twoFA == true) {
+        if (!$("#2fa-code").val()) {
+          return false;
+        }
+      }
+
       $.ajax({
         type: "POST",
         url: "/auth/login",
@@ -275,7 +292,7 @@
         data: {
           email: $("#email").val(),
           passwd: $("#password").val(),
-          code: $("#code").val(),{if $recaptcha_sitekey != null}
+          code: $("#2fa-code").val(),{if $recaptcha_sitekey != null}
           recaptcha: grecaptcha.getResponse(),{/if}
           remember_me: $("#remember-me:checked").val(){if $geetest_html != null},
           geetest_challenge: validate.geetest_challenge,
@@ -285,10 +302,22 @@
         success: function (data) {
           if (data.ret == 1) {
             window.location.assign('/user')
+          } else if(data.ret == 2) {
+            $('.login-form-item').hide();
+            $('form').removeClass('was-validated');
+            $('#2fa-form').show();
+            {if $geetest_html != null}
+            captcha.reset();
+            {/if}
+            {if $recaptcha_sitekey != null}
+            grecaptcha.reset();
+            {/if}
           } else {
             {if $geetest_html != null}
-            console.log(captcha)
             captcha.reset();
+            {/if}
+            {if $recaptcha_sitekey != null}
+            grecaptcha.reset();
             {/if}
             swal('出错了', '密码或邮箱不正确', 'error');
           }
@@ -300,7 +329,7 @@
         login();
       }
     });
-    $("#login").click(function () {
+    $(".login").click(function () {
       login();
     });
   </script>
