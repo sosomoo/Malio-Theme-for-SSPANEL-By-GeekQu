@@ -22,7 +22,7 @@
     $('body').html('<h5 style="margin:20px">不支持在微信内访问<br>请点击右上角菜单<br>选择浏览器打开</h5>')
   }
   function joinTelegramGroup() {
-    {if $malio_config['force_user_to_bind_tg_when_join_group'] == true}
+    {if $malio_config['force_user_to_bind_tg_when_join_group'] == true && $user->telegram_id == 0}
     Swal.fire({
       title: '提示',
       html: '加入群组之前需要在 <a href="/user/profile">我的账号</a> 页面绑定 Telegram 账号，未绑定则无法加入群组。',

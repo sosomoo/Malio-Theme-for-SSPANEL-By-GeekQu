@@ -148,7 +148,7 @@
                       </div>
                       <div class="card-body">
                         <p>点击会重置您的订阅链接，此操作不可逆，请谨慎操作。</p>
-                        当前订阅链接: <code>{$config['subUrl']}/{$ssr_sub_token}</code>
+                        当前订阅链接: <code>{$config['subUrl']}{$ssr_sub_token}</code>
                       </div>
                       <div class="card-footer bg-whitesmoke text-md-right">
                         <button id="reset-sub-link" class="btn btn-danger">重置订阅链接</button>
