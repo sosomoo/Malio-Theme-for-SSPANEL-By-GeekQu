@@ -273,7 +273,7 @@ $Malio_Config['taiwan_flag'] = 'cn';   //  台湾的旗显示方式，cn为中�
 // 节点设置 -> 连接设置
 $Malio_Config['enable_protocol'] = true;   // 是否显示自定义混淆和协议设置
 $Malio_Config['enable_method'] = true;    // 是否显示自定义加密方式设置
-$Malio_Config['enable_reset_port'] = true;   // 是否显示重置端口设置
+$Malio_Config['enable_reset_port'] = true;   // 是否显示重置端口设置，.config.php 里的 port_price (重置端口价格) 为负数的话是不会显示的。
 
 
 // 下载和使用

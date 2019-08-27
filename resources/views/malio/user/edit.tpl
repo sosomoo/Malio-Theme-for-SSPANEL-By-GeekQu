@@ -38,7 +38,7 @@
                       {if $malio_config['enable_method'] == true}<li class="nav-item"><a class="nav-link" id="method-tab" data-toggle="tab" href="#method" role="tab" aria-controls="method" aria-selected="false">加密方式</a></li>{/if}
                       {if $malio_config['enable_protocol'] == true}<li class="nav-item"><a class="nav-link" id="protocol-tab" data-toggle="tab" href="#protocol" role="tab" aria-controls="protocol" aria-selected="false">协议和混淆</a></li>{/if}
                       <li class="nav-item"><a class="nav-link" id="resetlink-tab" data-toggle="tab" href="#resetlink" role="tab" aria-controls="resetlink" aria-selected="false">重置订阅链接</a></li>
-                      {if $malio_config['enable_reset_port'] == true && $config['port_price'] > 0}<li class="nav-item"><a class="nav-link" id="resetport-tab" data-toggle="tab" href="#resetport" role="tab" aria-controls="resetport" aria-selected="false">重置端口</a></li>{/if}
+                      {if $malio_config['enable_reset_port'] == true && $config['port_price'] >= 0}<li class="nav-item"><a class="nav-link" id="resetport-tab" data-toggle="tab" href="#resetport" role="tab" aria-controls="resetport" aria-selected="false">重置端口</a></li>{/if}
                     </ul>
                   </div>
                 </div>
@@ -155,7 +155,7 @@
                       </div>
                     </div>
                   </div>
-                  {if $malio_config['enable_reset_port'] == true && $config['port_price'] > 0}
+                  {if $malio_config['enable_reset_port'] == true && $config['port_price'] >= 0}
                   <div class="tab-pane fade" id="resetport" role="tabpanel" aria-labelledby="resetport-tab">
                     <div class="card">
                       <div class="card-header">
