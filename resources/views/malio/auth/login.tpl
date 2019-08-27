@@ -90,7 +90,7 @@
                 <div class="text-job text-muted">或者</div>
               </div>
               <div class="form-group">
-                <button data-toggle="modal" data-target="#telegram-modal" class="btn btn-info btn-lg btn-block" tabindex="4" style="box-shadow:none;">
+                <button data-toggle="modal" id="telegram-login-button" data-target="#telegram-modal" class="btn btn-info btn-lg btn-block" tabindex="4" style="box-shadow:none;">
                   <i class="fab fa-telegram-plane"></i> 使用 Telegram 登录
                 </button>
               </div>
@@ -178,7 +178,7 @@
                 </a>
                 {/if}
                 {if $malio_config['enable_telegram'] == true}
-                <a href="##" data-toggle="modal" data-target="#telegram-modal" class="float-left mt-3">
+                <a href="##" id="telegram-login-button" data-toggle="modal" data-target="#telegram-modal" class="float-left mt-3">
                   Telegram 登录
                 </a>
                 {/if}
@@ -321,6 +321,60 @@
     el.setAttribute('data-auth-url', '{$base_url}/auth/telegram_oauth')
     el.setAttribute('data-request-access', 'write')
   });
+</script>
+<script>
+  $(document).ready(function () {
+    $("#telegram-login-button").click(
+      function () {
+        tgLogin();
+      }
+    );
+
+    function tgLogin() {
+      $.ajax({
+        type: "POST",
+        url: "qrcode_check",
+        dataType: "json",
+        data: {
+          token: "{$login_token}",
+          number: "{$login_number}"
+        },
+        success: (data) => {
+          if (data.ret > 0) {
+            clearTimeout(tid);
+
+            $.ajax({
+              type: "POST",
+              url: "/auth/qrcode_login",
+              dataType: "json",
+              data: {
+                token: "{$login_token}",
+                number: "{$login_number}"
+              },
+              success: (data) => {
+                if (data.ret) {
+                  window.location.href = '/user'
+                }
+              },
+              error: (jqXHR) => {
+                swal('TG登录失败','请使用账号密码登录', 'error');
+              }
+            });
+          } else {
+            if (data.ret === -1) {
+              $('#code_number').replaceWith('<code id="code_number">此数字已经过期，请刷新页面后重试。</code>');
+            }
+          }
+        },
+        error: (jqXHR) => {
+          if (jqXHR.status !== 200 && jqXHR.status !== 0) {
+            swal('TG登录失败','请使用账号密码登录', 'error');
+          }
+        }
+      });
+      tid = setTimeout(tgLogin, 2500); //循环调用触发setTimeout
+    }
+  })
 </script>
 {/if}
 
