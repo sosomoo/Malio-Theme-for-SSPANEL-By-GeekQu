@@ -65,7 +65,15 @@ $sign = md5(substr($o,0,-1).$settings['token']);
 
 
          if ($sign == $signs) {
-           $this->postPayment($order_data['out_trade_no'], "在线支付");
+			 //验重
+			 $p = Paylist::where('tradeno', '=', $order_data['out_trade_no'])->first();
+			 $money = $p->total;
+			 if ($p->status != 1) {
+                  $this->postPayment($order_data['out_trade_no'], "在线支付");
+                    echo 'SUCCESS';
+                } else {
+                    echo 'ERROR';
+                }
         echo 'success';
         if($ispost==0) header("Location: /user/code");
 			
