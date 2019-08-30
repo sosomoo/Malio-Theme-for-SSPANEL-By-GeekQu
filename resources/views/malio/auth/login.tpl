@@ -13,7 +13,6 @@
   <!-- Template CSS -->
   <link rel="stylesheet" href="/theme/malio/assets/css/style.css">
   <link rel="stylesheet" href="/theme/malio/assets/css/components.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css">
 
   {if $malio_config['enable_crisp'] == true && $malio_config['enable_crisp_outside'] == true}
   {include file='crisp.tpl'}
@@ -312,9 +311,7 @@
           if (data.ret == 1) {
             window.location.assign('/user')
           } else if(data.ret == 2) {
-            
-            $('.login-form-item').addClass('animated fadeOut faster')
-            $('.login-form-item').hide('300');
+            $('.login-form-item').hide('500');
             $('form').removeClass('was-validated');
             $('#2fa-form').show('fast');
             {if $geetest_html != null}
@@ -330,7 +327,11 @@
             {if $recaptcha_sitekey != null}
             grecaptcha.reset();
             {/if}
-            swal('出错了', '密码或邮箱不正确', 'error');
+            var errorMsg = '密码或邮箱不正确';
+            if (twoFA == true) {
+              errorMsg = '两步验证码错误'
+            }
+            swal('出错了', errorMsg, 'error');
           }
         }
       });

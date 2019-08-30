@@ -83,6 +83,10 @@
     .table750 {
       width: 750px;
     }
+
+    p {
+      font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #101010; font-size: 16px; line-height: 22px; font-weight: 300; letter-spacing: -1px;
+    }
   </style>
 </head>
 
@@ -91,9 +95,6 @@
   <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #f3f3f3; min-width: 350px; font-size: 1px; line-height: normal;">
     <tr>
       <td align="center" valign="top">
-        <!--[if (gte mso 9)|(IE)]>
-         <table border="0" cellspacing="0" cellpadding="0">
-         <tr><td align="center" valign="top" width="750"><![endif]-->
         <table cellpadding="0" cellspacing="0" border="0" width="750" class="table750" style="width: 100%; max-width: 750px; min-width: 350px; background: #f3f3f3;">
           <tr>
             <td class="mob_pad" width="25" style="width: 25px; max-width: 25px; min-width: 25px;">&nbsp;</td>
@@ -111,7 +112,7 @@
                 <tr>
                   <td align="left" valign="top">
                     <div style="height: 39px; line-height: 39px; font-size: 37px;">&nbsp;</div>
-                    <font class="mob_title1" face="'Source Sans Pro', sans-serif" color="#1a1a1a" style="font-size: 52px; line-height: 55px; font-weight: 300; letter-spacing: -1.5px;">
+                    <font class="mob_title1" face="'Nunito', sans-serif" color="#1a1a1a" style="font-size: 52px; line-height: 55px; font-weight: 300; letter-spacing: -1.5px;">
                       <a href="{$config['baseUrl']}" style="text-decoration:none"><span class="mob_title1" style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #6777ef; font-size: 48px; line-height: 55px; font-weight: 700; letter-spacing: -1.5px;">{$config['appName']}</span></a>
                     </font>
                     <div style="height: 73px; line-height: 73px; font-size: 71px;">&nbsp;</div>
@@ -123,16 +124,67 @@
                 <tr>
                   <td align="left" valign="top">
                     <font face="'Nunito', sans-serif" color="#1a1a1a" style="font-size: 52px; line-height: 60px; font-weight: 300; letter-spacing: -1.5px;">
-                      <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #1a1a1a; font-size: 52px; line-height: 60px; font-weight: 300; letter-spacing: -1.5px;">Hi, {$user->user_name}</span>
+                      <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #1a1a1a; font-size: 52px; line-height: 60px; font-weight: 300; letter-spacing: -1.5px;">Hi, 管理员</span>
                     </font>
                     <div style="height: 33px; line-height: 33px; font-size: 31px;">&nbsp;</div>
                     <font face="'Nunito', sans-serif" color="#585858" style="font-size: 24px; line-height: 32px;">
                       <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #585858; font-size: 24px; line-height: 32px;">{$text}</span>
                     </font>
+
+                    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100% !important; min-width: 100%; max-width: 100%;">
+                      <tbody>
+                        <tr>
+                          <td align="left" valign="top">
+                            <div class="mob_btn" style="display: inline-block; vertical-align: top; width: 100%;">
+                              <table class="mob_card" cellpadding="0" cellspacing="0" border="0">
+                                <tbody>
+                                  <tr>
+                                    <td align="left" valign="top">
+                                      <div style="height: 35px; line-height: 35px; font-size: 33px;">&nbsp;</div>
+
+                                      <div style="height: 22px; line-height: 22px; font-size: 20px;">&nbsp;</div>
+                                      <font face="'Nunito', sans-serif" color="#ff9800" style="font-size: 16px; line-height: 22px; font-weight: 700;">
+                                        <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #ff9800; font-size: 16px; line-height: 22px; font-weight: 700;">{$user->user_name}: {$title}</span>
+                                      </font>
+                                      <div style="height: 12px; line-height: 12px; font-size: 10px;">&nbsp;</div>
+                                      <font face="'Nunito', sans-serif" color="#101010" style="font-size: 26px; line-height: 33px; font-weight: 300; letter-spacing: -1px;">
+                                        <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #101010; font-size: 16px; line-height: 22px; font-weight: 300; letter-spacing: -1px;">{$content}</span>
+                                      </font>
+                                      <div style="height: 8px; line-height: 8px; font-size: 6px;">&nbsp;</div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                            <!--[if (gte mso 9)|(IE)]>
+                            </td></tr>
+                            </table><![endif]-->
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <div style="height: 26px; line-height: 26px; font-size: 31px;">&nbsp;</div>
+                    <table class="mob_btn" cellpadding="0" cellspacing="0" border="0" style="background: #6777ef; border-radius: 200px;">
+                      <tr>
+                        <td align="center" valign="top">
+                          <span style="display: block; border: 1px solid #6777ef; border-radius: 200px; padding: 8px 24px 6px 24px;; font-family: 'Nunito', Arial, Verdana, Tahoma, Geneva, sans-serif; color: #ffffff; font-size: 20px; line-height: 30px; text-decoration: none; white-space: nowrap; font-weight: 600;">
+                            <font face="'Nunito', sans-serif" color="#ffffff" style="font-size: 20px; line-height: 30px; text-decoration: none; white-space: nowrap; font-weight: 600;">
+                              <a href="{$ticket_url}" style="font-family: 'Nunito', Arial, Verdana, Tahoma, Geneva, sans-serif; color: #ffffff; font-size: 20px; line-height: 30px; text-decoration: none; white-space: nowrap; font-weight: 600;">查看工单</a>
+                            </font>
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+
                     <div style="height: 75px; line-height: 75px; font-size: 73px;">&nbsp;</div>
                   </td>
                 </tr>
               </table>
+
+
+
+
 
               <table cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100% !important; min-width: 100%; max-width: 100%; background: #f3f3f3;">
                 <tr>
@@ -161,9 +213,6 @@
             <td class="mob_pad" width="25" style="width: 25px; max-width: 25px; min-width: 25px;">&nbsp;</td>
           </tr>
         </table>
-        <!--[if (gte mso 9)|(IE)]>
-         </td></tr>
-         </table><![endif]-->
       </td>
     </tr>
   </table>

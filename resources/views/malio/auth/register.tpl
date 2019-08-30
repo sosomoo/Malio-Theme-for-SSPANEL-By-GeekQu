@@ -196,8 +196,11 @@
 
                   <div class="form-group">
                     <div class="custom-control custom-checkbox">
-                      <input type="checkbox" name="agree" class="custom-control-input" id="agree" checked="checked">
+                      <input type="checkbox" name="agree" class="custom-control-input" id="agree" checked="checked" required>
                       <label class="custom-control-label" for="agree">注册即代表同意 <a href="/tos" target="blank">服务条款</a></label>
+                      <div class="invalid-feedback">
+                          请阅读服务条款并勾选
+                      </div>
                     </div>
                   </div>
 
