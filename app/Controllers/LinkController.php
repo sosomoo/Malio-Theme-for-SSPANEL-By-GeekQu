@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Models\Link;
 use App\Models\User;
+use App\Models\UserSubscribeLog;
 use App\Models\Smartline;
 use App\Utils\ConfRender;
 use App\Utils\Tools;
@@ -125,6 +126,8 @@ class LinkController extends BaseController
             $quantumult = 1;
         }
 
+        $subscribe_type = '';
+
         if (in_array($quantumult, array(1, 2, 3))) {
             $getBody = self::getBody(
                 $user,
@@ -132,6 +135,7 @@ class LinkController extends BaseController
                 self::getQuantumult($user, $quantumult),
                 'Quantumult.conf'
             );
+            $subscribe_type = 'Quantumult';
         } elseif (in_array($surge, array(1, 2, 3))) {
             $getBody = self::getBody(
                 $user,
@@ -139,6 +143,7 @@ class LinkController extends BaseController
                 self::getSurge($user, $surge, $opts),
                 'Surge.conf'
             );
+            $subscribe_type = 'Surge';
         } elseif ($surfboard == 1) {
             $getBody = self::getBody(
                 $user,
@@ -146,6 +151,7 @@ class LinkController extends BaseController
                 self::getSurfboard($user),
                 'Surfboard.conf'
             );
+            $subscribe_type = 'Surfboard';
         } elseif ($clash == 1) {
             $getBody = self::getBody(
                 $user,
@@ -153,6 +159,7 @@ class LinkController extends BaseController
                 self::getClash($user, $opts),
                 'config.yaml'
             );
+            $subscribe_type = 'Clash';
         } elseif ($ssd == 1) {
             $getBody = self::getBody(
                 $user,
@@ -160,13 +167,15 @@ class LinkController extends BaseController
                 self::getSSD($user),
                 'SSD.txt'
             );
+            $subscribe_type = 'SSD';
         } elseif ($kitsunebi == 1) {
             $getBody = self::getBody(
                 $user,
                 $response,
-                self::getKitsunebi($user),
+                self::getKitsunebi($user, $opts),
                 'Kitsunebi.txt'
             );
+            $subscribe_type = 'Kitsunebi';
         } elseif ($shadowrocket == 1) {
             $getBody = self::getBody(
                 $user,
@@ -174,16 +183,53 @@ class LinkController extends BaseController
                 self::getShadowrocket($user),
                 'Shadowrocket.txt'
             );
+            $subscribe_type = 'Shadowrocket';
         } else {
+            if ($sub == 0 || $sub >= 6) {
+                $sub = 1;
+            }
             $getBody = self::getBody(
                 $user,
                 $response,
                 self::getSub($user, $sub, $opts),
                 'node.txt'
             );
+            $sub_type = [
+                1 => 'SSR',
+                2 => 'SS',
+                3 => 'V2Ray',
+                4 => 'V2Ray + SS',
+                5 => 'V2Ray + SS + SSR'
+            ];
+            $subscribe_type = $sub_type[$sub];
         }
 
+        // 记录订阅日志
+        self::Subscribe_log($user, $subscribe_type, $request->getHeaderLine('User-Agent'));
+
         return $getBody;
+    }
+
+    /**
+     * 记录订阅日志
+     *
+     * @param object $user 用户
+     * @param string $type 订阅类型
+     * @param string $ua   UA
+     *
+     */
+    private static function Subscribe_log($user, $type, $ua)
+    {
+        $log = new UserSubscribeLog();
+
+        $log->user_name = $user->user_name;
+        $log->user_id = $user->id;
+        $log->email = $user->email;
+        $log->subscribe_type = $type;
+        $log->request_ip = $_SERVER['REMOTE_ADDR'];
+        $log->request_time = date('Y-m-d H:i:s');
+        $log->request_user_agent = $ua;
+        $log->save();
     }
 
     /**
@@ -485,9 +531,7 @@ class LinkController extends BaseController
     {
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
-        $confs = [];
-        $proxy_confs = [];
-        $back_china_confs = [];
+        $Proxys = [];
         // ss
         $items = array_merge(URL::getAllItems($user, 0, 1, 1), URL::getAllItems($user, 1, 1, 1));
         foreach ($items as $item) {
@@ -532,12 +576,7 @@ class LinkController extends BaseController
             if (isset($opts['source']) && $opts['source'] != '') {
                 $sss['class'] = $item['class'];
             }
-            if (strpos($sss['name'], '回国') or strpos($sss['name'], 'China')) {
-                $back_china_confs[] = $sss;
-            } else {
-                $proxy_confs[] = $sss;
-            }
-            $confs[] = $sss;
+            $Proxys[] = $sss;
         }
         // v2
         $items = URL::getAllVMessUrl($user, 1);
@@ -569,12 +608,7 @@ class LinkController extends BaseController
             if (isset($opts['source']) && $opts['source'] != '') {
                 $v2rays['class'] = $item['class'];
             }
-            if (strpos($v2rays['name'], '回国') or strpos($v2rays['name'], 'China')) {
-                $back_china_confs[] = $v2rays;
-            } else {
-                $proxy_confs[] = $v2rays;
-            }
-            $confs[] = $v2rays;
+            $Proxys[] = $v2rays;
         }
 
         if (isset($opts['source']) && $opts['source'] != '') {
@@ -585,35 +619,28 @@ class LinkController extends BaseController
             }
             $SourceContent = @file_get_contents($SourceURL);
             if ($SourceContent) {
-                return ConfController::getClashConfs($user, $confs, $SourceContent);
+                return ConfController::getClashConfs($user, $Proxys, $SourceContent);
             } else {
                 return '远程配置下载失败。';
             }
+        } else {
+            if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(Config::get('clash_Profiles')))) {
+                $Profiles = (string) trim($opts['profiles']);
+            } else {
+                $Profiles = 'lhie1';
+            }
+            $ProxyGroups = ConfController::getClashConfProxyGroup($Proxys, Config::get('clash_Profiles')[$Profiles]['ProxyGroup']);
+            $ProxyGroups = ConfController::fixClashProxyGroup($ProxyGroups, Config::get('clash_Profiles')[$Profiles]['Checks']);
+            $ProxyGroups = ConfController::getClashProxyGroup2String($ProxyGroups);
         }
 
         $render = ConfRender::getTemplateRender();
         $render->assign('user', $user)
             ->assign('userapiUrl', $userapiUrl)
             ->assign('opts', $opts)
-            ->assign('confs', $confs)
-            ->assign(
-                'proxies',
-                array_map(
-                    static function ($conf) {
-                        return $conf['name'];
-                    },
-                    $proxy_confs
-                )
-            )
-            ->assign(
-                'back_china_proxies',
-                array_map(
-                    static function ($conf) {
-                        return $conf['name'];
-                    },
-                    $back_china_confs
-                )
-            );
+            ->assign('Proxys', $Proxys)
+            ->assign('ProxyGroups', $ProxyGroups)
+            ->assign('Profiles', $Profiles);
 
         return $render->fetch('clash.tpl');
     }
@@ -730,9 +757,14 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getKitsunebi($user)
+    public static function getKitsunebi($user, $opts)
     {
         $return = '';
+
+        // 账户到期时间以及流量信息
+        $extend = isset($opts['extend']) ? (int) $opts['extend'] : 0;
+        $return .= $extend == 0 ? '' : URL::getUserTraffic($user, 2) . PHP_EOL;
+
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
@@ -791,6 +823,13 @@ class LinkController extends BaseController
         $extend = isset($opts['extend']) ? $opts['extend'] : 0;
         $getV2rayPlugin = 1;
         $return_url = '';
+
+        // Quantumult 则不显示账户到期以及流量信息
+        if (strpos($_SERVER['HTTP_USER_AGENT'], 'Quantumult') !== false) {
+            $extend = 0;
+        }
+
+        // 如果是 Kitsunebi 不输出 SS V2rayPlugin 节点
         if (strpos($_SERVER['HTTP_USER_AGENT'], 'Kitsunebi') !== false) {
             $getV2rayPlugin = 0;
         }
