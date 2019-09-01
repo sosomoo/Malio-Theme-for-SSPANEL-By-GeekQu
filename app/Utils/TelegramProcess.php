@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use App\Models\User;
 use App\Services\Config;
+use App\Services\MalioConfig;
 use App\Controllers\LinkController;
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Exception;
@@ -281,6 +282,12 @@ class TelegramProcess
                         $reply['message'] = '欢迎 ' . $message->getNewChatMember()->getFirstName() . ' ' . $message->getNewChatMember()->getLastName();
                     } else {
                         $reply['message'] = null;
+                    }
+
+                    if ($user == null && $message->getNewChatMember() != null && MalioConfig::get('force_user_to_bind_tg_when_join_group') == true) {
+                        $remove_message = $bot->sendMessage($message->getChat()->getId(), '您未绑定本站账号，无法加入此群组。您可以进入网站的 “我的账号” 页面绑定您的账号。', $parseMode = null, $disablePreview = false, $replyToMessageId = $reply_to, $replyMarkup = $reply['mark']);
+                        $bot->kickChatMember($message->getChat()->getId(), $message->getFrom()->getId(), time()+60);
+                        $bot->deleteMessage($message->getChat()->getId(), $remove_message->getMessageId());
                     }
             }
         }

@@ -331,10 +331,10 @@ class Tools
                 if ($single_rule->dist_node_id == $path->begin_node->id) {
                     $path->begin_node = $single_rule->Source_Node();
                     if ($path->begin_node->isNodeAccessable() == false) {
-                        $path->path = '<font color="#FF0000">' . $single_rule->Source_Node()->name . '</font>' . ' → ' . $path->path;
+                        $path->path = '' . $single_rule->Source_Node()->name . '' . ' <i class="fas fa-long-arrow-alt-right"></i> ' . $path->path;
                         $path->status = '阻断';
                     } else {
-                        $path->path = $single_rule->Source_Node()->name . ' → ' . $path->path;
+                        $path->path = $single_rule->Source_Node()->name . ' <i class="fas fa-long-arrow-alt-right"></i> ' . $path->path;
                         $path->status = '通畅';
                     }
                     return $pathset;
@@ -343,10 +343,10 @@ class Tools
                 if ($path->end_node->id == $single_rule->source_node_id) {
                     $path->end_node = $single_rule->Dist_Node();
                     if ($path->end_node->isNodeAccessable() == false) {
-                        $path->path = $path->path . ' → ' . '<font color="#FF0000">' . $single_rule->Dist_Node()->name . '</font>';
+                        $path->path = $path->path . ' <i class="fas fa-long-arrow-alt-right"></i> ' . '' . $single_rule->Dist_Node()->name . '';
                         $path->status = '阻断';
                     } else {
-                        $path->path = $path->path . ' → ' . $single_rule->Dist_Node()->name;
+                        $path->path = $path->path . ' <i class="fas fa-long-arrow-alt-right"></i> ' . $single_rule->Dist_Node()->name;
                     }
                     return $pathset;
                 }
@@ -356,7 +356,7 @@ class Tools
         $new_path = new \stdClass();
         $new_path->begin_node = $single_rule->Source_Node();
         if ($new_path->begin_node->isNodeAccessable() == false) {
-            $new_path->path = '<font color="#FF0000">' . $single_rule->Source_Node()->name . '</font>';
+            $new_path->path = '' . $single_rule->Source_Node()->name . '';
             $new_path->status = '阻断';
         } else {
             $new_path->path = $single_rule->Source_Node()->name;
@@ -365,10 +365,10 @@ class Tools
 
         $new_path->end_node = $single_rule->Dist_Node();
         if ($new_path->end_node->isNodeAccessable() == false) {
-            $new_path->path .= ' -> ' . '<font color="#FF0000">' . $single_rule->Dist_Node()->name . '</font>';
+            $new_path->path .= ' <i class="fas fa-long-arrow-alt-right"></i> ' . '' . $single_rule->Dist_Node()->name . '';
             $new_path->status = '阻断';
         } else {
-            $new_path->path .= ' -> ' . $single_rule->Dist_Node()->name;
+            $new_path->path .= ' <i class="fas fa-long-arrow-alt-right"></i> ' . $single_rule->Dist_Node()->name;
         }
 
         $new_path->port = $port;
