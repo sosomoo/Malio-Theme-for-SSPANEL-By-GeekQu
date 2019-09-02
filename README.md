@@ -9,7 +9,7 @@
 - **商店**：商品增加同时连接设备数，用户限速属性
 - 从肥羊那里**抄**来的：新用户注册现金奖励|高等级节点体验|设备数量限制
 - **优化**：css 和 js 等置入本地提升加载速度
-- 增加 **v2Ray** 功能，详情请看 wiki: [Indexyz 版](https://github.com/Anankke/SSPanel-Uim/wiki/v2ray---indexyz-%E7%89%88%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B)  |  [Rico 版](https://github.com/Anankke/SSPanel-Uim/wiki/v2ray---Rico-%E7%89%88%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B)
+- 增加 **v2Ray** 功能，详情请看 wiki: [Indexyz 版](https://github.com/Anankke/SSPanel-Uim/wiki/v2ray---indexyz-%E7%89%88%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B)  |  [Rico 版](https://github.com/Anankke/SSPanel-Uim/wiki/v2ray---Rico-%E7%89%88%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B)  特别优惠 Malio SSPANEL主题 + V2Ray后端，原价1000，现在只需899，👉[查看详情](https://malio.fxxkmy.life/)
 - 巨量性能优化
 - 更多新功能写不下了。（确信）
 
