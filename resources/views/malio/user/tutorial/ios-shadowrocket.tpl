@@ -156,7 +156,7 @@
                             {else}
                               <p>这是一个付费软件，你需要购买才能使用。</p>
                             {/if}
-                            <a href="https://apps.apple.com/us/app/shadowrocket/id932747118'" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fab fa-apple"></i> 打开 App Store 下载</a>
+                            <a href="https://apps.apple.com/us/app/shadowrocket/id932747118" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" target="blank"><i class="fab fa-apple"></i> 打开 App Store 下载</a>
                             <button id="shadowrocket-download-qrcode" type="button" class="qrcode-btn btn">
                               <i class="fas fa-qrcode"></i>
                             </button>
