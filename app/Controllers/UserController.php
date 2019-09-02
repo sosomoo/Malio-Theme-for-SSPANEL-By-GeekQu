@@ -463,11 +463,11 @@ class UserController extends BaseController
         $infoLogs = $db->query('SELECT * FROM ( SELECT * FROM `ss_node_info` WHERE log_time > ' . (time() - 300) . ' ORDER BY id DESC LIMIT 999999999999 ) t GROUP BY node_id ORDER BY id DESC');
         $onlineLogs = $db->query('SELECT * FROM ( SELECT * FROM `ss_node_online_log` WHERE log_time > ' . (time() - 300) . ' ORDER BY id DESC LIMIT 999999999999 ) t GROUP BY node_id ORDER BY id DESC');
 
-		foreach($nodes as $node){
-			if($node->node_group != $user->node_group && $node->node_group != 0 && !$user->isAdmin()){
-				continue;
-			}
-			if ($node->sort == 9) {
+        foreach ($nodes as $node) {
+            if ($user->is_admin == 0 && $node->node_group != $user->node_group && $node->node_group != 0) {
+                continue;
+            }
+            if ($node->sort == 9) {
                 $mu_user = User::where('port', '=', $node->server)->first();
                 $mu_user->obfs_param = $this->user->getMuMd5();
                 $nodes_muport[] = array('server' => $node, 'user' => $mu_user);

@@ -2,405 +2,215 @@
 {$ssr_prefer = URL::SSRCanConnect($user, 0)}
 {$pre_user = URL::cloneUser($user)}
 
-	<main class="content">
+<style>
+.table {
+    box-shadow: none;
+}
+table tr td:first-child {
+    text-align: right;
+    font-weight: bold;
+}
+</style>
 
-		<div class="content-header ui-content-header">
-			<div class="container">
-				<h1 class="content-heading">用户中心</h1>
-			</div>
-		</div>
-		<div class="container">
-			<section class="content-inner margin-top-no">
-				<div class="ui-card-wrap">
+<main class="content">
 
-						<div class="col-xx-12 col-xs-6 col-lg-3">
-								<div class="card user-info">
-									<div class="user-info-main">
-										<div class="nodemain">
-											<div class="nodehead node-flex">
-												<div class="nodename">帐号等级</div>
-												<a href="/user/shop" class="card-tag tag-orange">升级</a>
-											</div>
-											<div class="nodemiddle node-flex">
-												<div class="nodetype">
-													{if $user->class!=0}
-													<dd>VIP {$user->class}</dd>
-													{else}
-													<dd>普通用户</dd>
-													{/if}
-												</div>
-											</div>
-										</div>
-										<div class="nodestatus">
-											<div class="infocolor-red">
-												<i class="icon icon-md t4-text">stars</i>
-											</div>
-										</div>
-									</div>
-									<div class="user-info-bottom">
-										<div class="nodeinfo node-flex">
-										{if $user->class!=0}
-											<span><i class="icon icon-md">add_circle</i>到期流量清空</span>
-										{else}
-										    <span><i class="icon icon-md">add_circle</i>升级解锁VIP节点</span>
-										{/if}
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-xx-12 col-xs-6 col-lg-3">
-								<div class="card user-info">
-									<div class="user-info-main">
-										<div class="nodemain">
-											<div class="nodehead node-flex">
-												<div class="nodename">余额</div>
-												<a href="/user/code" class="card-tag tag-green">充值</a>
-											</div>
-											<div class="nodemiddle node-flex">
-												<div class="nodetype">
-													{$user->money} CNY
-												</div>
-											</div>
-										</div>
-										<div class="nodestatus">
-											<div class="infocolor-green">
-												<i class="icon icon-md">account_balance_wallet</i>
-											</div>
-										</div>
-									</div>
-									<div class="user-info-bottom">
-										<div class="nodeinfo node-flex">
-											<span href="/user/shop"><i class="icon icon-md">attach_money</i>账户内可用余额</span>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-xx-12 col-xs-6 col-lg-3">
-								<div class="card user-info">
-									<div class="user-info-main">
-										<div class="nodemain">
-											<div class="nodehead node-flex">
-												<div class="nodename">在线设备数</div>
-											</div>
-											<div class="nodemiddle node-flex">
-												<div class="nodetype">
-													{if $user->node_connector!=0}
-													<dd>{$user->online_ip_count()} / {$user->node_connector}</dd>
-													{else}
-													<dd>{$user->online_ip_count()} / 不限制 </dd>
-													{/if}
-												</div>
-											</div>
-										</div>
-										<div class="nodestatus">
-											<div class="infocolor-yellow">
-												<i class="icon icon-md">phonelink</i>
-											</div>
-										</div>
-									</div>
-									<div class="user-info-bottom">
-										<div class="nodeinfo node-flex">
-											<span><i class="icon icon-md">donut_large</i>在线设备/设备限制数</span>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-xx-12 col-xs-6 col-lg-3">
-								<div class="card user-info">
-									<div class="user-info-main">
-										<div class="nodemain">
-											<div class="nodehead node-flex">
-												<div class="nodename">端口速率</div>
-											</div>
-											<div class="nodemiddle node-flex">
-												<div class="nodetype">
-													{if $user->node_speedlimit!=0}
-													<dd><code>{$user->node_speedlimit}</code>Mbps</dd>
-													{else}
-													<dd>无限制</dd>
-													{/if}
-												</div>
-											</div>
-										</div>
-										<div class="nodestatus">
-											<div class="infocolor-blue">
-												<i class="icon icon-md">settings_input_component</i>
-											</div>
-										</div>
-									</div>
-									<div class="user-info-bottom">
-										<div class="nodeinfo node-flex">
-											<span><i class="icon icon-md">signal_cellular_alt</i>账户最高下行网速</span>
-										</div>
-									</div>
-								</div>
-							</div>
+    <div class="content-header ui-content-header">
+        <div class="container">
+            <h1 class="content-heading">用户中心</h1>
+        </div>
+    </div>
+    <div class="container">
+        <section class="content-inner margin-top-no">
+            <div class="ui-card-wrap">
 
-						<div class="col-xx-12 col-sm-8">
+                <div class="col-xx-12 col-xs-6 col-lg-3">
+                    <div class="card user-info">
+                        <div class="user-info-main">
+                            <div class="nodemain">
+                                <div class="nodehead node-flex">
+                                    <div class="nodename">帐号等级</div>
+                                </div>
+                                <div class="nodemiddle node-flex">
+                                    <div class="nodetype">
+                                        {if $user->class!=0}
+                                            <dd>VIP {$user->class}</dd>
+                                        {else}
+                                            <dd>普通用户</dd>
+                                        {/if}
+                                    </div>
+                                </div>
+                                <div class="nodemiddle node-flex">
+                                    {if $user->class_expire!="1989-06-04 00:05:00"}
+                                        <div style="font-size: 14px">等级到期时间 {$user->class_expire}</div>
+                                    {else}
+                                        <div style="font-size: 14px">账户等级不会过期</div>
+                                    {/if}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user-info-bottom">
+                            <div class="nodeinfo node-flex">
+                                {if $user->class!=0}
+                                    <span><i class="icon icon-md">add_circle</i>到期流量清空</span>
+                                {else}
+                                    <span><i class="icon icon-md">add_circle</i>升级解锁 VIP 节点</span>
+                                {/if}
+                                <a href="/user/shop" class="card-tag tag-orange">商店</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xx-12 col-xs-6 col-lg-3">
+                    <div class="card user-info">
+                        <div class="user-info-main">
+                            <div class="nodemain">
+                                <div class="nodehead node-flex">
+                                    <div class="nodename">余额</div>
+                                </div>
+                                <div class="nodemiddle node-flex">
+                                    <div class="nodetype">
+                                        {$user->money} CNY
+                                    </div>
+                                </div>
+                                <div class="nodemiddle node-flex">
+                                    <div style="font-size: 14px">账户有效时间 {$user->expire_in}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user-info-bottom">
+                            <div class="nodeinfo node-flex">
+                                <span><i class="icon icon-md">attach_money</i>到期账户自动删除</span>
+                                <a href="/user/code" class="card-tag tag-green">充值</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xx-12 col-xs-6 col-lg-3">
+                    <div class="card user-info">
+                        <div class="user-info-main">
+                            <div class="nodemain">
+                                <div class="nodehead node-flex">
+                                    <div class="nodename">在线设备数</div>
+                                </div>
+                                <div class="nodemiddle node-flex">
+                                    <div class="nodetype">
+                                        {if $user->node_connector!=0}
+                                            <dd>{$user->online_ip_count()} / {$user->node_connector}</dd>
+                                        {else}
+                                            <dd>{$user->online_ip_count()} / 不限制</dd>
+                                        {/if}
+                                    </div>
+                                </div>
+                                <div class="nodemiddle node-flex">
+                                    {if $user->lastSsTime()!="从未使用喵"}
+                                        <div style="font-size: 14px">上次使用：{$user->lastSsTime()}</div>
+                                    {else}
+                                        <div style="font-size: 14px">从未使用过</div>
+                                    {/if}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user-info-bottom">
+                            <div class="nodeinfo node-flex">
+                                <span><i class="icon icon-md">donut_large</i>在线设备/设备限制数</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xx-12 col-xs-6 col-lg-3">
+                    <div class="card user-info">
+                        <div class="user-info-main">
+                            <div class="nodemain">
+                                <div class="nodehead node-flex">
+                                    <div class="nodename">端口速率</div>
+                                </div>
+                                <div class="nodemiddle node-flex">
+                                    <div class="nodetype">
+                                        {if $user->node_speedlimit!=0}
+                                            <dd><code>{$user->node_speedlimit}</code>Mbps</dd>
+                                        {else}
+                                            <dd>无限制</dd>
+                                        {/if}
+                                    </div>
+                                </div>
+                                <div class="nodemiddle node-flex">
+                                    <div style="font-size: 14px">实际速率受限于运营商带宽上限</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user-info-bottom">
+                            <div class="nodeinfo node-flex">
+                                <span><i class="icon icon-md">signal_cellular_alt</i>账户最高下行网速</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-							<div class="card">
-								<div class="card-main">
-									<div class="card-inner margin-bottom-no">
-                                    <p class="card-heading"> <i class="icon icon-md">notifications_active</i>公告栏</p>
-										{if $ann != null}
-										<p>{$ann->content}</p>
-										<br/>
-										<hr/>
-										<p><a href="/user/announcement">点击查看所有公告</a></p>
-										{/if}
-										{if $config["enable_admin_contact"] == 'true'}
-										<p class="card-heading">管理员联系方式</p>
-										{if $config["admin_contact1"]!=null}
-										<p>{$config["admin_contact1"]}</p>
-										{/if}
-										{if $config["admin_contact2"]!=null}
-										<p>{$config["admin_contact2"]}</p>
-										{/if}
-										{if $config["admin_contact3"]!=null}
-										<p>{$config["admin_contact3"]}</p>
-										{/if}
-										{/if}
-									</div>
-								</div>
-							</div>
+            </div>
+            <div class="ui-card-wrap">
 
+                <div class="col-xx-12 col-sm-5">
 
-							<div class="card quickadd">
-								<div class="card-main">
-									<div class="card-inner margin-bottom-no">
+                    <div class="card">
+                        <div class="card-main">
+                        <div class="card-inner margin-bottom-no">
+                            <p class="card-heading" style="margin-bottom: 0;"><i class="icon icon-md">account_circle</i>流量使用情况</p>
+                                <div class="progressbar">
+                                    <div class="before"></div>
+                                    <div class="bar tuse color3"
+                                         style="width:calc({($user->transfer_enable==0)?0:($user->u+$user->d-$user->last_day_t)/$user->transfer_enable*100}%);"></div>
+                                    <div class="label-flex">
+                                        <div class="label la-top">
+                                            <div class="bar ard color3"></div>
+                                            <span class="traffic-info">今日已用</span>
+                                            <code class="card-tag tag-red">{$user->TodayusedTraffic()}</code>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="progressbar">
+                                    <div class="before"></div>
+                                    <div class="bar ard color2"
+                                         style="width:calc({($user->transfer_enable==0)?0:$user->last_day_t/$user->transfer_enable*100}%);">
+                                        <span></span>
+                                    </div>
+                                    <div class="label-flex">
+                                        <div class="label la-top">
+                                            <div class="bar ard color2"><span></span></div>
+                                            <span class="traffic-info">过去已用</span>
+                                            <code class="card-tag tag-orange">{$user->LastusedTraffic()}</code>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="progressbar">
+                                    <div class="before"></div>
+                                    <div class="bar remain color"
+                                         style="width:calc({($user->transfer_enable==0)?0:($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100}%);">
+                                        <span></span>
+                                    </div>
+                                    <div class="label-flex">
+                                        <div class="label la-top">
+                                            <div class="bar ard color"><span></span></div>
+                                            <span class="traffic-info">剩余流量</span>
+                                            <code class="card-tag tag-green" id="remain">{$user->unusedTraffic()}</code>
+                                        </div>
+                                    </div>
+                                </div>
 
-										<div class="cardbtn-edit">
-											<div class="card-heading"><i class="icon icon-md">phonelink</i> <a id="quickadd" href="#quickadd"></a> 快速使用</div>
-										</div>
+                            </div>
 
-										<nav class="tab-nav margin-top-no">
-											<ul class="nav nav-list">
-												<li class="active">
-													<a class="" data-toggle="tab" href="#sub_center"><i class="icon icon-lg">info_outline</i>&nbsp;订阅中心</a>
-												</li>
-												<li>
-													<a class="" data-toggle="tab" href="#info_center"><i class="icon icon-lg">flight_takeoff</i>&nbsp;连接信息</a>
-												</li>
-											</ul>
-										</nav>
+                            <div class="card-inner margin-bottom-no">
+                                <p class="card-heading"><i class="icon icon-md">account_circle</i>签到</p>
 
-										<div class="card-inner">
-											<div class="tab-content">
+                                    <p>上次签到时间：{$user->lastCheckInTime()}</p>
 
-												<div class="tab-pane fade" id="info_center">
-													<p>您的链接信息：</p>
-													{if URL::SSRCanConnect($user)}
-													{$user = URL::getSSRConnectInfo($pre_user)}
-													<dl class="dl-horizontal">
-														<p><dt>端口</dt>
-														<dd>{$user->port}</dd></p>
-														<p><dt>密码</dt>
-														<dd>{$user->passwd}</dd></p>
-														<p><dt>自定义加密</dt>
-														<dd>{$user->method}</dd></p>
-														<p><dt>自定义协议</dt>
-														<dd>{$user->protocol}</dd></p>
-														<p><dt>自定义混淆</dt>
-														<dd>{$user->obfs}</dd></p>
-														<p><dt>自定义混淆参数</dt>
-														<dd>{$user->obfs_param}</dd></p>
-													</dl>
-													<hr/>
-													<p>您当前为 SSR 协议模式，请您选用支持 SSR 协议的客户端来连接。</p>
-													{else}
-													{$user = URL::getSSConnectInfo($pre_user)}
-													<dl class="dl-horizontal">
-														<p><dt>端口</dt>
-														<dd>{$user->port}</dd></p>
-														<p><dt>密码</dt>
-														<dd>{$user->passwd}</dd></p>
-														<p><dt>自定义加密</dt>
-														<dd>{$user->method}</dd></p>
-														<p><dt>自定义混淆</dt>
-														<dd>{$user->obfs}</dd></p>
-														<p><dt>自定义混淆参数</dt>
-														<dd>{$user->obfs_param}</dd></p>
-													</dl>
-													<hr/>
-													<p>您当前为 SS 协议模式，请您选用支持 SS 协议的客户端来连接。</p>
-													{/if}
-												</div>
+                                    <p id="checkin-msg"></p>
 
-												<div class="tab-pane fade active in" id="sub_center">
-													<nav class="tab-nav margin-top-no">
-														<ul class="nav nav-list">
-															<li class="active">
-																<a class="" data-toggle="tab" href="#sub_center_general"><i class="icon icon-lg">desktop_windows</i>&nbsp;General</a>
-															</li>
-															<li>
-																<a class="" data-toggle="tab" href="#sub_center_windows"><i class="icon icon-lg">desktop_windows</i>&nbsp;Windows</a>
-															</li>
-															<li>
-																<a class="" data-toggle="tab" href="#sub_center_mac"><i class="icon icon-lg">laptop_mac</i>&nbsp;MacOS</a>
-															</li>
-															<li>
-																<a class="" data-toggle="tab" href="#sub_center_ios"><i class="icon icon-lg">phone_iphone</i>&nbsp;iOS</a>
-															</li>
-															<li>
-																<a class="" data-toggle="tab" href="#sub_center_android"><i class="icon icon-lg">android</i>&nbsp;Android</a>
-															</li>
-														</ul>
-													</nav>
-
-													<div class="tab-pane fade active in" id="sub_center_general">
-														<p><span class="icon icon-lg text-white">filter_1</span> [ SS ]：
-															<a id="general_ss" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ss","#general_ss","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
-														</p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_2</span> [ SSR ]：
-															<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_ssr" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssr","#general_ssr","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
-														</p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_3</span> [ VMess ]：
-															<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_v2ray" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=v2ray","#general_v2ray","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
-														</p>
-													</div>
-
-													<div class="tab-pane fade" id="sub_center_windows">
-														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Windows/releases"><i class="material-icons">save_alt</i> GET</a> SSD - [ SS ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssd"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a id="win_ssd" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssd","#win_ssd","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/Fndroid/clash_for_windows_pkg/releases"><i class="material-icons">save_alt</i> GET</a> Clash for Windows - [ SS/VMess ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/Clash-for-Windows"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clash"])}"><i class="material-icons icon-sm">how_to_vote</i>Clash for Windows 一键导入</a></p>
-													</div>
-
-													<div class="tab-pane fade" id="sub_center_mac">
-														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://nssurge.com/mac/v3/Surge-latest.zip"><i class="material-icons">save_alt</i> GET</a> Surge - [ SS ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge3"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 托管</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge_node"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge2"]}"><i class="material-icons icon-sm">how_to_vote</i>2.x 托管</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/yichengchen/clashX/releases"><i class="material-icons">save_alt</i> GET</a> ClashX - [ SS/VMess ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/ClashX"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clash"])}"><i class="material-icons icon-sm">how_to_vote</i>ClashX 一键导入</a></p>
-
-													</div>
-
-													<div class="tab-pane fade" id="sub_center_ios">
-														{if $display_ios_class>=0}
-															{if $user->class>=$display_ios_class && $user->get_top_up()>=$display_ios_topup}
-																<div><span class="icon icon-lg text-white">account_box</span> 本站iOS账户：</div>
-																<div class="float-clear">
-																	<input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$ios_account}" readonly="true">
-																	<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_account}">点击复制</button><br>
-																</div>
-																<div><span class="icon icon-lg text-white">lock</span> 本站iOS密码：</div>
-																<div class="float-clear">
-																	<input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$ios_password}" readonly="true">
-																	<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_password}">点击复制</button><br>
-																</div>
-																<p><span class="icon icon-lg text-white">error</span><strong>禁止将账户分享给他人！</strong></p>
-																<hr/>
-															{/if}
-														{/if}
-														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/surge-3/id1442620678?ls=1&mt=8"><i class="material-icons">save_alt</i> GET</a> Surge - [ SS ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="btn-dl" href="surge3:///install-config?url={urlencode($subInfo["surge3"])}"><i class="material-icons icon-sm">how_to_vote</i>3.x 一键</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge_node"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="btn-dl" href="surge:///install-config?url={urlencode($subInfo["surge2"])}"><i class="material-icons icon-sm">how_to_vote</i>2.x 一键</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/kitsunebi-proxy-utility/id1446584073?ls=1&mt=8"><i class="material-icons">save_alt</i> GET</a> Kitsunebi - [ SS/VMess ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Kitsunebi"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["kitsunebi"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SS + V2 混合订阅</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/quantumult/id1252015438?ls=1&mt=8"><i class="material-icons">save_alt</i> GET</a> Quantumult - [ SS/SSR/VMess ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Quantumult_sub"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["quantumult_v2"]}"><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a id="quan_sub" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_sub"]}","#quan_sub","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整订阅配置</a>.<a id="quan_conf" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_conf"]}","#quan_conf","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整策略组配置</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/shadowrocket/id932747118?mt=8"><i class="material-icons">save_alt</i> GET</a> Shadowrocket - [ SS/SSR/VMess ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Shadowrocket"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="btn-dl" onclick=AddSub("{$subInfo["shadowrocket"]}","sub://")><i class="material-icons icon-sm">how_to_vote</i>SS(R) + V2 混合订阅</a></p>
-													</div>
-
-													<div class="tab-pane fade" id="sub_center_android">
-														<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Android/releases"><i class="material-icons">save_alt</i> GET</a> SSD - [ SS ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/Android/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssd"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a id="android_ssd" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssd","#android_ssd","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="#"><i class="material-icons">save_alt</i> GET</a> SSR - [ SSR ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/Android/ShadowsocksR"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://github.com/2dust/v2rayNG/releases"><i class="material-icons">save_alt</i> GET</a> V2rayNG - [ SS/VMess ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/Android/v2rayNG"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://rink.hockeyapp.net/recruit/2113783c503645abb0a5ec6317e1a169"><i class="material-icons">save_alt</i> GET</a> Surfboard - [ SS ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/Android/Surfboard"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surfboard"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝托管</a>.<a class="btn-dl" href="{$subInfo["surfboard"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
-														<hr/>
-														<p><span class="icon icon-lg text-white">filter_5</span> <a class="btn-dl" href="https://play.google.com/store/apps/details?id=fun.kitsunebi.kitsunebi4android&hl=zh"><i class="material-icons">save_alt</i> GET</a> Kitsunebi - [ SS/VMess ]：</p>
-															<p>教程文档：<a class="btn-dl" href="/doc/#/Android/Kitsunebi"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-															<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["kitsunebi"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SS + V2 混合订阅</a></p>
-														<hr/>
-													</div>
-												</div>
-
-											</div>
-										</div>
-
-									</div>
-								</div>
-							</div>
-
-						</div>
-
-						<div class="col-xx-12 col-sm-4">
-
-							<div class="card">
-								<div class="card-main">
-									<div class="card-inner margin-bottom-no">
-										<p class="card-heading"><i class="icon icon-md">account_circle</i>账号使用情况</p>
-										<dl class="dl-horizontal">
-
-
-											<p><dt>等级过期时间</dt>
-                                              {if $user->class_expire!="1989-06-04 00:05:00"}
-											<dd><i class="icon icon-md">event</i>&nbsp;{$user->class_expire}</dd>
-                                              {else}
-                                              <dd><i class="icon icon-md">event</i>&nbsp;不过期</dd>
-                                              {/if}
-											</p>
-                                          	<p><dt>等级有效期</dt>
-                                              <i class="icon icon-md">event</i>
-                                              <span class="label-level-expire">剩余</span>
-											  <code><span id="days-level-expire"></span></code>
-                                              <span class="label-level-expire">天</span>
-                                            </p>
-
-											<p><dt>帐号过期时间</dt>
-											  <dd><i class="icon icon-md">event</i>&nbsp;{$user->expire_in}</dd>
-                                            </p>
-                                            <p><dt>账号有效期</dt>
-                                              <i class="icon icon-md">event</i>
-                                              <span class="label-account-expire">剩余</span>
-											  <code><span id="days-account-expire"></span></code>
-											  <span class="label-account-expire">天</span>
-                                           </p>
-
-											<p><dt>上次使用</dt>
-                                              {if $user->lastSsTime()!="从未使用喵"}
-											<dd><i class="icon icon-md">event</i>&nbsp;{$user->lastSsTime()}</dd>
-                                              {else}
-                                              <dd><i class="icon icon-md">event</i>&nbsp;从未使用</dd>
-                                              {/if}</p>
-                                            <p><dt>上次签到时间：</dt>
-                                            <dd><i class="icon icon-md">event</i>&nbsp;{$user->lastCheckInTime()}</dd></p>
-
-
-											<p id="checkin-msg"></p>
-
-											{if $geetest_html != null}
-												<div id="popup-captcha"></div>
-											{/if}
-											{if $recaptcha_sitekey != null && $user->isAbleToCheckin()}
-                                                <div class="g-recaptcha" data-sitekey="{$recaptcha_sitekey}"></div>
-                                            {/if}
-
+                                    {if $geetest_html != null}
+                                        <div id="popup-captcha"></div>
+                                    {/if}
+                                    {if $recaptcha_sitekey != null && $user->isAbleToCheckin()}
+                                        <div class="g-recaptcha" data-sitekey="{$recaptcha_sitekey}"></div>
+                                    {/if}
 
                                     <div class="card-action">
                                         <div class="usercheck pull-left">
@@ -426,93 +236,247 @@
 
                     <div class="card">
                         <div class="card-main">
+                            <div class="card-inner margin-bottom-no">
+                                <p class="card-heading"><i class="icon icon-md">notifications_active</i>公告栏</p>
+                                {if $ann != null}
+                                    <p>{$ann->content}</p>
+                                    <br/>
+                                    <strong>查看所有公告请<a href="/user/announcement">点击这里</a></strong>
+                                {/if}
+                                {if $config["enable_admin_contact"] == 'true'}
+                                    <p class="card-heading">管理员联系方式</p>
+                                    {if $config["admin_contact1"]!=null}
+                                        <p>{$config["admin_contact1"]}</p>
+                                    {/if}
+                                    {if $config["admin_contact2"]!=null}
+                                        <p>{$config["admin_contact2"]}</p>
+                                    {/if}
+                                    {if $config["admin_contact3"]!=null}
+                                        <p>{$config["admin_contact3"]}</p>
+                                    {/if}
+                                {/if}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-xx-12 col-sm-7">
+
+                    <div class="card quickadd">
+                        <div class="card-main">
                             <div class="card-inner">
-
-                                {*<div id="traffic_chart" style="height: 300px; width: 100%;"></div>
-
-                               <script src="/assets/js/canvasjs.min.js"> </script>
-                                <script type="text/javascript">
-                                    var chart = new CanvasJS.Chart("traffic_chart", {
-                                        theme: "light1",
-                                        title: {
-                                            text: "流量使用情况",
-                                            fontFamily: "Impact",
-                                            fontWeight: "normal"
-                                        },
-                                        legend: {
-                                            verticalAlign: "bottom",
-                                            horizontalAlign: "center"
-                                        },
-                                        data: [{
-                                            startAngle: -15,
-                                            indexLabelFontSize: 20,
-                                            indexLabelFontFamily: "Garamond",
-                                            indexLabelFontColor: "darkgrey",
-                                            indexLabelLineColor: "darkgrey",
-                                            indexLabelPlacement: "outside",
-                                            yValueFormatString: "##0.00\"%\"",
-                                            type: "pie",
-                                            showInLegend: true,
-                                            dataPoints: [
-                                                {if $user->transfer_enable != 0}
-                                                {
-                                                    y: {$user->last_day_t/$user->transfer_enable*100},label: "过去已用", legendText:"过去已用 {number_format($user->last_day_t/$user->transfer_enable*100,2)}% {$user->LastusedTraffic()}", indexLabel: "过去已用 {number_format($user->last_day_t/$user->transfer_enable*100,2)}% {$user->LastusedTraffic()}"
-                                                },
-                                                {
-                                                    y: {($user->u+$user->d-$user->last_day_t)/$user->transfer_enable*100},label: "今日已用", legendText:"今日已用 {number_format(($user->u+$user->d-$user->last_day_t)/$user->transfer_enable*100,2)}% {$user->TodayusedTraffic()}", indexLabel: "今日已用 {number_format(($user->u+$user->d-$user->last_day_t)/$user->transfer_enable*100,2)}% {$user->TodayusedTraffic()}"
-                                                },
-                                                {
-                                                    y: {($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100},label: "剩余可用", legendText:"剩余可用 {number_format(($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100,2)}% {$user->unusedTraffic()}", indexLabel: "剩余可用 {number_format(($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100,2)}% {$user->unusedTraffic()}"
-                                                }
-                                                {/if}
-                                            ]
-                                        }
-                                        ]
-                                    });
-
-                                    chart.render();
-                                </script> *}
-
-                                <div class="progressbar">
-                                    <div class="before"></div>
-                                    <div class="bar tuse color3"
-                                         style="width:calc({($user->transfer_enable==0)?0:($user->u+$user->d-$user->last_day_t)/$user->transfer_enable*100}%);"></div>
-                                    <div class="label-flex">
-                                        <div class="label la-top">
-                                            <div class="bar ard color3"></div>
-                                            <span class="traffic-info">今日已用</span>
-                                            <code class="card-tag tag-red">{$user->TodayusedTraffic()}</code>
-                                        </div>
-                                    </div>
+                                <div class="cardbtn-edit">
+                                    <div class="card-heading"><i class="icon icon-md">phonelink</i> 快速使用</div>
                                 </div>
-                                <div class="progressbar">
-                                    <div class="before"></div>
-                                    <div class="bar ard color2"
-                                         style="width:calc({($user->transfer_enable==0)?0:$user->last_day_t/$user->transfer_enable*100}%);">
-                                        <span></span>
-                                    </div>
-                                    <div class="label-flex">
-                                        <div class="label la-top">
-                                            <div class="bar ard color2"><span></span></div>
-                                            <span class="traffic-info">过去已用</span><code
-                                                    class="card-tag tag-orange">{$user->LastusedTraffic()}</code>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="progressbar">
-                                    <div class="before"></div>
-                                    <div class="bar remain color"
-                                         style="width:calc({($user->transfer_enable==0)?0:($user->transfer_enable-($user->u+$user->d))/$user->transfer_enable*100}%);">
-                                        <span></span>
-                                    </div>
-                                    <div class="label-flex">
-                                        <div class="label la-top">
-                                            <div class="bar ard color"><span></span></div>
-                                            <span class="traffic-info">剩余流量</span>
-                                            <code class="card-tag tag-green" id="remain">{$user->unusedTraffic()}</code>
-                                        </div>
-                                    </div>
-                                </div>
+
+								<nav class="tab-nav margin-top-no">
+									<ul class="nav nav-list">
+										<li class="active">
+											<a class="" data-toggle="tab" href="#sub_center"><i class="icon icon-lg">info_outline</i>&nbsp;订阅中心</a>
+										</li>
+										<li>
+											<a class="" data-toggle="tab" href="#info_center"><i class="icon icon-lg">flight_takeoff</i>&nbsp;连接信息</a>
+										</li>
+									</ul>
+								</nav>
+
+								<div class="card-inner">
+									<div class="tab-content">
+
+										<div class="tab-pane fade" id="info_center">
+											<p>您的链接信息：</p>
+
+											{if URL::SSRCanConnect($user)}
+
+												{$user = URL::getSSRConnectInfo($pre_user)}
+                                                <table class="table">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><strong>端口</strong></td>
+                                                            <td>{$user->port}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>密码</strong></td>
+                                                            <td>{$user->passwd}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>自定义加密</strong></td>
+                                                            <td>{$user->method}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>自定义协议</strong></td>
+                                                            <td>{$user->protocol}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>自定义混淆</strong></td>
+                                                            <td>{$user->obfs}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>自定义混淆参数</strong></td>
+                                                            <td>{$user->obfs_param}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+												<hr/>
+												<p>您好，您目前的 加密方式，混淆或协议 为 SSR 模式，请您选用支持 SSR 的客户端来连接，或者到 <a href="/user/edit">资料编辑</a> 页面修改后再来查看此处。</p>
+                                                <p>同时, ShadowsocksR 单端口多用户的连接不受您设置的影响，您可以在此使用相应的客户端进行连接</p>
+
+											{elseif URL::SSCanConnect($user)}
+
+                                                {$user = URL::getSSConnectInfo($pre_user)}
+                                                <table class="table">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><strong>端口</strong></td>
+                                                            <td>{$user->port}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>密码</strong></td>
+                                                            <td>{$user->passwd}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>自定义加密</strong></td>
+                                                            <td>{$user->method}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>自定义混淆</strong></td>
+                                                            <td>{$user->obfs}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>自定义混淆参数</strong></td>
+                                                            <td>{$user->obfs_param}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+												<hr/>
+                                                <p>您好，您目前的 加密方式，混淆或协议 为 SS 模式，请您选用支持 SS 协议的客户端来连接，或者到 <a href="/user/edit">资料编辑</a> 页面修改后再来查看此处。</p>
+                                                <p>同时, Shadowsocks 单端口多用户的连接不受您设置的影响，您可以在此使用相应的客户端进行连接</p>
+
+                                            {else}
+
+                                                <p>您的账户连接信息存在异常，请联系管理员</p>
+
+											{/if}
+
+										</div>
+
+										<div class="tab-pane fade active in" id="sub_center">
+											<nav class="tab-nav margin-top-no">
+												<ul class="nav nav-list">
+													<li class="active">
+														<a class="" data-toggle="tab" href="#sub_center_general"><i class="icon icon-lg">desktop_windows</i>&nbsp;General</a>
+													</li>
+													<li>
+														<a class="" data-toggle="tab" href="#sub_center_windows"><i class="icon icon-lg">desktop_windows</i>&nbsp;Windows</a>
+													</li>
+													<li>
+														<a class="" data-toggle="tab" href="#sub_center_mac"><i class="icon icon-lg">laptop_mac</i>&nbsp;MacOS</a>
+													</li>
+													<li>
+														<a class="" data-toggle="tab" href="#sub_center_ios"><i class="icon icon-lg">phone_iphone</i>&nbsp;iOS</a>
+													</li>
+													<li>
+														<a class="" data-toggle="tab" href="#sub_center_android"><i class="icon icon-lg">android</i>&nbsp;Android</a>
+													</li>
+												</ul>
+											</nav>
+
+											<div class="tab-pane fade active in" id="sub_center_general">
+												<p><span class="icon icon-lg text-white">filter_1</span> [ SS ]：
+													<a id="general_ss" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ss","#general_ss","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
+												</p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_2</span> [ SSR ]：
+													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_ssr" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssr","#general_ssr","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
+												</p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_3</span> [ VMess ]：
+													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_v2ray" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=v2ray","#general_v2ray","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
+												</p>
+											</div>
+
+											<div class="tab-pane fade" id="sub_center_windows">
+												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Windows/releases"><i class="material-icons">save_alt</i> 下载</a> SSD - [ SS ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssd"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a id="win_ssd" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssd","#win_ssd","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/Fndroid/clash_for_windows_pkg/releases"><i class="material-icons">save_alt</i> 下载</a> Clash for Windows - [ SS/VMess ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/Clash-for-Windows"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clash"])}"><i class="material-icons icon-sm">how_to_vote</i>Clash for Windows 一键导入</a></p>
+											</div>
+
+											<div class="tab-pane fade" id="sub_center_mac">
+												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://nssurge.com/mac/v3/Surge-latest.zip"><i class="material-icons">save_alt</i> 下载</a> Surge - [ SS ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge3"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 托管</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge_node"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge2"]}"><i class="material-icons icon-sm">how_to_vote</i>2.x 托管</a></p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/yichengchen/clashX/releases"><i class="material-icons">save_alt</i> 下载</a> ClashX - [ SS/VMess ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/ClashX"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clash"])}"><i class="material-icons icon-sm">how_to_vote</i>ClashX 一键导入</a></p>
+											</div>
+
+											<div class="tab-pane fade" id="sub_center_ios">
+											{if $display_ios_class>=0}
+												{if $user->class>=$display_ios_class && $user->get_top_up()>=$display_ios_topup}
+												<div><span class="icon icon-lg text-white">account_box</span> 本站iOS账户：</div>
+												<div class="float-clear">
+													<input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$ios_account}" readonly="true">
+													<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_account}">点击复制</button>
+                                                    <br>
+												</div>
+												<div><span class="icon icon-lg text-white">lock</span> 本站iOS密码：</div>
+												<div class="float-clear">
+													<input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$ios_password}" readonly="true">
+													<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_password}">点击复制</button>
+                                                    <br>
+												</div>
+												<p><span class="icon icon-lg text-white">error</span><strong>禁止将账户分享给他人！</strong></p>
+												<hr/>
+												{/if}
+											{/if}
+												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/surge-3/id1442620678?ls=1&mt=8"><i class="material-icons">save_alt</i> 下载</a> Surge - [ SS ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="btn-dl" href="surge3:///install-config?url={urlencode($subInfo["surge3"])}"><i class="material-icons icon-sm">how_to_vote</i>3.x 一键</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge_node"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="btn-dl" href="surge:///install-config?url={urlencode($subInfo["surge2"])}"><i class="material-icons icon-sm">how_to_vote</i>2.x 一键</a></p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/kitsunebi-proxy-utility/id1446584073?ls=1&mt=8"><i class="material-icons">save_alt</i> 下载</a> Kitsunebi - [ SS/VMess ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Kitsunebi"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["kitsunebi"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SS + V2 混合订阅</a></p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/quantumult/id1252015438?ls=1&mt=8"><i class="material-icons">save_alt</i> 下载</a> Quantumult - [ SS/SSR/VMess ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Quantumult_sub"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["quantumult_v2"]}"><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a id="quan_sub" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_sub"]}","#quan_sub","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整订阅配置</a>.<a id="quan_conf" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_conf"]}","#quan_conf","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整策略组配置</a></p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/shadowrocket/id932747118?mt=8"><i class="material-icons">save_alt</i> 下载</a> Shadowrocket - [ SS/SSR/VMess ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Shadowrocket"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="btn-dl" onclick=AddSub("{$subInfo["shadowrocket"]}","sub://")><i class="material-icons icon-sm">how_to_vote</i>SS(R) + V2 混合订阅</a></p>
+											</div>
+
+											<div class="tab-pane fade" id="sub_center_android">
+												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Android/releases"><i class="material-icons">save_alt</i> 下载</a> SSD - [ SS ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssd"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a id="android_ssd" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssd","#android_ssd","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="#"><i class="material-icons">save_alt</i> 下载</a> SSR - [ SSR ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/ShadowsocksR"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://github.com/2dust/v2rayNG/releases"><i class="material-icons">save_alt</i> 下载</a> V2rayNG - [ SS/VMess ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/v2rayNG"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://rink.hockeyapp.net/recruit/2113783c503645abb0a5ec6317e1a169"><i class="material-icons">save_alt</i> 下载</a> Surfboard - [ SS ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/Surfboard"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surfboard"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝托管</a>.<a class="btn-dl" href="{$subInfo["surfboard"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_5</span> <a class="btn-dl" href="https://play.google.com/store/apps/details?id=fun.kitsunebi.kitsunebi4android&hl=zh"><i class="material-icons">save_alt</i> 下载</a> Kitsunebi - [ SS/VMess ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/Kitsunebi"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["kitsunebi"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SS + V2 混合订阅</a></p>
+											</div>
+										</div>
+
+									</div>
+								</div>
 
                             </div>
 
@@ -520,6 +484,7 @@
                     </div>
 
                 </div>
+
             </div>
             {include file='dialog.tpl'}
 
@@ -584,7 +549,7 @@
 
     $(".copy-text").click(function () {
         $("#result").modal();
-        $$.getElementById('msg').innerHTML = '已拷贝订阅链接，请您继续接下来的操作';
+        $$.getElementById('msg').innerHTML = '已复制，请您继续接下来的操作';
     });
 
     function AddSub(url,jumpurl="") {

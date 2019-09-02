@@ -9,7 +9,7 @@
 namespace App\Services;
 
 use App\Services\Gateway\{
-    AopF2F, Codepay, DoiAMPay, PaymentWall, ChenPay, SPay, TrimePay,BitPayX
+    AopF2F, Codepay, DoiAMPay, PaymentWall, ChenPay, SPay, TrimePay, PAYJS, BitPayX
 };
 
 class Payment
