@@ -79,6 +79,9 @@ $app->group('/user', function () {
     $this->get('/detect', App\Controllers\UserController::class . ':detect_index');
     $this->get('/detect/log', App\Controllers\UserController::class . ':detect_log');
 
+    // 订阅记录
+    $this->get('/subscribe_log', App\Controllers\UserController::class . ':subscribe_log');
+
     $this->get('/disable', App\Controllers\UserController::class . ':disable');
 
     $this->get('/shop', App\Controllers\UserController::class . ':shop');

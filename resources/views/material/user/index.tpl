@@ -488,11 +488,7 @@ table tr td:first-child {
             </div>
             {include file='dialog.tpl'}
 
-    </div>
-
-
-    </div>
-    </section>
+        </section>
     </div>
 </main>
 

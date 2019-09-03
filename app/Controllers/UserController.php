@@ -37,6 +37,7 @@ use App\Models\BlockIp;
 use App\Models\UnblockIp;
 use App\Models\Payback;
 use App\Models\Relay;
+use App\Models\UserSubscribeLog;
 use App\Utils\QQWry;
 use App\Utils\GA;
 use App\Utils\Geetest;
@@ -1904,6 +1905,17 @@ class UserController extends BaseController
         $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=node.txt');
         $newResponse->getBody()->write($return);
         return $newResponse;
+    }
+
+    public function subscribe_log($request, $response, $args)
+    {
+        $pageNum = $request->getQueryParams()['page'] ?? 1;
+        $logs = UserSubscribeLog::orderBy('id', 'desc')->where('user_id', $this->user->id)->paginate(15, ['*'], 'page', $pageNum);
+        $logs->setPath('/user/subscribe_log');
+
+        $iplocation = new QQWry();
+
+        return $this->view()->assign('logs', $logs)->assign('iplocation', $iplocation)->display('user/subscribe_log.tpl');
     }
 
 }
