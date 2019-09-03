@@ -590,14 +590,14 @@
           支付到账需要一段时间，请勿关闭或刷新此页面</div>
       </div>
       <div class="modal-footer bg-whitesmoke br">
-        <a id="to-bitpayx" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
+        <a id="to-bitpayx" href="##" target="blank" class="btn btn-primary">继续支付</a>
       </div>
     </div>
   </div>
 </div>
 {/if}
 
-{if $config['payment_system'] == 'f2fpay'}
+{if $config['payment_system'] == 'f2fpay' || $config['payment_system'] == 'f2fpay_payjs'}
 <div class="modal fade" tabindex="-1" role="dialog" id="f2fpay-modal">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -609,12 +609,13 @@
         <div id="f2fpay-qr" style="text-align: center"></div>
       </div>
       <div class="modal-footer bg-whitesmoke br">
-        <a id="to-alipay-app" href="##" type="button" target="blank" class="btn btn-primary">打开手机支付宝</a>
+        <a id="to-alipay-app" href="##" target="blank" class="btn btn-primary">打开手机支付宝</a>
       </div>
     </div>
   </div>
 </div>
 {/if}
+
 {if $config['payment_system'] == 'spay'}
 <div class="modal fade" tabindex="-1" role="dialog" id="spay-modal">
   <div class="modal-dialog" role="document">
@@ -628,7 +629,7 @@
           支付到账需要一段时间，请勿关闭或刷新此页面</div>
       </div>
       <div class="modal-footer bg-whitesmoke br">
-        <a id="to-spay" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
+        <a id="to-spay" href="##" target="blank" class="btn btn-primary">继续支付</a>
       </div>
     </div>
   </div>
@@ -648,7 +649,7 @@
           支付到账需要一段时间，请勿关闭或刷新此页面</div>
       </div>
       <div class="modal-footer bg-whitesmoke br">
-        <a id="to-codepay" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
+        <a id="to-codepay" href="##" target="blank" class="btn btn-primary">继续支付</a>
       </div>
     </div>
   </div>
@@ -689,6 +690,22 @@
       </div>
       <div class="modal-footer bg-whitesmoke br">
         <a id="to-flyfox" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
+      </div>
+    </div>
+  </div>
+</div>
+{/if}
+
+{if $config['payment_system'] == 'payjs' || $config['payment_system'] == 'f2fpay_payjs'}
+<div class="modal fade" tabindex="-1" role="dialog" id="payjs-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">打开微信，扫码支付</h5>
+      </div>
+      <div class="modal-body">
+        <p>支付到账需要一段时间，请勿关闭或刷新此页面</p>
+        <div id="payjs-qr" style="text-align: center"></div>
       </div>
     </div>
   </div>

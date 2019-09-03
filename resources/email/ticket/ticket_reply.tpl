@@ -131,39 +131,6 @@
                       <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #585858; font-size: 24px; line-height: 32px;">{$text}</span>
                     </font>
 
-                    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100% !important; min-width: 100%; max-width: 100%;">
-                      <tbody>
-                        <tr>
-                          <td align="left" valign="top">
-                            <div class="mob_btn" style="display: inline-block; vertical-align: top; width: 100%;">
-                              <table class="mob_card" cellpadding="0" cellspacing="0" border="0">
-                                <tbody>
-                                  <tr>
-                                    <td align="left" valign="top">
-                                      <div style="height: 35px; line-height: 35px; font-size: 33px;">&nbsp;</div>
-
-                                      <div style="height: 22px; line-height: 22px; font-size: 20px;">&nbsp;</div>
-                                      <font face="'Nunito', sans-serif" color="#ff9800" style="font-size: 16px; line-height: 22px; font-weight: 700;">
-                                        <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #ff9800; font-size: 16px; line-height: 22px; font-weight: 700;">标题: {$title}</span>
-                                      </font>
-                                      <div style="height: 12px; line-height: 12px; font-size: 10px;">&nbsp;</div>
-                                      <font face="'Nunito', sans-serif" color="#101010" style="font-size: 26px; line-height: 33px; font-weight: 300; letter-spacing: -1px;">
-                                        <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #101010; font-size: 16px; line-height: 22px; font-weight: 300; letter-spacing: -1px;">{$content}</span>
-                                      </font>
-                                      <div style="height: 8px; line-height: 8px; font-size: 6px;">&nbsp;</div>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                            <!--[if (gte mso 9)|(IE)]>
-                            </td></tr>
-                            </table><![endif]-->
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-
                     <div style="height: 26px; line-height: 26px; font-size: 31px;">&nbsp;</div>
                     <table class="mob_btn" cellpadding="0" cellspacing="0" border="0" style="background: #6777ef; border-radius: 200px;">
                       <tr>
@@ -181,10 +148,6 @@
                   </td>
                 </tr>
               </table>
-
-
-
-
 
               <table cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100% !important; min-width: 100%; max-width: 100%; background: #f3f3f3;">
                 <tr>

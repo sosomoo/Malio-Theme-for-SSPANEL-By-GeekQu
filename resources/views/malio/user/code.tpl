@@ -211,21 +211,31 @@
                               ¥
                             </div>
                           </div>
-                          <input id="amount" type="text" class="form-control currency">
+                          <input id="amount" type="number" class="form-control currency" onclick="hideFeedback('no-amount-warn')">
+                          <div id="no-amount-warn" class="invalid-feedback">
+                            请输入金额
+                          </div>
                         </div>
                       </div>
+                    </form>
                     </div>
                     <div class="form-group row mb-4">
                       <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">支付方式</label>
                       <div class="col-sm-12 {if $config['payment_system'] != 'f2fpay'}col-md-7{else}col-md-3{/if}">
                         <div class="selectgroup w-100">
+                          {if $config['payment_system'] != 'payjs'}
                           <label class="selectgroup-item">
                             <input type="radio" name="payment" value="alipay" class="selectgroup-input alipay" checked="">
                             <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-alipay mr-1"></i>支付宝</span>
                           </label>
+                          {/if}
                           {if $config['payment_system'] != 'f2fpay' && $config['payment_system'] != 'spay'}
                           <label class="selectgroup-item">
+                            {if $config['payment_system'] == 'payjs'}
+                            <input type="radio" name="payment" value="wechat" class="selectgroup-input wechat-pay" checked="">
+                            {else}
                             <input type="radio" name="payment" value="wechat" class="selectgroup-input wechat-pay">
+                            {/if}
                             <span class="selectgroup-button selectgroup-button-icon"><i class="malio-wechat-pay mr-1" style="vertical-align: -1px"></i>微信支付</span>
                           </label>
                           {/if}
@@ -263,33 +273,24 @@
   </div>
 
   {include file='user/scripts.tpl'}
+  <script src="https://cdn.jsdelivr.net/npm/kjua@0.1.2/dist/kjua.min.js"></script>
 
   <script>
-    $('#top-up').click(function(){
+    $('#top-up').click(function () {
       $('#main-page').hide();
       $('#topup-page').show();
     })
-    $('#back-to-main').click(function(){
+    $('#back-to-main').click(function () {
       $('#topup-page').hide();
       $('#main-page').show();
     })
-  </script>
-
-  {if $config['payment_system'] == 'bitpayx'}
-  <script>
+    var paymentSystem = "{$config['payment_system']}";
     $('#topup-confirm').click(function () {
-      bitpay($('input:radio:checked').val(),parseFloat($("#amount").val()));
+      walletTopup($('input:radio:checked').val());
     })
   </script>
-  {/if}
 
-  {if $config['payment_system'] == 'f2fpay'}
-  <script src="https://cdn.jsdelivr.net/npm/kjua@0.1.2/dist/kjua.min.js"></script>
-  <script>
-    $('#topup-confirm').click(function () {
-      f2fpay($("#amount").val());
-    })
-  </script>
+  {if $config['payment_system'] == 'f2fpay' || $config['payment_system'] == 'f2fpay_payjs'}
   <div class="modal fade" tabindex="-1" role="dialog" id="f2fpay-modal">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -303,7 +304,7 @@
           <div id="f2fpay-qr" style="text-align: center"></div>
         </div>
         <div class="modal-footer bg-whitesmoke br">
-          <a id="to-alipay-app" href="##" type="button" target="blank" class="btn btn-primary">打开手机支付宝</a>
+          <a id="to-alipay-app" href="##" target="blank" class="btn btn-primary">打开手机支付宝</a>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
         </div>
       </div>
@@ -311,36 +312,25 @@
   </div>
   {/if}
 
-  {if $config['payment_system'] == 'spay'}
-  <script>
-    $('#topup-confirm').click(function () {
-      spay(parseFloat($("#amount").val()));
-    })
-  </script>
-  {/if}
-
-  {if $config['payment_system'] == 'codepay'}
-  <script>
-    $('#topup-confirm').click(function () {
-      codepay($('input:radio:checked').val(),parseFloat($("#amount").val()));
-    })
-  </script>
-  {/if}
-
-  {if $config['payment_system'] == 'tomatopay'}
-  <script>
-    $('#topup-confirm').click(function () {
-      tmtpay($('input:radio:checked').val(),parseFloat($("#amount").val()));
-    })
-  </script>
-  {/if}
-
-  {if $config['payment_system'] == 'flyfoxpay'}
-  <script>
-    $('#topup-confirm').click(function () {
-      flyfox($('input:radio:checked').val(),parseFloat($("#amount").val()));
-    })
-  </script>
+  {if $config['payment_system'] == 'payjs' || $config['payment_system'] == 'f2fpay_payjs'}
+  <div class="modal fade" tabindex="-1" role="dialog" id="payjs-modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">打开微信，扫码支付</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="payjs-qr" style="text-align: center"></div>
+        </div>
+        <div class="modal-footer bg-whitesmoke br">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
   {/if}
 
   {if $malio_config['enable_topup_code'] == true}
