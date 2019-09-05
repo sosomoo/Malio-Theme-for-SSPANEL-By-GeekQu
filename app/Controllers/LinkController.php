@@ -719,12 +719,23 @@ class LinkController extends BaseController
             ) . '?remarks=' . rawurlencode($item['ps'])
                 . $obfs . PHP_EOL);
         }
-        // ss
-        $items = array_merge(
-            URL::getAllItems($user, 0, 1),
-            URL::getAllItems($user, 1, 1)
-        );
+
+        // 减少因为加密协议混淆同时支持 ss & ssr 而导致订阅出现大量重复节点
+        if (in_array($user->method, Config::getSupportParam('ss_aead_method')) || in_array($user->obfs, Config::getSupportParam('ss_obfs'))) {
+            // ss
+            $items = URL::getAllItems($user, 0, 1, 0);
+            foreach ($items as $item) {
+                if (in_array($item['obfs'], Config::getSupportParam('ss_obfs'))) {
+                    $return .= (URL::getItemUrl($item, 1) . PHP_EOL);
+                } elseif ($item['obfs'] == 'plain') {
+                    $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
+                }
+            }
+        }
+        // ss_mu
+        $items = URL::getAllItems($user, 1, 1, 1);
         foreach ($items as $item) {
+            //  V2Ray-Plugin
             if ($item['obfs'] == 'v2ray') {
                 $v2rayplugin = [
                     'address' => $item['address'],
@@ -740,12 +751,14 @@ class LinkController extends BaseController
                 ) . '?v2ray-plugin=' . Tools::base64_url_encode(
                     json_encode($v2rayplugin)
                 ) . '#' . rawurlencode($item['remark']) . PHP_EOL);
-            } elseif (in_array($item['obfs'], Config::getSupportParam('ss_obfs'))) {
+            } 
+            // obfs
+            if (in_array($item['obfs'], Config::getSupportParam('ss_obfs'))) {
                 $return .= (URL::getItemUrl($item, 1) . PHP_EOL);
-            } elseif ($item['obfs'] == 'plain') {
-                $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
             }
+            // ss 单端口不存在混淆为 plain
         }
+
         // ssr
         $return .= URL::getAllUrl($user, 0, 0, 0) . PHP_EOL;
 
