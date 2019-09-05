@@ -16,7 +16,7 @@ $System_Config['version']='1';	//仅当涉及【需要修改config以外的文�
 
 //基本设置--------------------------------------------------------------------------------------------
 $System_Config['key'] = '1145141919810';						//!!! 瞎 jb 修改此key为随机字符串确保网站安全 !!!
-$System_Config['debug'] =  'false';								//正式环境请确保为 false
+$System_Config['debug'] =  false;								//正式环境请确保为 false
 $System_Config['appName'] = 'sspanel';							//站点名称
 $System_Config['baseUrl'] = 'http://url.com';					//站点地址
 $System_Config['subUrl'] = $System_Config['baseUrl'].'/link/';	//订阅地址，如需和站点名称相同，请不要修改
@@ -123,6 +123,8 @@ $System_Config['user_agreement_scheme'] = [
     ['id'=>2,'name'=>'SSR 推荐配置','method'=>'chacha20-ietf','protocol'=>'auth_aes128_sha1','obfs'=>'http_simple_compatible'],
     ['id'=>3,'name'=>'SS/SSR 兼容配置','method'=>'chacha20-ietf','protocol'=>'auth_aes128_sha1_compatible','obfs'=>'plain']
 ];
+
+$System_Config['subscribeLog'] = 'false';			//是否记录用户订阅日志
 
 //Bot 设置--------------------------------------------------------------------------------------------
 #通用
@@ -564,3 +566,29 @@ $System_Config['clash_Profiles'] = [
         ]
     ]
 ];
+
+// make replace System_Config with env
+function findKeyName($name) {
+    global $System_Config;
+    foreach($System_Config as $configKey => $configValue) {
+        if (strtoupper($configKey) == $name) {
+            return $configKey;
+        }
+    }
+
+    return NULL;
+}
+
+foreach(getenv() as $envKey => $envValue) {
+    global $System_Config;
+    $envUpKey = strtoupper($envKey);
+    // Key starts with UIM_
+    if (substr($envUpKey, 0 , 4) == "UIM_") {
+        // Vaild env key, set to System_Config
+        $configKey = substr($envUpKey, 4);
+        $realKey = findKeyName($configKey);
+        if ($realKey != NULL) {
+            $System_Config[$realKey] = $envValue;
+        }
+    }
+}

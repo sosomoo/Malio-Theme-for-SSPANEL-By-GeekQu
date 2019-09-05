@@ -9,17 +9,11 @@ use App\Middleware\Mu;
 use App\Middleware\Mod_Mu;
 use Zeuxisoo\Whoops\Provider\Slim\WhoopsMiddleware;
 
-// config
-$debug = false;
-if (defined('DEBUG')) {
-    $debug = true;
-}
-
 $configuration = [
     'settings' => [
-        'debug' => $debug,
+        'debug' => DEBUG,
         'whoops.editor' => 'sublime',
-        'displayErrorDetails' => $debug
+        'displayErrorDetails' => DEBUG
     ]
 ];
 
@@ -84,6 +78,9 @@ $app->group('/user', function () {
 
     $this->get('/detect', App\Controllers\UserController::class . ':detect_index');
     $this->get('/detect/log', App\Controllers\UserController::class . ':detect_log');
+
+    // 订阅记录
+    $this->get('/subscribe_log', App\Controllers\UserController::class . ':subscribe_log');
 
     $this->get('/disable', App\Controllers\UserController::class . ':disable');
 

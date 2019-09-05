@@ -37,6 +37,7 @@ use App\Models\BlockIp;
 use App\Models\UnblockIp;
 use App\Models\Payback;
 use App\Models\Relay;
+use App\Models\UserSubscribeLog;
 use App\Utils\QQWry;
 use App\Utils\GA;
 use App\Utils\Geetest;
@@ -463,11 +464,11 @@ class UserController extends BaseController
         $infoLogs = $db->query('SELECT * FROM ( SELECT * FROM `ss_node_info` WHERE log_time > ' . (time() - 300) . ' ORDER BY id DESC LIMIT 999999999999 ) t GROUP BY node_id ORDER BY id DESC');
         $onlineLogs = $db->query('SELECT * FROM ( SELECT * FROM `ss_node_online_log` WHERE log_time > ' . (time() - 300) . ' ORDER BY id DESC LIMIT 999999999999 ) t GROUP BY node_id ORDER BY id DESC');
 
-		foreach($nodes as $node){
-			if($node->node_group != $user->node_group && $node->node_group != 0 && !$user->isAdmin()){
-				continue;
-			}
-			if ($node->sort == 9) {
+        foreach ($nodes as $node) {
+            if ($user->is_admin == 0 && $node->node_group != $user->node_group && $node->node_group != 0) {
+                continue;
+            }
+            if ($node->sort == 9) {
                 $mu_user = User::where('port', '=', $node->server)->first();
                 $mu_user->obfs_param = $this->user->getMuMd5();
                 $nodes_muport[] = array('server' => $node, 'user' => $mu_user);
@@ -1904,6 +1905,17 @@ class UserController extends BaseController
         $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=node.txt');
         $newResponse->getBody()->write($return);
         return $newResponse;
+    }
+
+    public function subscribe_log($request, $response, $args)
+    {
+        $pageNum = $request->getQueryParams()['page'] ?? 1;
+        $logs = UserSubscribeLog::orderBy('id', 'desc')->where('user_id', $this->user->id)->paginate(15, ['*'], 'page', $pageNum);
+        $logs->setPath('/user/subscribe_log');
+
+        $iplocation = new QQWry();
+
+        return $this->view()->assign('logs', $logs)->assign('iplocation', $iplocation)->display('user/subscribe_log.tpl');
     }
 
 }

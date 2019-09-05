@@ -205,7 +205,9 @@ class LinkController extends BaseController
         }
 
         // 记录订阅日志
-        self::Subscribe_log($user, $subscribe_type, $request->getHeaderLine('User-Agent'));
+        if (Config::get('subscribeLog') == 'true') {
+            self::Subscribe_log($user, $subscribe_type, $request->getHeaderLine('User-Agent'));
+        }
 
         return $getBody;
     }
