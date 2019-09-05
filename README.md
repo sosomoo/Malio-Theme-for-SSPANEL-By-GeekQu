@@ -18,6 +18,10 @@
 
 SSPanel UIM 是一款专为 Shadowsocks / ShadowsocksR / V2Ray 设计的多用户管理面板，基于 ss-panel-v3-mod 开发。
 
+## AD
+
+**特别优惠 Malio SSPANEL 主题 + Rico V2Ray 后端，原价 1000 CNY，现在只需 899 CNY，👉[查看详情](https://malio.fxxkmy.life/)**
+
 ## 特性
 
 - 集成超过 8 种支付系统
