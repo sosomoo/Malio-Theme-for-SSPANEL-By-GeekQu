@@ -4,14 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" name="viewport">
-  <meta name="description" content="致力于为用户提供高速稳定的高性价比网络中继服务">
-  <meta name="keywords" content="proxy, shadowrocks, shadowsocksr, ss, ssr, v2ray, 机场, 代理, netflix, 小飞机, 服务, hbo, hulu">
 
-  <meta property="og:title" content="{$config['appName']} &mdash; 全球网络中继服务提供者">
-  <meta property="og:description" content="致力于为用户提供高速稳定的高性价比网络中继服务">
-  <meta property="og:url" content="/">
-
-  <title>{$config['appName']} &mdash; 全球网络中继服务提供者</title>
+  <title>{$config['appName']}</title>
   <link rel="shortcut icon" href="/">
   <link rel="stylesheet" href="/theme/malio/index/css/prism.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
