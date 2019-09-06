@@ -1,3 +1,4 @@
+/* 新建用户订阅表 */
 CREATE TABLE IF NOT EXISTS `user_subscribe_log` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `user_name` varchar(128) NOT NULL COMMENT '用户名',
@@ -9,3 +10,7 @@ CREATE TABLE IF NOT EXISTS `user_subscribe_log` (
   `request_user_agent` text COMMENT '请求 UA 信息',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户订阅日志';
+
+/* 给 user 表增加 uuid 字段 */
+ALTER TABLE user
+ADD uuid text
