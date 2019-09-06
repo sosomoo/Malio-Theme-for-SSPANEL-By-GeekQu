@@ -54,7 +54,8 @@ class Config
             'enable_email_verify' => self::get('enable_email_verify'),
             'protocol_specify' => self::get('protocol_specify'),
             'clash_Profiles' => self::get('clash_Profiles'),
-            'subscribeLog' => self::get('subscribeLog')
+            'subscribeLog' => self::get('subscribeLog'),
+            'keep_connect' => self::get('keep_connect')
         ];
     }
 

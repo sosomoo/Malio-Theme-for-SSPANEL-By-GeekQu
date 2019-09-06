@@ -116,6 +116,7 @@ $System_Config['notify_limit_mode'] = 'false';			//false为关闭，per为按照
 $System_Config['notify_limit_value'] = '20';			//当上一项为per时，此处填写百分比；当上一项为mb时，此处填写流量
 $System_Config['mergeSub'] = 'false';					//合并订阅设置 可选项 false / true，此项在 Rico && GeekQu 仓库已废弃
 $System_Config['protocol_specify'] = 'true';			//允许用户自行切换加密、协议、混淆，允许请填写 true，禁止用户自行修改将使用下方配置的方案
+$System_Config['keep_connect'] = 'false';				//是否开启用户流量耗尽后降低速率至 1Mbps 而不断网
 
 #加密、协议、混淆切换方案
 $System_Config['user_agreement_scheme'] = [

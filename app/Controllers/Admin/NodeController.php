@@ -86,6 +86,10 @@ class NodeController extends AdminController
         $node->node_bandwidth_limit = $request->getParam('node_bandwidth_limit') * 1024 * 1024 * 1024;
         $node->bandwidthlimit_resetday = $request->getParam('bandwidthlimit_resetday');
 
+        if (in_array($node->sort, array(11, 12, 13))) {
+            $node->mu_only = 1;
+        }
+
         $node->save();
 
         $domain_name = explode('.' . Config::get('cloudflare_name'), $node->server);
@@ -175,6 +179,10 @@ class NodeController extends AdminController
         $node->node_class = $request->getParam('class');
         $node->node_bandwidth_limit = $request->getParam('node_bandwidth_limit') * 1024 * 1024 * 1024;
         $node->bandwidthlimit_resetday = $request->getParam('bandwidthlimit_resetday');
+
+        if (in_array($node->sort, array(11, 12, 13))) {
+            $node->mu_only = 1;
+        }
 
         $node->save();
 
