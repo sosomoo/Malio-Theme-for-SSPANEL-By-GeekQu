@@ -510,7 +510,7 @@ class LinkController extends BaseController
         $ss_group = '';
         $items = array_merge(URL::getAllItems($user, 0, 1, 0), URL::getAllItems($user, 1, 1, 0));
         foreach ($items as $item) {
-            $ss_group .= ($item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item) . PHP_EOL);
+            $ss_group .= $item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', http://host/SSE.module, ' . URL::getSurgeObfs($item) . PHP_EOL;
             $ss_name .= ', ' . $item['remark'];
         }
         $render = ConfRender::getTemplateRender();

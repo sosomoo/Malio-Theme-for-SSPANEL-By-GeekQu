@@ -190,8 +190,12 @@ $System_Config['enable_checkin_captcha'] = 'false';	//启用签到验证码
 
 
 //支付系统设置----------------------------------------------------------------------------------------
-#取值 none | codepay | trimepay | f2fpay | chenAlipay | paymentwall | spay |tomatopay | payjs
+#取值 none | codepay | trimepay | f2fpay | chenAlipay | paymentwall | spay | tomatopay | bitpayx | flyfoxpay | payjs | f2fpay_payjs | stripe
 $System_Config['payment_system']='none';
+
+# Stripe
+$System_Config['stripe_key'] = '';
+$System_Config['stripe_webhook_endpoint_secret'] = '';
 
 #codepay码支付
 #wiki地址:https://goo.gl/dRwRDi  http://t.cn/RnsWjtB
@@ -229,9 +233,29 @@ $System_Config['trimepay_secret']='';				//AppSecret
 #   客服和技术 24x7 在线支持： https://t.me/joinchat/GLKSKhUnE4GvEAPgqtChAQ
 $System_Config['bitpay_secret']='';
 
+
 #PayJs
 $System_Config['payjs_mchid']='';
 $System_Config['payjs_key']='';
+
+
+#tomatopay番茄云支付
+#使用教程:https://swapidc.fanqieui.com/?t/329.html  tg群 https://t.me/fanqiepay
+$System_Config['tomatopay'] = [
+    'wxpay'=>[
+        'mchid' => '',   // 商户号
+        'account' => '', //您在番茄云支付的登录邮箱
+        'token' => '' // 安全验证码
+    ],
+    'alipay'=>[
+        'mchid' => '',   // 商户号
+        'account' => '', //您在番茄云支付的登录邮箱
+        'token' => '' // 安全验证码
+    ],
+];
+
+# flyfox
+$System_Config['flyfoxpay']=['config'=>['hid'=>'******','key'=>'********','mail'=>'*******@****.***']];
 
 
 //其他面板显示设置------------------------------------------------------------------------------------------
