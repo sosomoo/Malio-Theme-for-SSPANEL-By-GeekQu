@@ -57,6 +57,7 @@ $Malio_Config['enable_relay'] = true;   // 是否显示中转规则
 $Malio_Config['enable_ticket'] = true;   // 是否显示工单系统
 $Malio_Config['enable_detect'] = true;   // 是否显示审计系统
 $Malio_Config['enable_invite'] = true;   // 是否显示邀请注册
+$Malio_Config['enable_user_sub_log'] = true;  // 是否显示用户订阅记录页面
 $Malio_Config['enable_share_account_page'] = true;  // 是否在侧边栏显示共享账号页面 (定制功能)
 $Malio_Config['enable_sidebar_button'] = true;    // 是否显示底部 Telegram 按钮
 $Malio_Config['telegram_group'] = 'https://t.me/SSUnion';   // Telegram 按钮的链接
