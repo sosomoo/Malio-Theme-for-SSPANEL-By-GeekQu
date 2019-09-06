@@ -40,3 +40,33 @@
     {/if}
   }
 </script>
+
+{if $malio_config['enable_crisp'] == true}
+<script>
+  function sendData() {
+    $crisp.push(["set", "user:email", "{$user->email}"], ["set", "user:nickname", "{$user->user_name}"]);
+    $crisp.push(["set", "session:data", [[
+      ["等级", "{$user->class}"],
+      ["等级过期", "class_expire"],
+      ["账号余额", "￥{$user->money}"],
+      ["剩余流量", "{$user->unusedTraffic()}"]
+    ]]]);
+  }
+  sendData();
+</script>
+{/if}
+
+{if $malio_config['enable_chatra'] == true}
+<script>
+  window.ChatraIntegration = {
+    name: '{$user->user_name}',
+    email: '{$user->email}',
+    '等级': '{$user->class}',
+    '等级过期': '{$user->class_expire}',
+    '账号余额': '￥{$user->money}',
+    '剩余流量': '{$user->unusedTraffic()}'
+  };
+  var userUUID = '{$user->uuid}';
+  setupChatra();
+</script>
+{/if}

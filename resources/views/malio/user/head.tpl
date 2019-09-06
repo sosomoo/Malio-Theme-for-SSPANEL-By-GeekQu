@@ -22,6 +22,7 @@
   gtag('config', '{$malio_config['google_analytics_code']}');
 </script>
 {/if}
+
 {if $config["sspanelAnalysis"] == 'true'}
 <!-- Google Analytics -->
 <script>
@@ -49,18 +50,6 @@
 <script async src="https://www.google-analytics.com/analytics.js"></script>
 <!-- End Google Analytics -->
 {/if}
-{if $malio_config['enable_crisp'] == true}
-{include file='crisp.tpl'}
-<script>
-  function sendData() {
-    $crisp.push(["set", "user:email", "{$user->email}"], ["set", "user:nickname", "{$user->user_name}"]);
-    $crisp.push(["set", "session:data", [[
-      ["等级", "{$user->class}"],
-      ["等级过期日", "{substr($user->class_expire, 0, 10)}"],
-      ["账号余额", "￥{$user->money}"],
-      ["剩余流量", "{$user->unusedTraffic()}"]
-    ]]]);
-  }
-  sendData();
-</script>
-{/if}
+
+{if $malio_config['enable_crisp'] == true}{include file='crisp.tpl'}{/if}
+{if $malio_config['enable_chatra'] == true}{include file='chatra.tpl'}{/if}

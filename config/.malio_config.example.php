@@ -48,8 +48,13 @@ $Malio_Config['enable_copy_urls_to_clipboard'] = true;   // 设置为 true 时�
 
 // Crisp 设置
 $Malio_Config['enable_crisp'] = false;   // 是否启用 Crisp 在线客服系统 https://crisp.chat
-$Malio_Config['enable_crisp_outside'] = true;   // 是否对未登录的用户也启用 Crisp，设置为 false 的话，着陆页和登录/注册等页面不会显示 Crisp
+$Malio_Config['enable_crisp_outside'] = true;   // 是否对未登录的用户也启用 Crisp，设置为 false 的话，着陆页和登录/注册等页面不会显示 Crisp，同时对 Chatra 也是生效的
 $Malio_Config['crisp_wesite_id'] = '18b46e92-eb21-76d3-bfb7-8f2ae9adba64';    // Crisp 的网站ID，格式为 '18b46e92-eb21-76d3-bfb7-8f2ae9adba64'
+
+
+// Chatra 设置
+$Malio_Config['enable_chatra'] = true;    // 是否启用 Chatra 在线客服系统 https://chatra.io
+$Malio_Config['chatra_id'] = '';    // Chatra 的 ChatraID，可以在 Chatra 提供的网站代码里找到
 
 
 // 侧边栏
