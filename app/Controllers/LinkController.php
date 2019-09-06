@@ -810,13 +810,13 @@ class LinkController extends BaseController
                 '&aid=' . $item['aid']
                 . $tls . $mux . PHP_EOL);
         }
+
         // ss
-        $items = array_merge(
-            URL::getAllItems($user, 0, 1, 0),
-            URL::getAllItems($user, 1, 1, 0)
-        );
-        foreach ($items as $item) {
-            if ($item['obfs'] == 'plain') {
+        if (URL::SSCanConnect($user) && !in_array($user->obfs, ['simple_obfs_http', 'simple_obfs_tls']) ) {
+            $user = URL::getSSConnectInfo($user);
+            $user->obfs = 'plain';
+            $items = URL::getAllItems($user, 0, 1, 0);
+            foreach ($items as $item) {
                 $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
             }
         }
