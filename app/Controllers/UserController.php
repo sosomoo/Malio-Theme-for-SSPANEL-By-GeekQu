@@ -49,6 +49,8 @@ use App\Utils\URL;
 use App\Utils\DatatablesHelper;
 use App\Services\Mail;
 
+use TelegramBot\Api\BotApi;
+
 /**
  *  HomeController
  */
@@ -1310,11 +1312,34 @@ class UserController extends BaseController
                 $text = '有新工单需要您处理';
                 try {
                     Mail::send($to, $subject, 'ticket/new_ticket.tpl', [
-                        'user' => $user, 'text' => $text, 'title' => $title, 'content' => $content, 'ticket_url' =>$ticket_url 
+                        'user' => $this->user, 'admin' =>$user, 'text' => $text, 'title' => $title, 'content' => $content, 'ticket_url' =>$ticket_url 
                     ], [
                     ]);
                 } catch (Exception $e) {
                     echo $e->getMessage();
+                }
+            }
+        }
+
+        /* notify admins on telegram */
+        if (Config::get('enable_telegram') == 'true') {
+            $messageText = 'Hi，管理员'.PHP_EOL.'有新工单需要您处理'.PHP_EOL.PHP_EOL.$this->user->user_name.': '.$title.PHP_EOL.$content;
+            $keyboard = new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
+                [
+                    [
+                        ['text' => '回复工单', 'url' => $ticket_url]
+                    ]
+                ]
+            );
+            $bot = new BotApi(Config::get('telegram_token'));
+            $adminUser = User::where('is_admin', '=', '1')->get();
+            foreach ($adminUser as $user) {
+                if ($user->telegram_id != null) {
+                    try {
+                        $bot->sendMessage($user->telegram_id, $messageText, null, null, null, $keyboard);
+                    } catch (Exception $e) {
+                        echo $e->getMessage();
+                    }
                 }
             }
         }
@@ -1414,11 +1439,33 @@ class UserController extends BaseController
                         $text = '有人回复了工单，请您及时处理';
                         try {
                             Mail::send($to, $subject, 'ticket/ticket_replay_admin.tpl', [
-                                'user' => $user, 'text' => $text, 'ticket_url' => $ticket_url, 'content' => $content, 'title' => $ticket_main->title
+                                'user' => $this->user, 'text' => $text, 'ticket_url' => $ticket_url, 'content' => $content, 'title' => $ticket_main->title
                             ], [
                             ]);
                         } catch (Exception $e) {
                             echo $e->getMessage();
+                        }
+                    }
+                }
+                if (Config::get('enable_telegram') == 'true') {
+                    $messageText = 'Hi，管理员'.PHP_EOL.'有人回复了工单，请您及时处理'.PHP_EOL.PHP_EOL.$this->user->user_name.': '.$ticket_main->title.PHP_EOL.$content;
+                    $ticket_url = Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view';
+                    $keyboard = new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
+                        [
+                            [
+                                ['text' => '回复工单', 'url' => $ticket_url]
+                            ]
+                        ]
+                    );
+                    $bot = new BotApi(Config::get('telegram_token'));
+                    $adminUser = User::where('is_admin', '=', '1')->get();
+                    foreach ($adminUser as $user) {
+                        if ($user->telegram_id != null) {
+                            try {
+                                $bot->sendMessage($user->telegram_id, $messageText, null, null, null, $keyboard);
+                            } catch (Exception $e) {
+                                echo $e->getMessage();
+                            }
                         }
                     }
                 }

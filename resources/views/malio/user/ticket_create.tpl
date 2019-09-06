@@ -48,7 +48,7 @@
                     <div class="form-group row mb-4">
                       <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">内容</label>
                       <div class="col-sm-12 col-md-7">
-                        <textarea class="summernote"></textarea>
+                        <textarea class="form-control" style="height: 200px;" id="ticket-content"></textarea>
                       </div>
                     </div>
                     <div class="form-group row mb-4">
@@ -69,9 +69,6 @@
   </div>
 
   {include file='user/scripts.tpl'}
-
-  <!-- JS Libraies -->
-  <script src="/theme/malio/assets/modules/summernote/summernote-bs4.js"></script>
 </body>
 
 </html>

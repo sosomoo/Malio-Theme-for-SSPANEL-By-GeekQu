@@ -17,6 +17,10 @@ use App\Utils\DatatablesHelper;
 
 use App\Controllers\AdminController;
 
+use App\Utils\Telegram;
+
+use TelegramBot\Api\BotApi;
+
 class TicketController extends AdminController
 {
     public function index($request, $response, $args)
@@ -65,6 +69,23 @@ class TicketController extends AdminController
             ]);
         } catch (Exception $e) {
             echo $e->getMessage();
+        }
+
+        if (Config::get('enable_telegram') == 'true' && $user->telegram_id != null) {
+            $messageText = 'Hi，'.$user->user_name.PHP_EOL.'管理员已回复您提出的工单'.PHP_EOL.PHP_EOL.'工单标题: '.$ticket_main->title.PHP_EOL.'回复内容: '.$content;
+            $keyboard = new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
+                [
+                    [
+                        ['text' => '回复工单', 'url' => $ticket_url]
+                    ]
+                ]
+            );
+            $bot = new BotApi(Config::get('telegram_token'));
+            try {
+                $bot->sendMessage($user->telegram_id, $messageText, null, null, null, $keyboard);
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
         }
 
         $antiXss = new AntiXSS();

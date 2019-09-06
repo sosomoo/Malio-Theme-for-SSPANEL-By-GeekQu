@@ -42,7 +42,7 @@
                         {if $ticket_status==1}
                         <div class="ticket-form">
                           <div class="form-group">
-                            <textarea class="summernote form-control" placeholder="Type a reply ..."></textarea>
+                            <textarea class="form-control" placeholder="填写回复内容" style="height: 200px;" id="ticket-content"></textarea>
                           </div>
                           <div class="form-group text-right">
                             <button id="ticket-reply" onclick="replyTicket({$id})" class="btn btn-primary btn-lg mr-2">
@@ -87,8 +87,6 @@
   </div>
 
   {include file='user/scripts.tpl'}
-
-  <script src="/theme/malio/assets/modules/summernote/summernote-bs4.js"></script>
 </body>
 
 </html>
