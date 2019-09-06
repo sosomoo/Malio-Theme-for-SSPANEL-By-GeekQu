@@ -12,18 +12,10 @@ udp-replay = true
 
 [Proxy]
 🚀 Direct = direct
-{$ss_group}
+{$All_Proxy}
 
 [Proxy Group]
-🍈 Select = select{$ss_name}
-
-🍃 Proxy = select, 🏃 Auto, 🍈 Select, 🚀 Direct
-
-🍂 Domestic = select, 🚀 Direct, 🍃 Proxy
-
-☁️ Others = select, 🍃 Proxy, 🚀 Direct
-
-🏃 Auto = url-test{$ss_name}, url = http://www.gstatic.com/generate_204, interval = 1200
+{$ProxyGroups}
 
 [Rule]
 {include file='rule/PROXY.conf'}

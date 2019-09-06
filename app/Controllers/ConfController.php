@@ -52,17 +52,16 @@ class ConfController extends BaseController
         $Proxys = (isset($Configs['Proxy'])
             ? self::getSurgeConfProxy($Configs['Proxy'])
             : '');
-        if (isset($Configs['ProxyGroup'])) {
-            $ProxyGroup = self::getSurgeConfProxyGroup(
-                $Nodes,
-                $Configs['ProxyGroup']
-            );
-        } else {
-            $ProxyGroup = self::getSurgeConfProxyGroup(
-                $Nodes,
-                $Configs['Proxy Group']
-            );
+
+        if (isset($Configs['Proxy Group'])) {
+            $Configs['ProxyGroup'] = $Configs['Proxy Group'];
         }
+        $ProxyGroups = self::getSurgeConfProxyGroup(
+            $Nodes,
+            $Configs['ProxyGroup']
+        );
+        $ProxyGroup = self::getSurgeProxyGroup2String($ProxyGroups);
+
         $Rule = self::getSurgeConfRule($Configs['Rule']);
         $Conf = '#!MANAGED-CONFIG '
             . Config::get('baseUrl') . $_SERVER['REQUEST_URI'] .
@@ -125,13 +124,12 @@ class ConfController extends BaseController
      * @param array $Nodes       全部节点数组
      * @param array $ProxyGroups Surge 策略组定义
      *
-     * @return string
+     * @return array
      */
     public static function getSurgeConfProxyGroup($Nodes, $ProxyGroups)
     {
-        $return = '';
+        $return = [];
         foreach ($ProxyGroups as $ProxyGroup) {
-            $str = '';
             if (in_array($ProxyGroup['type'], ['select', 'url-test', 'fallback'])) {
                 $proxies = [];
                 if (
@@ -179,13 +177,76 @@ class ConfController extends BaseController
                 if (isset($ProxyGroup['content']['right-proxies'])) {
                     $proxies = array_merge($proxies, $ProxyGroup['content']['right-proxies']);
                 }
-                $Remarks = implode(', ', $proxies);
+                $ProxyGroup['proxies'] = $proxies;
+            }
+            $return[] = $ProxyGroup;
+        }
+
+        return $return;
+    }
+
+    /**
+     * Surge ProxyGroup 去除无用策略组
+     *
+     * @param array $ProxyGroups 策略组
+     * @param array $checks      要检查的策略组名
+     *
+     * @return array
+     */
+    public static function fixSurgeProxyGroup($ProxyGroups, $checks)
+    {
+        if (count($checks) == 0) {
+            return $ProxyGroups;
+        }
+        $clean_names = [];
+        $newProxyGroups = [];
+        foreach ($ProxyGroups as $ProxyGroup) {
+            if (in_array($ProxyGroup['name'], $checks) && count($ProxyGroup['proxies']) == 0) {
+                $clean_names[] = $ProxyGroup['name'];
+                continue;
+            }
+            $newProxyGroups[] = $ProxyGroup;
+        }
+        if (count($clean_names) >= 1) {
+            $ProxyGroups = $newProxyGroups;
+            $newProxyGroups = [];
+            foreach ($ProxyGroups as $ProxyGroup) {
+                if (!in_array($ProxyGroup['name'], $checks) && $ProxyGroup['type'] != 'ssid') {
+                    $newProxies = [];
+                    foreach ($ProxyGroup['proxies'] as $proxie) {
+                        if (!in_array($proxie, $clean_names)) {
+                            $newProxies[] = $proxie;
+                        }
+                    }
+                    $ProxyGroup['proxies'] = $newProxies;
+                }
+                $newProxyGroups[] = $ProxyGroup;
+            }
+        }
+
+        return $newProxyGroups;
+    }
+
+    /**
+     * Surge ProxyGroup 转字符串
+     *
+     * @param array $ProxyGroups Surge 策略组定义
+     *
+     * @return string
+     */
+    public static function getSurgeProxyGroup2String($ProxyGroups)
+    {
+        $return = '';
+        foreach ($ProxyGroups as $ProxyGroup) {
+            $str = '';
+            if (in_array($ProxyGroup['type'], ['select', 'url-test', 'fallback'])) {
+                $proxies = implode(', ', $ProxyGroup['proxies']);
                 if (in_array($ProxyGroup['type'], ['url-test', 'fallback'])) {
                     $str .= ($ProxyGroup['name']
                         . ' = '
                         . $ProxyGroup['type']
                         . ', '
-                        . $Remarks
+                        . $proxies
                         . ', url = ' . $ProxyGroup['url']
                         . ', interval = ' . $ProxyGroup['interval']);
                 } else {
@@ -193,7 +254,7 @@ class ConfController extends BaseController
                         . ' = '
                         . $ProxyGroup['type']
                         . ', '
-                        . $Remarks);
+                        . $proxies);
                 }
             } elseif ($ProxyGroup['type'] == 'ssid') {
                 $wifi = '';
