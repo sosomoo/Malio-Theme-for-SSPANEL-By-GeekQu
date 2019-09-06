@@ -9,6 +9,7 @@ use App\Models\NodeOnlineLog;
 use App\Models\Ip;
 use App\Models\DetectLog;
 use App\Controllers\BaseController;
+use App\Services\Config;
 use App\Utils\Tools;
 use App\Services\MalioConfig;
 
@@ -83,6 +84,14 @@ class UserController extends BaseController
                     $user_raw->email = md5($user_raw->email);
                 }
                 $users[] = $user_raw;
+            } else {
+                // 流量耗尽用户限速至 1Mbps
+                if (Config::get('keep_connect') == 'true') {
+                    $user_raw = Tools::keyFilter($user_raw, $key_list);
+                    $user_raw->uuid = $user_raw->getUuid();
+                    $user_raw->node_speedlimit = 1;
+                    $users[] = $user_raw;
+                }
             }
         }
 

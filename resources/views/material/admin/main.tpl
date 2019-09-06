@@ -55,7 +55,7 @@
             <a class="dropdown-toggle padding-left-no padding-right-no" data-toggle="dropdown">
                 {if $user->isLogin}
                 <span class="access-hide">{$user->user_name}</span>
-                <span class="avatar avatar-sm"><img alt="alt text for John Smith avatar" src="{$user->gravatar}"></span>
+                <span class="avatar avatar-sm"><img src="{$user->gravatar}"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
                 <li>
@@ -68,8 +68,7 @@
             </ul>
             {else}
             <span class="access-hide">未登录</span>
-            <span class="avatar avatar-sm"><img alt="alt text for John Smith avatar"
-                                                src="/theme/material/images/users/avatar-001.jpg"></span>
+            <span class="avatar avatar-sm"><img src="/theme/material/images/users/avatar-001.jpg"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
                 <li>
@@ -113,7 +112,9 @@
                         <li><a href="/admin/user"><i class="icon icon-lg">supervisor_account</i>&nbsp;用户列表</a></li>
                         <li><a href="/admin/relay"><i class="icon icon-lg">compare_arrows</i>&nbsp;中转规则</a></li>
                         <li><a href="/admin/invite"><i class="icon icon-lg">loyalty</i>&nbsp;邀请与返利</a></li>
+                    {if $config['subscribeLog']=='true'}
                         <li><a href="/admin/subscribe"><i class="icon icon-lg">dialer_sip</i>&nbsp;订阅记录</a></li>
+                    {/if}
                         <li><a href="/admin/login"><i class="icon icon-lg">text_fields</i>&nbsp;登录记录</a></li>
                         <li><a href="/admin/alive"><i class="icon icon-lg">important_devices</i>&nbsp;在线IP</a></li>
                     </ul>

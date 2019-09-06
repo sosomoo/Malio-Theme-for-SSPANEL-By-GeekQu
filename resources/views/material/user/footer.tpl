@@ -43,7 +43,7 @@
 <script src="/theme/material/js/project.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/clipboard@1.5.16/dist/clipboard.min.js"></script>
 
-<script>console.log('数据库查询 {count($queryLog)} 次 | 执行时间 {$optTime} ms');</script>
+<script>console.table([['数据库查询', '执行时间'], ['{count($queryLog)} 次', '{$optTime} ms']])</script>
 
 </body>
 </html>
