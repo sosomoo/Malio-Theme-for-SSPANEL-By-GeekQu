@@ -27,6 +27,7 @@
         "lokielse/omnipay-alipay": "*",
         "remotelyliving/php-dns": "3.0.6",
         "charlottedunois/yasmin": "*",
+        "stripe/stripe-php": "7.0.0",
         "symfony/yaml": "^4.4@dev"
     },
     "autoload": {

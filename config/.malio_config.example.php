@@ -36,6 +36,7 @@ $Malio_Config['reset_bandwidth_and_expire_date_when_change_class'] = false;    /
 $Malio_Config['enable_register_email_restrict'] = true;    // 设置为true时，会限制注册时使用的邮箱后缀
 $Malio_Config['register_email_white_list'] = ['@gmail.com','@qq.com','@outlook.com','@163.com','@126.com','@yeah.net','@foxmail.com'];   // 注册时的邮箱后缀白名单，仅在上面的设置为true时生效
 $Malio_Config['force_user_to_bind_tg_when_join_group'] = true;   // 设置为true时，限制只有绑定了tg的用户才能加入群组，如未绑定将会被踢出群组。.config.php 需要设置群组id，机器人在群组中不回应设为false才能用。机器人需要在群里组设定为管理员才能踢人。(定制功能)
+$Malio_Config['stripe_minimum_amount'] = 4;   // Stripe 支付接口可充值的最低金额
 
 
 // 订阅设置
