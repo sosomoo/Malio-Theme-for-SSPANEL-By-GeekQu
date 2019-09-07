@@ -12,6 +12,7 @@ use App\Utils\ConfRender;
 use App\Utils\Tools;
 use App\Utils\URL;
 use App\Services\Config;
+use App\Services\AppsProfiles;
 
 /**
  *  HomeController
@@ -148,7 +149,7 @@ class LinkController extends BaseController
             $getBody = self::getBody(
                 $user,
                 $response,
-                self::getSurfboard($user),
+                self::getSurfboard($user, $opts),
                 'Surfboard.conf'
             );
             $subscribe_type = 'Surfboard';
@@ -324,41 +325,17 @@ class LinkController extends BaseController
     {
         $subInfo = self::getSubinfo($user, $surge);
         $userapiUrl = $subInfo['surge'];
-        $proxy_name = '';
-        $proxy_group = '';
+        $All_Proxy = '';
         $items = array_merge(
             URL::getAllItems($user, 0, 1, 0),
             URL::getAllItems($user, 1, 1, 0)
         );
         foreach ($items as $item) {
             if (in_array($surge, array(1, 3))) {
-                $proxy_group .= ($item['remark']
-                    . ' = ss, '
-                    . $item['address'] .
-                    ', '
-                    . $item['port']
-                    . ', encrypt-method='
-                    . $item['method']
-                    . ', password='
-                    . $item['passwd']
-                    . URL::getSurgeObfs($item)
-                    . ', udp-relay=true'
-                    . PHP_EOL);
+                $All_Proxy .= ($item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', encrypt-method=' . $item['method'] . ', password=' . $item['passwd'] . URL::getSurgeObfs($item) . ', udp-relay=true' . PHP_EOL);
             } else {
-                $proxy_group .= ($item['remark']
-                    . ' = custom, '
-                    . $item['address']
-                    . ', '
-                    . $item['port']
-                    . ', '
-                    . $item['method']
-                    . ', '
-                    . $item['passwd']
-                    . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module'
-                    . URL::getSurgeObfs($item)
-                    . PHP_EOL);
+                $All_Proxy .= ($item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item) . PHP_EOL);
             }
-            $proxy_name .= (', ' . $item['remark']);
         }
 
         if (isset($opts['source']) && $opts['source'] != '') {
@@ -371,7 +348,7 @@ class LinkController extends BaseController
             if ($SourceContent) {
                 return ConfController::getSurgeConfs(
                     $user,
-                    $proxy_group,
+                    $All_Proxy,
                     $items,
                     $SourceContent
                 );
@@ -379,18 +356,26 @@ class LinkController extends BaseController
                 return '远程配置下载失败。';
             }
         }
-
-        if (in_array($surge, array(2, 3))) {
-            $render = ConfRender::getTemplateRender();
-            $render->assign('user', $user)
-                ->assign('surge', $surge)
-                ->assign('userapiUrl', $userapiUrl)
-                ->assign('proxy_name', $proxy_name)
-                ->assign('proxy_group', $proxy_group);
-            return $render->fetch('surge.tpl');
-        } else {
-            return $proxy_group;
+        if ($surge == 1) {
+            return $All_Proxy;
         }
+        if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Surge()))) {
+            $Profiles = (string) trim($opts['profiles']);
+        } else {
+            $Profiles = 'lhie1';
+        }
+        $ProxyGroups = ConfController::getSurgeConfProxyGroup($items, AppsProfiles::Surge()[$Profiles]['ProxyGroup']);
+        $ProxyGroups = ConfController::fixSurgeProxyGroup($ProxyGroups, AppsProfiles::Surge()[$Profiles]['Checks']);
+        $ProxyGroups = ConfController::getSurgeProxyGroup2String($ProxyGroups);
+
+        $render = ConfRender::getTemplateRender();
+        $render->assign('user', $user)
+            ->assign('surge', $surge)
+            ->assign('userapiUrl', $userapiUrl)
+            ->assign('All_Proxy', $All_Proxy)
+            ->assign('ProxyGroups', $ProxyGroups);
+
+        return $render->fetch('surge.tpl');
     }
 
     /**
@@ -499,25 +484,30 @@ class LinkController extends BaseController
      * Surfboard 配置
      *
      * @param object $user 用户
+     * @param array  $opts request
      *
      * @return string
      */
-    public static function getSurfboard($user)
+    public static function getSurfboard($user, $opts)
     {
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['surfboard'];
-        $ss_name = '';
-        $ss_group = '';
+        $All_Proxy = '';
         $items = array_merge(URL::getAllItems($user, 0, 1, 0), URL::getAllItems($user, 1, 1, 0));
         foreach ($items as $item) {
             $ss_group .= $item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', http://host/SSE.module, ' . URL::getSurgeObfs($item) . PHP_EOL;
             $ss_name .= ', ' . $item['remark'];
         }
+        $ProxyGroups = ConfController::getSurgeConfProxyGroup($items, AppsProfiles::Surfboard()[$Profiles]['ProxyGroup']);
+        $ProxyGroups = ConfController::fixSurgeProxyGroup($ProxyGroups, AppsProfiles::Surfboard()[$Profiles]['Checks']);
+        $ProxyGroups = ConfController::getSurgeProxyGroup2String($ProxyGroups);
+
         $render = ConfRender::getTemplateRender();
         $render->assign('user', $user)
             ->assign('userapiUrl', $userapiUrl)
-            ->assign('ss_name', $ss_name)
-            ->assign('ss_group', $ss_group);
+            ->assign('All_Proxy', $All_Proxy)
+            ->assign('ProxyGroups', $ProxyGroups);
+
         return $render->fetch('surfboard.tpl');
     }
 
@@ -626,13 +616,13 @@ class LinkController extends BaseController
                 return '远程配置下载失败。';
             }
         } else {
-            if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(Config::get('clash_Profiles')))) {
+            if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Clash()))) {
                 $Profiles = (string) trim($opts['profiles']);
             } else {
                 $Profiles = 'lhie1';
             }
-            $ProxyGroups = ConfController::getClashConfProxyGroup($Proxys, Config::get('clash_Profiles')[$Profiles]['ProxyGroup']);
-            $ProxyGroups = ConfController::fixClashProxyGroup($ProxyGroups, Config::get('clash_Profiles')[$Profiles]['Checks']);
+            $ProxyGroups = ConfController::getClashConfProxyGroup($Proxys, AppsProfiles::Clash()[$Profiles]['ProxyGroup']);
+            $ProxyGroups = ConfController::fixClashProxyGroup($ProxyGroups, AppsProfiles::Clash()[$Profiles]['Checks']);
             $ProxyGroups = ConfController::getClashProxyGroup2String($ProxyGroups);
         }
 
@@ -810,13 +800,13 @@ class LinkController extends BaseController
                 '&aid=' . $item['aid']
                 . $tls . $mux . PHP_EOL);
         }
+
         // ss
-        $items = array_merge(
-            URL::getAllItems($user, 0, 1, 0),
-            URL::getAllItems($user, 1, 1, 0)
-        );
-        foreach ($items as $item) {
-            if ($item['obfs'] == 'plain') {
+        if (URL::SSCanConnect($user) && !in_array($user->obfs, ['simple_obfs_http', 'simple_obfs_tls']) ) {
+            $user = URL::getSSConnectInfo($user);
+            $user->obfs = 'plain';
+            $items = URL::getAllItems($user, 0, 1, 0);
+            foreach ($items as $item) {
                 $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
             }
         }

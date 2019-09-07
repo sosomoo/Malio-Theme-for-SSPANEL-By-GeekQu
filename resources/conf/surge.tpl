@@ -35,21 +35,10 @@ use-keyword-filter = false
 
 [Proxy]
 🚀 Direct = direct
-{$proxy_group}
+{$All_Proxy}
 
 [Proxy Group]
-
-🍃 Proxy = select, 🏃 Auto, 🍈 Select, 🚀 Direct
-
-🍂 Domestic = select, 🚀 Direct, 🍃 Proxy
-
-☁️ Others = select, 🍃 Proxy, 🚀 Direct
-
-🍎 Only = select, 🚀 Direct, 🍃 Proxy
-
-🍈 Select = select{$proxy_name}
-
-🏃 Auto = url-test{$proxy_name}, url = http://www.gstatic.com/generate_204, interval = 1200
+{$ProxyGroups}
 
 [Rule]
 {if $surge == 3}
