@@ -31,7 +31,7 @@ class SendGrid extends Base
 
     public function send($to_address, $subject_raw, $text, $files)
     {
-        $from = new Email(null, $this->sender);
+        $from = new Email(Config::get('appName'), $this->sender);
         $subject = $subject_raw;
         $to = new Email(null, $to_address);
         $content = new Content('text/html', $text);

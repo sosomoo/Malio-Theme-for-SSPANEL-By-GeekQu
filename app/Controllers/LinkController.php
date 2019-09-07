@@ -495,13 +495,8 @@ class LinkController extends BaseController
         $All_Proxy = '';
         $items = array_merge(URL::getAllItems($user, 0, 1, 0), URL::getAllItems($user, 1, 1, 0));
         foreach ($items as $item) {
-            $All_Proxy .= ($item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item) . PHP_EOL);
-        }
-
-        if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Surfboard()))) {
-            $Profiles = (string) trim($opts['profiles']);
-        } else {
-            $Profiles = 'lhie1';
+            $ss_group .= $item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', http://host/SSE.module, ' . URL::getSurgeObfs($item) . PHP_EOL;
+            $ss_name .= ', ' . $item['remark'];
         }
         $ProxyGroups = ConfController::getSurgeConfProxyGroup($items, AppsProfiles::Surfboard()[$Profiles]['ProxyGroup']);
         $ProxyGroups = ConfController::fixSurgeProxyGroup($ProxyGroups, AppsProfiles::Surfboard()[$Profiles]['Checks']);

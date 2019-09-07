@@ -11,6 +11,7 @@ use App\Models\DetectLog;
 use App\Controllers\BaseController;
 use App\Services\Config;
 use App\Utils\Tools;
+use App\Services\MalioConfig;
 
 class UserController extends BaseController
 {
@@ -79,6 +80,9 @@ class UserController extends BaseController
             if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
                 $user_raw = Tools::keyFilter($user_raw, $key_list);
                 $user_raw->uuid = $user_raw->getUuid();
+                if (MalioConfig::get('enable_webapi_email_hash') == true) {
+                    $user_raw->email = md5($user_raw->email);
+                }
                 $users[] = $user_raw;
             } else {
                 // 流量耗尽用户限速至 1Mbps
