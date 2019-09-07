@@ -170,7 +170,6 @@ class ConfController extends BaseController
                             $proxies[] = $item['remark'];
                             break;
                         default:
-                            continue;
                             break;
                     }
                 }
@@ -443,7 +442,6 @@ class ConfController extends BaseController
                             $proxies[] = $item['name'];
                             break;
                         default:
-                            continue;
                             break;
                     }
                 }
