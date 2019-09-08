@@ -362,7 +362,7 @@ class LinkController extends BaseController
         if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Surge()))) {
             $Profiles = (string) trim($opts['profiles']);
         } else {
-            $Profiles = 'lhie1';
+            $Profiles = '123456'; // 默认策略组
         }
         $ProxyGroups = ConfController::getSurgeConfProxyGroup($items, AppsProfiles::Surge()[$Profiles]['ProxyGroup']);
         $ProxyGroups = ConfController::fixSurgeProxyGroup($ProxyGroups, AppsProfiles::Surge()[$Profiles]['Checks']);
@@ -501,7 +501,7 @@ class LinkController extends BaseController
         if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Surfboard()))) {
             $Profiles = (string) trim($opts['profiles']);
         } else {
-            $Profiles = 'lhie1';
+            $Profiles = '123456'; // 默认策略组
         }
         $ProxyGroups = ConfController::getSurgeConfProxyGroup($items, AppsProfiles::Surfboard()[$Profiles]['ProxyGroup']);
         $ProxyGroups = ConfController::fixSurgeProxyGroup($ProxyGroups, AppsProfiles::Surfboard()[$Profiles]['Checks']);
@@ -624,7 +624,7 @@ class LinkController extends BaseController
             if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Clash()))) {
                 $Profiles = (string) trim($opts['profiles']);
             } else {
-                $Profiles = 'lhie1';
+                $Profiles = '123456'; // 默认策略组
             }
             $ProxyGroups = ConfController::getClashConfProxyGroup($Proxys, AppsProfiles::Clash()[$Profiles]['ProxyGroup']);
             $ProxyGroups = ConfController::fixClashProxyGroup($ProxyGroups, AppsProfiles::Clash()[$Profiles]['Checks']);
@@ -746,7 +746,7 @@ class LinkController extends BaseController
                 ) . '?v2ray-plugin=' . Tools::base64_url_encode(
                     json_encode($v2rayplugin)
                 ) . '#' . rawurlencode($item['remark']) . PHP_EOL);
-            } 
+            }
             // obfs
             if (in_array($item['obfs'], Config::getSupportParam('ss_obfs'))) {
                 $return .= (URL::getItemUrl($item, 1) . PHP_EOL);
