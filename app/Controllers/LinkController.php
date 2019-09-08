@@ -362,7 +362,7 @@ class LinkController extends BaseController
         if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Surge()))) {
             $Profiles = (string) trim($opts['profiles']);
         } else {
-            $Profiles = 'lhie1';
+            $Profiles = '123456'; // 默认策略组
         }
         $ProxyGroups = ConfController::getSurgeConfProxyGroup($items, AppsProfiles::Surge()[$Profiles]['ProxyGroup']);
         $ProxyGroups = ConfController::fixSurgeProxyGroup($ProxyGroups, AppsProfiles::Surge()[$Profiles]['Checks']);
@@ -495,8 +495,13 @@ class LinkController extends BaseController
         $All_Proxy = '';
         $items = array_merge(URL::getAllItems($user, 0, 1, 0), URL::getAllItems($user, 1, 1, 0));
         foreach ($items as $item) {
-            $ss_group .= $item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', http://host/SSE.module, ' . URL::getSurgeObfs($item) . PHP_EOL;
-            $ss_name .= ', ' . $item['remark'];
+            $All_Proxy .= ($item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item) . PHP_EOL);
+        }
+
+        if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Surfboard()))) {
+            $Profiles = (string) trim($opts['profiles']);
+        } else {
+            $Profiles = '123456'; // 默认策略组
         }
         $ProxyGroups = ConfController::getSurgeConfProxyGroup($items, AppsProfiles::Surfboard()[$Profiles]['ProxyGroup']);
         $ProxyGroups = ConfController::fixSurgeProxyGroup($ProxyGroups, AppsProfiles::Surfboard()[$Profiles]['Checks']);
@@ -619,7 +624,7 @@ class LinkController extends BaseController
             if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Clash()))) {
                 $Profiles = (string) trim($opts['profiles']);
             } else {
-                $Profiles = 'lhie1';
+                $Profiles = '123456'; // 默认策略组
             }
             $ProxyGroups = ConfController::getClashConfProxyGroup($Proxys, AppsProfiles::Clash()[$Profiles]['ProxyGroup']);
             $ProxyGroups = ConfController::fixClashProxyGroup($ProxyGroups, AppsProfiles::Clash()[$Profiles]['Checks']);
@@ -741,7 +746,7 @@ class LinkController extends BaseController
                 ) . '?v2ray-plugin=' . Tools::base64_url_encode(
                     json_encode($v2rayplugin)
                 ) . '#' . rawurlencode($item['remark']) . PHP_EOL);
-            } 
+            }
             // obfs
             if (in_array($item['obfs'], Config::getSupportParam('ss_obfs'))) {
                 $return .= (URL::getItemUrl($item, 1) . PHP_EOL);

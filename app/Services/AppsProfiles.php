@@ -101,10 +101,43 @@ class AppsProfiles
                         'name' => '🇨🇳 中继',
                         'type' => 'select',
                         'content' => [
-                            'regex' => '(中继|中转|中国|回国|China|CN)'
+                            'regex' => '(中继|中转|中国|回国|China)'
                         ],
                         'url' => 'http://www.qualcomm.cn/generate_204',
                         'interval' => 3600
+                    ]
+                ]
+            ],
+            '123456' => [
+                'Checks' => [],
+                'ProxyGroup' => [
+                    [
+                        'name' => '🍃 Proxy',
+                        'type' => 'select',
+                        'content' => [
+                            'regex' => '(.*)'
+                        ]
+                    ],
+                    [
+                        'name' => '🍂 Domestic',
+                        'type' => 'select',
+                        'content' => [
+                            'left-proxies' => ['🚀 Direct', '🍃 Proxy']
+                        ]
+                    ],
+                    [
+                        'name' => '🍎 Only',
+                        'type' => 'select',
+                        'content' => [
+                            'left-proxies' => ['🚀 Direct', '🍃 Proxy']
+                        ]
+                    ],
+                    [
+                        'name' => '☁️ Others',
+                        'type' => 'select',
+                        'content' => [
+                            'left-proxies' => ['🍃 Proxy', '🍂 Domestic']
+                        ]
                     ]
                 ]
             ]
@@ -203,10 +236,36 @@ class AppsProfiles
                         'name' => '🇨🇳 中继',
                         'type' => 'select',
                         'content' => [
-                            'regex' => '(中继|中转|中国|回国|China|CN)'
+                            'regex' => '(中继|中转|中国|回国|China)'
                         ],
                         'url' => 'http://www.qualcomm.cn/generate_204',
                         'interval' => 3600
+                    ]
+                ]
+            ],
+            '123456' => [
+                'Checks' => [],
+                'ProxyGroup' => [
+                    [
+                        'name' => '🍃 Proxy',
+                        'type' => 'select',
+                        'content' => [
+                            'regex' => '(.*)'
+                        ]
+                    ],
+                    [
+                        'name' => '🍂 Domestic',
+                        'type' => 'select',
+                        'content' => [
+                            'left-proxies' => ['🚀 Direct', '🍃 Proxy']
+                        ]
+                    ],
+                    [
+                        'name' => '☁️ Others',
+                        'type' => 'select',
+                        'content' => [
+                            'left-proxies' => ['🍃 Proxy', '🍂 Domestic']
+                        ]
                     ]
                 ]
             ]
@@ -284,7 +343,7 @@ class AppsProfiles
                         'name' => '中继',
                         'type' => 'url-test',
                         'content' => [
-                            'regex' => '(中继|中转|中国|回国|China|CN)'
+                            'regex' => '(中继|中转|中国|回国|China)'
                         ],
                         'url' => 'http://www.qualcomm.cn/generate_204',
                         'interval' => 3600
@@ -443,7 +502,47 @@ class AppsProfiles
                         'name' => 'PROXY',
                         'type' => 'select',
                         'content' => [
-                            'regex' => '(中继|中转|中国|回国|China|CN)'
+                            'regex' => '(中继|中转|中国|回国|China)'
+                        ]
+                    ]
+                ]
+            ],
+            '123456' => [
+                'Checks' => [],
+                'ProxyGroup' => [
+                    [
+                        'name' => 'Proxy',
+                        'type' => 'select',
+                        'content' => [
+                            'regex' => '(.*)'
+                        ]
+                    ],
+                    [
+                        'name' => 'Domestic',
+                        'type' => 'select',
+                        'content' => [
+                            'left-proxies' => ['DIRECT', 'Proxy']
+                        ]
+                    ],
+                    [
+                        'name' => 'AsianTV',
+                        'type' => 'select',
+                        'content' => [
+                            'left-proxies' => ['Domestic', 'Proxy']
+                        ]
+                    ],
+                    [
+                        'name' => 'GlobalTV',
+                        'type' => 'select',
+                        'content' => [
+                            'left-proxies' => ['Proxy']
+                        ]
+                    ],
+                    [
+                        'name' => 'Others',
+                        'type' => 'select',
+                        'content' => [
+                            'left-proxies' => ['Proxy', 'Domestic']
                         ]
                     ]
                 ]
