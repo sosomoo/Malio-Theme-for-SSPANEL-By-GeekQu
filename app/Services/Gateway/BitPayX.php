@@ -165,7 +165,7 @@ class BitPayX extends AbstractPayment
 
     public function getPurchaseHTML()
     {
-        return View::getSmarty()->fetch('user/bitpayx.tpl');
+        return 0;
     }
 
     public function getReturnHTML($request, $response, $args)

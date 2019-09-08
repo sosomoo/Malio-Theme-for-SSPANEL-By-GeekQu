@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\InviteCode;
 use App\Services\Config;
+use App\Services\MalioConfig;
 use App\Utils\Check;
 use App\Utils\Tools;
 use App\Utils\Radius;
@@ -51,10 +52,23 @@ class AuthController extends BaseController
             $login_number = '';
         }
 
+        $welcome = '';
+        $time = date('G');
+        if ($time <= 4) {
+            $welcome = 'Good Night';
+        } else if ($time <= 12) {
+            $welcome = 'Good Morning';
+        } else if ($time <=18) {
+            $welcome = 'Good Afternoon';
+        } else {
+            $welcome = 'Good Evening';
+        }
+
         return $this->view()
             ->assign('geetest_html', $GtSdk)
             ->assign('login_token', $login_token)
             ->assign('login_number', $login_number)
+            ->assign('welcome', $welcome)
             ->assign('telegram_bot', Config::get('telegram_bot'))
             ->assign('base_url', Config::get('baseUrl'))
             ->assign('recaptcha_sitekey', $recaptcha_sitekey)
@@ -149,7 +163,7 @@ class AuthController extends BaseController
             $rcode = $ga->verifyCode($user->ga_token, $code);
 
             if (!$rcode) {
-                $res['ret'] = 0;
+                $res['ret'] = 2;
                 $res['msg'] = '两步验证码错误，如果您是丢失了生成器或者错误地设置了这个选项，您可以尝试重置密码，即可取消这个选项。';
                 return $response->getBody()->write(json_encode($res));
             }
@@ -229,7 +243,6 @@ class AuthController extends BaseController
                     break;
             }
         }
-
 
         return $this->view()
             ->assign('geetest_html', $GtSdk)
@@ -360,7 +373,7 @@ class AuthController extends BaseController
 
         //dumplin：1、邀请人等级为0则邀请码不可用；2、邀请人invite_num为可邀请次数，填负数则为无限
         $c = InviteCode::where('code', $code)->first();
-        if ($c == null) {
+        if ($c == null && MalioConfig::get('code_required') == true) {
             if (Config::get('register_mode') === 'invite') {
                 $res['ret'] = 0;
                 $res['msg'] = '邀请码无效';
@@ -374,13 +387,13 @@ class AuthController extends BaseController
                 return $response->getBody()->write(json_encode($res));
             }
 
-            if ($gift_user->class == 0) {
+            if ($gift_user->class == 0 && MalioConfig::get('code_required') == true) {
                 $res['ret'] = 0;
                 $res['msg'] = '邀请人不是VIP';
                 return $response->getBody()->write(json_encode($res));
             }
 
-            if ($gift_user->invite_num == 0) {
+            if ($gift_user->invite_num == 0 && MalioConfig::get('code_required') == true) {
                 $res['ret'] = 0;
                 $res['msg'] = '邀请人可用邀请次数为0';
                 return $response->getBody()->write(json_encode($res));
@@ -425,6 +438,7 @@ class AuthController extends BaseController
             return $response->getBody()->write(json_encode($res));
         }
 
+        /*
         if ($imtype == '' || $wechat == '') {
             $res['ret'] = 0;
             $res['msg'] = '请填上你的联络方式';
@@ -437,6 +451,7 @@ class AuthController extends BaseController
             $res['msg'] = '此联络方式已注册';
             return $response->getBody()->write(json_encode($res));
         }
+        */
         if (Config::get('enable_email_verify') === 'true') {
             EmailVerify::where('email', '=', $email)->delete();
         }
