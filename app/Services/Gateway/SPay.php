@@ -62,7 +62,7 @@ class SPay extends AbstractPayment
         //header("Location: http://www.dayyun.com/pay/pay/alipay.php?".http_build_query($data));
 
 
-        return json_encode(['code' => 0, 'url' => 'https://h.8889838.com/pay/pay/alipay.php?' . http_build_query($data)]);
+        return json_encode(['code' => 0, 'url' => 'http://h.8889838.com/pay/pay/alipay.php?' . http_build_query($data)]);
     }
 
     public function notify($request, $response, $args)
