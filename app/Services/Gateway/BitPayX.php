@@ -91,6 +91,9 @@ class BitPayX extends AbstractPayment
         if ($price <= 0) {
             return json_encode(['errcode' => -1, 'errmsg' => '请输入合理的金额。']);
         }
+        if (Config::get('bitpyax_alipay_type') == 'ALIGLOBAL' && $type == 'ALIPAY') {
+            $type = 'ALIGLOBAL';
+        }
         $user = Auth::getUser();
         $pl = new Paylist();
         $pl->userid = $user->id;
