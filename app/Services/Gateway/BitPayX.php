@@ -12,6 +12,7 @@ namespace App\Services\Gateway;
 use App\Models\Paylist;
 use App\Services\Auth;
 use App\Services\Config;
+use App\Services\MalioConfig;
 use App\Services\View;
 
 class BitPayX extends AbstractPayment
@@ -91,7 +92,7 @@ class BitPayX extends AbstractPayment
         if ($price <= 0) {
             return json_encode(['errcode' => -1, 'errmsg' => '请输入合理的金额。']);
         }
-        if (Config::get('bitpyax_alipay_type') == 'ALIGLOBAL' && $type == 'ALIPAY') {
+        if (MalioConfig::get('bitpyax_alipay_type') == 'ALIGLOBAL' && $type == 'ALIPAY') {
             $type = 'ALIGLOBAL';
         }
         $user = Auth::getUser();
@@ -106,12 +107,11 @@ class BitPayX extends AbstractPayment
         $data['price_currency'] = 'CNY';
         if ($type === 'WECHAT') {
             $data['pay_currency'] = $type;
-            $data['mobile'] = $mobile;
         }
         if ($type === 'ALIGLOBAL' || $type === 'ALIPAY') {
             $data['pay_currency'] = $type;
-            $data['mobile'] = true;
         }
+        $data['mobile'] = $mobile;
         $data['title'] = '支付单号：' . $pl->tradeno;
         $data['description'] = '充值：' . $price . ' 元';
         $data['callback_url'] = Config::get('baseUrl') . '/payment/notify';
