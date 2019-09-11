@@ -46,8 +46,7 @@ class UserController extends BaseController
                         }
                     )->orwhere('is_admin', 1);
                 }
-            )
-                ->where('enable', 1)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
+            )->where('enable', 1)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
         } else {
             $users_raw = User::where(
                 static function ($query) use ($node) {
@@ -75,17 +74,25 @@ class UserController extends BaseController
             'forbidden_ip', 'forbidden_port', 'node_speedlimit', 'disconnect_ip',
             'is_multi_user', 'id', 'port', 'passwd', 'u', 'd');
 
-        foreach ($users_raw as $user_raw) {
-            if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
-                $user_raw = Tools::keyFilter($user_raw, $key_list);
-                $user_raw->uuid = $user_raw->getUuid();
-                $users[] = $user_raw;
-            } else {
-                // 流量耗尽用户限速至 1Mbps
-                if (Config::get('keep_connect') == 'true') {
+        if (Config::get('keep_connect') == 'true') {
+            foreach ($users_raw as $user_raw) {
+                if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
+                    $user_raw = Tools::keyFilter($user_raw, $key_list);
+                    $user_raw->uuid = $user_raw->getUuid();
+                    $users[] = $user_raw;
+                } else {
+                    // 流量耗尽用户限速至 1Mbps
                     $user_raw = Tools::keyFilter($user_raw, $key_list);
                     $user_raw->uuid = $user_raw->getUuid();
                     $user_raw->node_speedlimit = 1;
+                    $users[] = $user_raw;
+                }
+            }
+        } else {
+            foreach ($users_raw as $user_raw) {
+                if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
+                    $user_raw = Tools::keyFilter($user_raw, $key_list);
+                    $user_raw->uuid = $user_raw->getUuid();
                     $users[] = $user_raw;
                 }
             }
