@@ -11,6 +11,7 @@ use App\Models\DetectLog;
 use App\Controllers\BaseController;
 use App\Services\Config;
 use App\Utils\Tools;
+use App\Utils\URL;
 
 class UserController extends BaseController
 {
@@ -36,28 +37,7 @@ class UserController extends BaseController
         $node->node_heartbeat = time();
         $node->save();
 
-        if ($node->node_group != 0) {
-            $users_raw = User::where(
-                static function ($query) use ($node) {
-                    $query->where(
-                        static function ($query1) use ($node) {
-                            $query1->where('class', '>=', $node->node_class)
-                                ->where('node_group', '=', $node->node_group);
-                        }
-                    )->orwhere('is_admin', 1);
-                }
-            )->where('enable', 1)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
-        } else {
-            $users_raw = User::where(
-                static function ($query) use ($node) {
-                    $query->where(
-                        static function ($query1) use ($node) {
-                            $query1->where('class', '>=', $node->node_class);
-                        }
-                    )->orwhere('is_admin', 1);
-                }
-            )->where('enable', 1)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
-        }
+        // 节点流量耗尽则返回 null
         if (($node->node_bandwidth_limit != 0) && $node->node_bandwidth_limit < $node->node_bandwidth) {
             $users = null;
 
@@ -68,11 +48,104 @@ class UserController extends BaseController
             return $this->echoJson($response, $res);
         }
 
-        $users = array();
+        if (in_array($node->sort, [0, 10])) {
+            $mu_port_migration = Config::get('mu_port_migration');
+        } else {
+            $mu_port_migration = 'false';
+        }
+
+        $users_raw = User::where(
+            static function ($query) use ($node, $mu_port_migration) {
+                if ($mu_port_migration == 'true') {
+                    $query->where(
+                        static function ($query1) use ($node) {
+                            if ($node->node_group != 0) {
+                                $query1->where('class', '>=', $node->node_class)
+                                    ->where('node_group', '=', $node->node_group)
+                                    ->where('is_multi_user', '=', 0);
+                            } else {
+                                $query1->where('class', '>=', $node->node_class)
+                                    ->where('is_multi_user', '=', 0);
+                            }
+                        }
+                    );
+                } else {
+                    $query->where(
+                        static function ($query1) use ($node) {
+                            if ($node->node_group != 0) {
+                                $query1->where('class', '>=', $node->node_class)
+                                    ->where('node_group', '=', $node->node_group);
+                            } else {
+                                $query1->where('class', '>=', $node->node_class);
+                            }
+                        }
+                    )->orwhere('is_admin', 1);
+                }
+            }
+        )->where('enable', 1)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
+
+        // 单端口承载用户
+        if ($mu_port_migration == 'true') {
+            $mu_users_raw = User::where(
+                static function ($query) use ($node) {
+                    $query->where(
+                        static function ($query1) use ($node) {
+                            if ($node->node_group != 0) {
+                                $query1->where('class', '>=', $node->node_class)
+                                    ->where('node_group', '=', $node->node_group)
+                                    ->where('is_multi_user', '>', 0);
+                            } else {
+                                $query1->where('class', '>=', $node->node_class)
+                                    ->where('is_multi_user', '>', 0);
+                            }
+                        }
+                    )->orwhere('is_admin', 1);
+                }
+            )->where('enable', 1)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
+            $type = 0; //偏移
+            $port = []; //指定
+            if (strpos($node->server, ';') !== false) {
+                $node_server = explode(';', $node->server);
+                if (strpos($node_server[1], 'port') !== false) {
+                    $item = URL::parse_args($node_server[1]);
+                    if (strpos($item['port'], '#') !== false) {
+                        if (strpos($item['port'], '+') !== false) {
+                            $args_explode = explode('+', $item['port']);
+                            foreach ($args_explode as $arg) {
+                                $port[substr($arg, 0, strpos($arg, '#'))] = (int) substr($arg, strpos($arg, '#') + 1);
+                            }
+                        } else {
+                            $port[substr($item['port'], 0, strpos($item['port'], '#'))] = (int) substr($item['port'], strpos($item['port'], '#') + 1);
+                        }
+                    } else {
+                        $$type = (int) $item['port'];
+                    }
+                }
+            }
+            if ($type == 0) {
+                foreach ($mu_users_raw as $user_raw) {
+                    if ($user_raw->is_multi_user != 0) {
+                        if (in_array($user_raw->port, array_keys($port))) {
+                            $user_raw->port = $port[$user_raw->port];
+                        }
+                    }
+                    $users_raw[] = $user_raw;
+                }
+            } else {
+                foreach ($mu_users_raw as $user_raw) {
+                    if ($user_raw->is_multi_user != 0) {
+                        $user_raw->port = ($user_raw->port + $type);
+                    }
+                    $users_raw[] = $user_raw;
+                }
+            }
+        }
 
         $key_list = array('email', 'method', 'obfs', 'obfs_param', 'protocol', 'protocol_param',
             'forbidden_ip', 'forbidden_port', 'node_speedlimit', 'disconnect_ip',
             'is_multi_user', 'id', 'port', 'passwd', 'u', 'd');
+
+        $users = array();
 
         if (Config::get('keep_connect') == 'true') {
             foreach ($users_raw as $user_raw) {

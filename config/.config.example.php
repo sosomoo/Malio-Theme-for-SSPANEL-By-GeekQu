@@ -294,6 +294,7 @@ $System_Config['db_charset'] = 'utf8';
 $System_Config['db_collation'] = 'utf8_general_ci';
 $System_Config['db_prefix'] = '';
 $System_Config['muKeyList'] = ['　'];                //多 key 列表
+$System_Config['mu_port_migration'] = 'false';       //为后端直接下发偏移后的端口
 
 #aws
 $System_Config['aws_access_key_id'] = '';
