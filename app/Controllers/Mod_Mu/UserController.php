@@ -48,7 +48,7 @@ class UserController extends BaseController
             return $this->echoJson($response, $res);
         }
 
-        if (in_array($node->sort, [0, 10])) {
+        if (in_array($node->sort, [0, 10]) && $node->mu_only != -1) {
             $mu_port_migration = Config::get('mu_port_migration');
         } else {
             $mu_port_migration = 'false';
@@ -102,39 +102,19 @@ class UserController extends BaseController
                     )->orwhere('is_admin', 1);
                 }
             )->where('enable', 1)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
-            $type = 0; //偏移
-            $port = []; //指定
-            if (strpos($node->server, ';') !== false) {
-                $node_server = explode(';', $node->server);
-                if (strpos($node_server[1], 'port') !== false) {
-                    $item = URL::parse_args($node_server[1]);
-                    if (strpos($item['port'], '#') !== false) {
-                        if (strpos($item['port'], '+') !== false) {
-                            $args_explode = explode('+', $item['port']);
-                            foreach ($args_explode as $arg) {
-                                $port[substr($arg, 0, strpos($arg, '#'))] = (int) substr($arg, strpos($arg, '#') + 1);
-                            }
-                        } else {
-                            $port[substr($item['port'], 0, strpos($item['port'], '#'))] = (int) substr($item['port'], strpos($item['port'], '#') + 1);
-                        }
-                    } else {
-                        $$type = (int) $item['port'];
-                    }
-                }
-            }
-            if ($type == 0) {
+
+            $muPort = Tools::get_MuOutPortArray($node->server);
+            if ($muPort['type'] == 0) {
                 foreach ($mu_users_raw as $user_raw) {
-                    if ($user_raw->is_multi_user != 0) {
-                        if (in_array($user_raw->port, array_keys($port))) {
-                            $user_raw->port = $port[$user_raw->port];
-                        }
+                    if ($user_raw->is_multi_user != 0 && in_array($user_raw->port, array_keys($muPort['port']))) {
+                        $user_raw->port = $muPort['port'][$user_raw->port];
                     }
                     $users_raw[] = $user_raw;
                 }
             } else {
                 foreach ($mu_users_raw as $user_raw) {
                     if ($user_raw->is_multi_user != 0) {
-                        $user_raw->port = ($user_raw->port + $type);
+                        $user_raw->port = ($user_raw->port + $muPort['type']);
                     }
                     $users_raw[] = $user_raw;
                 }

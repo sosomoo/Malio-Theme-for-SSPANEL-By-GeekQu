@@ -295,6 +295,7 @@ $System_Config['db_collation'] = 'utf8_general_ci';
 $System_Config['db_prefix'] = '';
 $System_Config['muKeyList'] = ['　'];                //多 key 列表
 $System_Config['mu_port_migration'] = 'false';       //为后端直接下发偏移后的端口
+$System_Config['relay_port_migration'] = 'false';    //为中转规则下发偏移后的端口，一般与上一条同时启用
 
 #aws
 $System_Config['aws_access_key_id'] = '';
