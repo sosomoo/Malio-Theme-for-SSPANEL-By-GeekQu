@@ -6,6 +6,7 @@ use App\Services\Auth;
 use App\Services\Config;
 use App\Models\Paylist;
 use App\Services\View;
+use App\Services\MalioConfig;
 use Exception;
 use Stripe\Stripe;
 use Stripe\Charge;
@@ -31,10 +32,8 @@ class StripePay extends AbstractPayment
             return json_encode(['errcode' => -1, 'errmsg' => '充值最低金额为'.$stripe_minimum_amount.'元']);
         }
 
-        $currency = file_get_contents('https://api.exchangeratesapi.io/latest?symbols=CNY&base=USD');
-
         $ch = curl_init();
-        $url = 'https://api.exchangeratesapi.io/latest?symbols=CNY&base=USD';
+        $url = 'https://api.exchangeratesapi.io/latest?symbols=CNY&base='.MalioConfig::get('stripe_currency');
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -43,13 +42,9 @@ class StripePay extends AbstractPayment
 
         $price_usd = ((double)$price) / ($currency->rates->CNY);
 
-        if ($currency->rates->CNY <=6) {
-            return json_encode(['errcode' => -1, 'errmsg' => 'bad currency']);
-        }
-
         $source = Source::create([
             'amount' => floor($price_usd * 100),
-            'currency' => 'usd',
+            'currency' => MalioConfig::get('stripe_currency'),
             'type' => $type,
             'redirect' => [
                 'return_url' => Config::get('baseUrl') . '/user/payment/return',

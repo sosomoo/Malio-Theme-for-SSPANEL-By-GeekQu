@@ -84,7 +84,7 @@ class TicketController extends AdminController
             try {
                 $bot->sendMessage($user->telegram_id, $messageText, null, null, null, $keyboard);
             } catch (Exception $e) {
-                echo $e->getMessage();
+                
             }
         }
 
