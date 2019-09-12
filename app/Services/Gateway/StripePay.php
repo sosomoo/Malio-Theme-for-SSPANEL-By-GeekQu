@@ -27,7 +27,7 @@ class StripePay extends AbstractPayment
         if ($type != 'alipay' and $type != 'wechat') {
             return json_encode(['errcode' => -1, 'errmsg' => 'wrong payment.']);
         }
-        $stripe_minimum_amount = Config::get('stripe_minimum_amount');
+        $stripe_minimum_amount = MalioConfig::get('stripe_minimum_amount');
         if ($price < $stripe_minimum_amount) {
             return json_encode(['errcode' => -1, 'errmsg' => '充值最低金额为'.$stripe_minimum_amount.'元']);
         }
