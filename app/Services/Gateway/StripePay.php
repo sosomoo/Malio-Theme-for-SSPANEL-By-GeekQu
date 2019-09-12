@@ -33,17 +33,17 @@ class StripePay extends AbstractPayment
         }
 
         $ch = curl_init();
-        $url = 'https://api.exchangeratesapi.io/latest?symbols=CNY&base='.MalioConfig::get('stripe_currency');
+        $url = 'https://api.exchangeratesapi.io/latest?symbols=CNY&base='.strtoupper(MalioConfig::get('stripe_currency'));
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         $currency = json_decode(curl_exec($ch));
         curl_close($ch);
 
-        $price_usd = ((double)$price) / ($currency->rates->CNY);
+        $price_exchanged = ((double)$price) / ($currency->rates->CNY);
 
         $source = Source::create([
-            'amount' => floor($price_usd * 100),
+            'amount' => floor($price_exchanged * 100),
             'currency' => MalioConfig::get('stripe_currency'),
             'type' => $type,
             'redirect' => [
