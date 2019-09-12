@@ -54,6 +54,10 @@ class UserController extends BaseController
             $mu_port_migration = 'false';
         }
 
+        /*
+         * 1. 请不要把管理员作为单端口承载用户
+         * 2. 请不要把真实用户作为单端口承载用户
+         */
         $users_raw = User::where(
             static function ($query) use ($node, $mu_port_migration) {
                 if ($mu_port_migration == 'true') {
@@ -62,10 +66,12 @@ class UserController extends BaseController
                             if ($node->node_group != 0) {
                                 $query1->where('class', '>=', $node->node_class)
                                     ->where('node_group', '=', $node->node_group)
-                                    ->where('is_multi_user', '=', 0);
+                                    ->where('is_multi_user', '=', 0)
+                                    ->where('is_admin', 0);
                             } else {
                                 $query1->where('class', '>=', $node->node_class)
-                                    ->where('is_multi_user', '=', 0);
+                                    ->where('is_multi_user', '=', 0)
+                                    ->where('is_admin', 0);
                             }
                         }
                     );

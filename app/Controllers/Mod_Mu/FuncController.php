@@ -62,14 +62,19 @@ class FuncController extends BaseController
                 $server = null;
             }
 
-            if (Config::get('mu_port_migration') == 'true') {
+            if (Config::get('relay_port_migration') == 'true') {
                 foreach ($rules as $rule) {
                     $dis = $this->get_dis_node_info($rule['dist_node_id']);
                     if ($dis != null) {
                         $rule['source_node_sort'] = $node->sort;
                         $rule['dist_node_sort'] = $dis->sort;
-                        $rule['dist_node_server'] = $dis->server;
-    
+                        if (in_array($dis->sort, [0, 10])) {
+                            $dis_server = explode(';', $dis->server);
+                            $rule['dist_node_server'] = $dis_server[0];
+                        } else {
+                            $rule['dist_node_server'] = $dis->server;
+                        }
+
                         if (in_array($dis->sort, [0, 10]) && strpos($dis->server, ';') !== false && $dis->mu_only != -1) {
                             $muPort = Tools::get_MuOutPortArray($dis->server);
                             $user = User::where('port', '=', $rule['port'])->first();
@@ -85,7 +90,7 @@ class FuncController extends BaseController
                                 }
                             }
                         }
-    
+
                     } else {
                         $rule['source_node_sort'] = $node->sort;
                         $rule['dist_node_sort'] = null;
@@ -98,7 +103,7 @@ class FuncController extends BaseController
                     if ($dis != null) {
                         $rule['source_node_sort'] = $node->sort;
                         $rule['dist_node_sort'] = $dis->sort;
-                        $rule['dist_node_server'] = $dis->server;    
+                        $rule['dist_node_server'] = $dis->server;
                     } else {
                         $rule['source_node_sort'] = $node->sort;
                         $rule['dist_node_sort'] = null;
