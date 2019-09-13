@@ -150,7 +150,7 @@ class PAYJS extends AbstractPayment
     }
     public function getPurchaseHTML()
     {
-        return View::getSmarty()->fetch('user/payjs.tpl');
+        return 1;
     }
     public function getReturnHTML($request, $response, $args)
     {

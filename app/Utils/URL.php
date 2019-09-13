@@ -316,7 +316,7 @@ class URL
                 $ssurl .= '?plugin=' . rawurlencode($plugin);
             }
             $ssurl .= '#' . rawurlencode(
-                Config::get('appName') . ' - ' . $item['remark']
+                $item['remark']
             );
         }
         return $ssurl;
