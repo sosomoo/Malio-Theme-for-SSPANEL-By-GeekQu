@@ -181,7 +181,7 @@ class LinkController extends BaseController
             $getBody = self::getBody(
                 $user,
                 $response,
-                self::getShadowrocket($user),
+                self::getShadowrocket($user, $opts),
                 'Shadowrocket.txt'
             );
             $subscribe_type = 'Shadowrocket';
@@ -722,7 +722,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getShadowrocket($user)
+    public static function getShadowrocket($user, $opts)
     {
         $return = '';
         $find = false;
