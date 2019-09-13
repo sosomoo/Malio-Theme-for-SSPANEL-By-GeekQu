@@ -7,6 +7,7 @@ use App\Models\Node;
 use App\Models\Relay;
 use App\Services\Config;
 use App\Controllers\LinkController;
+use App\Controllers\ConfController;
 
 class URL
 {
@@ -269,6 +270,32 @@ class URL
         $items = self::getAllItems($user, $is_mu, $is_ss, $getV2rayPlugin);
         foreach ($items as $item) {
             $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
+        }
+
+        return $return_url;
+    }
+
+    public static function get_NewAllUrl($user, $Rule, $find)
+    {
+        $return_url = '';
+        if (strtotime($user->expire_in) < time()) {
+            return $return_url;
+        }
+        $items = array_merge(
+            self::getAllItems($user, 0, $Rule['is_ss'], $Rule['getV2rayPlugin']),
+            self::getAllItems($user, 1, $Rule['is_ss'], $Rule['getV2rayPlugin'])
+        );
+        if ($find) {
+            foreach ($items as $item) {
+                $item = $item = ConfController::getMatchProxy($item, $Rule);
+                if ($item !== null) {
+                    $return_url .= self::getItemUrl($item, $Rule['is_ss']) . PHP_EOL;
+                }
+            }
+        } else {
+            foreach ($items as $item) {
+                $return_url .= self::getItemUrl($item, $Rule['is_ss']) . PHP_EOL;
+            }
         }
 
         return $return_url;
