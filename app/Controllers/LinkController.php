@@ -153,11 +153,11 @@ class LinkController extends BaseController
                 'Surfboard.conf'
             );
             $subscribe_type = 'Surfboard';
-        } elseif ($clash == 1) {
+        } elseif ($clash >= 1) {
             $getBody = self::getBody(
                 $user,
                 $response,
-                self::getClash($user, $opts),
+                self::getClash($user, $clash, $opts),
                 'config.yaml'
             );
             $subscribe_type = 'Clash';
@@ -524,7 +524,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getClash($user, $opts)
+    public static function getClash($user, $clash, $opts)
     {
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
@@ -606,6 +606,38 @@ class LinkController extends BaseController
                 $v2rays['class'] = $item['class'];
             }
             $Proxys[] = $v2rays;
+        }
+
+        if ($clash == 2) {
+            // ssr
+            $items = array_merge(URL::getAllItems($user, 0, 0, 0), URL::getAllItems($user, 1, 0, 0));
+            foreach ($items as $item) {
+                // 不支持的
+                if (in_array($item['method'], ['rc4-md5-6', 'des-ede3-cfb', 'xsalsa20', 'none'])
+                    ||
+                    in_array($item['protocol'], array_merge(Config::getSupportParam('allow_none_protocol'), ['verify_deflate']))
+                    ||
+                    in_array($item['obfs'], ['tls1.2_ticket_fastauth'])
+                ) {
+                    continue;
+                }
+                $ssr = [
+                    'name' => $item['remark'],
+                    'type' => 'ssr',
+                    'server' => $item['address'],
+                    'port' => $item['port'],
+                    'cipher' => $item['method'],
+                    'password' => $item['passwd'],
+                    'protocol' => $item['protocol'],
+                    'protocolparam' => $item['protocol_param'],
+                    'obfs' => $item['obfs'],
+                    'obfsparam' => $item['obfs_param']
+                ];
+                if (isset($opts['source']) && $opts['source'] != '') {
+                    $ssr['class'] = $item['class'];
+                }
+                $Proxys[] = $ssr;
+            }
         }
 
         if (isset($opts['source']) && $opts['source'] != '') {

@@ -11,6 +11,7 @@ use App\Models\DetectLog;
 use App\Controllers\BaseController;
 use App\Services\Config;
 use App\Utils\Tools;
+use App\Utils\URL;
 use App\Services\MalioConfig;
 
 class UserController extends BaseController
@@ -37,29 +38,7 @@ class UserController extends BaseController
         $node->node_heartbeat = time();
         $node->save();
 
-        if ($node->node_group != 0) {
-            $users_raw = User::where(
-                static function ($query) use ($node) {
-                    $query->where(
-                        static function ($query1) use ($node) {
-                            $query1->where('class', '>=', $node->node_class)
-                                ->where('node_group', '=', $node->node_group);
-                        }
-                    )->orwhere('is_admin', 1);
-                }
-            )
-                ->where('enable', 1)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
-        } else {
-            $users_raw = User::where(
-                static function ($query) use ($node) {
-                    $query->where(
-                        static function ($query1) use ($node) {
-                            $query1->where('class', '>=', $node->node_class);
-                        }
-                    )->orwhere('is_admin', 1);
-                }
-            )->where('enable', 1)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
-        }
+        // 节点流量耗尽则返回 null
         if (($node->node_bandwidth_limit != 0) && $node->node_bandwidth_limit < $node->node_bandwidth) {
             $users = null;
 
@@ -70,26 +49,119 @@ class UserController extends BaseController
             return $this->echoJson($response, $res);
         }
 
-        $users = array();
+        if (in_array($node->sort, [0, 10]) && $node->mu_only != -1) {
+            $mu_port_migration = Config::get('mu_port_migration');
+        } else {
+            $mu_port_migration = 'false';
+        }
+
+        /*
+         * 1. 请不要把管理员作为单端口承载用户
+         * 2. 请不要把真实用户作为单端口承载用户
+         */
+        $users_raw = User::where(
+            static function ($query) use ($node, $mu_port_migration) {
+                if ($mu_port_migration == 'true') {
+                    $query->where(
+                        static function ($query1) use ($node) {
+                            if ($node->node_group != 0) {
+                                $query1->where('class', '>=', $node->node_class)
+                                    ->where('node_group', '=', $node->node_group)
+                                    ->where('is_multi_user', '=', 0)
+                                    ->where('is_admin', 0);
+                            } else {
+                                $query1->where('class', '>=', $node->node_class)
+                                    ->where('is_multi_user', '=', 0)
+                                    ->where('is_admin', 0);
+                            }
+                        }
+                    );
+                } else {
+                    $query->where(
+                        static function ($query1) use ($node) {
+                            if ($node->node_group != 0) {
+                                $query1->where('class', '>=', $node->node_class)
+                                    ->where('node_group', '=', $node->node_group);
+                            } else {
+                                $query1->where('class', '>=', $node->node_class);
+                            }
+                        }
+                    )->orwhere('is_admin', 1);
+                }
+            }
+        )->where('enable', 1)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
+
+        // 单端口承载用户
+        if ($mu_port_migration == 'true') {
+            $mu_users_raw = User::where(
+                static function ($query) use ($node) {
+                    $query->where(
+                        static function ($query1) use ($node) {
+                            if ($node->node_group != 0) {
+                                $query1->where('class', '>=', $node->node_class)
+                                    ->where('node_group', '=', $node->node_group)
+                                    ->where('is_multi_user', '>', 0);
+                            } else {
+                                $query1->where('class', '>=', $node->node_class)
+                                    ->where('is_multi_user', '>', 0);
+                            }
+                        }
+                    )->orwhere('is_admin', 1);
+                }
+            )->where('enable', 1)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
+
+            $muPort = Tools::get_MuOutPortArray($node->server);
+            if ($muPort['type'] == 0) {
+                foreach ($mu_users_raw as $user_raw) {
+                    if ($user_raw->is_multi_user != 0 && in_array($user_raw->port, array_keys($muPort['port']))) {
+                        $user_raw->port = $muPort['port'][$user_raw->port];
+                    }
+                    $users_raw[] = $user_raw;
+                }
+            } else {
+                foreach ($mu_users_raw as $user_raw) {
+                    if ($user_raw->is_multi_user != 0) {
+                        $user_raw->port = ($user_raw->port + $muPort['type']);
+                    }
+                    $users_raw[] = $user_raw;
+                }
+            }
+        }
 
         $key_list = array('email', 'method', 'obfs', 'obfs_param', 'protocol', 'protocol_param',
             'forbidden_ip', 'forbidden_port', 'node_speedlimit', 'disconnect_ip',
             'is_multi_user', 'id', 'port', 'passwd', 'u', 'd');
 
-        foreach ($users_raw as $user_raw) {
-            if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
-                $user_raw = Tools::keyFilter($user_raw, $key_list);
-                $user_raw->uuid = $user_raw->getUuid();
-                if (MalioConfig::get('enable_webapi_email_hash') == true) {
-                    $user_raw->email = md5($user_raw->email);
-                }
-                $users[] = $user_raw;
-            } else {
-                // 流量耗尽用户限速至 1Mbps
-                if (Config::get('keep_connect') == 'true') {
+        $users = array();
+
+        if (Config::get('keep_connect') == 'true') {
+            foreach ($users_raw as $user_raw) {
+                if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
+                    $user_raw = Tools::keyFilter($user_raw, $key_list);
+                    $user_raw->uuid = $user_raw->getUuid();
+                    if (MalioConfig::get('enable_webapi_email_hash') == true) {
+                        $user_raw->email = md5($user_raw->email);
+                    }
+                    $users[] = $user_raw;
+                } else {
+                    // 流量耗尽用户限速至 1Mbps
                     $user_raw = Tools::keyFilter($user_raw, $key_list);
                     $user_raw->uuid = $user_raw->getUuid();
                     $user_raw->node_speedlimit = 1;
+                    if (MalioConfig::get('enable_webapi_email_hash') == true) {
+                        $user_raw->email = md5($user_raw->email);
+                    }
+                    $users[] = $user_raw;
+                }
+            }
+        } else {
+            foreach ($users_raw as $user_raw) {
+                if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
+                    $user_raw = Tools::keyFilter($user_raw, $key_list);
+                    $user_raw->uuid = $user_raw->getUuid();
+                    if (MalioConfig::get('enable_webapi_email_hash') == true) {
+                        $user_raw->email = md5($user_raw->email);
+                    }
                     $users[] = $user_raw;
                 }
             }
