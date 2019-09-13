@@ -568,4 +568,31 @@ class Tools
             'port' => $node_port
         ];
     }
+
+    public static function get_MuOutPortArray($server)
+    {
+        $type = 0; //偏移
+        $port = []; //指定
+        $node_server = explode(';', $server);
+        if (strpos($node_server[1], 'port') !== false) {
+            $item = URL::parse_args($node_server[1]);
+            if (strpos($item['port'], '#') !== false) {
+                if (strpos($item['port'], '+') !== false) {
+                    $args_explode = explode('+', $item['port']);
+                    foreach ($args_explode as $arg) {
+                        $port[substr($arg, 0, strpos($arg, '#'))] = (int) substr($arg, strpos($arg, '#') + 1);
+                    }
+                } else {
+                    $port[substr($item['port'], 0, strpos($item['port'], '#'))] = (int) substr($item['port'], strpos($item['port'], '#') + 1);
+                }
+            } else {
+                $$type = (int) $item['port'];
+            }
+        }
+
+        return [
+            'type' => $type,
+            'port' => $port
+        ];
+    }
 }
