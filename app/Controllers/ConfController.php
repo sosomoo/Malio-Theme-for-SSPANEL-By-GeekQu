@@ -139,38 +139,9 @@ class ConfController extends BaseController
                     $proxies = $ProxyGroup['content']['left-proxies'];
                 }
                 foreach ($Nodes as $item) {
-                    switch (true) {
-                        case (isset($ProxyGroup['content']['class'])):
-                            if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['remark'], $proxies)) {
-                                if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['remark'])) {
-                                        $proxies[] = $item['remark'];
-                                    }
-                                } else {
-                                    $proxies[] = $item['remark'];
-                                }
-                            }
-                            break;
-                        case (isset($ProxyGroup['content']['noclass'])):
-                            if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['remark'], $proxies)) {
-                                if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['remark'])) {
-                                        $proxies[] = $item['remark'];
-                                    }
-                                } else {
-                                    $proxies[] = $item['remark'];
-                                }
-                            }
-                            break;
-                        case (!isset($ProxyGroup['content']['class'])
-                            && !isset($ProxyGroup['content']['noclass'])
-                            && isset($ProxyGroup['content']['regex'])
-                            && preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['remark'])
-                            && !in_array($item['remark'], $proxies)):
-                            $proxies[] = $item['remark'];
-                            break;
-                        default:
-                            break;
+                    $item = self::getMatchProxy($item, $ProxyGroup);
+                    if ($item !== null && !in_array($item['remark'], $proxies)) {
+                        $proxies[] = $item['remark'];
                     }
                 }
                 if (isset($ProxyGroup['content']['right-proxies'])) {
@@ -179,6 +150,52 @@ class ConfController extends BaseController
                 $ProxyGroup['proxies'] = $proxies;
             }
             $return[] = $ProxyGroup;
+        }
+
+        return $return;
+    }
+
+    /**
+     * 获取匹配的节点
+     *
+     * @param array $Proxy 节点
+     * @param array $Rule  匹配规则
+     *
+     * @return array
+     */
+    public static function getMatchProxy($Proxy, $Rule)
+    {
+        $return = null;
+        switch (true) {
+            case (isset($Rule['content']['class'])):
+                if ($Proxy['class'] == $Rule['content']['class']) {
+                    if (isset($Rule['content']['regex'])) {
+                        if (preg_match('/' . $Rule['content']['regex'] . '/i', $Proxy['remark'])) {
+                            $return = $Proxy;
+                        }
+                    } else {
+                        $return = $Proxy;
+                    }
+                }
+                break;
+            case (isset($Rule['content']['noclass'])):
+                if ($Proxy['class'] != $Rule['content']['noclass']) {
+                    if (isset($Rule['content']['regex'])) {
+                        if (preg_match('/' . $Rule['content']['regex'] . '/i', $Proxy['remark'])) {
+                            $return = $Proxy['remark'];
+                        }
+                    } else {
+                        $return = $Proxy;
+                    }
+                }
+                break;
+            case (!isset($Rule['content']['class'])
+                && !isset($Rule['content']['noclass'])
+                && isset($Rule['content']['regex'])
+                && preg_match('/' . $Rule['content']['regex'] . '/i', $Proxy['remark'])
+            ):
+                $return = $Proxy;
+                break;
         }
 
         return $return;

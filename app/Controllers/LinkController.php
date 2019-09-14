@@ -181,7 +181,7 @@ class LinkController extends BaseController
             $getBody = self::getBody(
                 $user,
                 $response,
-                self::getShadowrocket($user),
+                self::getShadowrocket($user, $opts),
                 'Shadowrocket.txt'
             );
             $subscribe_type = 'Shadowrocket';
@@ -325,20 +325,52 @@ class LinkController extends BaseController
     {
         $subInfo = self::getSubinfo($user, $surge);
         $userapiUrl = $subInfo['surge'];
+        $source = (
+            isset($opts['source']) && $opts['source'] != ''
+            ? true
+            : false
+        );
         $All_Proxy = '';
         $items = array_merge(
             URL::getAllItems($user, 0, 1, 0),
             URL::getAllItems($user, 1, 1, 0)
         );
+        if (!$source && $surge == 1) {
+            $find = false;
+            $Rule = [];
+            if (isset($opts['class'])) {
+                $Rule['content']['class'] = urldecode(trim($opts['class']));
+                $find = true;
+            }
+            if (isset($opts['noclass'])) {
+                $Rule['content']['noclass'] = urldecode(trim($opts['noclass']));
+                $find = true;
+            }
+            if (isset($opts['regex'])) {
+                $Rule['content']['regex'] = urldecode(trim($opts['regex']));
+                $find = true;
+            }
+            foreach ($items as $item) {
+                if ($find) {
+                    $item = ConfController::getMatchProxy($item, $Rule);
+                    if ($item !== null) {
+                        $All_Proxy .= ($item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', encrypt-method=' . $item['method'] . ', password=' . $item['passwd'] . URL::getSurgeObfs($item) . ', udp-relay=true' . PHP_EOL);
+                    }
+                } else {
+                    $All_Proxy .= ($item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', encrypt-method=' . $item['method'] . ', password=' . $item['passwd'] . URL::getSurgeObfs($item) . ', udp-relay=true' . PHP_EOL);
+                }
+            }
+
+            return $All_Proxy;
+        }
         foreach ($items as $item) {
-            if (in_array($surge, array(1, 3))) {
+            if (in_array($surge, array(3))) {
                 $All_Proxy .= ($item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', encrypt-method=' . $item['method'] . ', password=' . $item['passwd'] . URL::getSurgeObfs($item) . ', udp-relay=true' . PHP_EOL);
             } else {
                 $All_Proxy .= ($item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item) . PHP_EOL);
             }
         }
-
-        if (isset($opts['source']) && $opts['source'] != '') {
+        if ($source) {
             $SourceURL = trim(urldecode($opts['source']));
             // 远程规则仅支持 github 以及 gitlab
             if (!preg_match('/^https:\/\/((gist\.)?github\.com|raw\.githubusercontent\.com|gitlab\.com)/i', $SourceURL)) {
@@ -355,9 +387,6 @@ class LinkController extends BaseController
             } else {
                 return '远程配置下载失败。';
             }
-        }
-        if ($surge == 1) {
-            return $All_Proxy;
         }
         if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Surge()))) {
             $Profiles = (string) trim($opts['profiles']);
@@ -693,9 +722,26 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getShadowrocket($user)
+    public static function getShadowrocket($user, $opts)
     {
         $return = '';
+        $find = false;
+        $Rule = [
+            'is_ss' => 0,
+            'getV2rayPlugin' => 1
+        ];
+        if (isset($opts['class'])) {
+            $Rule['content']['class'] = urldecode(trim($opts['class']));
+            $find = true;
+        }
+        if (isset($opts['noclass'])) {
+            $Rule['content']['noclass'] = urldecode(trim($opts['noclass']));
+            $find = true;
+        }
+        if (isset($opts['regex'])) {
+            $Rule['content']['regex'] = urldecode(trim($opts['regex']));
+            $find = true;
+        }
         if (strtotime($user->expire_in) > time()) {
             if ($user->transfer_enable == 0) {
                 $tmp = '剩余流量：0';
@@ -721,6 +767,13 @@ class LinkController extends BaseController
         foreach ($items as $item) {
             if ($item['net'] == 'kcp') {
                 continue;
+            }
+            if ($find) {
+                $item['remark'] = $item['ps'];
+                $item = ConfController::getMatchProxy($item, $Rule);
+                if ($item === null) {
+                    continue;
+                }
             }
             $obfs = '';
             if ($item['net'] == 'ws') {
@@ -752,6 +805,12 @@ class LinkController extends BaseController
             // ss
             $items = URL::getAllItems($user, 0, 1, 0);
             foreach ($items as $item) {
+                if ($find) {
+                    $item = ConfController::getMatchProxy($item, $Rule);
+                    if ($item === null) {
+                        continue;
+                    }
+                }
                 if (in_array($item['obfs'], Config::getSupportParam('ss_obfs'))) {
                     $return .= (URL::getItemUrl($item, 1) . PHP_EOL);
                 } elseif ($item['obfs'] == 'plain') {
@@ -762,6 +821,12 @@ class LinkController extends BaseController
         // ss_mu
         $items = URL::getAllItems($user, 1, 1, 1);
         foreach ($items as $item) {
+            if ($find) {
+                $item = ConfController::getMatchProxy($item, $Rule);
+                if ($item === null) {
+                    continue;
+                }
+            }
             //  V2Ray-Plugin
             if ($item['obfs'] == 'v2ray') {
                 $v2rayplugin = [
@@ -787,7 +852,7 @@ class LinkController extends BaseController
         }
 
         // ssr
-        $return .= URL::getAllUrl($user, 0, 0, 0) . PHP_EOL;
+        $return .= URL::get_NewAllUrl($user, $Rule, $find) . PHP_EOL;
 
         return Tools::base64_url_encode($return);
     }
@@ -802,6 +867,20 @@ class LinkController extends BaseController
     public static function getKitsunebi($user, $opts)
     {
         $return = '';
+        $find = false;
+        $Rule = [];
+        if (isset($opts['class'])) {
+            $Rule['content']['class'] = urldecode(trim($opts['class']));
+            $find = true;
+        }
+        if (isset($opts['noclass'])) {
+            $Rule['content']['noclass'] = urldecode(trim($opts['noclass']));
+            $find = true;
+        }
+        if (isset($opts['regex'])) {
+            $Rule['content']['regex'] = urldecode(trim($opts['regex']));
+            $find = true;
+        }
 
         // 账户到期时间以及流量信息
         $extend = isset($opts['extend']) ? (int) $opts['extend'] : 0;
@@ -810,6 +889,13 @@ class LinkController extends BaseController
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
+            if ($find) {
+                $item['remark'] = $item['ps'];
+                $item = ConfController::getMatchProxy($item, $Rule);
+                if ($item === null) {
+                    continue;
+                }
+            }
             $network = ($item['net'] == 'tls'
                 ? '&network=tcp'
                 : ('&network=' . $item['net']));
@@ -843,8 +929,17 @@ class LinkController extends BaseController
             $user = URL::getSSConnectInfo($user);
             $user->obfs = 'plain';
             $items = URL::getAllItems($user, 0, 1, 0);
-            foreach ($items as $item) {
-                $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
+            if ($find) {
+                foreach ($items as $item) {
+                    $item = ConfController::getMatchProxy($item, $Rule);
+                    if ($item !== null) {
+                        $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
+                    }
+                }
+            } else {
+                foreach ($items as $item) {
+                    $return .= (URL::getItemUrl($item, 2) . PHP_EOL);
+                }
             }
         }
 
@@ -863,7 +958,23 @@ class LinkController extends BaseController
     public static function getSub($user, $sub, $opts)
     {
         $extend = isset($opts['extend']) ? $opts['extend'] : 0;
-        $getV2rayPlugin = 1;
+        $find = false;
+        $Rule = [
+            'is_ss' => 0,
+            'getV2rayPlugin' => 1
+        ];
+        if (isset($opts['class'])) {
+            $Rule['content']['class'] = urldecode(trim($opts['class']));
+            $find = true;
+        }
+        if (isset($opts['noclass'])) {
+            $Rule['content']['noclass'] = urldecode(trim($opts['noclass']));
+            $find = true;
+        }
+        if (isset($opts['regex'])) {
+            $Rule['content']['regex'] = urldecode(trim($opts['regex']));
+            $find = true;
+        }
         $return_url = '';
 
         // Quantumult 则不显示账户到期以及流量信息
@@ -873,31 +984,34 @@ class LinkController extends BaseController
 
         // 如果是 Kitsunebi 不输出 SS V2rayPlugin 节点
         if (strpos($_SERVER['HTTP_USER_AGENT'], 'Kitsunebi') !== false) {
-            $getV2rayPlugin = 0;
+            $Rule['getV2rayPlugin'] = 0;
         }
         switch ($sub) {
             case 1: // SSR
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 1) . PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 0, $getV2rayPlugin) . PHP_EOL;
+                $return_url .= URL::get_NewAllUrl($user, $Rule, $find) . PHP_EOL;
                 break;
             case 2: // SS
+                $Rule['is_ss'] = 1;
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 2) . PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 1, $getV2rayPlugin) . PHP_EOL;
+                $return_url .= URL::get_NewAllUrl($user, $Rule, $find) . PHP_EOL;
                 break;
             case 3: // V2
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 3) . PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
                 break;
             case 4: // V2 + SS
+                $Rule['is_ss'] = 1;
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 3) . PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 1, $getV2rayPlugin) . PHP_EOL;
+                $return_url .= URL::get_NewAllUrl($user, $Rule, $find) . PHP_EOL;
                 break;
             case 5: // V2 + SS + SSR
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 1) . PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 0, $getV2rayPlugin) . PHP_EOL;
-                $return_url .= URL::getAllUrl($user, 0, 1, $getV2rayPlugin) . PHP_EOL;
+                $return_url .= URL::get_NewAllUrl($user, $Rule, $find) . PHP_EOL;
+                $Rule['is_ss'] = 1;
+                $return_url .= URL::get_NewAllUrl($user, $Rule, $find) . PHP_EOL;
                 break;
         }
         return Tools::base64_url_encode($return_url);
