@@ -182,7 +182,7 @@ class ConfController extends BaseController
                 if ($Proxy['class'] != $Rule['content']['noclass']) {
                     if (isset($Rule['content']['regex'])) {
                         if (preg_match('/' . $Rule['content']['regex'] . '/i', $Proxy['remark'])) {
-                            $return = $Proxy['remark'];
+                            $return = $Proxy;
                         }
                     } else {
                         $return = $Proxy;
