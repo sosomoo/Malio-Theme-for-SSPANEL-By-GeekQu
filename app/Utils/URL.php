@@ -275,26 +275,37 @@ class URL
         return $return_url;
     }
 
-    public static function get_NewAllUrl($user, $Rule, $find)
+    /**
+     * 获取全部节点 Url
+     *
+     * @param object $user           用户
+     * @param int    $is_ss          订阅类型
+     * @param int    $getV2rayPlugin 是否获取 V2rayPlugin 节点
+     * @param array  $Rule           节点筛选规则
+     * @param bool   $find           是否筛选节点
+     *
+     * @return string
+     */
+    public static function get_NewAllUrl($user, $is_ss, $getV2rayPlugin, $Rule, $find)
     {
         $return_url = '';
         if (strtotime($user->expire_in) < time()) {
             return $return_url;
         }
         $items = array_merge(
-            self::getAllItems($user, 0, $Rule['is_ss'], $Rule['getV2rayPlugin']),
-            self::getAllItems($user, 1, $Rule['is_ss'], $Rule['getV2rayPlugin'])
+            self::getAllItems($user, 0, $is_ss, $getV2rayPlugin),
+            self::getAllItems($user, 1, $is_ss, $getV2rayPlugin)
         );
         if ($find) {
             foreach ($items as $item) {
                 $item = ConfController::getMatchProxy($item, $Rule);
                 if ($item !== null) {
-                    $return_url .= self::getItemUrl($item, $Rule['is_ss']) . PHP_EOL;
+                    $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
                 }
             }
         } else {
             foreach ($items as $item) {
-                $return_url .= self::getItemUrl($item, $Rule['is_ss']) . PHP_EOL;
+                $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
             }
         }
 
