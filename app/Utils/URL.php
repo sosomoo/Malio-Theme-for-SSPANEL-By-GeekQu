@@ -287,7 +287,7 @@ class URL
         );
         if ($find) {
             foreach ($items as $item) {
-                $item = $item = ConfController::getMatchProxy($item, $Rule);
+                $item = ConfController::getMatchProxy($item, $Rule);
                 if ($item !== null) {
                     $return_url .= self::getItemUrl($item, $Rule['is_ss']) . PHP_EOL;
                 }
