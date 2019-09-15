@@ -54,7 +54,7 @@ class Config
             'enable_email_verify' => self::get('enable_email_verify'),
             'protocol_specify' => self::get('protocol_specify'),
             'subscribeLog' => self::get('subscribeLog'),
-            'keep_connect' => self::get('keep_connect')
+            'subscribeLog_keep_days' => self::get('subscribeLog_keep_days')
         ];
     }
 
