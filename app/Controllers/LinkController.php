@@ -351,8 +351,8 @@ class LinkController extends BaseController
         );
         $All_Proxy = '';
         $items = array_merge(
-            URL::getAllItems($user, 0, 1, 0),
-            URL::getAllItems($user, 1, 1, 0)
+            URL::getAllItems($user, 0, 1),
+            URL::getAllItems($user, 1, 1)
         );
         if (!$source && $surge == 1) {
             foreach ($items as $item) {
@@ -463,7 +463,7 @@ class LinkController extends BaseController
             } elseif ($quantumult == 3) {
                 $ss_group = '';
                 $ss_name = '';
-                $items = array_merge(URL::getAllItems($user, 0, 1, 0), URL::getAllItems($user, 1, 1, 0));
+                $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
                 foreach ($items as $item) {
                     $ss_group .= $item['remark'] . ' = shadowsocks, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', "' . $item['passwd'] . '", upstream-proxy=false, upstream-proxy-auth=false' . URL::getSurgeObfs($item) . ', group=' . Config::get('appName') . PHP_EOL;
                     if (strpos($item['remark'], '回国') or strpos($item['remark'], 'China')) {
@@ -529,7 +529,7 @@ class LinkController extends BaseController
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['surfboard'];
         $All_Proxy = '';
-        $items = array_merge(URL::getAllItems($user, 0, 1, 0), URL::getAllItems($user, 1, 1, 0));
+        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
         foreach ($items as $item) {
             $All_Proxy .= ($item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item) . PHP_EOL);
         }
@@ -567,7 +567,11 @@ class LinkController extends BaseController
         $userapiUrl = $subInfo['clash'];
         $Proxys = [];
         // ss
-        $items = array_merge(URL::getAllItems($user, 0, 1, 1), URL::getAllItems($user, 1, 1, 1));
+        $items = array_merge(
+            URL::getAllItems($user, 0, 1),
+            URL::getAllItems($user, 1, 1),
+            URL::getAllV2RayPluginItems($user)
+        );
         foreach ($items as $item) {
             $sss = [
                 'name' => $item['remark'],
@@ -647,7 +651,10 @@ class LinkController extends BaseController
 
         if ($clash == 2) {
             // ssr
-            $items = array_merge(URL::getAllItems($user, 0, 0, 0), URL::getAllItems($user, 1, 0, 0));
+            $items = array_merge(
+                URL::getAllItems($user, 0, 0),
+                URL::getAllItems($user, 1, 0)
+            );
             foreach ($items as $item) {
                 // 不支持的
                 if (in_array($item['method'], ['rc4-md5-6', 'des-ede3-cfb', 'xsalsa20', 'none'])
@@ -797,7 +804,7 @@ class LinkController extends BaseController
         // 减少因为加密协议混淆同时支持 ss & ssr 而导致订阅出现大量重复节点
         if (in_array($user->method, Config::getSupportParam('ss_aead_method')) || in_array($user->obfs, Config::getSupportParam('ss_obfs'))) {
             // ss
-            $items = URL::getAllItems($user, 0, 1, 0);
+            $items = URL::getAllItems($user, 0, 1);
             foreach ($items as $item) {
                 if ($find) {
                     $item = ConfController::getMatchProxy($item, $Rule);
@@ -812,8 +819,12 @@ class LinkController extends BaseController
                 }
             }
         }
+
         // ss_mu
-        $items = URL::getAllItems($user, 1, 1, 1);
+        $items = array_merge(
+            URL::getAllItems($user, 1, 1),
+            URL::getAllV2RayPluginItems($user)
+        );
         foreach ($items as $item) {
             if ($find) {
                 $item = ConfController::getMatchProxy($item, $Rule);
@@ -911,7 +922,7 @@ class LinkController extends BaseController
         if (URL::SSCanConnect($user) && !in_array($user->obfs, ['simple_obfs_http', 'simple_obfs_tls']) ) {
             $user = URL::getSSConnectInfo($user);
             $user->obfs = 'plain';
-            $items = URL::getAllItems($user, 0, 1, 0);
+            $items = URL::getAllItems($user, 0, 1);
             if ($find) {
                 foreach ($items as $item) {
                     $item = ConfController::getMatchProxy($item, $Rule);
