@@ -709,6 +709,26 @@
 </div>
 {/if}
 
+{if $config['payment_system'] == 'payssion'}
+<div class="modal fade" tabindex="-1" role="dialog" id="payssion-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">支付</h5>
+      </div>
+      <div class="modal-body">
+        <div style="text-align: center">
+          点击“继续支付”打开支付页面支付<br>
+          支付到账需要一段时间，请勿关闭或刷新此页面</div>
+      </div>
+      <div class="modal-footer bg-whitesmoke br">
+        <a id="to-payssion" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
+      </div>
+    </div>
+  </div>
+</div>
+{/if}
+
 {if $config['payment_system'] == 'flyfoxpay'}
 <div class="modal fade" tabindex="-1" role="dialog" id="flyfox-modal">
   <div class="modal-dialog" role="document">

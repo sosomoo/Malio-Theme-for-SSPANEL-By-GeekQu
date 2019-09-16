@@ -9,7 +9,7 @@
 namespace App\Services;
 
 use App\Services\Gateway\{
-    AopF2F, Codepay, DoiAMPay, PaymentWall, ChenPay, SPay, TrimePay, BitPayX, TomatoPay, flyfoxpay, PAYJS, F2Fpay_PAYJS, StripePay
+    AopF2F, Codepay, DoiAMPay, PaymentWall, ChenPay, SPay, TrimePay, BitPayX, TomatoPay, flyfoxpay, PAYJS, F2Fpay_PAYJS, StripePay, Payssion
 };
 
 class Payment
@@ -44,6 +44,8 @@ class Payment
                 return new F2Fpay_PAYJS();
             case ('stripe'):
                 return new StripePay();
+            case ('payssion'):
+                return new Payssion();
             default:
                 return null;
         }
