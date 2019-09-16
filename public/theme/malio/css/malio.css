@@ -119,4 +119,25 @@
   .malio-ssr:before {
     content: "\e90f";
   }
-  
+  .malio-unionpay:before {
+    content: "\e910";
+  }
+  .malio-unionpay-color .path1:before {
+    content: "\e911";
+    color: rgb(226, 24, 54);
+  }
+  .malio-unionpay-color .path2:before {
+    content: "\e912";
+    margin-left: -1em;
+    color: rgb(0, 68, 124);
+  }
+  .malio-unionpay-color .path3:before {
+    content: "\e913";
+    margin-left: -1em;
+    color: rgb(0, 123, 132);
+  }
+  .malio-unionpay-color .path4:before {
+    content: "\e914";
+    margin-left: -1em;
+    color: rgb(254, 254, 254);
+  }

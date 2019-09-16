@@ -229,7 +229,7 @@
                             <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-alipay mr-1"></i>支付宝</span>
                           </label>
                           {/if}
-                          {if $config['payment_system'] != 'f2fpay' && $config['payment_system'] != 'spay'}
+                          {if $config['payment_system'] != 'f2fpay' && $config['payment_system'] != 'spay' && $config['payment_system'] != 'payssion'}
                           <label class="selectgroup-item">
                             {if $config['payment_system'] == 'payjs'}
                             <input type="radio" name="payment" value="wechat" class="selectgroup-input wechat-pay" checked="">
@@ -249,6 +249,12 @@
                           <label class="selectgroup-item">
                             <input type="radio" name="payment" value="qqpay" class="selectgroup-input qqpay">
                             <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-qq mr-1"></i>QQ支付</span>
+                          </label>
+                          {/if}
+                          {if $config['payment_system'] == 'payssion'}
+                          <label class="selectgroup-item">
+                            <input type="radio" name="payment" value="unionpay" class="selectgroup-input">
+                            <span class="selectgroup-button selectgroup-button-icon"><i class="malio-unionpay mr-1"></i>银联支付</span>
                           </label>
                           {/if}
                         </div>

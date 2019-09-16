@@ -54,6 +54,11 @@
       border: 2px solid #f1f2f5;
     }
 
+    #payment-selection #unionpay i {
+      font-size: 1.2rem;
+      vertical-align: -3px;
+    }
+
     #payment-selection #alipay:hover {
       color: #029de3;
       border: 2px solid #029de3;
@@ -397,7 +402,7 @@
                       <div id="alipay" class="color col-12 col-md-2 col-lg-2 active" onclick="selectItem('payment','alipay')">
                         <i class="fab fa-alipay" style="font-size: 1.1rem;vertical-align: -1px;margin-right: 2px;"></i> 支付宝
                       </div>
-                      {if $config['payment_system'] != 'f2fpay' && $config['payment_system'] != 'spay'}
+                      {if $config['payment_system'] != 'f2fpay' && $config['payment_system'] != 'spay' && $config['payment_system'] != 'payssion'}
                       <div id="wechat" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','wechat')">
                         <i class="malio-wechat-pay" style="font-size: 1.1rem;vertical-align: -1px;"></i> 微信支付
                       </div>
@@ -410,6 +415,11 @@
                       {if $config['payment_system'] == 'codepay' || $config['payment_system'] == 'flyfoxpay'}
                       <div id="qqpay" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','qqpay')">
                         <i class="fab fa-qq"></i> QQ支付
+                      </div>
+                      {/if}
+                      {if $config['payment_system'] == 'payssion'}
+                      <div id="unionpay" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','unionpay')">
+                        <i class="malio-unionpay"></i> 银联支付
                       </div>
                       {/if}
                     </div>
