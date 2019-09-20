@@ -125,7 +125,8 @@ $System_Config['user_agreement_scheme'] = [
     ['id'=>3,'name'=>'SS/SSR 兼容配置','method'=>'chacha20-ietf','protocol'=>'auth_aes128_sha1_compatible','obfs'=>'plain']
 ];
 
-$System_Config['subscribeLog'] = 'false';			//是否记录用户订阅日志
+$System_Config['subscribeLog'] = 'false';			    //是否记录用户订阅日志
+$System_Config['subscribeLog_keep_days'] = '7';		    //订阅记录保留天数
 
 //Bot 设置--------------------------------------------------------------------------------------------
 #通用

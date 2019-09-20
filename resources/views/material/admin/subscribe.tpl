@@ -13,7 +13,7 @@
                 <div class="card">
                     <div class="card-main">
                         <div class="card-inner">
-                            <p>这里是订阅记录。</p>
+                            <p>这里是所有用户最近 {$config['subscribeLog_keep_days']} 天的订阅记录。</p>
                             <p>显示表项: {include file='table/checkbox.tpl'}</p>
                         </div>
                     </div>

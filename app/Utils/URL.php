@@ -142,21 +142,13 @@ class URL
     public static function getAllItems(
         $user,
         $is_mu = 0,
-        $is_ss = 0,
-        $getV2rayPlugin = 1
+        $is_ss = 0
     ) {
         $return_array = array();
         if ($user->is_admin) {
             $nodes = Node::where(
-                static function ($query) use ($getV2rayPlugin) {
-                    if ($getV2rayPlugin) {
-                        $query->where('sort', 0)
-                            ->orwhere('sort', 10)
-                            ->orwhere('sort', 13);
-                    } else {
-                        $query->where('sort', 0)
-                            ->orwhere('sort', 10);
-                    }
+                static function ($query) {
+                    $query->where('sort', 0)->orwhere('sort', 10);
                 }
             )
                 ->where('type', '1')
@@ -164,15 +156,8 @@ class URL
                 ->get();
         } else {
             $nodes = Node::where(
-                static function ($query) use ($getV2rayPlugin) {
-                    if ($getV2rayPlugin) {
-                        $query->where('sort', 0)
-                            ->orwhere('sort', 10)
-                            ->orwhere('sort', 13);
-                    } else {
-                        $query->where('sort', 0)
-                            ->orwhere('sort', 10);
-                    }
+                static function ($query) {
+                    $query->where('sort', 0)->orwhere('sort', 10);
                 }
             )
                 ->where(
@@ -253,6 +238,7 @@ class URL
                 }
             }
         }
+
         return $return_array;
     }
 
@@ -262,12 +248,12 @@ class URL
         if (strtotime($user->expire_in) < time()) {
             return $return_url;
         }
-        $items = self::getAllItems($user, $is_mu, $is_ss, $getV2rayPlugin);
+        $items = self::getAllItems($user, $is_mu, $is_ss);
         foreach ($items as $item) {
             $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
         }
         $is_mu = $is_mu == 0 ? 1 : 0;
-        $items = self::getAllItems($user, $is_mu, $is_ss, $getV2rayPlugin);
+        $items = self::getAllItems($user, $is_mu, $is_ss);
         foreach ($items as $item) {
             $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
         }
@@ -275,26 +261,45 @@ class URL
         return $return_url;
     }
 
-    public static function get_NewAllUrl($user, $Rule, $find)
+    /**
+     * 获取全部节点 Url
+     *
+     * @param object $user           用户
+     * @param int    $is_ss          是否 ss
+     * @param int    $getV2rayPlugin 是否获取 V2rayPlugin 节点
+     * @param array  $Rule           节点筛选规则
+     * @param bool   $find           是否筛选节点
+     *
+     * @return string
+     */
+    public static function get_NewAllUrl($user, $is_ss, $getV2rayPlugin, $Rule, $find)
     {
         $return_url = '';
         if (strtotime($user->expire_in) < time()) {
             return $return_url;
         }
-        $items = array_merge(
-            self::getAllItems($user, 0, $Rule['is_ss'], $Rule['getV2rayPlugin']),
-            self::getAllItems($user, 1, $Rule['is_ss'], $Rule['getV2rayPlugin'])
-        );
+        if ($getV2rayPlugin === 0) {
+            $items = array_merge(
+                self::getAllItems($user, 0, $is_ss),
+                self::getAllItems($user, 1, $is_ss)
+            );
+        } else {
+            $items = array_merge(
+                self::getAllItems($user, 0, $is_ss),
+                self::getAllItems($user, 1, $is_ss),
+                self::getAllV2RayPluginItems($user)
+            );
+        }
         if ($find) {
             foreach ($items as $item) {
                 $item = ConfController::getMatchProxy($item, $Rule);
                 if ($item !== null) {
-                    $return_url .= self::getItemUrl($item, $Rule['is_ss']) . PHP_EOL;
+                    $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
                 }
             }
         } else {
             foreach ($items as $item) {
-                $return_url .= self::getItemUrl($item, $Rule['is_ss']) . PHP_EOL;
+                $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
             }
         }
 
@@ -347,6 +352,79 @@ class URL
             );
         }
         return $ssurl;
+    }
+
+    /**
+     * 获取 V2RayPlugin 全部节点
+     *
+     * @param object $user 用户
+     *
+     * @return array
+     */
+    public static function getAllV2RayPluginItems($user) {
+        $return_array = array();
+        if ($user->is_admin) {
+            $nodes = Node::where('sort', 13)
+                ->where('type', '1')
+                ->orderBy('name')
+                ->get();
+        } else {
+            $nodes = Node::where('sort', 13)
+                ->where(
+                    static function ($query) use ($user) {
+                        $query->where('node_group', '=', $user->node_group)
+                            ->orWhere('node_group', '=', 0);
+                    }
+                )
+                ->where('type', '1')
+                ->where('node_class', '<=', $user->class)
+                ->orderBy('name')
+                ->get();
+        }
+        foreach ($nodes as $node) {
+            $item = self::getV2RayPluginItem($user, $node);
+            if ($item != null) {
+                $return_array[] = $item;
+            }
+        }
+
+        return $return_array;
+    }
+
+    /**
+     * 获取 V2RayPlugin 节点
+     *
+     * @param object $user 用户
+     * @param object $node 节点
+     *
+     * @return array
+     */
+    public static function getV2RayPluginItem($user, $node)
+    {
+        // 非 AEAD 加密无法使用
+        if (!in_array($user->method, Config::getSupportParam('ss_aead_method'))) {
+            return null;
+        }
+        $return_array = Tools::ssv2Array($node->server);
+        $return_array['remark'] = $node->name;
+        $return_array['address'] = $return_array['add'];
+        $return_array['method'] = $user->method;
+        $return_array['passwd'] = $user->passwd;
+        $return_array['protocol'] = 'origin';
+        $return_array['protocol_param'] = '';
+        $return_array['obfs'] = 'v2ray';
+        if ($return_array['tls'] == 'tls' && $return_array['net'] == 'ws') {
+            $return_array['obfs_param'] = ('mode=ws;security=tls;path=' . $return_array['path'] .
+                ';host=' . $return_array['host']);
+        } else {
+            $return_array['obfs_param'] = ('mode=ws;security=none;path=' . $return_array['path'] .
+                ';host=' . $return_array['host']);
+        }
+        $return_array['path'] = ($return_array['path'] . '?redirect=' . $user->getMuMd5());
+        $return_array['class'] = $node->node_class;
+        $return_array['group'] = Config::get('appName');
+
+        return $return_array;
     }
 
     public static function getV2Url($user, $node, $arrout = 0)
@@ -612,7 +690,7 @@ class URL
         if ($relay_rule != null) {
             $node_name .= ' - ' . $relay_rule->dist_node()->name;
         }
-        if ($mu_port != 0 && $node->sort != 13) {
+        if ($mu_port != 0) {
             $mu_user = User::where('port', '=', $mu_port)->where('is_multi_user', '<>', 0)->first();
             if ($mu_user == null) {
                 return;
@@ -633,35 +711,19 @@ class URL
             }
             $user = self::getSSRConnectInfo($user);
         }
-        if ($node->sort == 13) {
-            $return_array = Tools::ssv2Array($node->server);
-            $return_array['address'] = $return_array['add'];
-            $return_array['protocol'] = 'origin';
-            $return_array['protocol_param'] = '';
-            $return_array['obfs'] = 'v2ray';
-            $return_array['path'] = ($return_array['path'] . '?redirect=' . $user->getMuMd5());
-            if ($return_array['tls'] == 'tls' && $return_array['net'] == 'ws') {
-                $return_array['obfs_param'] = ('mode=ws;security=tls;path=' . $return_array['path'] .
-                    ';host=' . $return_array['host']);
-            } else {
-                $return_array['obfs_param'] = ('mode=ws;security=none;path=' . $return_array['path'] .
-                    ';host=' . $return_array['host']);
+        $return_array['address'] = $node->server;
+        $return_array['port'] = $user->port;
+        $return_array['protocol'] = $user->protocol;
+        $return_array['protocol_param'] = $user->protocol_param;
+        $return_array['obfs'] = $user->obfs;
+        $return_array['obfs_param'] = $user->obfs_param;
+        if (strpos($node->server, ';') !== false) {
+            $node_tmp = Tools::OutPort($node->server, $node->name, $mu_port);
+            if ($mu_port != 0) {
+                $return_array['port'] = $node_tmp['port'];
+                $node_name = $node_tmp['name'];
             }
-        } else {
-            $return_array['address'] = $node->server;
-            $return_array['port'] = $user->port;
-            $return_array['protocol'] = $user->protocol;
-            $return_array['protocol_param'] = $user->protocol_param;
-            $return_array['obfs'] = $user->obfs;
-            $return_array['obfs_param'] = $user->obfs_param;
-            if (strpos($node->server, ';') !== false) {
-                $node_tmp = Tools::OutPort($node->server, $node->name, $mu_port);
-                if ($mu_port != 0) {
-                    $return_array['port'] = $node_tmp['port'];
-                    $node_name = $node_tmp['name'];
-                }
-                $return_array['address'] = $node_tmp['address'];
-            }
+            $return_array['address'] = $node_tmp['address'];
         }
         $return_array['passwd'] = $user->passwd;
         $return_array['method'] = $user->method;
