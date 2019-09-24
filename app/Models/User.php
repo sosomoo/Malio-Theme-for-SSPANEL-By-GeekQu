@@ -13,6 +13,8 @@ use App\Utils\GA;
 use App\Utils\QQWry;
 use App\Utils\Radius;
 use Ramsey\Uuid\Uuid;
+use App\Models\DetectLog;
+use App\Models\DetectBanLog;
 
 class User extends Model
 {
@@ -352,5 +354,40 @@ class User extends Model
             $top_up += $code->number;
         }
         return round($top_up, 2);
+    }
+
+    // 最后一次被封禁的时间
+    public function last_detect_ban_time()
+    {
+        return ($this->attributes['last_detect_ban_time'] == '1989-06-04 00:05:00'
+            ? '未被封禁过'
+            : $this->attributes['last_detect_ban_time']
+        );
+    }
+
+    // 当前解封时间
+    public function relieve_time()
+    {
+        if ($this->attributes['detect_ban'] == 1) {
+            $logs = DetectBanLog::where('user_id', $this->attributes['id'])->orderBy("id", "desc")->first();
+            $time = ($logs->end_time + $logs->ban_time * 60);
+            return date('Y-m-d H:i:s', $time);
+        } else {
+            return '当前未被封禁';
+        }
+    }
+
+    // 累计被封禁的次数
+    public function detect_ban_number()
+    {
+        $logs = DetectBanLog::where('user_id', $this->attributes['id'])->get();
+        return count($logs);
+    }
+
+    // 最后一次封禁的违规次数
+    public function user_detect_ban_number()
+    {
+        $logs = DetectBanLog::where('user_id', $this->attributes['id'])->orderBy("id", "desc")->first();
+        return $logs->detect_number;
     }
 }

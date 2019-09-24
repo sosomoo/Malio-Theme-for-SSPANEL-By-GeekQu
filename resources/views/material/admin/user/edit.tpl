@@ -84,6 +84,47 @@
                     </div>
                 </div>
 
+				<div class="card">
+					<div class="card-main">
+						<div class="card-inner">
+
+							<div class="form-group form-group-label">
+								<div class="checkbox switch">
+									<label for="detect_ban">
+										<input {if $edit_user->detect_ban==1}checked{/if} class="access-hide" id="detect_ban" type="checkbox"><span class="switch-toggle"></span>审计已封禁
+									</label>
+								</div>
+							</div>
+
+							<div class="form-group form-group-label">
+								<label class="floating-label" for="ban_time">手动封禁时长 (分钟)，不封禁不要修改</label>
+								<input class="form-control" id="ban_time" type="text" value="0">
+							</div>
+
+							<div class="form-group form-group-label">
+								<label class="floating-label" for="last_detect_ban_time">最后一次被封禁的时间</label>
+								<input class="form-control" id="last_detect_ban_time" type="text" value="{$edit_user->last_detect_ban_time()}" readonly>
+							</div>
+
+							<div class="form-group form-group-label">
+								<label class="floating-label" for="relieve_time">当前解封时间</label>
+								<input class="form-control" id="relieve_time" type="text" value="{$edit_user->relieve_time()}" readonly>
+							</div>
+
+							<div class="form-group form-group-label">
+								<label class="floating-label" for="detect_ban_number">累计封禁次数</label>
+								<input class="form-control" id="detect_ban_number" type="text" value="{if $edit_user->detect_ban_number()==0}好耶！标杆用户，没有被审计封禁过耶{else}太坏了，这位用户累计被封禁过 {$edit_user->detect_ban_number()} 次呢{/if}" readonly>
+							</div>
+
+							<div class="form-group form-group-label">
+								<label class="floating-label" for="all_detect_number">累计违规次数</label>
+								<input class="form-control" id="all_detect_number" type="text" value="{$edit_user->all_detect_number}" readonly>
+							</div>
+
+						</div>
+					</div>
+				</div>	
+
                 <div class="card">
                     <div class="card-main">
                         <div class="card-inner">
@@ -317,6 +358,12 @@
                 var ga_enable = 0;
             }
 
+			if(document.getElementById('detect_ban').checked) {
+				var detect_ban=1;
+			} else {
+				var detect_ban=0;
+			}
+
             $.ajax({
                 type: "PUT",
                 url: "/admin/user/{$edit_user->id}",
@@ -339,6 +386,8 @@
                     enable,
                     is_admin,
                     ga_enable,
+                    detect_ban: detect_ban,
+                    ban_time: $$getValue('ban_time'),
                     ref_by: $$getValue('ref_by'),
                     forbidden_ip: $$getValue('forbidden_ip'),
                     forbidden_port: $$getValue('forbidden_port'),

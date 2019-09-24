@@ -275,6 +275,10 @@ $app->group('/admin', function () {
     $this->get('/subscribe', App\Controllers\Admin\SubscribeLogController::class . ':index');
     $this->post('/subscribe/ajax', App\Controllers\Admin\SubscribeLogController::class . ':ajax_subscribe_log');
 
+    // Detect Ban Mange
+    $this->get('/detect/ban', App\Controllers\Admin\DetectBanLogController::class . ':index');
+    $this->post('/detect/ban/ajax', App\Controllers\Admin\DetectBanLogController::class . ':ajax_log');
+
     // Code Mange
     $this->get('/code', App\Controllers\Admin\CodeController::class . ':index');
     $this->get('/code/create', App\Controllers\Admin\CodeController::class . ':create');
