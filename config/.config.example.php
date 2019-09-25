@@ -151,7 +151,7 @@ $System_Config['telegram_request_token']='';		//Telegram 机器人请求Key，�
 
 
 //沟通设置--------------------------------------------------------------------------------------------
-#客服系统设置，注册地址 https://www.mylivechat.com
+#客服系统设置，注册地址 https://www.mylivechat.com，此项在 mlaio 主题中已被废弃，太难看了
 $System_Config['enable_mylivechat']='false';		//是否开启客服系统
 $System_Config['mylivechat_id']='null';			//客服系统ID
 
@@ -167,7 +167,7 @@ $System_Config['mail_ticket']='true';		//是否开启工单邮件提醒
 $System_Config['useScFtqq'] = 'false';		//是否开启工单Server酱提醒
 $System_Config['ScFtqq_SCKEY'] = '';	//请填写您在Server酱获取的SCKEY  请仔细检查勿粘贴错
 
-#管理员联系方式设置
+#管理员联系方式设置，此项在 mlaio 主题中已被废弃，即时通讯请用客服系统
 $System_Config['enable_admin_contact']='false';			//是否开启管理员联系方式
 $System_Config['admin_contact1'] = 'QQ：1233456';		//QQ、邮箱、微信仅用于举例
 $System_Config['admin_contact2'] = '邮箱123456@qq.com';	//也可以写电话、tg等其他联系方式
@@ -213,8 +213,8 @@ $System_Config['alipay_public_key']='';
 $System_Config['merchant_private_key']='';
 $System_Config['f2fNotifyUrl']=null;                  //自定义当面付回调地址
 
-#PaymentWall
-$System_Config['pmw_publickey']='';
+#PaymentWall  // 此项在 mlaio 主题中暂未支持
+$System_Config['pmw_publickey']='';  
 $System_Config['pmw_privatekey']='';
 $System_Config['pmw_widget']='m2_1';
 $System_Config['pmw_height']='350px';
@@ -224,12 +224,12 @@ $System_Config['alipay_id']='';
 $System_Config['alipay_key']='';
 $System_Config['amount']=[2,23,233,2333,23333];		//充值金额选项设定
 
-#alipay,zfbjk.com
+#alipay,zfbjk.com  // 此项在 mlaio 主题中暂未支持
 $System_Config['zfbjk_pid']='';
 $System_Config['zfbjk_key']='';
 $System_Config['zfbjk_qrcodeurl']='';
 
-#Trimepay https://portal.trimepay.com/#/auth/register/134
+#Trimepay https://portal.trimepay.com/#/auth/register/134  // 此项在 mlaio 主题中暂未支持
 $System_Config['trimepay_appid']='';				//AppID
 $System_Config['trimepay_secret']='';				//AppSecret
 
@@ -264,7 +264,7 @@ $System_Config['flyfoxpay']=['config'=>['hid'=>'******','key'=>'********','mail'
 
 //其他面板显示设置------------------------------------------------------------------------------------------
 
-#用户文档
+#用户文档 // 此项在 mlaio 主题中已被废弃
 $System_Config['enable_documents'] = 'true';	    //是否允许未登陆用户查看文档中心
 $System_Config['documents_name'] = $System_Config['appName'] . ' 文档中心';	    //文档中心名称
 $System_Config['remote_documents'] = 'true';	    //是否从远程加载文档中心，否的话请执行 php xcat initdocuments
@@ -273,14 +273,14 @@ $System_Config['documents_source'] = 'https://raw.githubusercontent.com/GeekQu/P
 #后台商品列表 销量统计
 $System_Config['sales_period']='30';	//统计指定周期内的销量，值为【expire/任意大于0的整数】
 
-#国旗
+#国旗 // 此项在 mlaio 主题中已被废弃
 $System_Config['enable_flag']='false';			//启用该项之前务必先仔细阅读教程
 $System_Config['flag_regex']='/.*?(?=\s)/';		//从站点全名中匹配【国家/地区】的正则表达式(php版)
 
-#捐赠
+#捐赠 // 此项在 mlaio 主题中已被废弃
 $System_Config['enable_donate']='false';	//是否显示用户捐赠（所有收入将被公开）
 
-#iOS账户显示
+#iOS账户显示 // 此项在 mlaio 主题中已被废弃
 $System_Config['display_ios_class']='-1';	//至少等级为多少的用户可以看见，小于0时关闭此功能
 $System_Config['display_ios_topup']='0';	//满足等级要求后，累计充值高于多少的用户可以看见
 $System_Config['ios_account']='';			//iOS账户

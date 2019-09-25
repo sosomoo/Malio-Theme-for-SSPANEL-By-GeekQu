@@ -205,6 +205,17 @@
                     <div class="form-group row mb-4">
                       <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">金额</label>
                       <div class="col-sm-12 col-md-7">
+                        {if $malio_config['topup_amount_input_mode'] == 'select'}
+                        <div class="selectric-wrapper selectric-form-control selectric-selectric selectric-below">
+                          <div class="selectric-hide-select">
+                            <select class="form-control" tabindex="-1" id="amount">
+                              {foreach $malio_config['topup_select_list'] as $amount}
+                              <option value="{$amount}">¥ {$amount}</option>
+                              {/foreach}
+                            </select>
+                          </div>
+                        </div>
+                        {else}
                         <div class="input-group">
                           <div class="input-group-prepend">
                             <div class="input-group-text">
@@ -216,6 +227,7 @@
                             请输入金额
                           </div>
                         </div>
+                        {/if}
                       </div>
                     </form>
                     </div>

@@ -14,9 +14,11 @@
         <a href="/user/profile" class="dropdown-item has-icon">
           <i class="fas fa-user"></i> 我的账号
         </a>
+        {if $malio_config['enable_wallet'] == true}
         <a href="/user/code" class="dropdown-item has-icon">
           <i class="fas fa-wallet"></i> 我的钱包
         </a>
+        {/if}
         <a href="/user/invite" class="dropdown-item has-icon">
           <i class="fas fa-laugh-squint"></i> 邀请注册
         </a>
@@ -41,7 +43,9 @@
       <li><a class="nav-link" href="/user/shop"><i class="fas fa-store"></i> <span>商店</span></a></li>
       <li class="menu-header">我的</li>
       <li><a class="nav-link" href="/user/profile"><i class="fas fa-user"></i> <span>我的账号</span></a></li>
+      {if $malio_config['enable_wallet'] == true}
       <li><a class="nav-link" href="/user/code"><i class="fas fa-wallet"></i> <span>我的钱包</span></a></li>
+      {/if}
       {if $malio_config['enable_invite'] == true && $user->class >=0}
       <li><a class="nav-link" href="/user/invite"><i class="fas fa-laugh-squint"></i> <span>邀请注册</span></a></li>
       {/if}

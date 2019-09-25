@@ -31,7 +31,7 @@ $Malio_Config['small_brand'] = 'ML';    // 侧边栏在缩小状态下显示的 
 // 面板设置
 $Malio_Config['enable_webapi_ip_verification'] = false;    // 当节点通过 webapi 连接时，不验证节点IP是否与数据库中的IP相同。关闭此选项会降低安全性。
 $Malio_Config['enable_webapi_email_hash'] = true;    // 启用后，当节点通过 webapi 连接时，传出去的邮件地址会经过md5加密。
-$Malio_Config['code_required'] = true;    // 设置为true时，注册时邀请码是必须的。设置为false时，有无邀请码都可以注册，但是可以填邀请码（aff专用）
+$Malio_Config['code_required'] = true;    // 设置为true时，注册时邀请码是必须的。设置为false时，有无邀请码都可以注册，但是可以填邀请码（aff专用）, 只有在 .config.php 的 register_mode 设置为 invite 时生效
 $Malio_Config['reset_bandwidth_and_expire_date_when_change_class'] = false;    // 设置为true时，当用户购买与用户当前等级不同的套餐时，重置流量和过期时间。（定制功能）
 $Malio_Config['enable_register_email_restrict'] = true;    // 设置为true时，会限制注册时使用的邮箱后缀
 $Malio_Config['register_email_white_list'] = ['@gmail.com','@qq.com','@outlook.com','@163.com','@126.com','@yeah.net','@foxmail.com'];   // 注册时的邮箱后缀白名单，仅在上面的设置为true时生效
@@ -64,6 +64,7 @@ $Malio_Config['enable_relay'] = true;   // 是否显示中转规则
 $Malio_Config['enable_ticket'] = true;   // 是否显示工单系统
 $Malio_Config['enable_detect'] = true;   // 是否显示审计系统
 $Malio_Config['enable_invite'] = true;   // 是否显示邀请注册
+$Malio_Config['enable_wallet'] = true;   // 是否显示我的钱包
 $Malio_Config['enable_user_sub_log'] = true;  // 是否显示用户订阅记录页面
 $Malio_Config['enable_share_account_page'] = true;  // 是否在侧边栏显示共享账号页面 (定制功能)
 $Malio_Config['enable_sidebar_button'] = true;    // 是否显示底部 Telegram 按钮
@@ -261,6 +262,8 @@ $Malio_Config['buyer_reading'] = '
 
 // 我的钱包
 $Malio_Config['enable_topup_code'] = true;   // 是否在我的钱包页面显示充值码充值按钮
+$Malio_Config['topup_amount_input_mode'] = 'input';  //  充值金额的输入方式，input 是用户手动输入， select 是用户选择站长设定的固定值进行充值
+$Malio_Config['topup_select_list'] = [9.9, 19.9, 29.9];  // 用户只能在这个列表里选择充值金额，只有在 topup_mode 设置为 select 的时候有效
 
 
 // 我的账号
