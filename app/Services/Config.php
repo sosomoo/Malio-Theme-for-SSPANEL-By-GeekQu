@@ -54,7 +54,12 @@ class Config
             'enable_email_verify' => self::get('enable_email_verify'),
             'protocol_specify' => self::get('protocol_specify'),
             'subscribeLog' => self::get('subscribeLog'),
-            'subscribeLog_keep_days' => self::get('subscribeLog_keep_days')
+            'subscribeLog_keep_days' => self::get('subscribeLog_keep_days'),
+            'enable_auto_detect_ban' => self::get('enable_auto_detect_ban'),
+            'auto_detect_ban_type' => self::get('auto_detect_ban_type'),
+            'auto_detect_ban_number' => self::get('auto_detect_ban_number'),
+            'auto_detect_ban_time' => self::get('auto_detect_ban_time'),
+            'auto_detect_ban' => self::get('auto_detect_ban')
         ];
     }
 

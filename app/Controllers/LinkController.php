@@ -395,6 +395,7 @@ class LinkController extends BaseController
         }
         if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Surge()))) {
             $Profiles = (string) trim($opts['profiles']);
+            $userapiUrl .= ('&profiles=' . $Profiles);
         } else {
             $Profiles = '123456'; // 默认策略组
         }
@@ -536,6 +537,7 @@ class LinkController extends BaseController
 
         if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Surfboard()))) {
             $Profiles = (string) trim($opts['profiles']);
+            $userapiUrl .= ('&profiles=' . $Profiles);
         } else {
             $Profiles = '123456'; // 默认策略组
         }
@@ -699,6 +701,7 @@ class LinkController extends BaseController
         } else {
             if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Clash()))) {
                 $Profiles = (string) trim($opts['profiles']);
+                $userapiUrl .= ('&profiles=' . $Profiles);
             } else {
                 $Profiles = '123456'; // 默认策略组
             }

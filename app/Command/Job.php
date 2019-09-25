@@ -18,6 +18,7 @@ use App\Models\BlockIp;
 use App\Models\TelegramSession;
 use App\Models\EmailVerify;
 use App\Models\UserSubscribeLog;
+use App\Models\DetectBanLog;
 use App\Services\Config;
 use App\Services\Password;
 use App\Utils\DNSoverHTTPS;
@@ -855,6 +856,14 @@ class Job
                 }
 
                 $user->class = 0;
+            }
+
+            // 审计封禁解封
+            if ($user->detect_ban == 1) {
+                $logs = DetectBanLog::where('user_id', $user->id)->orderBy("id", "desc")->first();
+                if (($logs->end_time + $logs->ban_time * 60) <= time() || $logs == null) {
+                    $user->detect_ban = 0;
+                }
             }
 
             $user->save();
