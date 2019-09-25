@@ -562,9 +562,11 @@ class URL
                 $array_server[] = $server;
                 $server_index++;
                 continue;
+            } else {
+                $node_server = explode(';', $node->server);
+                $server['server'] = $node_server[0];
             }
             $server['id'] = $server_index;
-            $server['server'] = $node->server;
             //判断是否是中转起源节点
             $relay_rule = Relay::where('source_node_id', $node->id)->where(
                 static function ($query) use ($user) {
@@ -607,6 +609,12 @@ class URL
                     $server['id'] = $server_index;
                     $server['remarks'] = $node->name . ' - 单多' . $node_muport->server . '端口';
                     $server['port'] = $node_muport->server;
+                    // 端口偏移
+                    if (strpos($node->server, ';') !== false) {
+                        $node_tmp = Tools::OutPort($node->server, $node->name, $node_muport->server);
+                        $server['port'] = $node_tmp['port'];
+                        $server['remarks'] = $node->name . ' - 单多' . $node_tmp['port'] . '端口';
+                    }
                     $server['encryption'] = $muport_user->method;
                     $server['password'] = $muport_user->passwd;
                     $server['plugin'] = 'simple-obfs'; //目前只支持这个
