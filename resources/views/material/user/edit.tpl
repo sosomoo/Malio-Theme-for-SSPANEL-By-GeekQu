@@ -984,16 +984,17 @@
     })
 </script>
 
-<script>
-	$(function(){
-		new Clipboard('.reset-link');
-	});
+{/literal}
 
-	$(".reset-link").click(function () {
-		$("#result").modal();
-		$("#msg").html("已重置您的订阅链接，请变更或添加您的订阅链接！");
-		window.setTimeout("location.href='/user/url_reset'", {$config['jump_delay']});
-	});
+<script>
+    $(function () {
+        new Clipboard('.reset-link');
+    });
+    $(".reset-link").click(function () {
+        $("#result").modal();
+        $$.getElementById('msg').innerHTML = '已重置您的订阅链接，请变更或添加您的订阅链接！';
+        window.setTimeout("location.href='/user/url_reset'", {$config['jump_delay']});
+    });
 </script>
 
 <script>
@@ -1006,19 +1007,21 @@
                 data: {
                     id: $("#agreement_scheme").val()
                 },
-                success: function (data) {
+                success: (data) => {
                     if (data.ret) {
                         $("#result").modal();
-						$("#msg").html(data.msg);
-						window.setTimeout("location.href='/user/edit'", {$config['jump_delay']});
+                        $$.getElementById('msg').innerHTML = data.msg;
+                        window.setTimeout("location.href='/user/edit'", {$config['jump_delay']});
                     } else {
                         $("#result").modal();
-						$("#msg").html(data.msg);
+                        $$.getElementById('msg').innerHTML = data.msg;
                     }
                 },
-                error: function (jqXHR) {
+                error: (jqXHR) => {
                     $("#result").modal();
-					$("#msg").html(data.msg+"     出现了一些错误。");
+                    $$.getElementById('msg').innerHTML = `${
+                            data.msg
+                            } 出现了一些错误`;
                 }
             })
         })
@@ -1026,4 +1029,3 @@
 </script>
 
 
-{/literal}
