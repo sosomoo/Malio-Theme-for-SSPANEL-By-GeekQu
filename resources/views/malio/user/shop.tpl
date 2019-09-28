@@ -177,7 +177,11 @@
                   </div>
                   <div class="pricing-padding">
                     <div class="pricing-price">
+                      {if $malio_config['plan_trail_pricing'] != 0}
+                      <div>¥{$malio_config['plan_trail_pricing']}</div>
+                      {else}
                       <div>免费</div>
+                      {/if}
                       <div>一次性</div>
                     </div>
                     <div class="pricing-details">

@@ -120,6 +120,7 @@ $Malio_Config['shop_enable_coupon'] = true;    // 商店是否显示试用优惠
 
 $Malio_Config['shop_enable_trail_plan'] = true;   // 商店是否显示新用户试用选项
 $Malio_Config['shop_trail_plan_shopid'] = '12';   // 新用户试用的商品ID
+$Malio_Config['plan_trail_pricing'] = 0;    // 新用户试用的商品价格
 $Malio_Config['plan_trail_traffic'] = 50;    // 新用户试用的流量
 $Malio_Config['plan_trail_online'] = 2;    // 新用户试用的在线客户端数量
 $Malio_Config['plan_trail_feature'] = [    // 新用户试用的特性，一个array为一个特性，support设置为false的话就是不支持
