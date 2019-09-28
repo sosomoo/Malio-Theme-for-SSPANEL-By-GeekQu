@@ -479,6 +479,10 @@ class Tools
                 $item['add'] = $item['server'];
                 unset($item['server']);
             }
+            if (array_key_exists('relayserver', $item)) {
+                $item['add'] = $item['relayserver'];
+                unset($item['relayserver']);
+            }
             if (array_key_exists('outside_port', $item)) {
                 $item['port'] = (int)$item['outside_port'];
                 unset($item['outside_port']);
@@ -529,6 +533,10 @@ class Tools
             if (array_key_exists('server', $item)) {
                 $item['add'] = $item['server'];
                 unset($item['server']);
+            }
+            if (array_key_exists('relayserver', $item)) {
+                $item['add'] = $item['relayserver'];
+                unset($item['relayserver']);
             }
             if (array_key_exists('outside_port', $item)) {
                 $item['port'] = (int)$item['outside_port'];
