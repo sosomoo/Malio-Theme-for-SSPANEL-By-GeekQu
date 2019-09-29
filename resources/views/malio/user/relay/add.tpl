@@ -42,6 +42,7 @@
                     <div class="form-group">
                       <label>目标节点</label>
                       <select class="form-control form-control-sm" id="dist_node">
+                        <option value="-1">不进行中转</option>
                         {foreach $dist_nodes as $dist_node}
                         <option value="{$dist_node->id}">{$dist_node->name}</option>
                         {/foreach}
