@@ -125,7 +125,8 @@ $System_Config['user_agreement_scheme'] = [
     ['id'=>3,'name'=>'SS/SSR 兼容配置','method'=>'chacha20-ietf','protocol'=>'auth_aes128_sha1_compatible','obfs'=>'plain']
 ];
 
-$System_Config['subscribeLog'] = 'false';			//是否记录用户订阅日志
+$System_Config['subscribeLog'] = 'false';			    //是否记录用户订阅日志
+$System_Config['subscribeLog_keep_days'] = '7';		    //订阅记录保留天数
 
 //Bot 设置--------------------------------------------------------------------------------------------
 #通用
@@ -324,6 +325,43 @@ $System_Config['db_prefix'] = '';
 $System_Config['muKeyList'] = ['　'];                //多 key 列表
 $System_Config['mu_port_migration'] = 'false';       //为后端直接下发偏移后的端口
 $System_Config['relay_port_migration'] = 'false';    //为中转规则下发偏移后的端口，此项未经测试
+
+// 审计自动封禁开关
+$System_Config['enable_auto_detect_ban'] = 'false';
+
+// 审计封禁判断类型：
+//   - 1 = 仁慈模式，每触碰多少次封禁一次
+//   - 2 = 疯狂模式，累计触碰次数按阶梯进行不同时长的封禁
+$System_Config['auto_detect_ban_type'] = '1';
+
+// 仁慈模式每次执行封禁所需的触发次数
+$System_Config['auto_detect_ban_number'] = '30';
+
+// 仁慈模式每次封禁的时长 (分钟)
+$System_Config['auto_detect_ban_time'] = '60';
+
+// 疯狂模式阶梯
+// key 为触发次数
+//   - type：可选 time 按时间 或 kill 删号
+//   - time：时间，单位分钟
+$System_Config['auto_detect_ban'] = [
+    100 => [
+        'type' => 'time',
+        'time' => '120'
+    ],
+    300 => [
+        'type' => 'time',
+        'time' => '720'
+    ],
+    600 => [
+        'type' => 'time',
+        'time' => '4320'
+    ],
+    1000 => [
+        'type' => 'kill',
+        'time' => '0'
+    ]
+];
 
 #aws
 $System_Config['aws_access_key_id'] = '';

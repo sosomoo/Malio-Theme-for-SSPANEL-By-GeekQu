@@ -523,7 +523,7 @@ class UserController extends BaseController
 
             $sort = $array_node['sort'];
             $array_node['online_user'] = 0;
-            
+
             foreach ($onlineLogs as $log) {
                 if ($log['node_id'] != $node->id) {
                     continue;
@@ -535,8 +535,8 @@ class UserController extends BaseController
                 }
                 break;
             }
-            
-            // check node status 
+
+            // check node status
             // 0: new node; -1: offline; 1: online
             $node_heartbeat = $node->node_heartbeat + 300;
             $array_node['online'] = -1;
