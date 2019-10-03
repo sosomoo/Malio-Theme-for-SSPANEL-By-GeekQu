@@ -301,6 +301,12 @@ $System_Config['relay_port_migration'] = 'false';    //为中转规则下发偏�
 // 审计自动封禁开关
 $System_Config['enable_auto_detect_ban'] = 'false';
 
+// 管理员不受审计限制
+$System_Config['auto_detect_ban_allow_admin'] = 'true';
+
+// 审计封禁的例外用户 ID
+$System_Config['auto_detect_ban_allow_users'] = [];
+
 // 审计封禁判断类型：
 //   - 1 = 仁慈模式，每触碰多少次封禁一次
 //   - 2 = 疯狂模式，累计触碰次数按阶梯进行不同时长的封禁
