@@ -309,15 +309,59 @@ class LinkController extends BaseController
                 }
             }
 
+            // v2
+            $v2_items = URL::getAllVMessUrl($user, 1);
+            foreach ($v2_items as $item) {
+                if (!in_array($item['net'], ['ws', 'tcp'])) {
+                    continue;
+                }
+                $item['remark'] = $item['ps'];
+                $tls = ($item['tls'] == 'tls'
+                    ? ', tls=true'
+                    : '');
+                $ws = ($item['net'] == 'ws'
+                    ? ', ws=true, ws-path=' . $item['path'] . ', ws-headers=host:' . $item['host']
+                    : '');
+                $Proxy = $item['ps'] . ' = vmess, ' . $item['add'] . ', ' . $item['port'] . ', username = ' . $item['id'] . $ws . $tls . PHP_EOL;
+                if ($find) {
+                    $item = ConfController::getMatchProxy($item, $Rule);
+                    if ($item !== null) {
+                        $All_Proxy .= $Proxy;
+                    }
+                } else {
+                    $All_Proxy .= $Proxy;
+                }
+            }
+
             return $All_Proxy;
         }
         foreach ($items as $item) {
-            if (in_array($surge, array(3))) {
+            if (in_array($surge, array(3, 4))) {
                 $All_Proxy .= ($item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', encrypt-method=' . $item['method'] . ', password=' . $item['passwd'] . URL::getSurgeObfs($item) . ', udp-relay=true' . PHP_EOL);
             } else {
                 $All_Proxy .= ($item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item) . PHP_EOL);
             }
         }
+
+        if ($surge == 4) {
+            // v2
+            $v2_items = URL::getAllVMessUrl($user, 1);
+            foreach ($v2_items as $item) {
+                if (!in_array($item['net'], ['ws', 'tcp'])) {
+                    continue;
+                }
+                $tls = ($item['tls'] == 'tls'
+                    ? ', tls=true'
+                    : '');
+                $ws = ($item['net'] == 'ws'
+                    ? ', ws=true, ws-path=' . $item['path'] . ', ws-headers=host:' . $item['host']
+                    : '');
+                $All_Proxy .= $item['ps'] . ' = vmess, ' . $item['add'] . ', ' . $item['port'] . ', username = ' . $item['id'] . $ws . $tls . PHP_EOL;
+                $item['remark'] = $item['ps'];
+                $items[] = $item;
+            }
+        }
+
         if ($source) {
             $SourceURL = trim(urldecode($opts['source']));
             // 远程规则仅支持 github 以及 gitlab
