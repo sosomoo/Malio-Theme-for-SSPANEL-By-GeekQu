@@ -14,7 +14,7 @@
                 <div class="card">
                     <div class="card-main">
                         <div class="card-inner">
-                            <p>您可在此查询您账户所有的订阅记录，确保您的账户没有被盗用。</p>
+                            <p>您可在此查询您账户最近 {$config['subscribeLog_keep_days']} 天的订阅记录，确保您的账户没有被盗用。</p>
                         </div>
                     </div>
                 </div>

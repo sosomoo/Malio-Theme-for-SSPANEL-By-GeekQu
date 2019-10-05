@@ -428,38 +428,10 @@ class ConfController extends BaseController
                     $proxies = $ProxyGroup['content']['left-proxies'];
                 }
                 foreach ($Nodes as $item) {
-                    switch (true) {
-                        case (isset($ProxyGroup['content']['class'])):
-                            if ($item['class'] == $ProxyGroup['content']['class'] && !in_array($item['name'], $proxies)) {
-                                if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['name'])) {
-                                        $proxies[] = $item['name'];
-                                    }
-                                } else {
-                                    $proxies[] = $item['name'];
-                                }
-                            }
-                            break;
-                        case (isset($ProxyGroup['content']['noclass'])):
-                            if ($item['class'] != $ProxyGroup['content']['noclass'] && !in_array($item['name'], $proxies)) {
-                                if (isset($ProxyGroup['content']['regex'])) {
-                                    if (preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['name'])) {
-                                        $proxies[] = $item['name'];
-                                    }
-                                } else {
-                                    $proxies[] = $item['name'];
-                                }
-                            }
-                            break;
-                        case (!isset($ProxyGroup['content']['class'])
-                            && !isset($ProxyGroup['content']['noclass'])
-                            && isset($ProxyGroup['content']['regex'])
-                            && preg_match('/' . $ProxyGroup['content']['regex'] . '/i', $item['name'])
-                            && !in_array($item['name'], $proxies)):
-                            $proxies[] = $item['name'];
-                            break;
-                        default:
-                            break;
+                    $item['remark'] = $item['name'];
+                    $item = self::getMatchProxy($item, $ProxyGroup);
+                    if ($item !== null && !in_array($item['name'], $proxies)) {
+                        $proxies[] = $item['name'];
                     }
                 }
                 if (isset($ProxyGroup['content']['right-proxies'])) {
