@@ -44,7 +44,7 @@ $Malio_Config['bitpyax_alipay_type'] = 'ALIPAY';   // bitpayx 支付宝充值的
 // 订阅设置
 $Malio_Config['support_sub_type'] = ['ss','ssr','v2ray'];    // 选择网站支持的代理协议，会影响复制订阅链接和一键导入按钮的显示。比如删除这个参数里的ss，则 Surge 订阅按钮不会显示再首页上，教程里也不会显示Surge教程
 $Malio_Config['quantumult_mode'] = 'single';   // quantumult 一键导入按钮的模式，可选 "single"或"all"。选择single的话只能导入一种订阅（比如只能导入SSR订阅）。选择all的话可以一次性导入全部订阅类型（SS+SSR+V2RAY），但是导入后需要用户手动更新订阅才会出现节点。
-$Malio_Config['quantumult_sub_type'] = 'v2ray';    // quanmutult 的一键导入的订阅类型，可选 ss、ssr、v2ray
+$Malio_Config['quantumult_sub_type'] = 'v2ray';    // quanmutult 的一键导入的订阅类型，可选 ss、ssr、v2ray (仅在quantumult_mode设置为single时生效)
 $Malio_Config['enable_copy_urls_to_clipboard'] = true;   // 设置为 true 时，首页会显示 批量复制XX链接到剪贴板 的按钮，不建议启用。
 
 
@@ -76,6 +76,8 @@ $Malio_Config['telegram_group_class'] = 0;   // 显示底部 Telegram 按钮的�
 $Malio_Config['enable_index_subinfo'] = true;    // 是否在首页显示订阅链接复制或一键导入等按钮
 $Malio_Config['index_subinfo_buttons_align'] = false;   // 是否开启首页订阅链接按钮的对齐
 $Malio_Config['index_show_alert_to_tutorial'] = false;   // 首页是否一直显示进入教程的横幅 （此项设置为false后，新用户的首页依旧会显示引导进入教程的横幅）
+$Malio_Config['enable_index_popup_ann'] = true;   //  是否在用户登录后弹出重要公告
+$Malio_Config['index_popup_ann_content'] = '仅在有重大通知时使用，否则会降低用户体验，可以使用HTML标签';   //  重要公告的内容
 
 $Malio_Config['enable_share'] = true;   // 是否显示共享账号
 $Malio_Config['share_account'] = [    // 一个array为一个共享账号

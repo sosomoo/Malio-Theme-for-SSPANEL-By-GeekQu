@@ -1,6 +1,9 @@
 # 请勿泄露源码给他人，当你让他人为你debug或进行其他操作时，切勿让他访问你网站的全部代码，尤其是不认识的人。泄露源码对你我都没好处。
 # 不能删改页面底部的 Powered by SSPANEL. Theme by editXY，不能删改staff页面的任何信息。
 ## 安装
+
+需要删除原来的面板，然后全新安装（数据库通用），操作前请备份面板
+
 在网站目录下 
 `git clone -b malio https://gitlab.com/maxitio/malio-theme-for-sspanel.git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard`
 
@@ -41,3 +44,6 @@
 
 ## CREDIT
 基于 [rico](https://github.com/rico93) 和 [GeekQu](https://github.com/GeekQu) 维护的 [ss-panel-v3-mod_Uim](https://github.com/rico93/ss-panel-v3-mod_Uim) 修改
+
+## Malio.js 授权文件更新记录
+
