@@ -423,6 +423,24 @@
     </div>
   </div>
 
+  {if $malio_config['enable_index_popup_ann'] == true}
+  <div class="modal fade" tabindex="-1" role="dialog" id="popup-ann-modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">重要公告</h5>
+        </div>
+        <div class="modal-body">
+          <p>{$malio_config['index_popup_ann_content']}</p>
+        </div>
+        <div class="modal-footer bg-whitesmoke br">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">已读</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {/if}
+
   {include file='user/scripts.tpl'}
 
   <!-- Counter Up  -->
@@ -524,6 +542,12 @@
     });
   }
 </script>
+
+{if $malio_config['enable_index_popup_ann'] == true}
+<script>
+  $('#popup-ann-modal').modal('show');
+</script>
+{/if}
 </body>
 
 </html>
