@@ -108,7 +108,6 @@
                 </button>
                 <div class="dropdown-menu dropleft">
                   <a class="dropdown-item has-icon" href="/user/tutorial?os=windows&client=cfw"><i class="malio-clash"></i>Clash for Windows</a>
-                  <a class="dropdown-item has-icon" href="/user/tutorial?os=windows&client=ssd"><i class="malio-ssr"></i>SSD</a>
                 </div>
               </div>
             </div>
@@ -155,13 +154,13 @@
                             <label class="step-no">2.</label>
                             <p>粘贴订阅链接到左下角的链接，备注填写为，点击添加，然后点击保存</p>
                             {if (in_array("ssr",$malio_config['support_sub_type']))}
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
                             {/if}
                             {if (in_array("v2ray",$malio_config['support_sub_type']))}
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}"><i class="malio-v2ray"></i> 复制 V2Ray 订阅链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}"><i class="malio-v2ray"></i> 复制 V2Ray 订阅链接</a>
                             {/if}
                             {if (in_array("ss",$malio_config['support_sub_type']))}
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ss']}"><i class="malio-ssr"></i> 复制 SS 订阅链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ss']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}"><i class="malio-ssr"></i> 复制 SS 订阅链接</a>
                             {/if}
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">

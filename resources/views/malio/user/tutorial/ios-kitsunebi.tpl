@@ -171,7 +171,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>打开 Kitsunebi，点击底部导航栏的「服务器」进入服务器页面。点击右上角的加号，从弹出菜单中选择第四个「订阅」。在「备注」中输入本站名称，随后在「URL」中粘贴上方 获取订阅 中您需要使用的订阅类型，打开自动更新的开关，随后点击右上角储存。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 托管配置链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="{$subInfo['kitsunebi']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 托管配置链接</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">

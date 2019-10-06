@@ -141,7 +141,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>点击右上角 <i class="fas fa-plus"></i> 按钮，选择 “订阅”，再点击右上角 <i class="fas fa-plus"></i> 按钮，备注填写为 “{$config['appName']}”，粘贴 Kitsunebi 订阅链接到URL，然后右上角保存。点击 <i class="fas fa-history" style="transform: rotateY(180deg);"></i> 按钮更新节点列表。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo["v2ray"]}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">

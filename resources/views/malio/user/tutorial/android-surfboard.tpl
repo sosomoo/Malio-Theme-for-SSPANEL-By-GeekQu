@@ -213,7 +213,7 @@
                         <div id="manual-import" class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
                           <h6>Surfboard 无法一键导入，如何手动导入配置？</h6>
                           <p class="mb-4 font-13">
-                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['surfboard']}" style="color:#E91E63">点此复制 Surfboard 托管配置链接</a>
+                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['surfboard']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}" style="color:#E91E63">点此复制 Surfboard 托管配置链接</a>
                             ，选择 Surfboard 底栏第三个的 “Profies”，轻点右下角红色+号按钮，选择 “Dwonload from url”，粘贴托管配置链接。
                           </p>
                         </div>
@@ -250,10 +250,10 @@
   <script>
     var appName = "{$config['appName']}";
     function importSublink() {
-      oneclickImport('surfboard', '{$subInfo["surfboard"]}')
+      oneclickImport('surfboard', '{$subInfo["surfboard"]}{if $malio_config["enable_sub_extend"] == true}?extend=1{/if}')
     }
     createQRCode('surfboard-download-qrcode', '{$config["baseUrl"]}/client-download/surfboard.apk', '扫描二维码下载客户端')
-    createQRCode('surfboard-qrcode', 'surfboard:///install-config?url=' + encodeURIComponent('{$subInfo["surfboard"]}'), '打开Surfboard 👉Profile 👉右下角红色添加按钮 👉Scan qrcode')
+    createQRCode('surfboard-qrcode', 'surfboard:///install-config?url=' + encodeURIComponent('{$subInfo["surfboard"]}{if $malio_config["enable_sub_extend"] == true}?extend=1{/if}'), '打开Surfboard 👉Profile 👉右下角红色添加按钮 👉Scan qrcode')
   </script>
 </body>
 
