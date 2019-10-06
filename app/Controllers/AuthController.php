@@ -20,6 +20,7 @@ use App\Models\EmailVerify;
 use App\Utils\GA;
 use App\Utils\Geetest;
 use App\Utils\TelegramSessionManager;
+use Ramsey\Uuid\Uuid;
 
 /**
  *  AuthController
@@ -515,6 +516,11 @@ class AuthController extends BaseController
 
         $user->ga_token = $secret;
         $user->ga_enable = 0;
+
+
+        /* malio 增加UUID */
+        $user->uuid = Uuid::uuid3(Uuid::NAMESPACE_DNS, ($user->passwd) . Config::get('key') . $user->id)->toString();
+        /* malio end */
 
 
         if ($user->save()) {
