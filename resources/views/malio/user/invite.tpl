@@ -173,7 +173,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">定制邀请链接</h5>
+        <h5 class="modal-title">重置邀请链接</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -182,7 +182,7 @@
         <p>确定要要重置邀请链接吗？点击确定后会重置并自动刷新本页。</p>
       </div>
       <div class="modal-footer bg-whitesmoke br">
-        <a type="button" class="btn btn-primary" href="/user/inviteurl_reset">确定</a>
+        <a class="btn btn-primary" href="/user/inviteurl_reset">确定</a>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
       </div>
     </div>

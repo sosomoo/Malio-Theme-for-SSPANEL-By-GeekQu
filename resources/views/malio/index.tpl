@@ -16,8 +16,11 @@
   <link rel="stylesheet" href="/theme/malio/index/landing/style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@4.5.0/dist/css/swiper.min.css">
 
-  {if $malio_config['enable_landing_page'] == true && $malio_config['enable_crisp'] == true && $malio_config['enable_crisp_outside'] == true}
+  {if $malio_config['enable_crisp'] == true && $malio_config['enable_crisp_outside'] == true}
   {include file='crisp.tpl'}
+  {/if}
+  {if $malio_config['enable_chatra'] == true && $malio_config['enable_crisp_outside'] == true}
+  {include file='chatra.tpl'}
   {/if}
 </head>
 

@@ -17,6 +17,9 @@
   {if $malio_config['enable_crisp'] == true && $malio_config['enable_crisp_outside'] == true}
   {include file='crisp.tpl'}
   {/if}
+  {if $malio_config['enable_chatra'] == true && $malio_config['enable_crisp_outside'] == true}
+  {include file='chatra.tpl'}
+  {/if}
 </head>
 
 <body>

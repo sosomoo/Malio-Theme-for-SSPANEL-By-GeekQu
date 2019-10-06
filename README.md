@@ -43,6 +43,8 @@
 
 如果需要配置Stripe支付接口的话，请看本仓库的wiki
 
+需要去.config.php打开订阅记录的开关才会记录订阅
+
 ## Telegram
 [TG群组](https://t.me/joinchat/DM2_FxStXAbYZ2DzVfZjcw)
 
