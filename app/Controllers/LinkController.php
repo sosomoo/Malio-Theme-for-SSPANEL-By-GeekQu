@@ -259,10 +259,12 @@ class LinkController extends BaseController
             // apps
             'ssd' => $userapiUrl . '?ssd=1',
             'clash' => $userapiUrl . '?clash=1',
+            'clashr' => $userapiUrl . '?clash=2',
             'surge' => $userapiUrl . '?surge=' . $int,
             'surge_node' => $userapiUrl . '?surge=1',
             'surge2' => $userapiUrl . '?surge=2',
             'surge3' => $userapiUrl . '?surge=3',
+            'surge4' => $userapiUrl . '?surge=4',
             'surfboard' => $userapiUrl . '?surfboard=1',
             'quantumult' => $userapiUrl . '?quantumult=' . $int,
             'quantumult_v2' => $userapiUrl . '?quantumult=1',
