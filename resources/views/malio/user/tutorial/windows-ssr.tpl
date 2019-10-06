@@ -155,7 +155,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>在状态栏找到小飞机，右键点击，选中 “服务器订阅” > “SSR服务器订阅设置”，点击下面的按钮复制订阅链接，<span style="color:#e780a3;">然后按照图中的步骤添加并站粘贴订阅链接。</span></p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">

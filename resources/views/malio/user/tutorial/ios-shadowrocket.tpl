@@ -232,7 +232,7 @@
                         <div id="manual-import" class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
                           <h6>Shadowrocket 无法一键导入，如何手动导入配置？</h6>
                           <p class="mb-4 font-13">
-                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['shadowrocket']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}">点此复制 Shadowrocket 订阅链接</a>，打开 Shadowrocket 首页，点击右上角的加号，再次点击第一行的「类型」，选择 Subscribe。在「备注」中输入{$config['appName']}，随后在「URL」中粘贴订阅链接。
+                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['shadowrocket']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}">点此复制 Shadowrocket 订阅链接</a>，打开 Shadowrocket 首页，点击右上角的加号，再次点击第一行的「类型」，选择 Subscribe。在「备注」中输入{$config['appName']}，随后在「URL」中粘贴订阅链接。
                           </p>
                         </div>
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
@@ -262,11 +262,11 @@
   <script>
     function importSublink(client) {
       if (client == 'shadowrocket') {
-        oneclickImport('shadowrocket','{$subInfo["shadowrocket"]}{if $malio_config["enable_sub_extend"] == true}?extend=1{/if}')
+        oneclickImport('shadowrocket','{$subInfo["shadowrocket"]}{if $malio_config["enable_sub_extend"] == true}&extend=1{/if}')
       };
     }
     createQRCode('shadowrocket-download-qrcode', 'https://itunes.apple.com/us/app/shadowrocket/id932747118','扫描二维码下载客户端')
-    createQRCode('shadowrocket-qrcode', "shadowrocket://add/sub://" + btoa('{$subInfo["shadowrocket"]}{if $malio_config["enable_sub_extend"] == true}?extend=1{/if}') + "?remarks={$config[appName]}", '打开手机相机，扫描二维码导入')
+    createQRCode('shadowrocket-qrcode', "shadowrocket://add/sub://" + btoa('{$subInfo["shadowrocket"]}{if $malio_config["enable_sub_extend"] == true}&extend=1{/if}') + "?remarks={$config[appName]}", '打开手机相机，扫描二维码导入')
     var appName = '{$config["appName"]}';
   </script>
 </body>

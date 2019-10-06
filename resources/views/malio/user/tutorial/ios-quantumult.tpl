@@ -218,7 +218,7 @@
                         <div id="manual-import" class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
                           <h6>Quantumult 无法一键导入，如何手动导入配置？</h6>
                           <p class="mb-4 font-13">
-                            <a href="##" class="copy-text" data-clipboard-text="{if $malio_config['quantumult_sub_type']=='v2ray'}{$subInfo['v2ray']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}{elseif $malio_config['quantumult_sub_type']=='ss'}{$subInfo['ss']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}{elseif $malio_config['quantumult_sub_type']=='ssr'}{$subInfo['ssr']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}{/if}">点此复制 Quantumult 订阅链接</a>，打开 Quantumult，轻点底栏的设置，轻点订阅，轻点右上角的+，选择服务器，填入名称为 {$config['appName']} ，粘贴订阅链接，最后保存即可。
+                            <a href="##" class="copy-text" data-clipboard-text="{if $malio_config['quantumult_sub_type']=='v2ray'}{$subInfo['v2ray']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}{elseif $malio_config['quantumult_sub_type']=='ss'}{$subInfo['ss']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}{elseif $malio_config['quantumult_sub_type']=='ssr'}{$subInfo['ssr']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}{/if}">点此复制 Quantumult 订阅链接</a>，打开 Quantumult，轻点底栏的设置，轻点订阅，轻点右上角的+，选择服务器，填入名称为 {$config['appName']} ，粘贴订阅链接，最后保存即可。
                           </p>
                         </div>
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
@@ -254,10 +254,10 @@
   <script>
     function importSublink(client) {
       if (client == 'quantumult') {
-        oneclickImport('quantumult', '{if $malio_config["quantumult_sub_type"]=="v2ray"}{$subInfo["v2ray"]}{if $malio_config["enable_sub_extend"] == true}?extend=1{/if}{elseif $malio_config["quantumult_sub_type"]=="ss"}{$subInfo["ss"]}{elseif $malio_config["quantumult_sub_type"]=="ssr"}{$subInfo["ssr"]}{if $malio_config["enable_sub_extend"] == true}?extend=1{/if}{/if}');
+        oneclickImport('quantumult', '{if $malio_config["quantumult_sub_type"]=="v2ray"}{$subInfo["v2ray"]}{if $malio_config["enable_sub_extend"] == true}&extend=1{/if}{elseif $malio_config["quantumult_sub_type"]=="ss"}{$subInfo["ss"]}{elseif $malio_config["quantumult_sub_type"]=="ssr"}{$subInfo["ssr"]}{if $malio_config["enable_sub_extend"] == true}&extend=1{/if}{/if}');
       }
     }
-    createQRCode('quantumult-qrcode',"quantumult://configuration?server=" + btoa('{if $malio_config["quantumult_sub_type"]=="v2ray"}{$subInfo["v2ray"]}{if $malio_config["enable_sub_extend"] == true}?extend=1{/if}{elseif $malio_config["quantumult_sub_type"]=="ss"}{$subInfo["ss"]}{if $malio_config["enable_sub_extend"] == true}?extend=1{/if}{elseif $malio_config["quantumult_sub_type"]=="ssr"}{$subInfo["ssr"]}{if $malio_config["enable_sub_extend"] == true}?extend=1{/if}{/if}').replace(/=/g, '') + '&filter=YUhSMGNITTZMeTl0ZVM1dmMyOWxZMjh1ZUhsNkwzSjFiR1Z6TDNGMVlXNTBkVzExYkhRdVkyOXVaZw', '打开手机相机，扫描二维码导入');
+    createQRCode('quantumult-qrcode',"quantumult://configuration?server=" + btoa('{if $malio_config["quantumult_sub_type"]=="v2ray"}{$subInfo["v2ray"]}{if $malio_config["enable_sub_extend"] == true}&extend=1{/if}{elseif $malio_config["quantumult_sub_type"]=="ss"}{$subInfo["ss"]}{if $malio_config["enable_sub_extend"] == true}&extend=1{/if}{elseif $malio_config["quantumult_sub_type"]=="ssr"}{$subInfo["ssr"]}{if $malio_config["enable_sub_extend"] == true}&extend=1{/if}{/if}').replace(/=/g, '') + '&filter=YUhSMGNITTZMeTl0ZVM1dmMyOWxZMjh1ZUhsNkwzSjFiR1Z6TDNGMVlXNTBkVzExYkhRdVkyOXVaZw', '打开手机相机，扫描二维码导入');
     createQRCode('quantumult-download-qrcode', 'https://itunes.apple.com/us/app/quantumult/id1252015438','扫描二维码下载客户端');
     var appName = '{$config["appName"]}';
   </script>

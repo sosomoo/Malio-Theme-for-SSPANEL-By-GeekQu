@@ -195,7 +195,7 @@
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6" id="manual-import">
                           <h6>Clash for Windows 无法一键导入，如何手动导入配置？</h6>
                           <p class="mb-4 font-13">
-                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['clash']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}">点此复制 Clash 托管配置链接</a>，打开客户端的侧边栏的 Profiles，粘贴托管配置链接到左下角，点击 Direct Mode。
+                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['clash']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}">点此复制 Clash 托管配置链接</a>，打开客户端的侧边栏的 Profiles，粘贴托管配置链接到左下角，点击 Direct Mode。
                           </p>
                         </div>
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
@@ -247,7 +247,7 @@
   <script>
     function importSublink(client) {
       if (client == 'clash') {
-        oneclickImport('clash', '{$subInfo["clash"]}{if $malio_config["enable_sub_extend"] == true}?extend=1{/if}')
+        oneclickImport('clash', '{$subInfo["clash"]}{if $malio_config["enable_sub_extend"] == true}&extend=1{/if}')
       };
     }
     appName = "{$config['appName']}";

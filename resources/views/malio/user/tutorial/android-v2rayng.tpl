@@ -141,7 +141,7 @@
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
                             <p>打开 V2rayNG 点击左上角的菜单图标打开侧边栏，随后点击 订阅设置。点击右上角的加号按钮，在新页面的备注中填写本站名称，地址输入框中粘贴订阅链接并点击右上角的 <i class="fas fa-check"></i>。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="{$subInfo['v2ray']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}"><i class="malio-v2rayng"></i> 复制 V2Ray 订阅链接</a>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round copy-text" data-clipboard-text="{$subInfo['v2ray']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-v2rayng"></i> 复制 V2Ray 订阅链接</a>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">

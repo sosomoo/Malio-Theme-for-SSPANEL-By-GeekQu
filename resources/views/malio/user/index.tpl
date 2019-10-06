@@ -331,7 +331,7 @@
                       <div class="buttons">
                         {if (in_array("ss",$malio_config['support_sub_type'])) || (in_array("v2ray",$malio_config['support_sub_type']))}
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-clash btn-lg btn-round" onclick="importSublink('clash')"><i class="malio-clash"></i> 一键导入 ClashX / CFW 配置</a>
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-kitsunebi copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-kitsunebi copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['kitsunebi']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-kitsunebi"></i> 复制 Kitsunebi 订阅链接</a>
                         {/if}
                         {if $malio_config['quantumult_mode'] == 'single'}
                         <a href="##" id="quan_sub" class="btn btn-icon icon-left btn-primary btn-quantumult btn-lg btn-round copy-config" onclick="importSublink('quantumult')"><i class="malio-quantumult"></i> 一键导入 Quantumult 配置</a>
@@ -340,11 +340,11 @@
                         {/if}
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-shadowrocket btn-lg btn-round" onclick="importSublink('shadowrocket')"><i class="malio-shadowrocket"></i> 一键导入 Shadowrocket 配置</a>
                         {if (in_array("v2ray",$malio_config['support_sub_type']))}
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-v2ray copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}"><i class="malio-v2rayng"></i> 复制 V2Ray 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-v2ray copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-v2rayng"></i> 复制 V2Ray 订阅链接</a>
                         {/if}
                         {if (in_array("ss",$malio_config['support_sub_type']))}
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-ss copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ss']}"><i class="malio-ssr"></i> 复制 SS 订阅链接</a>
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-quantumult copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssd']}"><i class="malio-ssr"></i> 复制 SSD 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-ss copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ss']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-ssr"></i> 复制 SS 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-quantumult copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssd']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-ssr"></i> 复制 SSD 订阅链接</a>
 
                         <div class="dropdown d-inline">
                           <button class="btn btn-primary btn-surge dropdown-toggle btn-icon btn-round btn-lg" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -363,7 +363,7 @@
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-surfboard btn-lg btn-round" onclick="importSublink('surfboard')"><i class="malio-surfboard"></i> 一键导入 Surfboard 配置</a>
                         {/if}
                         {if (in_array("ssr",$malio_config['support_sub_type']))}
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-ssr copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-ssr copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
                         {/if}
                         {if $malio_config['enable_copy_urls_to_clipboard'] == true}
                         {if (in_array("ss",$malio_config['support_sub_type']))}
