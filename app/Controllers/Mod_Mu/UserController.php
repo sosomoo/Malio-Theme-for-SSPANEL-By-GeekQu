@@ -368,7 +368,7 @@ class UserController extends BaseController
             if ($User == null) {
                 continue;
             }
-            if ($User->detect_ban == 1) {
+            if ($User->detect_ban == 1 || ($User->is_admin && Config::get('auto_detect_ban_allow_admin') == 'true') || in_array($User->id, Config::get('auto_detect_ban_allow_users'))) {
                 continue;
             }
             if (Config::get('auto_detect_ban_type') == '1') {
