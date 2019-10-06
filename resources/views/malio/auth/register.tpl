@@ -205,7 +205,7 @@
                   </div>
 
                   <div class="form-group">
-                    <button id="register-confirm" type="submit" class="btn btn-primary btn-lg btn-block">
+                    <button id="register-confirm" onclick="doSignUp()" class="btn btn-primary btn-lg btn-block">
                       注册
                     </button>
                   </div>
@@ -278,7 +278,8 @@
         !$("#passwd").val() ||
         !$("#repasswd").val()
         ){
-        $('#register-confirm').removeAttr("disabled","disabled")
+          $('#register-confirm').removeClass("disabled")
+          $('#register-confirm').removeAttr("disabled")
         return false
       };
       // eof vaildation
@@ -287,7 +288,8 @@
       validate = captcha.getValidate();
       if (typeof validate === 'undefined' || !validate) {
         swal('请验证身份', '请滑动验证码来完成验证。', 'info');
-        $('#register-confirm').removeAttr("disabled","disabled")
+        $('#register-confirm').removeClass("disabled")
+        $('#register-confirm').removeAttr("disabled")
         return;
       }
       {/if}
@@ -336,6 +338,7 @@
                   }
                 })
               } else {
+                $('#register-confirm').removeClass("disabled")
                 $('#register-confirm').removeAttr("disabled")
                 {if $geetest_html != null}
                 captcha.reset();
@@ -358,10 +361,11 @@
         }
     });
 
-    $('#register-confirm').click(function(){
+    function doSignUp(){
+      $('#register-confirm').addClass("disabled")
       $('#register-confirm').attr("disabled","disabled")
       register()
-    })
+    }
   </script>
 
   {if $enable_email_verify == 'true'}
