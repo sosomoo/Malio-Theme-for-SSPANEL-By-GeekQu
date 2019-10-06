@@ -609,6 +609,7 @@
 
   <!--End mc_embed_signup-->
   <script src="https://cdn.jsdelivr.net/npm/swiper@4.5.0/dist/js/swiper.min.js"></script>
+  <script src="/theme/malio/js/malio.js?{$malio_config['malio_js_version']}"></script>
 
   <script>
     var mySwiper = new Swiper('.swiper-container', {

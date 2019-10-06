@@ -19,9 +19,11 @@
           <i class="fas fa-wallet"></i> 我的钱包
         </a>
         {/if}
+        {if $malio_config['enable_invite'] == true && $user->class >=0}
         <a href="/user/invite" class="dropdown-item has-icon">
           <i class="fas fa-laugh-squint"></i> 邀请注册
         </a>
+        {/if}
         <div class="dropdown-divider"></div>
         <a href="/user/logout" class="dropdown-item has-icon text-danger">
           <i class="fas fa-sign-out-alt"></i> 退出登录
@@ -52,10 +54,10 @@
       <li class="menu-header">使用</li>
       <li><a class="nav-link" href="/user/node"><i class="fas fa-server"></i> <span>节点列表</span></a></li>
       <li><a class="nav-link" href="/user/tutorial"><i class="fas fa-book"></i> <span>下载和教程</span></a></li>
-      {if $malio_config['enable_user_sub_log'] == true}
+      {if $malio_config['enable_user_sub_log'] == true && $user->class >=0}
       <li><a class="nav-link" href="/user/subscribe_log"><i class="fas fa-stream"></i> <span>订阅记录</span></a></li>
       {/if}
-      {if $malio_config['enable_share_account_page'] == true}
+      {if $malio_config['enable_share_account_page'] == true && $user->class >=0}
       <li><a class="nav-link" href="/user/share-account"><i class="fas fa-share"></i> <span>共享账号</span></a></li>
       {/if}
       {if $malio_config['enable_ticket'] == true}
