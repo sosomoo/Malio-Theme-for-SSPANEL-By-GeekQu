@@ -345,8 +345,21 @@
                         {if (in_array("ss",$malio_config['support_sub_type']))}
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-ss copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ss']}"><i class="malio-ssr"></i> 复制 SS 订阅链接</a>
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-quantumult copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssd']}"><i class="malio-ssr"></i> 复制 SSD 订阅链接</a>
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-surge btn-lg btn-round" onclick="importSublink('surge2')"><i class="malio-surge"></i> 一键导入 Surge 2 配置</a>
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-surge btn-lg btn-round" onclick="importSublink('surge3')"><i class="malio-surge"></i> 一键导入 Surge 3 配置</a> 
+
+                        <div class="dropdown d-inline">
+                          <button class="btn btn-primary btn-surge dropdown-toggle btn-icon btn-round btn-lg" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="malio-surge mr-1"></i> Surge 托管配置
+                          </button>
+                          <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 28px, 0px); top: 0px; left: 0px; will-change: transform;">
+                            <a class="dropdown-item" href="##" onclick="importSublink('surge2')"> 一键导入 Surge 2 托管配置</a>
+                            <a class="dropdown-item copy-text" href="##" data-clipboard-text="{$subInfo['surge']}"> 复制 Surge 2 托管配置链接</a>
+                            <a class="dropdown-item" href="##" onclick="importSublink('surge3')"> 一键导入 Surge 3 配置</a>
+                            <a class="dropdown-item copy-text" href="##" data-clipboard-text="{$subInfo['surge3']}"> 复制 Surge 3 托管配置链接</a>
+                            <a class="dropdown-item" href="##" onclick="importSublink('surge4')"> 一键导入 Surge 4 配置</a>
+                            <a class="dropdown-item copy-text" href="##" data-clipboard-text="{$subInfo['surge4']}"> 复制 Surge 4 托管配置链接</a>
+                          </div>
+                        </div>
+
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-surfboard btn-lg btn-round" onclick="importSublink('surfboard')"><i class="malio-surfboard"></i> 一键导入 Surfboard 配置</a>
                         {/if}
                         {if (in_array("ssr",$malio_config['support_sub_type']))}
@@ -482,6 +495,9 @@
       };
       if (client == 'surge3') {
         oneclickImport('surge3','{$subInfo["surge3"]}')
+      };
+      if (client == 'surge4') {
+        oneclickImport('surge3','{$subInfo["surge4"]}')
       };
       if (client == 'clash') {
         oneclickImport('clash','{$subInfo["clash"]}')
