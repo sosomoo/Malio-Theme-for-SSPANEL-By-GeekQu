@@ -420,16 +420,24 @@ table tr td:first-child {
 												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/Fndroid/clash_for_windows_pkg/releases"><i class="material-icons">save_alt</i> 下载</a> Clash for Windows - [ SS/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/Clash-for-Windows"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 													<p>使用方式：<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clash"])}"><i class="material-icons icon-sm">how_to_vote</i>Clash for Windows 一键导入</a></p>
+                                            	<hr/>
+												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://t.me/clashr4ssr"><i class="material-icons">save_alt</i> 下载</a> ClashR for Windows - [ SS/SSR/VMess ]：</p>
+													<p>教程文档：自行摸索</p>
+													<p>使用方式：<a class="btn-dl" href="{$subInfo["clashr"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clashr"])}"><i class="material-icons icon-sm">how_to_vote</i>ClashR for Windows 一键导入</a></p>
 											</div>
 
 											<div class="tab-pane fade" id="sub_center_mac">
-												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://nssurge.com/mac/v3/Surge-latest.zip"><i class="material-icons">save_alt</i> 下载</a> Surge - [ SS ]：</p>
+												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://nssurge.com/mac/v3/Surge-latest.zip"><i class="material-icons">save_alt</i> 下载</a> Surge - [ SS/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge3"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 托管</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge_node"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge2"]}"><i class="material-icons icon-sm">how_to_vote</i>2.x 托管</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge4"]}"><i class="material-icons icon-sm">how_to_vote</i>4.x 托管</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge3"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 托管</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge_node"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge2"]}"><i class="material-icons icon-sm">how_to_vote</i>2.x 托管</a></p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/yichengchen/clashX/releases"><i class="material-icons">save_alt</i> 下载</a> ClashX - [ SS/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/ClashX"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 													<p>使用方式：<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clash"])}"><i class="material-icons icon-sm">how_to_vote</i>ClashX 一键导入</a></p>
+                                                <hr/>
+												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://t.me/clashr4ssr"><i class="material-icons">save_alt</i> 下载</a> ClashXR - [ SS/SSR/VMess ]：</p>
+													<p>教程文档：自行摸索</p>
+													<p>使用方式：<a class="btn-dl" href="{$subInfo["clashr"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clashr"])}"><i class="material-icons icon-sm">how_to_vote</i>ClashXR 一键导入</a></p>
 											</div>
 
 											<div class="tab-pane fade" id="sub_center_ios">
@@ -451,9 +459,9 @@ table tr td:first-child {
 												<hr/>
 												{/if}
 											{/if}
-												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/surge-3/id1442620678?ls=1&mt=8"><i class="material-icons">save_alt</i> 下载</a> Surge - [ SS ]：</p>
+												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/surge-3/id1442620678?ls=1&mt=8"><i class="material-icons">save_alt</i> 下载</a> Surge - [ SS/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Surge"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-													<p>使用方式：<a class="btn-dl" href="surge3:///install-config?url={urlencode($subInfo["surge3"])}"><i class="material-icons icon-sm">how_to_vote</i>3.x 一键</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge_node"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="btn-dl" href="surge:///install-config?url={urlencode($subInfo["surge2"])}"><i class="material-icons icon-sm">how_to_vote</i>2.x 一键</a></p>
+													<p>使用方式：<a class="btn-dl" href="surge3:///install-config?url={urlencode($subInfo["surge4"])}"><i class="material-icons icon-sm">how_to_vote</i>4.x 一键</a>.<a class="btn-dl" href="surge3:///install-config?url={urlencode($subInfo["surge3"])}"><i class="material-icons icon-sm">how_to_vote</i>3.x 一键</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surge_node"]}"><i class="material-icons icon-sm">how_to_vote</i>3.x 节点</a>.<a class="btn-dl" href="surge:///install-config?url={urlencode($subInfo["surge2"])}"><i class="material-icons icon-sm">how_to_vote</i>2.x 一键</a></p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/kitsunebi-proxy-utility/id1446584073?ls=1&mt=8"><i class="material-icons">save_alt</i> 下载</a> Kitsunebi - [ SS/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Kitsunebi"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
