@@ -482,7 +482,7 @@
 
     function importSublink(client) {
       if (client == 'quantumult') {
-        oneclickImport('quantumult', '{if $malio_config["quantumult_sub_type"]=="v2ray"}{$subInfo["v2ray"]}{elseif $malio_config["quantumult_sub_type"]=="ss"}{$subInfo["ss"]}{elseif $malio_config["quantumult_sub_type"]=="ssr"}{$subInfo["ssr"]}{/if}');
+        oneclickImport('quantumult', '{if $malio_config["quantumult_sub_type"]=="v2ray"}{$subInfo["quantumult_v2"]}{elseif $malio_config["quantumult_sub_type"]=="ss"}{$subInfo["ss"]}{elseif $malio_config["quantumult_sub_type"]=="ssr"}{$subInfo["ssr"]}{/if}');
       }
       if (client == 'shadowrocket') {
         oneclickImport('shadowrocket','{$subInfo["shadowrocket"]}')
