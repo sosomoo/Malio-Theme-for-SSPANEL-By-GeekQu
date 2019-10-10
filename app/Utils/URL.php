@@ -139,11 +139,8 @@ class URL
         return $new_user;
     }
 
-    public static function getAllItems(
-        $user,
-        $is_mu = 0,
-        $is_ss = 0
-    ) {
+    public static function getAllItems($user, $is_mu = 0, $is_ss = 0, $emoji = 0)
+    {
         $return_array = array();
         if ($user->is_admin) {
             $nodes = Node::where(
@@ -206,12 +203,12 @@ class URL
                     if (($relay_rule != null) && $relay_rule->dist_node() != null) {
                         $relay_rule_id = $relay_rule->id;
                     }
-                    $item = self::getItem($user, $node, 0, $relay_rule_id, $is_ss);
+                    $item = self::getItem($user, $node, 0, $relay_rule_id, $is_ss, $emoji);
                     if ($item != null) {
                         $return_array[] = $item;
                     }
                 } else {
-                    $item = self::getItem($user, $node, 0, 0, $is_ss);
+                    $item = self::getItem($user, $node, 0, 0, $is_ss, $emoji);
                     if ($item != null) {
                         $return_array[] = $item;
                     }
@@ -225,12 +222,12 @@ class URL
                         if (($relay_rule != null) && $relay_rule->dist_node() != null) {
                             $relay_rule_id = $relay_rule->id;
                         }
-                        $item = self::getItem($user, $node, $mu_node->server, $relay_rule_id, $is_ss);
+                        $item = self::getItem($user, $node, $mu_node->server, $relay_rule_id, $is_ss, $emoji);
                         if ($item != null) {
                             $return_array[] = $item;
                         }
                     } else {
-                        $item = self::getItem($user, $node, $mu_node->server, 0, $is_ss);
+                        $item = self::getItem($user, $node, $mu_node->server, 0, $is_ss, $emoji);
                         if ($item != null) {
                             $return_array[] = $item;
                         }
@@ -272,7 +269,7 @@ class URL
      *
      * @return string
      */
-    public static function get_NewAllUrl($user, $is_ss, $getV2rayPlugin, $Rule, $find)
+    public static function get_NewAllUrl($user, $is_ss, $getV2rayPlugin, $Rule, $find, $emoji = 0)
     {
         $return_url = '';
         if (strtotime($user->expire_in) < time()) {
@@ -280,14 +277,14 @@ class URL
         }
         if ($getV2rayPlugin === 0) {
             $items = array_merge(
-                self::getAllItems($user, 0, $is_ss),
-                self::getAllItems($user, 1, $is_ss)
+                self::getAllItems($user, 0, $is_ss, $emoji),
+                self::getAllItems($user, 1, $is_ss, $emoji)
             );
         } else {
             $items = array_merge(
-                self::getAllItems($user, 0, $is_ss),
-                self::getAllItems($user, 1, $is_ss),
-                self::getAllV2RayPluginItems($user)
+                self::getAllItems($user, 0, $is_ss, $emoji),
+                self::getAllItems($user, 1, $is_ss, $emoji),
+                self::getAllV2RayPluginItems($user, $emoji)
             );
         }
         if ($find) {
@@ -361,7 +358,8 @@ class URL
      *
      * @return array
      */
-    public static function getAllV2RayPluginItems($user) {
+    public static function getAllV2RayPluginItems($user, $emoji = 0)
+    {
         $return_array = array();
         if ($user->is_admin) {
             $nodes = Node::where('sort', 13)
@@ -382,7 +380,7 @@ class URL
                 ->get();
         }
         foreach ($nodes as $node) {
-            $item = self::getV2RayPluginItem($user, $node);
+            $item = self::getV2RayPluginItem($user, $node, $emoji);
             if ($item != null) {
                 $return_array[] = $item;
             }
@@ -399,14 +397,16 @@ class URL
      *
      * @return array
      */
-    public static function getV2RayPluginItem($user, $node)
+    public static function getV2RayPluginItem($user, $node, $emoji = 0)
     {
         // 非 AEAD 加密无法使用
         if (!in_array($user->method, Config::getSupportParam('ss_aead_method'))) {
             return null;
         }
         $return_array = Tools::ssv2Array($node->server);
-        $return_array['remark'] = $node->name;
+        $return_array['remark'] = ($emoji == 1
+            ? Tools::addEmoji($node->name)
+            : $node->name);
         $return_array['address'] = $return_array['add'];
         $return_array['method'] = $user->method;
         $return_array['passwd'] = $user->passwd;
@@ -427,11 +427,13 @@ class URL
         return $return_array;
     }
 
-    public static function getV2Url($user, $node, $arrout = 0)
+    public static function getV2Url($user, $node, $arrout = 0, $emoji = 0)
     {
         $item = Tools::v2Array($node->server);
         $item['v'] = '2';
-        $item['ps'] = $node->name;
+        $item['ps'] = ($emoji == 1
+            ? Tools::addEmoji($node->name)
+            : $node->name);
         $item['id'] = $user->getUuid();
         $item['class'] = $node->node_class;
         if ($arrout == 0) {
@@ -443,7 +445,7 @@ class URL
         return $item;
     }
 
-    public static function getAllVMessUrl($user, $arrout = 0)
+    public static function getAllVMessUrl($user, $arrout = 0, $emoji = 0)
     {
         if ($user->is_admin) {
             $nodes = Node::where(
@@ -475,12 +477,12 @@ class URL
         if ($arrout == 0) {
             $result = '';
             foreach ($nodes as $node) {
-                $result .= (self::getV2Url($user, $node, $arrout) . "\n");
+                $result .= (self::getV2Url($user, $node, $arrout, $emoji) . "\n");
             }
         } else {
             $result = [];
             foreach ($nodes as $node) {
-                $result[] = self::getV2Url($user, $node, $arrout);
+                $result[] = self::getV2Url($user, $node, $arrout, $emoji);
             }
         }
         return $result;
@@ -686,7 +688,7 @@ class URL
     * obfs
     * obfs_param
     */
-    public static function getItem($user, $node, $mu_port = 0, $relay_rule_id = 0, $is_ss = 0)
+    public static function getItem($user, $node, $mu_port = 0, $relay_rule_id = 0, $is_ss = 0, $emoji = 0)
     {
         $relay_rule = Relay::where('id', $relay_rule_id)->where(
             static function ($query) use ($user) {
@@ -735,7 +737,9 @@ class URL
         }
         $return_array['passwd'] = $user->passwd;
         $return_array['method'] = $user->method;
-        $return_array['remark'] = $node_name;
+        $return_array['remark'] = ($emoji == 1
+            ? Tools::addEmoji($node_name)
+            : $node_name);
         $return_array['class'] = $node->node_class;
         $return_array['group'] = Config::get('appName');
         return $return_array;

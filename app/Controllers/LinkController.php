@@ -89,6 +89,10 @@ class LinkController extends BaseController
             $find = true;
         }
 
+        $emoji = ((isset($opts['emoji']) && $opts['emoji'] == 'true') || Config::get('add_emoji_to_node_name') == 'true'
+            ? 1
+            : 0);
+
         // 兼容原版
         if (isset($opts['mu'])) {
             $mu = (int) $opts['mu'];
@@ -141,7 +145,7 @@ class LinkController extends BaseController
                     $getBody = self::getBody(
                         $user,
                         $response,
-                        self::$class($user, $int, $opts, $Rule, $find),
+                        self::$class($user, $int, $opts, $Rule, $find, $emoji),
                         $value['filename']
                     );
                     $subscribe_type = $value['class'];
@@ -162,7 +166,7 @@ class LinkController extends BaseController
             $getBody = self::getBody(
                 $user,
                 $response,
-                self::getSub($user, $int, $opts, $Rule, $find),
+                self::getSub($user, $int, $opts, $Rule, $find, $emoji),
                 $value['filename']
             );
         }
@@ -287,7 +291,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSurge($user, $surge, $opts, $Rule, $find)
+    public static function getSurge($user, $surge, $opts, $Rule, $find, $emoji)
     {
         $subInfo = self::getSubinfo($user, $surge);
         $userapiUrl = $subInfo['surge'];
@@ -296,8 +300,8 @@ class LinkController extends BaseController
             : false);
         $All_Proxy = '';
         $items = array_merge(
-            URL::getAllItems($user, 0, 1),
-            URL::getAllItems($user, 1, 1)
+            URL::getAllItems($user, 0, 1, $emoji),
+            URL::getAllItems($user, 1, 1, $emoji)
         );
         if (!$source && $surge == 1) {
             foreach ($items as $item) {
@@ -312,7 +316,7 @@ class LinkController extends BaseController
             }
 
             // v2
-            $v2_items = URL::getAllVMessUrl($user, 1);
+            $v2_items = URL::getAllVMessUrl($user, 1, $emoji);
             foreach ($v2_items as $item) {
                 if (!in_array($item['net'], ['ws', 'tcp'])) {
                     continue;
@@ -347,7 +351,7 @@ class LinkController extends BaseController
 
         if ($surge == 4) {
             // v2
-            $v2_items = URL::getAllVMessUrl($user, 1);
+            $v2_items = URL::getAllVMessUrl($user, 1, $emoji);
             foreach ($v2_items as $item) {
                 if (!in_array($item['net'], ['ws', 'tcp'])) {
                     continue;
@@ -412,7 +416,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getQuantumult($user, $quantumult, $opts, $Rule, $find)
+    public static function getQuantumult($user, $quantumult, $opts, $Rule, $find, $emoji)
     {
         $subInfo = self::getSubinfo($user, 0);
         $proxys = [];
@@ -424,7 +428,7 @@ class LinkController extends BaseController
             $back_china_name = '';
             $v2ray_group = '';
             $v2ray_name = '';
-            $v2rays = URL::getAllVMessUrl($user, 1);
+            $v2rays = URL::getAllVMessUrl($user, 1, $emoji);
             foreach ($v2rays as $v2ray) {
                 if ($v2ray['net'] == 'kcp' || $v2ray['net'] == 'quic') {
                     continue;
@@ -453,7 +457,7 @@ class LinkController extends BaseController
             } elseif ($quantumult == 3) {
                 $ss_group = '';
                 $ss_name = '';
-                $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
+                $items = array_merge(URL::getAllItems($user, 0, 1, $emoji), URL::getAllItems($user, 1, 1, $emoji));
                 foreach ($items as $item) {
                     $ss_group .= $item['remark'] . ' = shadowsocks, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', "' . $item['passwd'] . '", upstream-proxy=false, upstream-proxy-auth=false' . URL::getSurgeObfs($item) . ', group=' . Config::get('appName') . PHP_EOL;
                     if (strpos($item['remark'], '回国') or strpos($item['remark'], 'China')) {
@@ -464,7 +468,7 @@ class LinkController extends BaseController
                 }
                 $ssr_group = '';
                 $ssr_name = '';
-                $ssrs = array_merge(URL::getAllItems($user, 0, 0), URL::getAllItems($user, 1, 0));
+                $ssrs = array_merge(URL::getAllItems($user, 0, 0, $emoji), URL::getAllItems($user, 1, 0, $emoji));
                 foreach ($ssrs as $item) {
                     $ssr_group .= $item['remark'] . ' = shadowsocksr, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', "' . $item['passwd'] . '", protocol=' . $item['protocol'] . ', protocol_param=' . $item['protocol_param'] . ', obfs=' . $item['obfs'] . ', obfs_param="' . $item['obfs_param'] . '", group=' . Config::get('appName') . PHP_EOL;
                     if (strpos($item['remark'], '回国') or strpos($item['remark'], 'China')) {
@@ -514,12 +518,12 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSurfboard($user, $surfboard, $opts, $Rule, $find)
+    public static function getSurfboard($user, $surfboard, $opts, $Rule, $find, $emoji)
     {
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['surfboard'];
         $All_Proxy = '';
-        $items = array_merge(URL::getAllItems($user, 0, 1), URL::getAllItems($user, 1, 1));
+        $items = array_merge(URL::getAllItems($user, 0, 1, $emoji), URL::getAllItems($user, 1, 1, $emoji));
         foreach ($items as $item) {
             $All_Proxy .= ($item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item) . PHP_EOL);
         }
@@ -552,16 +556,16 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getClash($user, $clash, $opts, $Rule, $find)
+    public static function getClash($user, $clash, $opts, $Rule, $find, $emoji)
     {
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
         $Proxys = [];
         // ss
         $items = array_merge(
-            URL::getAllItems($user, 0, 1),
-            URL::getAllItems($user, 1, 1),
-            URL::getAllV2RayPluginItems($user)
+            URL::getAllItems($user, 0, 1, $emoji),
+            URL::getAllItems($user, 1, 1, $emoji),
+            URL::getAllV2RayPluginItems($user, $emoji)
         );
         foreach ($items as $item) {
             $sss = [
@@ -608,7 +612,7 @@ class LinkController extends BaseController
             $Proxys[] = $sss;
         }
         // v2
-        $items = URL::getAllVMessUrl($user, 1);
+        $items = URL::getAllVMessUrl($user, 1, $emoji);
         foreach ($items as $item) {
             if (in_array($item['net'], array('kcp', 'http', 'quic'))) {
                 continue;
@@ -643,8 +647,8 @@ class LinkController extends BaseController
         if ($clash == 2) {
             // ssr
             $items = array_merge(
-                URL::getAllItems($user, 0, 0),
-                URL::getAllItems($user, 1, 0)
+                URL::getAllItems($user, 0, 0, $emoji),
+                URL::getAllItems($user, 1, 0, $emoji)
             );
             foreach ($items as $item) {
                 // 不支持的
@@ -718,7 +722,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSSD($user, $ssd, $opts, $Rule, $find)
+    public static function getSSD($user, $ssd, $opts, $Rule, $find, $emoji)
     {
         return URL::getAllSSDUrl($user);
     }
@@ -733,8 +737,10 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getShadowrocket($user, $shadowrocket, $opts, $Rule, $find)
+    public static function getShadowrocket($user, $shadowrocket, $opts, $Rule, $find, $emoji)
     {
+        $emoji = 0; // Shadowrocket 自带 emoji
+
         $return = '';
         if (strtotime($user->expire_in) > time()) {
             if ($user->transfer_enable == 0) {
@@ -865,7 +871,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getKitsunebi($user, $kitsunebi, $opts, $Rule, $find)
+    public static function getKitsunebi($user, $kitsunebi, $opts, $Rule, $find, $emoji)
     {
         $return = '';
 
@@ -874,7 +880,7 @@ class LinkController extends BaseController
         $return .= $extend == 0 ? '' : URL::getUserTraffic($user, 2) . PHP_EOL;
 
         // v2ray
-        $items = URL::getAllVMessUrl($user, 1);
+        $items = URL::getAllVMessUrl($user, 1, $emoji);
         foreach ($items as $item) {
             if ($find) {
                 $item['remark'] = $item['ps'];
@@ -915,7 +921,7 @@ class LinkController extends BaseController
         if (URL::SSCanConnect($user) && !in_array($user->obfs, ['simple_obfs_http', 'simple_obfs_tls'])) {
             $user = URL::getSSConnectInfo($user);
             $user->obfs = 'plain';
-            $items = URL::getAllItems($user, 0, 1);
+            $items = URL::getAllItems($user, 0, 1, $emoji);
             if ($find) {
                 foreach ($items as $item) {
                     $item = ConfController::getMatchProxy($item, $Rule);
@@ -944,7 +950,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSub($user, $sub, $opts, $Rule, $find)
+    public static function getSub($user, $sub, $opts, $Rule, $find, $emoji)
     {
         $extend = isset($opts['extend']) ? $opts['extend'] : 0;
         $getV2rayPlugin = 1;
@@ -962,26 +968,26 @@ class LinkController extends BaseController
         switch ($sub) {
             case 1: // SSR
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 1) . PHP_EOL;
-                $return_url .= URL::get_NewAllUrl($user, 0, $getV2rayPlugin, $Rule, $find) . PHP_EOL;
+                $return_url .= URL::get_NewAllUrl($user, 0, $getV2rayPlugin, $Rule, $find, $emoji) . PHP_EOL;
                 break;
             case 2: // SS
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 2) . PHP_EOL;
-                $return_url .= URL::get_NewAllUrl($user, 1, $getV2rayPlugin, $Rule, $find) . PHP_EOL;
+                $return_url .= URL::get_NewAllUrl($user, 1, $getV2rayPlugin, $Rule, $find, $emoji) . PHP_EOL;
                 break;
             case 3: // V2
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 3) . PHP_EOL;
-                $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
+                $return_url .= URL::getAllVMessUrl($user, 0, $emoji) . PHP_EOL;
                 break;
             case 4: // V2 + SS
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 3) . PHP_EOL;
-                $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
-                $return_url .= URL::get_NewAllUrl($user, 1, $getV2rayPlugin, $Rule, $find) . PHP_EOL;
+                $return_url .= URL::getAllVMessUrl($user, 0, $emoji) . PHP_EOL;
+                $return_url .= URL::get_NewAllUrl($user, 1, $getV2rayPlugin, $Rule, $find, $emoji) . PHP_EOL;
                 break;
             case 5: // V2 + SS + SSR
                 $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 1) . PHP_EOL;
-                $return_url .= URL::getAllVMessUrl($user) . PHP_EOL;
-                $return_url .= URL::get_NewAllUrl($user, 1, $getV2rayPlugin, $Rule, $find) . PHP_EOL;
-                $return_url .= URL::get_NewAllUrl($user, 0, $getV2rayPlugin, $Rule, $find) . PHP_EOL;
+                $return_url .= URL::getAllVMessUrl($user, 0, $emoji) . PHP_EOL;
+                $return_url .= URL::get_NewAllUrl($user, 1, $getV2rayPlugin, $Rule, $find, $emoji) . PHP_EOL;
+                $return_url .= URL::get_NewAllUrl($user, 0, $getV2rayPlugin, $Rule, $find, $emoji) . PHP_EOL;
                 break;
         }
         return Tools::base64_url_encode($return_url);
