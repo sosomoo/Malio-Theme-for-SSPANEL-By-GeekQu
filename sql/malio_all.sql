@@ -1,7 +1,6 @@
 /* 给 user 表增加 uuid, phone 字段 */
-ALTER TABLE user
-ADD uuid text
-ADD phone bigint(20)
+ALTER TABLE `user` ADD `uuid` text;
+ALTER TABLE `user` ADD `phone` bigint(20) AFTER `email`;
 
 /* 增加 短信验证码 表 */
 CREATE TABLE IF NOT EXISTS `sms_verify` (
@@ -12,4 +11,4 @@ CREATE TABLE IF NOT EXISTS `sms_verify` (
   `expire_in` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
