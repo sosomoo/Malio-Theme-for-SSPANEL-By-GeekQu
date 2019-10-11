@@ -17,6 +17,7 @@ use App\Services\Mail;
 use App\Models\User;
 use App\Models\LoginIp;
 use App\Models\EmailVerify;
+use App\Models\SmsVerify;
 use App\Utils\GA;
 use App\Utils\Geetest;
 use App\Utils\TelegramSessionManager;
@@ -326,6 +327,84 @@ class AuthController extends BaseController
         return $response->getBody()->write(json_encode($res));
     }
 
+    public function sendSMS($request, $response, $next)
+    {
+        if (MalioConfig::get('enable_sms_verify') == true) {
+            $phone = $request->getParam('phone');
+            $phone = trim($phone);
+
+            $area_code = $request->getParam('area_code');
+
+            $full_phone = $area_code.$phone;
+
+            if ($phone == '' || $area_code == '') {
+                $res['ret'] = 0;
+                $res['msg'] = '请填写完整的手机号';
+                return $response->getBody()->write(json_encode($res));
+            }
+
+            $ipcount = SmsVerify::where('ip', '=', $_SERVER['REMOTE_ADDR'])->where('expire_in', '>', time())->count();
+            if ($ipcount >= (int)MalioConfig::get('sms_verify_iplimit')) {
+                $res['ret'] = 0;
+                $res['msg'] = '此IP请求次数过多';
+                return $response->getBody()->write(json_encode($res));
+            }
+
+            $code = Tools::genRandomNum(6);
+
+            $pamas = array(
+                'access_key' => MalioConfig::get('globalsent_access_key'),
+                'mobile' => $full_phone,
+                'content' => '您的注册验证码是 '.$code
+            );
+            
+            $url = 'https://api.globalsent.com/send?'.http_build_query($pamas);
+            
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            $return = curl_exec($ch);
+            curl_close($ch);
+            $return = json_decode($return);
+            
+            if ($return->code != '0000') {
+                $res['ret'] = 0;
+                $res['msg'] = '发送短信验证码失败';
+                return $return->code;
+                return $response->getBody()->write(json_encode($res));
+            } else {
+                $sv = new SmsVerify();
+                $sv->expire_in = time() + Config::get('email_verify_ttl');
+                $sv->ip = $_SERVER['REMOTE_ADDR'];
+                $sv->phone = $full_phone;
+                $sv->code = $code;
+                $sv->save();
+                $res['ret'] = 1;
+                $res['msg'] = '验证码发送成功，请查收短信。';
+                return $response->getBody()->write(json_encode($res));
+            }
+
+            /*
+{
+    "code": "0000",
+    "data": {
+        "send_id": "312312312",
+        "mobile": "861212131212",
+        "messages": "\u3010Malio\u4e91\u3011test",
+        "count": 1,
+        "per_price": 0.06,
+        "count_price": 0.06
+    },
+    "message": ""
+}
+            */
+        }
+        $res['ret'] = 0;
+        return $response->getBody()->write(json_encode($res));
+    }
+
     public function registerHandle($request, $response)
     {
         if (Config::get('register_mode') === 'close') {
@@ -347,6 +426,15 @@ class AuthController extends BaseController
         $wechat = $request->getParam('wechat');
         $wechat = trim($wechat);
         // check code
+
+        $sms_code = $request->getParam('sms_code');
+        $sms_code = trim($sms_code);
+        $phone = $request->getParam('phone');
+        $phone = trim($phone);
+
+        $area_code = $request->getParam('area_code');
+
+        $full_phone = $area_code.$phone;
 
 
         if (Config::get('enable_reg_captcha') === 'true') {
@@ -425,6 +513,15 @@ class AuthController extends BaseController
             }
         }
 
+        if (MalioConfig::get('enable_sms_verify') == true) {
+            $smscount = SmsVerify::where('phone', '=', $full_phone)->where('code', '=', $sms_code)->where('expire_in', '>', time())->first();
+            if ($smscount == null) {
+                $res['ret'] = 0;
+                $res['msg'] = '您的短信验证码不正确';
+                return $response->getBody()->write(json_encode($res));
+            }
+        }
+
         // check pwd length
         if (strlen($passwd) < 8) {
             $res['ret'] = 0;
@@ -456,6 +553,11 @@ class AuthController extends BaseController
         if (Config::get('enable_email_verify') === 'true') {
             EmailVerify::where('email', '=', $email)->delete();
         }
+
+        if (MalioConfig::get('enable_sms_verify') == true) {
+            SmsVerify::where('phone', '=', $full_phone)->delete();
+        }
+
         // do reg user
         $user = new User();
 
@@ -484,6 +586,7 @@ class AuthController extends BaseController
         $user->auto_reset_day = Config::get('reg_auto_reset_day');
         $user->auto_reset_bandwidth = Config::get('reg_auto_reset_bandwidth');
         $user->money = 0;
+        $user->phone = $full_phone;
 
         //dumplin：填写邀请人，写入邀请奖励
         $user->ref_by = 0;

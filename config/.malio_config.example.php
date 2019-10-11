@@ -31,14 +31,28 @@ $Malio_Config['small_brand'] = 'ML';    // 侧边栏在缩小状态下显示的 
 // 面板设置
 $Malio_Config['enable_webapi_ip_verification'] = false;    // 当节点通过 webapi 连接时，不验证节点IP是否与数据库中的IP相同。关闭此选项会降低安全性。
 $Malio_Config['enable_webapi_email_hash'] = true;    // 启用后，当节点通过 webapi 连接时，传出去的邮件地址会经过md5加密。
-$Malio_Config['code_required'] = true;    // 设置为true时，注册时邀请码是必须的。设置为false时，有无邀请码都可以注册，但是可以填邀请码（aff专用）, 只有在 .config.php 的 register_mode 设置为 invite 时生效
 $Malio_Config['reset_bandwidth_and_expire_date_when_change_class'] = false;    // 设置为true时，当用户购买与用户当前等级不同的套餐时，重置流量和过期时间。（定制功能）
-$Malio_Config['enable_register_email_restrict'] = true;    // 设置为true时，会限制注册时使用的邮箱后缀
-$Malio_Config['register_email_white_list'] = ['@gmail.com','@qq.com','@outlook.com','@163.com','@126.com','@yeah.net','@foxmail.com'];   // 注册时的邮箱后缀白名单，仅在上面的设置为true时生效
 $Malio_Config['force_user_to_bind_tg_when_join_group'] = true;   // 设置为true时，限制只有绑定了tg的用户才能加入群组，如未绑定将会被踢出群组。.config.php 需要设置群组id，机器人在群组中不回应设为false才能用。机器人需要在群里组设定为管理员才能踢人。(定制功能)
 $Malio_Config['stripe_minimum_amount'] = 4;   // Stripe 支付接口可充值的最低金额
 $Malio_Config['stripe_currency'] = 'usd';   // Stripe 支付接口的默认货币，可以写 hkd usd等，stripe限制了收款货币只能是账号注册地区的货币
 $Malio_Config['bitpyax_alipay_type'] = 'ALIPAY';   // bitpayx 支付宝充值的类似，ALIPAY是国内支付宝，ALIGLOBAL是国际支付宝
+
+
+// 注册
+$Malio_Config['code_required'] = false;    // 设置为true时，注册时邀请码是必须的。设置为false时，有无邀请码都可以注册，但是可以填邀请码（aff专用）
+$Malio_Config['enable_register_email_restrict'] = true;    // 设置为true时，会限制注册时使用的邮箱后缀
+$Malio_Config['register_email_white_list'] = ['@gmail.com','@qq.com','@outlook.com','@163.com','@126.com','@yeah.net','@foxmail.com'];   // 注册时的邮箱后缀白名单，仅在上面的设置为true时生效
+$Malio_Config['enable_sms_verify'] = false;   //  是否启用注册时的短信验证码
+$Malio_Config['sms_verify_iplimit'] = '5';   //  单IP限制发送短信验证码的次数
+$Malio_Config['globalsent_access_key'] = '';   //  GlobalSent 的 api key， https://globalsent.com
+$Malio_Config['phone_area_code'] = [    // 发送短信支持的手机区号
+    '86' => '中国 +86',
+    '1' => '美国 +1',
+    '852' => '香港 +852',
+    '81' => '日本 +81',
+    '44' => '英国 +44',
+    '61' => '澳大利亚 +61'
+];
 
 
 // 订阅设置

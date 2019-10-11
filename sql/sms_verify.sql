@@ -1,6 +1,5 @@
-/* 给 user 表增加 uuid, phone 字段 */
+/* 给 user 表增加 phone 字段 */
 ALTER TABLE user
-ADD uuid text
 ADD phone bigint(20)
 
 /* 增加 短信验证码 表 */

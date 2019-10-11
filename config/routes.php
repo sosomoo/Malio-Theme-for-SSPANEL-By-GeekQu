@@ -180,6 +180,7 @@ $app->group('/auth', function () {
     $this->get('/register', App\Controllers\AuthController::class . ':register');
     $this->post('/register', App\Controllers\AuthController::class . ':registerHandle');
     $this->post('/send', App\Controllers\AuthController::class . ':sendVerify');
+    $this->post('/sendsms', App\Controllers\AuthController::class . ':sendSMS');
     $this->get('/logout', App\Controllers\AuthController::class . ':logout');
     $this->get('/telegram_oauth', App\Controllers\AuthController::class . ':telegram_oauth');
     $this->get('/login_getCaptcha', App\Controllers\AuthController::class . ':getCaptcha');

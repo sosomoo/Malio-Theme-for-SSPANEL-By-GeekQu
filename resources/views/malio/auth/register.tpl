@@ -12,6 +12,7 @@
   
   <!-- CSS Libraries -->
   <link rel="stylesheet" href="/theme/malio/assets/modules/selectric/public/selectric.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.3/dist/css/select2.min.css">
 
   <!-- Template CSS -->
   <link rel="stylesheet" href="/theme/malio/assets/css/style.css">
@@ -169,6 +170,42 @@
                     </div>
                   </div>
 
+                  {if $malio_config['enable_sms_verify'] == true}
+                  <div class="row">
+                    <div class="form-group col-lg-6 col-sm-12 col-xs-12">
+                      <label for="email">手机号</label>
+                      <div class="form-group">
+                        <div class="input-group">
+                          <select id="area_code" class="form-control custom-select col-4 select2" style="border-top-right-radius: 0 !important;
+                                border-bottom-right-radius: 0 !important;">
+                            {foreach $malio_config['phone_area_code'] as $code => $name}
+                            <option value="{$code}">{$name}</option>
+                            {/foreach}
+                          </select>
+                          <input id="phone" type="text" class="form-control col-8" required>
+                          <div class="invalid-feedback">
+                            请填写手机号
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group col-lg-6 col-sm-12 col-xs-12">
+                      <label for="email">短信验证码</label>
+                      <div class="form-group">
+                        <div class="input-group mb-3">
+                          <input id="sms_code" type="text" class="form-control" placeholder="" aria-label="" required>
+                          <div class="input-group-append">
+                            <button id="send_sms_code" class="btn btn-primary" type="button" style="border-top-right-radius: .3rem;border-bottom-right-radius: .3rem;">发送</button>
+                          </div>
+                          <div class="invalid-feedback">
+                              请填写短信验证码
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/if}
+
                   {if $config['register_mode'] == 'invite' && $enable_email_verify == 'false'}
                   <div class="row">
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
@@ -244,6 +281,7 @@
   <!-- JS Libraies -->
   <script src="/theme/malio/assets/modules/jquery-pwstrength/jquery.pwstrength.min.js"></script>
   <script src="/theme/malio/assets/modules/selectric/public/jquery.selectric.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.3/dist/js/select2.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.25.6/dist/sweetalert2.all.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 
@@ -322,6 +360,11 @@
               repasswd: $("#repasswd").val(),
               {if $recaptcha_sitekey != null}
               recaptcha: grecaptcha.getResponse(),
+              {/if}
+              {if $malio_config['enable_sms_verify'] == true}
+              "phone": $('#phone').val(),
+              "area_code": $('#area_code').val(),
+              "sms_code": $('#sms_code').val(),
               {/if}
               code: code{if $enable_email_verify == 'true'},
               emailcode: $("#email_code").val(){/if}{if $geetest_html != null},
@@ -425,6 +468,69 @@
           }
         }
       })
+    })
+  </script>
+  {/if}
+
+  {if $malio_config['enable_sms_verify'] == true}
+  <script>
+    var wait = 60;
+
+  function time(o) {
+    if (wait == 0) {
+      o.removeAttr("disabled");
+      o.text("获取验证码");
+      wait = 60;
+    } else {
+      o.attr("disabled", "disabled");
+      o.text("重新发送(" + wait + ")");
+      wait--;
+      setTimeout(function () {
+          time(o)
+        },
+        1000)
+    }
+  }
+
+    $('#send_sms_code').click(function () {
+      if (!$("#phone").val()) {
+        swal({
+          type: 'error',
+          title: '提示',
+          showCloseButton: true,
+          text: '请填写手机号'
+        })
+        return false
+      }
+
+      $.ajax({
+        type: "POST",
+        url: "sendsms",
+        dataType: "json",
+        data: {
+          "phone": $('#phone').val(),
+          "area_code": $('#area_code').val()
+        },
+        success: function (data) {
+          if (data.ret) {
+            time($("#send_sms_code"));
+            swal({
+              type: 'success',
+              title: '已发送验证码',
+              showCloseButton: true,
+              text: data.msg
+            })
+          } else {
+            swal({
+              type: 'error',
+              title: '发送验证码失败',
+              showCloseButton: true,
+              text: data.msg
+            })
+          }
+        }
+      })
+
     })
   </script>
   {/if}
