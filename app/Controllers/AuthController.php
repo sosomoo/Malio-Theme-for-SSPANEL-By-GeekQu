@@ -586,7 +586,11 @@ class AuthController extends BaseController
         $user->auto_reset_day = Config::get('reg_auto_reset_day');
         $user->auto_reset_bandwidth = Config::get('reg_auto_reset_bandwidth');
         $user->money = 0;
-        $user->phone = $full_phone;
+        if ($full_phone == '') {
+        	$user->phone = null;
+        } else {
+            $user->phone = $full_phone;	
+        }
 
         //dumplin：填写邀请人，写入邀请奖励
         $user->ref_by = 0;
