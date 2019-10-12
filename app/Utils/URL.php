@@ -342,7 +342,9 @@ class URL
                 if ($item['obfs_param'] != '' && $item['obfs'] != 'v2ray') {
                     $plugin .= ';obfs-host=' . $item['obfs_param'];
                 }
-                $ssurl .= '?plugin=' . rawurlencode($plugin);
+                $ssurl .= '?plugin=' . rawurlencode($plugin) . '&group=' . Tools::base64_url_encode(Config::get('appName'));
+            } else {
+                $ssurl .= '?group=' . Tools::base64_url_encode(Config::get('appName'));
             }
             $ssurl .= '#' . rawurlencode(
                 Config::get('appName') . ' - ' . $item['remark']
