@@ -599,7 +599,7 @@ class LinkController extends BaseController
                         }
                         $sss['plugin-opts']['host'] = $item['host'];
                         $sss['plugin-opts']['path'] = $item['path'];
-                        $sss['plugin-opts']['skip-cert-verify'] = true;
+                        $sss['plugin-opts']['mux'] = true;
                         break;
                 }
                 if ($item['obfs'] != 'v2ray') {
@@ -629,6 +629,7 @@ class LinkController extends BaseController
                 'uuid' => $item['id'],
                 'alterId' => $item['aid'],
                 'cipher' => 'auto',
+                'udp' => true
             ];
             if ($item['net'] == 'ws') {
                 $v2rays['network'] = 'ws';
