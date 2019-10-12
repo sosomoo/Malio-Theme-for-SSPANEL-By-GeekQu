@@ -326,7 +326,9 @@ class URL
         if ($is_ss == 2) {
             $personal_info = $item['method'] . ':' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port'];
             $ssurl = 'ss://' . Tools::base64_url_encode($personal_info);
-            $ssurl .= '#' . rawurlencode(Config::get('appName') . ' - ' . $item['remark']);
+            $ssurl .= (Config::get('add_appName_to_ss_uri') == 'true'
+                ? '#' . rawurlencode(Config::get('appName') . ' - ' . $item['remark'])
+                : '#' . rawurlencode($item['remark']));
         } else {
             $personal_info = $item['method'] . ':' . $item['passwd'];
             $ssurl = 'ss://' . Tools::base64_url_encode($personal_info) . '@' . $item['address'] . ':' . $item['port'];
@@ -346,9 +348,9 @@ class URL
             } else {
                 $ssurl .= '?group=' . Tools::base64_url_encode(Config::get('appName'));
             }
-            $ssurl .= '#' . rawurlencode(
-                Config::get('appName') . ' - ' . $item['remark']
-            );
+            $ssurl .= (Config::get('add_appName_to_ss_uri') == 'true'
+                ? '#' . rawurlencode(Config::get('appName') . ' - ' . $item['remark'])
+                : '#' . rawurlencode($item['remark']));
         }
         return $ssurl;
     }

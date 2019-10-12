@@ -298,6 +298,7 @@ $System_Config['muKeyList'] = ['　'];                //多 key 列表
 $System_Config['mu_port_migration'] = 'false';       //为后端直接下发偏移后的端口
 $System_Config['relay_port_migration'] = 'false';    //为中转规则下发偏移后的端口，此项未经测试
 $System_Config['add_emoji_to_node_name'] = 'false';  //为部分订阅中默认添加 emoji
+$System_Config['add_appName_to_ss_uri'] = 'true';    //为 SS 节点名称中添加站点名
 
 // 审计自动封禁开关
 $System_Config['enable_auto_detect_ban'] = 'false';
