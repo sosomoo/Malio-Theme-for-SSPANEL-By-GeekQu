@@ -453,6 +453,10 @@ class LinkController extends BaseController
                 }
             }
             if ($quantumult == 1) {
+                $extend = isset($opts['extend']) ? $opts['extend'] : 0;
+                $v2ray_group .= ($extend == 0
+                    ? ''
+                    : URL::getUserInfo($user, 'quantumult_v2', 0) . PHP_EOL);
                 return base64_encode($v2ray_group);
             } elseif ($quantumult == 3) {
                 $ss_group = '';
@@ -762,6 +766,10 @@ class LinkController extends BaseController
             . PHP_EOL
             . 'REMARKS=' . Config::get('appName')
             . PHP_EOL);
+
+        $extend = isset($opts['extend']) ? $opts['extend'] : 0;
+        $return .= ($extend == 0 ? '' : URL::getUserInfo($user, 'ssr', 0) . PHP_EOL);
+
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
@@ -877,7 +885,7 @@ class LinkController extends BaseController
 
         // 账户到期时间以及流量信息
         $extend = isset($opts['extend']) ? (int) $opts['extend'] : 0;
-        $return .= $extend == 0 ? '' : URL::getUserTraffic($user, 2) . PHP_EOL;
+        $return .= $extend == 0 ? '' : URL::getUserInfo($user, 'ss', 1) . PHP_EOL;
 
         // v2ray
         $items = URL::getAllVMessUrl($user, 1, $emoji);
@@ -953,12 +961,13 @@ class LinkController extends BaseController
     public static function getSub($user, $sub, $opts, $Rule, $find, $emoji)
     {
         $extend = isset($opts['extend']) ? $opts['extend'] : 0;
+        $traffic_class_expire = 1;
         $getV2rayPlugin = 1;
         $return_url = '';
 
         // Quantumult 则不显示账户到期以及流量信息
         if (strpos($_SERVER['HTTP_USER_AGENT'], 'Quantumult') !== false) {
-            $extend = 0;
+            $traffic_class_expire = 0;
         }
 
         // 如果是 Kitsunebi 不输出 SS V2rayPlugin 节点
@@ -967,24 +976,24 @@ class LinkController extends BaseController
         }
         switch ($sub) {
             case 1: // SSR
-                $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 1) . PHP_EOL;
+                $return_url .= $extend == 0 ? '' : URL::getUserInfo($user, 'ssr', $traffic_class_expire) . PHP_EOL;
                 $return_url .= URL::get_NewAllUrl($user, 0, $getV2rayPlugin, $Rule, $find, $emoji) . PHP_EOL;
                 break;
             case 2: // SS
-                $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 2) . PHP_EOL;
+                $return_url .= $extend == 0 ? '' : URL::getUserInfo($user, 'ss', $traffic_class_expire) . PHP_EOL;
                 $return_url .= URL::get_NewAllUrl($user, 1, $getV2rayPlugin, $Rule, $find, $emoji) . PHP_EOL;
                 break;
             case 3: // V2
-                $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 3) . PHP_EOL;
+                $return_url .= $extend == 0 ? '' : URL::getUserInfo($user, 'v2ray', $traffic_class_expire) . PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user, 0, $emoji) . PHP_EOL;
                 break;
             case 4: // V2 + SS
-                $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 3) . PHP_EOL;
+                $return_url .= $extend == 0 ? '' : URL::getUserInfo($user, 'v2ray', $traffic_class_expire) . PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user, 0, $emoji) . PHP_EOL;
                 $return_url .= URL::get_NewAllUrl($user, 1, $getV2rayPlugin, $Rule, $find, $emoji) . PHP_EOL;
                 break;
             case 5: // V2 + SS + SSR
-                $return_url .= $extend == 0 ? '' : URL::getUserTraffic($user, 1) . PHP_EOL;
+                $return_url .= $extend == 0 ? '' : URL::getUserInfo($user, 'ssr', $traffic_class_expire) . PHP_EOL;
                 $return_url .= URL::getAllVMessUrl($user, 0, $emoji) . PHP_EOL;
                 $return_url .= URL::get_NewAllUrl($user, 1, $getV2rayPlugin, $Rule, $find, $emoji) . PHP_EOL;
                 $return_url .= URL::get_NewAllUrl($user, 0, $getV2rayPlugin, $Rule, $find, $emoji) . PHP_EOL;

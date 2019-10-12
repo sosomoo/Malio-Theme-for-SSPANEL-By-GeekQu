@@ -754,36 +754,49 @@ class URL
         return clone $user;
     }
 
-    public static function getUserTraffic($user, $type)
+    public static function getUserInfo($user, $type, $traffic_class_expire)
     {
-        $group_name = Config::get('appName');
-        if (strtotime($user->expire_in) > time()) {
-            if ($user->transfer_enable == 0) {
-                $userTraffic = '剩余流量：0.00%';
+        $return = '';
+
+        // 订阅信息
+        $info_array = (count(Config::get('sub_message')) != 0
+            ? (array) Config::get('sub_message')
+            : []);
+
+        if ($traffic_class_expire !== 0) {
+            // 用户账户及流量信息
+            if (strtotime($user->expire_in) > time()) {
+                if ($user->transfer_enable == 0) {
+                    $info_array[] = '剩余流量：0.00%';
+                } else {
+                    $info_array[] = '剩余流量：' . number_format(($user->transfer_enable - $user->u - $user->d) / $user->transfer_enable * 100, 2) . '% ' . $user->unusedTraffic();
+                }
+                $info_array[] = '过期时间：' . $user->class_expire;
             } else {
-                $userTraffic = '剩余流量：' . number_format(($user->transfer_enable - $user->u - $user->d) / $user->transfer_enable * 100, 2) . '% ' . $user->unusedTraffic();
+                $info_array[] = '账户已过期，请续费后使用';
             }
-            $userClassExpire = '过期时间：' . $user->class_expire;
-        } else {
-            $userTraffic = '账户已过期，请续费后使用';
-            $userClassExpire = '账户已过期，请续费后使用';
         }
-        switch ($type) {
-            case 1: // SSR
-                $getUserTraffic = 'ssr://' . Tools::base64_url_encode('www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=' . Tools::base64_url_encode($userTraffic) . '&group=' . Tools::base64_url_encode($group_name)) . PHP_EOL;
-                $getUserClassExpiration = 'ssr://' . Tools::base64_url_encode('www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=' . Tools::base64_url_encode($userClassExpire) . '&group=' . Tools::base64_url_encode($group_name)) . PHP_EOL;
-                break;
-            case 2: // SS
-                $getUserTraffic = 'ss://' . Tools::base64_url_encode('chacha20:YnJlYWt3YWxs@www.google.com:2') . '#' . rawurlencode($userTraffic) . PHP_EOL;
-                $getUserClassExpiration = 'ss://' . Tools::base64_url_encode('chacha20:YnJlYWt3YWxs@www.google.com:2') . '#' . rawurlencode($userClassExpire) . PHP_EOL;
-                break;
-            case 3: // V2
-                $userTrafficArray = ['v' => '2', 'ps' => $userTraffic, 'add' => 'www.google.com', 'port' => '3', 'id' => '2661b5f8-8062-34a5-9371-a44313a75b6b', 'aid' => '16', 'net' => 'tcp', 'type' => 'none', 'host' => '', 'tls' => ''];
-                $userClassExpirationArray = ['v' => '2', 'ps' => $userClassExpire, 'add' => 'www.google.com', 'port' => '3', 'id' => '2661b5f8-8062-34a5-9371-a44313a75b6b', 'aid' => '16', 'net' => 'tcp', 'type' => 'none', 'host' => '', 'tls' => ''];
-                $getUserTraffic = 'vmess://' . base64_encode(json_encode($userTrafficArray, JSON_UNESCAPED_UNICODE)) . PHP_EOL;
-                $getUserClassExpiration = 'vmess://' . base64_encode(json_encode($userClassExpirationArray, JSON_UNESCAPED_UNICODE)) . PHP_EOL;
-                break;
+
+        $group_name = Config::get('appName');
+        foreach ($info_array as $item) {
+            switch ($type) {
+                case 'ss':
+                    $return .= 'ss://' . Tools::base64_url_encode('chacha20:YnJlYWt3YWxs@www.google.com:10086') . '#' . rawurlencode($item) . PHP_EOL;
+                    break;
+                case 'ssr':
+                    $return .= 'ssr://' . Tools::base64_url_encode('www.google.com:10086:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=' . Tools::base64_url_encode($item) . '&group=' . Tools::base64_url_encode($group_name)) . PHP_EOL;
+                    break;
+                case 'v2ray':
+                    $v2ray = ['v' => '2', 'ps' => $item, 'add' => 'www.google.com', 'port' => '10086', 'id' => '2661b5f8-8062-34a5-9371-a44313a75b6b', 'aid' => '2', 'net' => 'tcp', 'type' => 'none', 'host' => '', 'tls' => ''];
+                    $return .= 'vmess://' . base64_encode(json_encode($v2ray, JSON_UNESCAPED_UNICODE)) . PHP_EOL;
+                    break;
+                case 'quantumult_v2':
+                    $quantumult_v2 = base64_encode($item . ' = vmess, ' . 'www.google.com' . ', ' . '10086' . ', chacha20-ietf-poly1305, "2661b5f8-8062-34a5-9371-a44313a75b6b", group=' . $group_name . '_v2') . PHP_EOL;
+                    $return .= 'vmess://' . base64_encode($quantumult_v2) . PHP_EOL;
+                    break;
+            }
         }
-        return $getUserTraffic . $getUserClassExpiration;
+
+        return $return;
     }
 }
