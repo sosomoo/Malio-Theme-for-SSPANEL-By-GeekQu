@@ -1000,8 +1000,6 @@ class LinkController extends BaseController
                 $return_url .= URL::get_NewAllUrl($user, 0, $getV2rayPlugin, $Rule, $find, $emoji) . PHP_EOL;
                 break;
         }
-        return ($sub == 2
-            ? base64_encode($return_url)
-            : Tools::base64_url_encode($return_url));
+        return base64_encode($return_url);
     }
 }
