@@ -41,7 +41,8 @@ $Malio_Config['bitpyax_alipay_type'] = 'ALIPAY';   // bitpayx 支付宝充值的
 // 注册
 $Malio_Config['code_required'] = false;    // 设置为true时，注册时邀请码是必须的。设置为false时，有无邀请码都可以注册，但是可以填邀请码（aff专用）
 $Malio_Config['enable_register_email_restrict'] = true;    // 设置为true时，会限制注册时使用的邮箱后缀
-$Malio_Config['register_email_white_list'] = ['@gmail.com','@qq.com','@outlook.com','@163.com','@126.com','@yeah.net','@foxmail.com'];   // 注册时的邮箱后缀白名单，仅在上面的设置为true时生效
+$Malio_Config['register_email_white_list'] = ['@gmail.com','@qq.com','@outlook.com','@163.com','@126.com','@yeah.net','@foxmail.com'];   // 注册时的邮箱后缀白白白白白白名单，仅在上面的设置为true时生效
+$Malio_Config['register_email_black_list'] = ['@bcaoo.com','@chacuo.net'];   // 注册时的邮箱后缀黑黑黑黑黑黑名单
 $Malio_Config['enable_sms_verify'] = false;   //  是否启用注册时的短信验证码
 $Malio_Config['sms_verify_iplimit'] = '5';   //  单IP限制发送短信验证码的次数
 $Malio_Config['globalsent_access_key'] = '';   //  GlobalSent 的 api key， https://globalsent.com

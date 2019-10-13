@@ -496,6 +496,19 @@ class AuthController extends BaseController
             $res['msg'] = '邮箱无效';
             return $response->getBody()->write(json_encode($res));
         }
+        $email_postfix = '@'.(explode("@",$email)[1]);
+        if (in_array($email_postfix, MalioConfig::get('register_email_black_list')) == true) {
+            $res['ret'] = 0;
+            $res['msg'] = '邮箱后缀已被拉黑';
+            return $response->getBody()->write(json_encode($res));
+        }
+        if (MalioConfig::get('enable_register_email_restrict') == true) {
+            if (in_array($email_postfix, MalioConfig::get('register_email_white_list')) == false) {
+                $res['ret'] = 0;
+                $res['msg'] = '小老弟还会发送post请求啊';
+                return $response->getBody()->write(json_encode($res));
+            }
+        }
         // check email
         $user = User::where('email', $email)->first();
         if ($user != null) {
