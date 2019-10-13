@@ -344,9 +344,9 @@ class URL
                 if ($item['obfs_param'] != '' && $item['obfs'] != 'v2ray') {
                     $plugin .= ';obfs-host=' . $item['obfs_param'];
                 }
-                $ssurl .= '?plugin=' . rawurlencode($plugin) . '&group=' . Tools::base64_url_encode(Config::get('appName'));
+                $ssurl .= '/?plugin=' . rawurlencode($plugin) . '&group=' . Tools::base64_url_encode(Config::get('appName'));
             } else {
-                $ssurl .= '?group=' . Tools::base64_url_encode(Config::get('appName'));
+                $ssurl .= '/?group=' . Tools::base64_url_encode(Config::get('appName'));
             }
             $ssurl .= (Config::get('add_appName_to_ss_uri') == 'true'
                 ? '#' . rawurlencode(Config::get('appName') . ' - ' . $item['remark'])
@@ -781,7 +781,7 @@ class URL
         foreach ($info_array as $item) {
             switch ($type) {
                 case 'ss':
-                    $return .= 'ss://' . Tools::base64_url_encode('chacha20:YnJlYWt3YWxs@www.google.com:10086') . '#' . rawurlencode($item) . PHP_EOL;
+                    $return .= 'ss://' . Tools::base64_url_encode('chacha20:breakwall') . '@www.google.com:10086' . '/?group=' . Tools::base64_url_encode($group_name) . '#' . rawurlencode($item) . PHP_EOL;
                     break;
                 case 'ssr':
                     $return .= 'ssr://' . Tools::base64_url_encode('www.google.com:10086:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=' . Tools::base64_url_encode($item) . '&group=' . Tools::base64_url_encode($group_name)) . PHP_EOL;
