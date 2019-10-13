@@ -28,12 +28,12 @@ $_ENV['db_username'] = 'root';							//数据库用户名
 $_ENV['db_password'] = 'sspanel';						//用户名对应的密码
 
 // 新旧首页设置--------------------------------------------------------------------------------------------
-$System_Config['newIndex'] = 'true';	//使用新的 Node.js 开发的首页请填写 true，其他值为使用先前的首页，如您使用其他主题请保持 true
+$_ENV['newIndex'] = 'true';	//使用新的 Node.js 开发的首页请填写 true，其他值为使用先前的首页，如您使用其他主题请保持 true
 
 // 订阅中的公告信息
 // 使用数组形式，将会添加在订阅列表的顶端
 // 可用于为用户推送最新地址等信息，尽可能简短且数量不宜太多
-$System_Config['sub_message'] = [];
+$_ENV['sub_message'] = [];
 
 //邮件设置--------------------------------------------------------------------------------------------
 $_ENV['mailDriver'] = 'none';	//发送邮件方式：none / mailgun / smtp / sendgrid
@@ -243,10 +243,10 @@ $_ENV['payjs_key']='';
 //其他面板显示设置------------------------------------------------------------------------------------------
 
 #用户文档
-$System_Config['enable_documents'] = 'true';	    //是否允许未登陆用户查看文档中心
-$System_Config['documents_name'] = $System_Config['appName'] . ' 文档中心';	    //文档中心名称
-$System_Config['remote_documents'] = 'true';	    //是否从远程加载文档中心，否的话请执行 php xcat initdocuments
-$System_Config['documents_source'] = 'https://raw.githubusercontent.com/GeekQu/PANEL_DOC/master/GeekQu';	    //远程文档加载地址
+$_ENV['enable_documents'] = 'true';	    //是否允许未登陆用户查看文档中心
+$_ENV['documents_name'] = $_ENV['appName'] . ' 文档中心';	    //文档中心名称
+$_ENV['remote_documents'] = 'true';	    //是否从远程加载文档中心，否的话请执行 php xcat initdocuments
+$_ENV['documents_source'] = 'https://raw.githubusercontent.com/GeekQu/PANEL_DOC/master/GeekQu';	    //远程文档加载地址
 
 #后台商品列表 销量统计
 $_ENV['sales_period']='30';	//统计指定周期内的销量，值为【expire/任意大于0的整数】
