@@ -56,13 +56,16 @@ class ClientApiController extends BaseController
     public function GetSubLink($request, $response, $args)
     {
         $accessToken = Helper::getParam($request, 'access_token');
+        $sub = (Helper::getParam($request, 'sub') != ''
+            ? Helper::getParam($request, 'sub')
+            : 1);
         $storage = Factory::createTokenStorage();
         $token = $storage->get($accessToken);
         $user = User::find($token->userId);
         $ssr_sub_token = LinkController::GenerateSSRSubCode($user->id, 0);
         $res['ret'] = 1;
         $res['msg'] = 'ok';
-        $res['data'] = Config::get('subUrl') . $ssr_sub_token . '?sub=1';
+        $res['data'] = Config::get('subUrl') . $ssr_sub_token . '?sub=' . $sub;
         return $this->echoJson($response, $res);
     }
 }
