@@ -89,7 +89,7 @@ class LinkController extends BaseController
             $find = true;
         }
 
-        $emoji = ((isset($opts['emoji']) && $opts['emoji'] == 'true') || Config::get('add_emoji_to_node_name') == 'true'
+        $emoji = ((isset($opts['emoji']) && $opts['emoji'] == '1') || Config::get('add_emoji_to_node_name') == 'true'
             ? 1
             : 0);
 
