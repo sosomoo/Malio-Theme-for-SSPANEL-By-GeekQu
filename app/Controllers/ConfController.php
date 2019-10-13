@@ -16,6 +16,7 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Services\Config;
+use App\Utils\ConfRender;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 
@@ -41,7 +42,7 @@ class ConfController extends BaseController
      *
      * @return string
      */
-    public static function getSurgeConfs($User, $AllProxys, $Nodes, $SourceContent)
+    public static function getSurgeConfs($User, $AllProxys, $Nodes, $SourceContent, $local = false)
     {
         try {
             $Configs = Yaml::parse($SourceContent);
@@ -62,7 +63,7 @@ class ConfController extends BaseController
         );
         $ProxyGroup = self::getSurgeProxyGroup2String($ProxyGroups);
 
-        $Rule = self::getSurgeConfRule($Configs['Rule']);
+        $Rule = self::getSurgeConfRule($Configs['Rule'], $local);
         $Conf = '#!MANAGED-CONFIG '
             . Config::get('baseUrl') . $_SERVER['REQUEST_URI'] .
             "\n\n#---------------------------------------------------#" .
@@ -302,8 +303,15 @@ class ConfController extends BaseController
      *
      * @return string
      */
-    public static function getSurgeConfRule($Rules)
+    public static function getSurgeConfRule($Rules, $local)
     {
+        // 加载本地规则文件
+        if ($local) {
+            $render = ConfRender::getTemplateRender();    
+            return $render->fetch(trim($Rules['source']));
+        }
+
+        // 加载远程规则文件
         $return = '';
         if (isset($Rules['source']) && $Rules['source'] != '') {
             $sourceURL = trim($Rules['source']);
@@ -337,7 +345,7 @@ class ConfController extends BaseController
      *
      * @return string
      */
-    public static function getClashConfs($User, $AllProxys, $SourceContent)
+    public static function getClashConfs($User, $AllProxys, $SourceContent, $local = false)
     {
         try {
             $Configs = Yaml::parse($SourceContent);
@@ -375,7 +383,7 @@ class ConfController extends BaseController
             "\n\n"
             . Yaml::dump($tmp, 4, 2) .
             "\n\n"
-            . self::getClashConfRule($Configs['Rule']);
+            . self::getClashConfRule($Configs['Rule'], $local);
 
         return $Conf;
     }
@@ -459,8 +467,15 @@ class ConfController extends BaseController
      *
      * @return string
      */
-    public static function getClashConfRule($Rules)
+    public static function getClashConfRule($Rules, $local)
     {
+        // 加载本地规则文件
+        if ($local) {
+            $render = ConfRender::getTemplateRender();    
+            return $render->fetch(trim($Rules['source']));
+        }
+
+        // 加载远程规则文件
         $return = ('Rule:' . PHP_EOL);
         if (isset($Rules['source']) && $Rules['source'] != '') {
             $sourceURL = trim($Rules['source']);
