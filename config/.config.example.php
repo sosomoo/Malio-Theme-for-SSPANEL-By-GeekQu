@@ -386,6 +386,66 @@ $_ENV['relay_insecure_mode']='false';		//强烈推荐不开启
 $_ENV['enable_analytics_code']='false';
 $_ENV['sspanelAnalysis'] = 'true';
 
+//自定义设置---------------------------------------------------------------------
+
+//是否向 Telegram 群组推送系统今天的运行状况
+$_ENV['sendDiary_Telegram'] = 'true';
+
+//自定义向 Telegram 群组推送系统今天的运行状况的信息
+$_ENV['sendDiary_Msg'] = [
+    '各位老爷少奶奶，我来为大家报告一下系统今天的运行状况哈~',
+    '今日签到人数:',
+    '今日使用总流量:',
+    '晚安~'
+];
+
+//是否向 Telegram 群组推送数据库清理通知
+$_ENV['sendDailyJob_Telegram'] = 'true';
+
+//自定义向 Telegram 群组推送数据库清理通知的信息
+$_ENV['sendDailyJob_Msg'] = '姐姐姐姐，数据库被清理了，感觉身体被掏空了呢~';
+
+
+//是否向 Telegram 群组推送节点掉线通知
+$_ENV['sendNodeOffline_Telegram'] = 'true';
+
+//自定义向 Telegram 群组推送节点掉线已切换通知的信息
+$_ENV['sendNodeOffline_Update_Msg'] = '喵喵喵~ %node_name% 节点掉线了喵~域名解析被切换到了 %Temp_node_name% 上了喵~';
+
+//自定义向 Telegram 群组推送节点掉线通知的信息
+$_ENV['sendNodeOffline_Msg'] = '喵喵喵~ %node_name% 节点掉线了喵~';
+
+
+//是否向 Telegram 群组推送节点上线通知
+$_ENV['sendNodeOnline_Telegram'] = 'true';
+
+//自定义向 Telegram 群组推送节点上线已切换通知的信息
+$_ENV['sendNodeOnline_Update_Msg'] = '喵喵喵~ %node_name% 节点恢复了喵~域名解析被切换回来了喵~';
+
+//自定义向 Telegram 群组推送节点上线通知的信息
+$_ENV['sendNodeOnline_Msg'] = '喵喵喵~ %node_name% 节点恢复了喵~';
+
+
+//是否向 Telegram 群组推送节点被墙通知
+$_ENV['sendNodeGFW_Telegram'] = 'true';
+
+//自定义向 Telegram 群组推送节点被墙已切换通知的信息
+$_ENV['sendNodeGFW_Update_Msg'] = '喵喵喵~ %node_name% 节点被墙了喵~域名解析被切换到了 %Temp_node_name% 上了喵~';
+
+//自定义向 Telegram 群组推送节点被墙通知的信息
+$_ENV['sendNodeGFW_Msg'] = '喵喵喵~ %node_name% 节点被墙了喵~';
+
+
+//是否向 Telegram 群组推送节点被墙恢复通知
+$_ENV['sendNodeGFW_recover_Telegram'] = 'true';
+
+//自定义向 Telegram 群组推送节点被墙恢复已切换通知的信息
+$_ENV['sendNodeGFW_recover_Update_Msg'] = '喵喵喵~ %node_name% 节点恢复了喵~域名解析被切换回来了喵~';
+
+//自定义向 Telegram 群组推送节点被墙恢复通知的信息
+$_ENV['sendNodeGFW_recover_Msg'] = '喵喵喵~ %node_name% 节点恢复了喵~';
+
+
 #在套了CDN之后获取用户真实ip，如果您不知道这是什么，请不要乱动
 if ( isset($_SERVER['HTTP_X_FORWARDED_FOR']) ) {
 $list = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);

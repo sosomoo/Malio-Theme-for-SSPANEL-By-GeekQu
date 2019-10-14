@@ -52,11 +52,13 @@ class DailyMail
 
         $sts = new Analytics();
 
-        Telegram::Send('各位老爷少奶奶，我来为大家报告一下系统今天的运行状况哈~' .
+        if (Config::get('sendDiary_Telegram') == 'true') {
+            Telegram::Send(Config::get('sendDiary_Msg')[0] .
             PHP_EOL .
-            '今日签到人数:' . $sts->getTodayCheckinUser() . PHP_EOL .
-            '今日使用总流量:' . Tools::flowAutoShow($lastday_total) . PHP_EOL .
-            '晚安~');
+            Config::get('sendDiary_Msg')[1] . $sts->getTodayCheckinUser() . PHP_EOL .
+            Config::get('sendDiary_Msg')[2] . Tools::flowAutoShow($lastday_total) . PHP_EOL .
+            Config::get('sendDiary_Msg')[3]);
+        }
     }
 
 
