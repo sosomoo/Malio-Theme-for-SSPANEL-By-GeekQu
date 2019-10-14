@@ -53,11 +53,19 @@ class DailyMail
         $sts = new Analytics();
 
         if (Config::get('sendDiary_Telegram') == 'true') {
-            Telegram::Send(Config::get('sendDiary_Msg')[0] .
-            PHP_EOL .
-            Config::get('sendDiary_Msg')[1] . $sts->getTodayCheckinUser() . PHP_EOL .
-            Config::get('sendDiary_Msg')[2] . Tools::flowAutoShow($lastday_total) . PHP_EOL .
-            Config::get('sendDiary_Msg')[3]);
+            Telegram::Send(
+                str_replace(
+                    array(
+                        '%getTodayCheckinUser%',
+                        '%lastday_total%'
+                    ),
+                    array(
+                        $sts->getTodayCheckinUser(),
+                        Tools::flowAutoShow($lastday_total)
+                    ),
+                    Config::get('sendDiary_Msg')
+                )
+            );
         }
     }
 

@@ -392,12 +392,10 @@ $_ENV['sspanelAnalysis'] = 'true';
 $_ENV['sendDiary_Telegram'] = 'true';
 
 //自定义向 Telegram 群组推送系统今天的运行状况的信息
-$_ENV['sendDiary_Msg'] = [
-    '各位老爷少奶奶，我来为大家报告一下系统今天的运行状况哈~',
-    '今日签到人数:',
-    '今日使用总流量:',
-    '晚安~'
-];
+$_ENV['sendDiary_Msg'] = ('各位老爷少奶奶，我来为大家报告一下系统今天的运行状况哈~' . PHP_EOL
+    . '今日签到人数：%getTodayCheckinUser%' . PHP_EOL
+    . '今日使用总流量：%lastday_total%' . PHP_EOL
+    . '晚安~');
 
 //是否向 Telegram 群组推送数据库清理通知
 $_ENV['sendDailyJob_Telegram'] = 'true';
