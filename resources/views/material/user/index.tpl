@@ -469,7 +469,7 @@ table tr td:first-child {
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/quantumult/id1252015438?ls=1&mt=8"><i class="material-icons">save_alt</i> 下载</a> Quantumult - [ SS/SSR/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Quantumult_sub"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["quantumult_v2"]}"><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a id="quan_sub" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_sub"]}","#quan_sub","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整订阅配置</a>.<a id="quan_conf" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_conf"]}","#quan_conf","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整策略组配置</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["quantumult_v2"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a id="quan_sub" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_sub"]}","#quan_sub","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整订阅配置</a>.<a id="quan_conf" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_conf"]}","#quan_conf","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整策略组配置</a></p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/shadowrocket/id932747118?mt=8"><i class="material-icons">save_alt</i> 下载</a> Shadowrocket - [ SS/SSR/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Shadowrocket"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
@@ -528,37 +528,6 @@ table tr td:first-child {
         return new Date(str_date_splited[0], str_date_splited[1] - 1, str_date_splited[2], str_date_splited[3], str_date_splited[4], str_date_splited[5]);
     }
 
-    /*
-     * Author: neoFelhz & CloudHammer
-     * https://github.com/CloudHammer/CloudHammer/make-sspanel-v3-mod-great-again
-     * License: MIT license & SATA license
-     */
-    function CountDown() {
-        var levelExpire = DateParse("{$user->class_expire}");
-        var accountExpire = DateParse("{$user->expire_in}");
-        var nowDate = new Date();
-        var a = nowDate.getTime();
-        var b = levelExpire - a;
-        var c = accountExpire - a;
-        var levelExpireDays = Math.floor(b / (24 * 3600 * 1000));
-        var accountExpireDays = Math.floor(c / (24 * 3600 * 1000));
-        if (levelExpireDays < 0 || levelExpireDays > 315360000000) {
-            document.getElementById('days-level-expire').innerHTML = "无限期";
-            for (var i = 0; i < document.getElementsByClassName('label-level-expire').length; i += 1) {
-                document.getElementsByClassName('label-level-expire')[i].style.display = 'none';
-            }
-        } else {
-            document.getElementById('days-level-expire').innerHTML = levelExpireDays;
-        }
-        if (accountExpireDays < 0 || accountExpireDays > 315360000000) {
-            document.getElementById('days-account-expire').innerHTML = "无限期";
-            for (var i = 0; i < document.getElementsByClassName('label-account-expire').length; i += 1) {
-                document.getElementsByClassName('label-account-expire')[i].style.display = 'none';
-            }
-        } else {
-            document.getElementById('days-account-expire').innerHTML = accountExpireDays;
-        }
-    }
 </script>
 
 <script>
@@ -635,8 +604,6 @@ table tr td:first-child {
             threshold: 15
         });
         myShakeEvent.start();
-        CountDown();
-
         window.addEventListener('shake', shakeEventDidOccur, false);
         function shakeEventDidOccur() {
             if ("vibrate" in navigator) {
