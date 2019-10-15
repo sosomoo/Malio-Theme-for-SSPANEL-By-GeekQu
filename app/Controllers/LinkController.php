@@ -376,11 +376,15 @@ class LinkController extends BaseController
             }
             $SourceContent = @file_get_contents($SourceURL);
             if ($SourceContent) {
+                $Content = ConfController::YAML2Array($SourceContent);
+                if (!is_array($Content)) {
+                    return $Content;
+                }
                 return ConfController::getSurgeConfs(
                     $user,
                     $All_Proxy,
                     $items,
-                    ConfController::YAML2Array($SourceContent)
+                    $Content
                 );
             } else {
                 return '远程配置下载失败。';
@@ -693,10 +697,14 @@ class LinkController extends BaseController
             }
             $SourceContent = @file_get_contents($SourceURL);
             if ($SourceContent) {
+                $Content = ConfController::YAML2Array($SourceContent);
+                if (!is_array($Content)) {
+                    return $Content;
+                }
                 return ConfController::getClashConfs(
                     $user,
                     $Proxys,
-                    ConfController::YAML2Array($SourceContent)
+                    $Content
                 );
             } else {
                 return '远程配置下载失败。';
