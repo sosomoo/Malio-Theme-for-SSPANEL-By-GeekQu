@@ -444,6 +444,27 @@ $_ENV['sendNodeGFW_recover_Update_Msg'] = '喵喵喵~ %node_name% 节点恢复�
 $_ENV['sendNodeGFW_recover_Msg'] = '喵喵喵~ %node_name% 节点恢复了喵~';
 
 
+//是否向 Telegram 群组推送节点新增通知
+$_ENV['sendAddNode_Telegram'] = 'true';
+
+//自定义向 Telegram 群组推送节点新增通知的信息
+$_ENV['sendAddNode_Msg'] = '新节点添加~ %node_name%';
+
+
+//是否向 Telegram 群组推送节点修改通知
+$_ENV['sendUpdateNode_Telegram'] = 'true';
+
+//自定义向 Telegram 群组推送节点修改通知的信息
+$_ENV['sendUpdateNode_Msg'] = '节点信息被修改~ %node_name%';
+
+
+//是否向 Telegram 群组推送节点删除通知
+$_ENV['sendDeleteNode_Telegram'] = 'true';
+
+//自定义向 Telegram 群组推送节点删除通知的信息
+$_ENV['sendDeleteNode_Msg'] = '节点被删除~ %node_name%';
+
+
 #在套了CDN之后获取用户真实ip，如果您不知道这是什么，请不要乱动
 if ( isset($_SERVER['HTTP_X_FORWARDED_FOR']) ) {
 $list = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);

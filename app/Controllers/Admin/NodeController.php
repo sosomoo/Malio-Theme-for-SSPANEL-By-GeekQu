@@ -97,7 +97,15 @@ class NodeController extends AdminController
             CloudflareDriver::updateRecord($domain_name[0], $node->node_ip);
         }
 
-        Telegram::Send('新节点添加~' . $request->getParam('name'));
+        if (Config::get('sendAddNode_Telegram') == 'true') {
+            Telegram::Send(
+                str_replace(
+                    '%node_name%',
+                    $request->getParam('name'),
+                    Config::get('sendAddNode_Msg')
+                )
+            );
+        }
 
         $rs['ret'] = 1;
         $rs['msg'] = '节点添加成功';
@@ -186,7 +194,15 @@ class NodeController extends AdminController
 
         $node->save();
 
-        Telegram::Send('节点信息被修改~' . $request->getParam('name'));
+        if (Config::get('sendUpdateNode_Telegram') == 'true') {
+            Telegram::Send(
+                str_replace(
+                    '%node_name%',
+                    $request->getParam('name'),
+                    Config::get('sendUpdateNode_Msg')
+                )
+            );
+        }
 
         $rs['ret'] = 1;
         $rs['msg'] = '修改成功';
@@ -202,15 +218,21 @@ class NodeController extends AdminController
             Radius::DelNas($node->node_ip);
         }
 
-        $name = $node->name;
-
         if (!$node->delete()) {
             $rs['ret'] = 0;
             $rs['msg'] = '删除失败';
             return $response->getBody()->write(json_encode($rs));
         }
 
-        Telegram::Send('节点被删除~' . $name);
+        if (Config::get('sendDeleteNode_Telegram') == 'true') {
+            Telegram::Send(
+                str_replace(
+                    '%node_name%',
+                    $node->name,
+                    Config::get('sendDeleteNode_Msg')
+                )
+            );
+        }
 
         $rs['ret'] = 1;
         $rs['msg'] = '删除成功';
