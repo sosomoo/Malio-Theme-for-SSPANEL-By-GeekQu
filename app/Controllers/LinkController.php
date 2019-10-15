@@ -380,7 +380,7 @@ class LinkController extends BaseController
                     $user,
                     $All_Proxy,
                     $items,
-                    $SourceContent
+                    ConfController::YAML2Array($SourceContent)
                 );
             } else {
                 return '远程配置下载失败。';
@@ -693,7 +693,11 @@ class LinkController extends BaseController
             }
             $SourceContent = @file_get_contents($SourceURL);
             if ($SourceContent) {
-                return ConfController::getClashConfs($user, $Proxys, $SourceContent);
+                return ConfController::getClashConfs(
+                    $user,
+                    $Proxys,
+                    ConfController::YAML2Array($SourceContent)
+                );
             } else {
                 return '远程配置下载失败。';
             }

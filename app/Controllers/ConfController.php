@@ -33,6 +33,22 @@ class ConfController extends BaseController
 {
 
     /**
+     * YAML 转数组
+     *
+     * @param string $Content YAML 字符串
+     *
+     * @return string
+     */
+    public static function YAML2Array($Content)
+    {
+        try {
+            return Yaml::parse($Content);
+        } catch (ParseException $exception) {
+            return printf('无法解析 YAML 字符串: %s', $exception->getMessage());
+        }
+    }
+
+    /**
      *  从远端自定义配置文件生成 Surge 托管配置
      *
      * @param object $User          用户
@@ -42,13 +58,8 @@ class ConfController extends BaseController
      *
      * @return string
      */
-    public static function getSurgeConfs($User, $AllProxys, $Nodes, $SourceContent, $local = false)
+    public static function getSurgeConfs($User, $AllProxys, $Nodes, $Configs, $local = false)
     {
-        try {
-            $Configs = Yaml::parse($SourceContent);
-        } catch (ParseException $exception) {
-            return printf('无法解析 YAML 字符串: %s', $exception->getMessage());
-        }
         $General = self::getSurgeConfGeneral($Configs['General']);
         $Proxys = (isset($Configs['Proxy'])
             ? self::getSurgeConfProxy($Configs['Proxy'])
@@ -307,7 +318,7 @@ class ConfController extends BaseController
     {
         // 加载本地规则文件
         if ($local) {
-            $render = ConfRender::getTemplateRender();    
+            $render = ConfRender::getTemplateRender();
             return $render->fetch(trim($Rules['source']));
         }
 
@@ -345,13 +356,8 @@ class ConfController extends BaseController
      *
      * @return string
      */
-    public static function getClashConfs($User, $AllProxys, $SourceContent, $local = false)
+    public static function getClashConfs($User, $AllProxys, $Configs, $local = false)
     {
-        try {
-            $Configs = Yaml::parse($SourceContent);
-        } catch (ParseException $exception) {
-            return printf('无法解析 YAML 字符串: %s', $exception->getMessage());
-        }
         if (isset($Configs['Proxy']) || count($Configs['Proxy']) != 0) {
             $tmpProxys = array_merge($AllProxys, $Configs['Proxy']);
         } else {
@@ -471,7 +477,7 @@ class ConfController extends BaseController
     {
         // 加载本地规则文件
         if ($local) {
-            $render = ConfRender::getTemplateRender();    
+            $render = ConfRender::getTemplateRender();
             return $render->fetch(trim($Rules['source']));
         }
 
