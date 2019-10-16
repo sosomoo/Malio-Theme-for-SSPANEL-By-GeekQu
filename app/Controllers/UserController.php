@@ -1918,4 +1918,24 @@ class UserController extends BaseController
         return $this->view()->assign('logs', $logs)->assign('iplocation', $iplocation)->display('user/subscribe_log.tpl');
     }
 
+    public function getPcClient($request, $response, $args)
+    {
+        $zipArc = new \ZipArchive();
+        $user_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
+        if ($request->getQueryParams()['type'] == 'ssr-win') {
+            $file = '../storage/ssr_client_' . $user_token . '.zip';
+            $zipArc->open($file, \ZipArchive::CREATE);
+            $zipArc->addFromString ('gui-config.json', LinkController::getSSRPcConf($this->user));
+            $zipArc->addGlob('../resources/clients/ssr-win/*', GLOB_BRACE, ['add_path' => '/', 'remove_all_path' => true]);
+            $zipArc->close();
+            $newResponse = $response->withHeader('Content-type', ' application/octet-stream')->withHeader('Content-Disposition', ' attachment; filename=ssr-win.zip');
+            $newResponse->getBody()->write(file_get_contents($file));
+            unlink($file);
+        } else {
+            return 'gg';
+        }
+
+        return $newResponse;
+    }
+
 }

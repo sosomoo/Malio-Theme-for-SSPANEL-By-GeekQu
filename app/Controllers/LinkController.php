@@ -960,6 +960,76 @@ class LinkController extends BaseController
         return base64_encode($return);
     }
 
+    public static function getSSRPcConf($user)
+    {
+        $proxy = [];
+        $items = array_merge(
+            URL::getAllItems($user, 0, 0, 0),
+            URL::getAllItems($user, 1, 0, 0)
+        );
+        foreach ($items as $item) {
+            $proxy[] = [
+                "remarks" => $item['remark'],
+                "server" => $item['address'],
+                "server_port" => $item['port'],
+                "method" => $item['method'],
+                "obfs" => $item['obfs'],
+                "obfsparam" => $item['obfs_param'],
+                "remarks_base64" => base64_encode($item['remark']),
+                "password" => $item['passwd'],
+                "tcp_over_udp" => false,
+                "udp_over_tcp" => false,
+                "group" => Config::get('appName'),
+                "protocol" => $item['protocol'],
+                "protoparam" => $item['protocol_param'],
+                "obfs_udp" => false,
+                "enable" => true
+            ];
+        }
+        $config = [
+            'configs' => $proxy,
+            'index' => 0,
+            'random' => true,
+            'sysProxyMode' => 1,
+            'shareOverLan' => false,
+            'localPort' => 1080,
+            'localAuthPassword' => Tools::genRandomChar(26),
+            'dnsServer' => '',
+            'reconnectTimes' => 2,
+            'balanceAlgorithm' => 'LowException',
+            'randomInGroup' => false,
+            'TTL' => 0,
+            'connectTimeout' => 5,
+            'proxyRuleMode' => 2,
+            'proxyEnable' => false,
+            'pacDirectGoProxy' => false,
+            'proxyType' => 0,
+            'proxyHost' => '',
+            'proxyPort' => 0,
+            'proxyAuthUser' => '',
+            'proxyAuthPass' => '',
+            'proxyUserAgent' => '',
+            'authUser' => '',
+            'authPass' => '',
+            'autoBan' => false,
+            'sameHostForSameTarget' => false,
+            'keepVisitTime' => 180,
+            'isHideTips' => false,
+            'nodeFeedAutoUpdate' => true,
+            'serverSubscribes' => [
+                [
+                    'URL' => self::getSubinfo($user, 0)['ssr'],
+                    'Group' => Config::get('appName'),
+                    'LastUpdateTime' => 0
+                ]
+            ],
+            'token' => [],
+            'portMap' => []
+        ];
+
+        return json_encode($config, JSON_PRETTY_PRINT);
+    }
+
     /**
      * 通用订阅，ssr & v2rayn
      *
