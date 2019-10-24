@@ -981,7 +981,7 @@ class LinkController extends BaseController
                 "udp_over_tcp" => false,
                 "group" => Config::get('appName'),
                 "protocol" => $item['protocol'],
-                "protoparam" => $item['protocol_param'],
+                "protocolparam" => $item['protocol_param'],
                 "obfs_udp" => false,
                 "enable" => true
             ];
