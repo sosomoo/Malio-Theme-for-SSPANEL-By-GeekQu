@@ -865,7 +865,7 @@ class LinkController extends BaseController
                 $return .= ('ss://' . Tools::base64_url_encode(
                     $item['method'] . ':' . $item['passwd'] .
                         '@' . $item['address'] . ':' . $item['port']
-                ) . '?v2ray-plugin=' . Tools::base64_url_encode(
+                ) . '?v2ray-plugin=' . base64_encode(
                     json_encode($v2rayplugin)
                 ) . '#' . rawurlencode($item['remark']) . PHP_EOL);
             }
