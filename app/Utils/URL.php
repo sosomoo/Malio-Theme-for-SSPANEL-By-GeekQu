@@ -746,6 +746,10 @@ class URL
             : $node_name);
         $return_array['class'] = $node->node_class;
         $return_array['group'] = Config::get('appName');
+        $return_array['ratio'] = ($relay_rule != null
+            ? $node->traffic_rate + $relay_rule->dist_node()->traffic_rate
+            : $node->traffic_rate);
+
         return $return_array;
     }
 
