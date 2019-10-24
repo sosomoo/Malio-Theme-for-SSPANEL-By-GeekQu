@@ -1925,6 +1925,18 @@ class UserController extends BaseController
         // 客户端文件存放路径
         $client_path = '../resources/clients/';
         switch ($type) {
+            case 'ss-win':
+                $temp_file_path .= $type . '_' . $user_token . '.zip';
+                $user_config_file_name = 'gui-config.json';
+                $content = LinkController::getSSPcConf($this->user);
+                $client_path .= $type . '/';
+                break;
+            case 'ssd-win':
+                $temp_file_path .= $type . '_' . $user_token . '.zip';
+                $user_config_file_name = 'gui-config.json';
+                $content = LinkController::getSSDPcConf($this->user);
+                $client_path .= $type . '/';
+                break;
             case 'ssr-win':
                 $temp_file_path .= $type . '_' . $user_token . '.zip';
                 $user_config_file_name = 'gui-config.json';
