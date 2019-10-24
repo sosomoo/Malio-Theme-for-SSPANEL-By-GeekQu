@@ -304,6 +304,7 @@ $_ENV['mu_port_migration'] = 'false';       //为后端直接下发偏移后的�
 $_ENV['relay_port_migration'] = 'false';    //为中转规则下发偏移后的端口，此项未经测试
 $_ENV['add_emoji_to_node_name'] = 'false';  //为部分订阅中默认添加 emoji
 $_ENV['add_appName_to_ss_uri'] = 'true';    //为 SS 节点名称中添加站点名
+$_ENV['subscribe_client'] = 'false';        //下载协议客户端时附带节点和订阅信息
 
 // 审计自动封禁开关
 $_ENV['enable_auto_detect_ban'] = 'false';

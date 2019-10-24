@@ -413,7 +413,7 @@ table tr td:first-child {
 											</div>
 
 											<div class="tab-pane fade" id="sub_center_windows">
-												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Windows/releases"><i class="material-icons">save_alt</i> 下载</a> SSD - [ SS ]：</p>
+												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="{if $config["subscribe_client"]=='true'}/user/getPcClient?type=ssd-win{else}https://github.com/CGDF-Github/SSD-Windows/releases{/if}"><i class="material-icons">save_alt</i> 下载</a> SSD - [ SS ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssd"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a id="win_ssd" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssd","#win_ssd","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 												<hr/>
