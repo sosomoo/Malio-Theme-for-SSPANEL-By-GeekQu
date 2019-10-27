@@ -529,6 +529,12 @@
                         <div class="pricing-item-label">{$shop->speedlimit()} 最高速率</div>
                       </div>
                       {/if}
+                      {if {$shop->reset()} != '0' }
+                      <div class="pricing-item">
+                        <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                        <div class="pricing-item-label">每 {$shop->reset()} 天重置流量为 {$shop->reset_value()}GB</div>
+                      </div>
+                      {/if}
                       {foreach $shop->content_extra() as $service}
                       <div class="pricing-item">
                         <div class="pricing-item-icon"><i class="fas fa-check"></i></div>

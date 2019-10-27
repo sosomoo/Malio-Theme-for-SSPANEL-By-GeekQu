@@ -380,7 +380,7 @@
                   title: '注册成功',
                   showCloseButton: true,
                   onClose: () => {
-                    login($("#email").val(), $("#passwd").val());
+                    login(email, $("#passwd").val());
                   }
                 })
               } else {

@@ -2,7 +2,59 @@
 <html lang="en">
 
 <head>
-  {include file='user/head.tpl'}
+  <meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+
+<!-- General CSS Files -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.8.2/css/all.min.css">
+
+<!-- Template CSS -->
+<link rel="stylesheet" href="/theme/malio/css/style-{$malio_config['theme_color']}.css">
+<link rel="stylesheet" href="/theme/malio/assets/css/components.css">
+
+<!-- Custom CSS -->
+<link rel="stylesheet" href="/theme/malio/css/malio.css">
+
+{if $malio_config['google_analytics_code'] != ''}
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={$malio_config['google_analytics_code']}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  {literal}function gtag() {dataLayer.push(arguments);}{/literal}
+  gtag('js', new Date());
+  gtag('config', '{$malio_config['google_analytics_code']}');
+</script>
+{/if}
+
+{if $config["sspanelAnalysis"] == 'true'}
+<!-- Google Analytics -->
+<script>
+    window.ga = window.ga || function () {
+        (ga.q = ga.q || []).push(arguments)
+    };
+    ga.l = +new Date;
+    ga('create', 'UA-143778338-1', 'auto');
+    var hostDomain = window.location.host || document.location.host || document.domain;
+    ga('set', 'dimension1', hostDomain);
+    ga('send', 'pageview');
+    (function () {
+        function perfops() {
+            var js = document.createElement('script');
+            js.src = 'https://cdn.jsdelivr.net/npm/perfops-rom';
+            document.body.appendChild(js);
+        }
+        if (document.readyState === 'complete') {
+            perfops();
+        } else {
+            window.addEventListener('load', perfops);
+        }
+    })();
+</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+<!-- End Google Analytics -->
+{/if}
+
 
   <title>节点信息 &mdash; {$config["appName"]}</title>
 
@@ -15,7 +67,7 @@
         {if (in_array("ssr",$malio_config['support_sub_type']))}
         {if $node->mu_only != 1}
         <li class="nav-item">
-          <a class="nav-link active" id="ssr-tab" data-toggle="tab" href="#ssr" role="tab" aria-controls="ssr" aria-selected="true">ShadowrsocksR</a>
+          <a class="nav-link active" id="ssr-tab" data-toggle="tab" href="#ssr" role="tab" aria-controls="ssr" aria-selected="true">ShadowsocksR</a>
         </li>
         {/if}
         {$first_mu_node_one = true}
@@ -28,7 +80,7 @@
               {continue}
           {/if}
           <li class="nav-item">
-            <a class="nav-link {if $node->mu_only == 1 and $first_mu_node_one == ture}active{/if}" id="ssr-{$single_muport['server']->server}-tab" data-toggle="tab" href="#ssr-{$single_muport['server']->server}" role="tab" aria-controls="ss-{$single_muport['server']->server}" aria-selected="{if $node->mu_only == 1 and $first_mu_node_one == ture}ture{$first_mu_node_one = false}{else}false{/if}">ShadowrsocksR ({$single_muport['server']->server}单端口)</a>
+            <a class="nav-link {if $node->mu_only == 1 and $first_mu_node_one == ture}active{/if}" id="ssr-{$single_muport['server']->server}-tab" data-toggle="tab" href="#ssr-{$single_muport['server']->server}" role="tab" aria-controls="ss-{$single_muport['server']->server}" aria-selected="{if $node->mu_only == 1 and $first_mu_node_one == ture}ture{$first_mu_node_one = false}{else}false{/if}">ShadowsocksR ({$single_muport['server']->server}单端口)</a>
           </li>
         {/foreach}
         {/if}

@@ -185,7 +185,7 @@
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6" id="manual-import">
                           <h6>ClashX 无法一键导入，如何手动导入配置？</h6>
                           <p class="mb-4 font-13">
-                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['clash']}{if $malio_config['enable_sub_extend'] == true}?extend=1{/if}">点此复制 Clash 托管配置链接</a>，点击屏幕右上角 ClashX 图标，选择 “配置” > “托管配置” > “管理”，点击 “添加”，粘贴托管配置链接到 Url，Config Name 可留空。
+                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['clash']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}">点此复制 Clash 托管配置链接</a>，点击屏幕右上角 ClashX 图标，选择 “配置” > “托管配置” > “管理”，点击 “添加”，粘贴托管配置链接到 Url，Config Name 可留空。
                           </p>
                         </div>
                         <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6">
