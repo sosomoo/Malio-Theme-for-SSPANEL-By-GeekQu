@@ -68,7 +68,6 @@ class TicketController extends AdminController
             ], [
             ]);
         } catch (Exception $e) {
-            echo $e->getMessage();
         }
 
         if (Config::get('enable_telegram') == 'true' && $user->telegram_id != null) {

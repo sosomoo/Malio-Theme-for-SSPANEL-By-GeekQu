@@ -123,7 +123,8 @@ $Malio_Config['share_account'] = [    // 一个array为一个共享账号
         array(
             'name' => 'Hulu 1',
             'account' => 'malio@nintendo.jp',
-            'passwd' => 'yahaha~'
+            'passwd' => 'yahaha~',
+            'class' => 1,
         )
     ],
 ];

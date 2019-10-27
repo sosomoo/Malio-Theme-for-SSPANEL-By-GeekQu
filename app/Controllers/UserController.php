@@ -1316,7 +1316,6 @@ class UserController extends BaseController
                     ], [
                     ]);
                 } catch (Exception $e) {
-                    echo $e->getMessage();
                 }
             }
         }
@@ -1338,7 +1337,7 @@ class UserController extends BaseController
                     try {
                         $bot->sendMessage($user->telegram_id, $messageText, null, null, null, $keyboard);
                     } catch (Exception $e) {
-                        echo $e->getMessage();
+                        
                     }
                 }
             }
@@ -1407,7 +1406,6 @@ class UserController extends BaseController
                             ], [
                             ]);
                         } catch (Exception $e) {
-                            echo $e->getMessage();
                         }
                     }
                 }
@@ -1443,7 +1441,6 @@ class UserController extends BaseController
                             ], [
                             ]);
                         } catch (Exception $e) {
-                            echo $e->getMessage();
                         }
                     }
                 }
@@ -1464,7 +1461,6 @@ class UserController extends BaseController
                             try {
                                 $bot->sendMessage($user->telegram_id, $messageText, null, null, null, $keyboard);
                             } catch (Exception $e) {
-                                echo $e->getMessage();
                             }
                         }
                     }
