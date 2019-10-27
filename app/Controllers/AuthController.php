@@ -612,7 +612,9 @@ class AuthController extends BaseController
             $user->ref_by = $c->user_id;
             $user->money = Config::get('invite_get_money');
             $gift_user->transfer_enable += Config::get('invite_gift') * 1024 * 1024 * 1024;
-            --$gift_user->invite_num;
+            if (MalioConfig::get('code_required') == true) {
+                --$gift_user->invite_num;
+            }
             $gift_user->save();
         }
 
