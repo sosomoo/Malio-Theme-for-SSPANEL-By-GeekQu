@@ -794,9 +794,10 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
+          {$traffic_package_counter = 0}
           {foreach $malio_config['shop_traffic_packages'] as $package}
           <div class="custom-control custom-radio">
-            <input type="radio" value="{$package['shopid']}" id="tp-{$package['shopid']}" name="traffic-package-radio" class="custom-control-input">
+            <input type="radio" value="{$package['shopid']}" id="tp-{$package['shopid']}" name="traffic-package-radio" class="custom-control-input" {if $traffic_package_counter == 0}checked{$traffic_package_counter = 1}{/if}>
             <label class="custom-control-label" for="tp-{$package['shopid']}"> {$package['price']} 元 {$package['traffic']}GB 流量叠加包</label>
           </div>
           {/foreach}

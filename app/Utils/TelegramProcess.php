@@ -109,7 +109,7 @@ class TelegramProcess
                     break;
             }
         } else {
-            $reply['message'] = '您未绑定本站账号，您可以进入网站的“资料编辑”，在右下方绑定您的账号';
+            $reply['message'] = '您未绑定本站账号，您可以进入网站的 "我的账号" 页面，点击绑定您的账号';
         }
 
         return $reply;

@@ -363,7 +363,15 @@
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-surfboard btn-lg btn-round" onclick="importSublink('surfboard')"><i class="malio-surfboard"></i> 一键导入 Surfboard 配置</a>
                         {/if}
                         {if (in_array("ssr",$malio_config['support_sub_type']))}
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-ssr copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
+                        <div class="dropdown d-inline">
+                          <button class="btn btn-primary btn-ssr dropdown-toggle btn-icon btn-round btn-lg" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="malio-ssr mr-1"></i> SSR 订阅链接
+                          </button>
+                          <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 28px, 0px); top: 0px; left: 0px; will-change: transform;">
+                            <a class="dropdown-item" href="##" onclick="importSublink('ssr')"> 一键导入 SSR 订阅链接</a>
+                            <a class="dropdown-item copy-text" href="##" data-clipboard-text="{$subInfo['ssr']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"> 复制 SSR 订阅链接</a>
+                          </div>
+                        </div>
                         {/if}
                         {if $malio_config['enable_copy_urls_to_clipboard'] == true}
                         {if (in_array("ss",$malio_config['support_sub_type']))}
@@ -502,6 +510,9 @@
       if (client == 'clash') {
         oneclickImport('clash','{$subInfo["clash"]}')
       };
+      if (client == 'ssr') {
+        oneclickImport('ssr','{$subInfo["ssr"]}')
+      }
     }
 
     appName = "{$config['appName']}";
