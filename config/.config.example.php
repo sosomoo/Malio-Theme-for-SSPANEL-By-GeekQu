@@ -191,7 +191,7 @@ $System_Config['enable_checkin_captcha'] = 'false';	//启用签到验证码
 
 
 //支付系统设置----------------------------------------------------------------------------------------
-#取值 none | codepay | trimepay | f2fpay | chenAlipay | paymentwall | spay | tomatopay | bitpayx | flyfoxpay | payjs | f2fpay_payjs | stripe | payssion
+#取值 none | codepay | trimepay | f2fpay | chenAlipay | paymentwall | spay | tomatopay | bitpayx | flyfoxpay | payjs | f2fpay_payjs | stripe | payssion | yftpay
 $System_Config['payment_system']='none';
 
 # Stripe
@@ -201,6 +201,10 @@ $System_Config['stripe_webhook_endpoint_secret'] = '';
 # payssion
 $System_Config['payssion_api_key'] = '';
 $System_Config['payssion_secret_key'] = '';
+
+#yft支付设置
+$System_Config['yft_secret']='';
+$System_Config['yft_accesskey']='';
 
 #codepay码支付
 #wiki地址:https://goo.gl/dRwRDi  http://t.cn/RnsWjtB
