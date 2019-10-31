@@ -609,13 +609,13 @@ class AuthController extends BaseController
         $user->ref_by = 0;
         if (($c != null) && $c->user_id != 0) {
             $gift_user = User::where('id', '=', $c->user_id)->first();
-            $user->ref_by = $c->user_id;
-            $user->money = Config::get('invite_get_money');
-            $gift_user->transfer_enable += Config::get('invite_gift') * 1024 * 1024 * 1024;
-            if (MalioConfig::get('code_required') == true) {
+            if ($gift_user->invite_num > 0) {
+                $user->ref_by = $c->user_id;
+                $user->money = Config::get('invite_get_money');
+                $gift_user->transfer_enable += Config::get('invite_gift') * 1024 * 1024 * 1024;
                 --$gift_user->invite_num;
-            }
-            $gift_user->save();
+                $gift_user->save();
+            };
         }
 
 
