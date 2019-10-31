@@ -154,8 +154,9 @@
                         <div class="row">
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
-                            <p>在状态栏找到小飞机，右键点击，选中 “服务器订阅” > “SSR服务器订阅设置”，点击下面的按钮复制订阅链接，<span style="color:#e780a3;">然后按照图中的步骤添加并站粘贴订阅链接。</span></p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssr']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-ssr"></i> 复制 SSR 订阅链接</a>
+                            <p>点击这个按钮 👇👇👇</p>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" onclick="importSublink('ssr')"><i class="malio-ssr"></i> 一键导入订阅链接到 SSR</a>
+                            <p class="text-muted" style="font-size: 13px">一键导入不成功？<a href="#manual-import" class="text-muted "><u>试试手动导入</u> →</a></p>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">
@@ -195,6 +196,23 @@
                     </ul>
                   </div>
                 </div>
+                <div class="text-center">
+                  <h3 style="margin-top: 50px;margin-bottom: 30px;">🤔</h3>
+                </div>
+                <div class="card">
+                  <div class="card-body">
+                    <div class="faq">
+                      <div class="row mt-2 mb-2">
+                        <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6" id="manual-import">
+                          <h6>SSR 无法一键导入，如何手动导入配置？</h6>
+                          <p class="mb-4 font-13">
+                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['ssr']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}">点此复制 SSR 订阅链接</a>，在状态栏找到小飞机，右键点击，选中 “服务器订阅” > “SSR服务器订阅设置”，添加并粘贴订阅链接。
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -206,6 +224,14 @@
 
   {include file='user/scripts.tpl'}
 
+  <script>
+    function importSublink(client) {
+      if (client == 'ssr') {
+        oneclickImport('ssr', '{$subInfo["ssr"]}{if $malio_config["enable_sub_extend"] == true}&extend=1{/if}')
+      };
+    }
+    appName = "{$config['appName']}";
+  </script>
 </body>
 
 </html>

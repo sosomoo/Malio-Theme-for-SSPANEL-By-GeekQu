@@ -37,6 +37,11 @@
                             <th>时间</th>
                             <th>User-Agent</th>
                           </tr>
+                          {if count($codes) == 0}
+                          <tr>
+                            <td colspan="6"><strong>暂无订阅记录</strong></td>
+                          </tr>
+                          {else}
                           {foreach $logs as $log}
                           <tr>
                             <td>#{$log->id}</td>
@@ -48,6 +53,7 @@
                             <td>{$log->request_user_agent}</td>
                           </tr>
                           {/foreach}
+                          {/if}
                         </tbody>
                       </table>
                     </div>
