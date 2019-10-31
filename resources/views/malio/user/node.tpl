@@ -61,22 +61,22 @@
             <h1>节点列表</h1>
           </div>
 
-          {if $malio_config['show_free_nodes'] == true}
+          {foreach $malio_config['node_class_name'] as $node_class => $node_group_name}
           <div class="section-body">
-            <h2 class="section-title">免费节点</h2>
+            <h2 class="section-title">{$node_group_name}</h2>
             <div class="row">
               {foreach $nodes as $node}
-              {if $node['class'] == 0}
+              {if $node['class'] == $node_class}
               <div class="col-12 col-sm-12 col-lg-6">
                 {if $node['sort'] == 11}
-                <div class="card" {if $user->class >= 0} data-toggle="modal" data-target="#node-modal-{$node['id']}"{/if}>
+                <div class="card" {if $user->class>0} data-toggle="modal" data-target="#node-modal-{$node['id']}"{/if}>
                   {else}
-                  <div class="card" {if $user->class >= 0}onclick="urlChange('{$node['id']}',0,{if $relay_rule != null}{$relay_rule->id}{else}0{/if})"{/if}>
+                  <div class="card" {if $user->class >0}onclick="urlChange('{$node['id']}',0,{if $relay_rule != null}{$relay_rule->id}{else}0{/if})"{/if}>
                     {/if}
-                    {$region = substr($node['name'],0,6)}
                     <div class="card-body">
                       <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
                         <li class="media">
+                          {$region = substr($node['name'],0,6)}
                           <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $malio_config['flag_mode']=='node-name'}{if $flags[$region] != ''}{$flags[$region]}{else}un{/if}{else}{$node['status']}{/if}.svg">
                           <div class="media-body">
                             <div class="media-title node-status {if $node['online']=='1'}node-is-online{else}node-is-offline{/if}">{current(explode(" - ", $node['name']))}</div>
@@ -117,179 +117,8 @@
                 {/foreach}
               </div>
             </div>
-          {/if}
+            {/foreach}
 
-            <div class="section-body">
-              <h2 class="section-title">{$malio_config['plan_1_name']}节点</h2>
-              <div class="row">
-                {foreach $nodes as $node}
-                {if $node['class'] == 1}
-                <div class="col-12 col-sm-12 col-lg-6">
-                  {if $node['sort'] == 11}
-                  <div class="card" {if $user->class>0} data-toggle="modal" data-target="#node-modal-{$node['id']}"{/if}>
-                    {else}
-                    <div class="card" {if $user->class >0}onclick="urlChange('{$node['id']}',0,{if $relay_rule != null}{$relay_rule->id}{else}0{/if})"{/if}>
-                      {/if}
-                      <div class="card-body">
-                        <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
-                          <li class="media">
-                            {$region = substr($node['name'],0,6)}
-                            <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $malio_config['flag_mode']=='node-name'}{if $flags[$region] != ''}{$flags[$region]}{else}un{/if}{else}{$node['status']}{/if}.svg">
-                            <div class="media-body">
-                              <div class="media-title node-status {if $node['online']=='1'}node-is-online{else}node-is-offline{/if}">{current(explode(" - ", $node['name']))}</div>
-                          <div class=" text-job text-muted">{$node['info']}</div>
-                            </div>
-                            <div class="media-items">
-                              {if $malio_config['enable_online_user'] == true}
-                              <div class="media-item">
-                                <div class="media-value">{if $node['online_user'] == -1} N/A{else} {$node['online_user']}{/if}</div>
-                                <div class="media-label">在线</div>
-                              </div>
-                              {/if}
-                              {if $malio_config['enable_node_traffic_rate'] == true}
-                              <div class="media-item">
-                                <div class="media-value">x{$node['traffic_rate']}</div>
-                                <div class="media-label">倍率</div>
-                              </div>
-                              {/if}
-                              {if $malio_config['enable_node_load'] == true}
-                              <div class="media-item">
-                                <div class="media-value">{if $node['latest_load'] == -1}N/A{else}{$node['latest_load']}%{/if}</div>
-                                <div class="media-label">负载</div>
-                              </div>
-                              {/if}
-                              {if $malio_config['enable_node_speedlimit'] == true}
-                              <div class="media-item">
-                                <div class="media-value">{if {$node['bandwidth']}==0}N/A{else}{$node['bandwidth']}{/if}</div>
-                                <div class="media-label">限速</div>
-                              </div>
-                              {/if}
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                  {/if}
-                  {/foreach}
-                </div>
-              </div>
-
-              <div class="section-body">
-                {if $malio_config['enable_plan_2'] == true}
-                <h2 class="section-title">{$malio_config['plan_2_name']}节点</h2>
-                {/if}
-                <div class="row">
-                  {foreach $nodes as $node}
-                  {if $node['class'] == 2}
-                  <div class="col-12 col-sm-12 col-lg-6">
-                    {if $node['sort'] == 11}
-                    <div class="card" {if $user->class>0} data-toggle="modal" data-target="#node-modal-{$node['id']}"{/if}>
-                      {else}
-                      <div class="card" {if $user->class >0}onclick="urlChange('{$node['id']}',0,{if $relay_rule != null}{$relay_rule->id}{else}0{/if})"{/if}>
-                        {/if}
-                        <div class="card-body">
-                          <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
-                            <li class="media">
-                              {$region = substr($node['name'],0,6)}
-                              <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $malio_config['flag_mode']=='node-name'}{if $flags[$region] != ''}{$flags[$region]}{else}un{/if}{else}{$node['status']}{/if}.svg">
-                              <div class="media-body">
-                                <div class="media-title node-status {if $node['online']=='1'}node-is-online{else}node-is-offline{/if}">{current(explode(" - ", $node['name']))}</div>
-                          <div class=" text-job text-muted">{$node['info']}</div>
-                              </div>
-                              <div class="media-items">
-                                {if $malio_config['enable_online_user'] == true}
-                                <div class="media-item">
-                                  <div class="media-value">{if $node['online_user'] == -1} N/A{else} {$node['online_user']}{/if}</div>
-                                  <div class="media-label">在线</div>
-                                </div>
-                                {/if}
-                                {if $malio_config['enable_node_traffic_rate'] == true}
-                                <div class="media-item">
-                                  <div class="media-value">x{$node['traffic_rate']}</div>
-                                  <div class="media-label">倍率</div>
-                                </div>
-                                {/if}
-                                {if $malio_config['enable_node_load'] == true}
-                                <div class="media-item">
-                                  <div class="media-value">{if $node['latest_load'] == -1}N/A{else}{$node['latest_load']}%{/if}</div>
-                                  <div class="media-label">负载</div>
-                                </div>
-                                {/if}
-                                {if $malio_config['enable_node_speedlimit'] == true}
-                                <div class="media-item">
-                                  <div class="media-value">{if {$node['bandwidth']}==0}N/A{else}{$node['bandwidth']}{/if}</div>
-                                  <div class="media-label">限速</div>
-                                </div>
-                                {/if}
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                    {/if}
-                    {/foreach}
-                  </div>
-                </div>
-
-                <div class="section-body">
-                  {if $malio_config['enable_plan_3'] == true}
-                  <h2 class="section-title">{$malio_config['plan_3_name']}节点</h2>
-                  {/if}
-                  <div class="row">
-                    {foreach $nodes as $node}
-                    {if $node['class'] == 3}
-                    <div class="col-12 col-sm-12 col-lg-6">
-                      {if $node['sort'] == 11}
-                      <div class="card" {if $user->class>0} data-toggle="modal" data-target="#node-modal-{$node['id']}"{/if}>
-                        {else}
-                        <div class="card" {if $user->class >0}onclick="urlChange('{$node['id']}',0,{if $relay_rule != null}{$relay_rule->id}{else}0{/if})"{/if}>
-                          {/if}
-                          <div class="card-body">
-                            <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
-                              <li class="media">
-                                {$region = substr($node['name'],0,6)}
-                                <img alt="image" class="mr-3 rounded-circle" width="50" src="/theme/malio/assets/modules/flag-icon-css/flags/1x1/{if $malio_config['flag_mode']=='node-name'}{if $flags[$region] != ''}{$flags[$region]}{else}un{/if}{else}{$node['status']}{/if}.svg">
-                                <div class="media-body">
-                                  <div class="media-title node-status {if $node['online']=='1'}node-is-online{else}node-is-offline{/if}">{current(explode(" - ", $node['name']))}</div>
-                          <div class=" text-job text-muted">{$node['info']}</div>
-                                </div>
-                                <div class="media-items">
-                                  {if $malio_config['enable_online_user'] == true}
-                                  <div class="media-item">
-                                    <div class="media-value">{if $node['online_user'] == -1} N/A{else} {$node['online_user']}{/if}</div>
-                                    <div class="media-label">在线</div>
-                                  </div>
-                                  {/if}
-                                  {if $malio_config['enable_node_traffic_rate'] == true}
-                                  <div class="media-item">
-                                    <div class="media-value">x{$node['traffic_rate']}</div>
-                                    <div class="media-label">倍率</div>
-                                  </div>
-                                  {/if}
-                                  {if $malio_config['enable_node_load'] == true}
-                                  <div class="media-item">
-                                    <div class="media-value">{if $node['latest_load'] == -1}N/A{else}{$node['latest_load']}%{/if}</div>
-                                    <div class="media-label">负载</div>
-                                  </div>
-                                  {/if}
-                                  {if $malio_config['enable_node_speedlimit'] == true}
-                                  <div class="media-item">
-                                    <div class="media-value">{if {$node['bandwidth']}==0}N/A{else}{$node['bandwidth']}{/if}</div>
-                                    <div class="media-label">限速</div>
-                                  </div>
-                                  {/if}
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                      {/if}
-                      {/foreach}
-                    </div>
-                  </div>
 
         </section>
       </div>

@@ -293,13 +293,18 @@ $Malio_Config['enable_telegram'] = true;   // 是否显示绑定 Telegram 账号
 
 
 // 节点列表
-$Malio_Config['show_free_nodes'] = true;    // 是否显示免费节点（等级为0的节点）
 $Malio_Config['enable_node_load'] = true;   // 是否显示节点的负载
 $Malio_Config['enable_online_user'] = true;   // 是否显示节点的在线人数
 $Malio_Config['enable_node_traffic_rate'] = true;   // 是否显示节点的流量倍率
 $Malio_Config['enable_node_speedlimit'] = true;   // 是否显示节点的限速
 $Malio_Config['flag_mode'] = 'node-name';   // 节点列表的国旗取值方式。node-name 为从节点名字前两个字取值（比如美国Vultr取值为美国）。node-info 为从节点状态取值，在节点列表里编辑节点，填写节点状态为 us 则显示美国国旗。us这个是国家ISO 3166码，不懂就谷歌。
 $Malio_Config['taiwan_flag'] = 'cn';   //  台湾的旗显示方式，cn为中国国旗，tw为台湾区旗
+$Malio_Config['node_class_name'] = [   //  节点的等级对应的名字
+    0 => '免费节点',   // 格式为 节点等级 => 节点等级名字
+    1 => '标准版节点',
+    2 => '高级版节点',
+    3 => '加强版节点',
+];
 
 
 // 节点设置 -> 连接设置

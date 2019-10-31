@@ -67,6 +67,5 @@
     '剩余流量': '{$user->unusedTraffic()}'
   };
   var userUUID = '{$user->uuid}';
-  setupChatra();
 </script>
 {/if}
