@@ -444,7 +444,15 @@ class LinkController extends BaseController
                 }
                 $v2ray_tls = ', over-tls=false, certificate=1';
                 if (($v2ray['net'] == 'tcp' && $v2ray['tls'] == 'tls') || $v2ray['tls'] == 'tls') {
-                    $v2ray_tls = ', over-tls=true, tls-host=' . $v2ray['add'] . ', certificate=1';
+                    $v2ray_tls = ', over-tls=true, tls-host=' . $v2ray['add'];
+                    if (array_key_exists('relayserver', $v2ray)) {
+                            if ($v2ray['relayserver']!=""){
+                                $v2ray_tls.=', certificate=0';
+                            }
+                        }else{
+                        $v2ray_tls.=', certificate=1';
+                    }
+
                 }
                 $v2ray_obfs = '';
                 if ($v2ray['net'] == 'ws' || $v2ray['net'] == 'http') {
