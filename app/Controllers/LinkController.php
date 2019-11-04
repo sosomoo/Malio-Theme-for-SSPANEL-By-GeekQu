@@ -811,8 +811,16 @@ class LinkController extends BaseController
                 $obfs .= ($item['tls'] == 'tls'
                     ? '&tls=1'
                     : '&tls=0');
+
             } else {
                 $obfs .= '&obfs=none';
+            }
+            if ($obfs!='&obfs=none'){
+                if (array_key_exists('relayserver', $item)) {
+                    if ($item['relayserver']!="" && $item['tls'] == 'tls'){
+                        $obfs.="&allowInsecure=1";
+                    }
+                }
             }
             $return .= ('vmess://' . Tools::base64_url_encode(
                 'chacha20-poly1305:' . $item['id'] .
