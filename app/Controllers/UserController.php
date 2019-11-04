@@ -23,6 +23,8 @@ use App\Utils\Tools;
 use App\Utils\Radius;
 use App\Models\DetectLog;
 use App\Models\DetectRule;
+use App\Models\NodeOnlineLog;
+use App\Models\NodeInfoLog;
 
 use Exception;
 use voku\helper\AntiXSS;
@@ -42,6 +44,7 @@ use App\Utils\Telegram;
 use App\Utils\TelegramSessionManager;
 use App\Utils\Pay;
 use App\Utils\URL;
+use App\Utils\DatatablesHelper;
 use App\Services\Mail;
 
 /**
@@ -456,9 +459,12 @@ class UserController extends BaseController
 
         $array_nodes = array();
         $nodes_muport = array();
+        $db = new DatatablesHelper();
+        $infoLogs = $db->query('SELECT * FROM ( SELECT * FROM `ss_node_info` WHERE log_time > ' . (time() - 300) . ' ORDER BY id DESC LIMIT 999999999999 ) t GROUP BY node_id ORDER BY id DESC');
+        $onlineLogs = $db->query('SELECT * FROM ( SELECT * FROM `ss_node_online_log` WHERE log_time > ' . (time() - 300) . ' ORDER BY id DESC LIMIT 999999999999 ) t GROUP BY node_id ORDER BY id DESC');
 
         foreach ($nodes as $node) {
-            if ($node->node_group != $user->node_group && $node->node_group != 0) {
+            if ($user->is_admin == 0 && $node->node_group != $user->node_group && $node->node_group != 0) {
                 continue;
             }
             if ($node->sort == 9) {
@@ -493,26 +499,37 @@ class UserController extends BaseController
                 $array_node['flag'] = 'unknown.png';
             }
 
-            $node_online = $node->isNodeOnline();
-            if ($node_online === null) {
+            $sort = $array_node['sort'];
+            $array_node['online_user'] = 0;
+            
+            foreach ($onlineLogs as $log) {
+                if ($log['node_id'] != $node->id) {
+                    continue;
+                }
+                if (in_array($sort, array(0, 7, 8, 10, 11, 12, 13))) {
+                    $array_node['online_user'] = $log['online_user'];
+                } else {
+                    $array_node['online_user'] = -1;
+                }
+                break;
+            }
+            
+            // check node status 
+            // 0: new node; -1: offline; 1: online
+            $node_heartbeat = $node->node_heartbeat + 300;
+            $array_node['online'] = -1;
+            if (!in_array($sort, array(0, 7, 8, 10, 11, 12, 13)) || $node_heartbeat == 300 ) {
                 $array_node['online'] = 0;
-            } elseif ($node_online === true) {
+            } elseif ($node_heartbeat > time()) {
                 $array_node['online'] = 1;
-            } elseif ($node_online === false) {
-                $array_node['online'] = -1;
             }
 
-            if (in_array($node->sort, array(0, 7, 8, 10, 11, 12, 13))) {
-                $array_node['online_user'] = $node->getOnlineUserCount();
-            } else {
-                $array_node['online_user'] = -1;
-            }
-
-            $nodeLoad = $node->getNodeLoad();
-            if (isset($nodeLoad[0]['load'])) {
-                $array_node['latest_load'] = (explode(' ', $nodeLoad[0]['load']))[0] * 100;
-            } else {
-                $array_node['latest_load'] = -1;
+            $array_node['latest_load'] = -1;
+            foreach ($infoLogs as $log) {
+                if ($log['node_id'] == $node->id) {
+                    $array_node['latest_load'] = (explode(' ', $log['load']))[0] * 100;
+                    break;
+                }
             }
 
             $array_node['traffic_used'] = (int)Tools::flowToGB($node->node_bandwidth);
@@ -1815,5 +1832,63 @@ class UserController extends BaseController
             'old_local' => null
         ], $expire_in);
         return $response->withStatus(302)->withHeader('Location', $local);
+    }
+
+    /** 
+     * 获取包含订阅信息的客户端压缩档
+     * 
+     * @param Request  $request 
+     * @param Response $response 
+     * @param array    $args
+     */
+    public function getPcClient($request, $response, $args)
+    {
+        $zipArc = new \ZipArchive();
+        $user_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
+        $type = trim($request->getQueryParams()['type']);
+        // 临时文件存放路径
+        $temp_file_path = '../storage/';
+        // 客户端文件存放路径
+        $client_path = '../resources/clients/';
+        switch ($type) {
+            case 'ss-win':
+                $temp_file_path .= $type . '_' . $user_token . '.zip';
+                $user_config_file_name = 'gui-config.json';
+                $content = LinkController::getSSPcConf($this->user);
+                $client_path .= $type . '/';
+                break;
+            case 'ssd-win':
+                $temp_file_path .= $type . '_' . $user_token . '.zip';
+                $user_config_file_name = 'gui-config.json';
+                $content = LinkController::getSSDPcConf($this->user);
+                $client_path .= $type . '/';
+                break;
+            case 'ssr-win':
+                $temp_file_path .= $type . '_' . $user_token . '.zip';
+                $user_config_file_name = 'gui-config.json';
+                $content = LinkController::getSSRPcConf($this->user);
+                $client_path .= $type . '/';
+                break;
+            default:
+                return 'gg';
+        }
+        // 文件存在则先删除
+        if (is_file($temp_file_path)) {
+            unlink($temp_file_path);
+        }
+        // 超链接文件内容
+        $site_url_content = '[InternetShortcut]' . PHP_EOL . 'URL=' . Config::get('baseUrl');
+        // 创建 zip 并添加内容
+        $zipArc->open($temp_file_path, \ZipArchive::CREATE);
+        $zipArc->addFromString($user_config_file_name, $content);
+        $zipArc->addFromString('点击访问_' . Config::get('appName') . '.url', $site_url_content);
+        Tools::folderToZip($client_path, $zipArc, strlen($client_path));
+        $zipArc->close();
+
+        $newResponse = $response->withHeader('Content-type', ' application/octet-stream')->withHeader('Content-Disposition', ' attachment; filename=' . $type . '.zip');
+        $newResponse->write(file_get_contents($temp_file_path));
+        unlink($temp_file_path);
+
+        return $newResponse;
     }
 }

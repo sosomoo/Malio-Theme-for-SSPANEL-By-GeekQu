@@ -9,17 +9,11 @@ use App\Middleware\Mu;
 use App\Middleware\Mod_Mu;
 use Zeuxisoo\Whoops\Provider\Slim\WhoopsMiddleware;
 
-// config
-$debug = false;
-if (defined('DEBUG')) {
-    $debug = true;
-}
-
 $configuration = [
     'settings' => [
-        'debug' => $debug,
+        'debug' => DEBUG,
         'whoops.editor' => 'sublime',
-        'displayErrorDetails' => $debug
+        'displayErrorDetails' => DEBUG
     ]
 ];
 
@@ -42,7 +36,7 @@ $container['notAllowedHandler'] = static function ($c) {
     };
 };
 
-if ($debug == false) {
+if (DEBUG == false) {
     $container['errorHandler'] = static function ($c) {
         return static function ($request, $response, $exception) use ($c) {
             return $response->withAddedHeader('Location', '/500');
@@ -66,6 +60,8 @@ $app->post('/notify', App\Controllers\HomeController::class . ':notify');
 $app->get('/tos', App\Controllers\HomeController::class . ':tos');
 $app->get('/staff', App\Controllers\HomeController::class . ':staff');
 $app->post('/telegram_callback', App\Controllers\HomeController::class . ':telegram');
+$app->post('/tomato_back/{type}', 'App\Services\Payment:notify');
+$app->get('/tomato_back/{type}', 'App\Services\Payment:notify');
 
 // User Center
 $app->group('/user', function () {
@@ -151,9 +147,13 @@ $app->group('/user', function () {
     // Crypto Payment - BTC, ETH, EOS, BCH, LTC etch
     $this->post('/payment/bitpay/purchase', App\Services\BitPayment::class . ':purchase');
     $this->get('/payment/bitpay/return', App\Services\BitPayment::class . ':returnHTML');
+
+    // getPcClient
+    $this->get('/getPcClient', App\Controllers\UserController::class . ':getPcClient');
 })->add(new Auth());
 
 $app->group('/payment', function () {
+    $this->get('/notify', App\Services\Payment::class . ':notify');
     $this->post('/notify', App\Services\Payment::class . ':notify');
     $this->post('/notify/{type}', App\Services\Payment::class . ':notify');
     $this->post('/status', App\Services\Payment::class . ':getStatus');
@@ -294,6 +294,7 @@ $app->group('/admin', function () {
     $this->get('/profile', App\Controllers\AdminController::class . ':profile');
     $this->get('/invite', App\Controllers\AdminController::class . ':invite');
     $this->post('/invite', App\Controllers\AdminController::class . ':addInvite');
+    $this->post('/chginvite', App\Controllers\AdminController::class . ':chgInvite');
     $this->get('/sys', App\Controllers\AdminController::class . ':sys');
     $this->get('/logout', App\Controllers\AdminController::class . ':logout');
     $this->post('/payback/ajax', App\Controllers\AdminController::class . ':ajax_payback');
@@ -307,14 +308,6 @@ $app->group('/api', function () {
     $this->get('/user/{id}', App\Controllers\ApiController::class . ':userInfo')->add(new Api());
     $this->get('/sublink', App\Controllers\Client\ClientApiController::class . ':GetSubLink');
 });
-
-// mu
-$app->group('/mu', function () {
-    $this->get('/users', App\Controllers\Mu\UserController::class . ':index');
-    $this->post('/users/{id}/traffic', App\Controllers\Mu\UserController::class . ':addTraffic');
-    $this->post('/nodes/{id}/online_count', App\Controllers\Mu\NodeController::class . ':onlineUserLog');
-    $this->post('/nodes/{id}/info', App\Controllers\Mu\NodeController::class . ':info');
-})->add(new Mu());
 
 // mu
 $app->group('/mod_mu', function () {

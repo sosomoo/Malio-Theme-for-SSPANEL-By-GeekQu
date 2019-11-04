@@ -17,9 +17,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1"></script>
-<script src="/assets/js/qrcode.min.js"></script>
-
 <script>
     var pid = 0;
 
@@ -59,7 +56,7 @@
         });
     }
 
-    function f() {
+    function bitpayf() {
         $.ajax({
             type: "POST",
             url: "/payments/bitpay/status",
@@ -79,6 +76,6 @@
                 //console.log(jqXHR);
             }
         });
-        tid = setTimeout(f, 1000); //循环调用触发setTimeout
+        tid = setTimeout(bitpayf, 1000); //循环调用触发setTimeout
     }
 </script>
