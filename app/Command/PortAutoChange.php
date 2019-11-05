@@ -26,6 +26,7 @@ class PortAutoChange
 
         // 例外的节点，填写节点 ID，英文逗号分隔
         // 此处提供的节点将不会进行端口更换
+        // 当原先的承载端口被更换时，也会偏移回去
         'exception_node_id' => array(),
     ];
 
