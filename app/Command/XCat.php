@@ -33,6 +33,8 @@ class XCat
     public function boot()
     {
         switch ($this->argv[1]) {
+            case ('portAutoChange'):
+                return PortAutoChange::index();
             case ('alipay'):
                 return (new ChenPay())->AliPayListen();
             case ('wxpay'):

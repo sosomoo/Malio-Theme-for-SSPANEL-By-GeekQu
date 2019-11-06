@@ -1,5 +1,20 @@
 <?php
 
+/**
+ * [实验性] 检测到端口被墙则自动更换端口
+ *
+ * // 实验性，可能会有惊喜，请确保拥有承受能力
+ * // 请通过 Crontab 启动，间隔建议 60 分钟以上
+ *
+ * PHP version 7.2+
+ *
+ * @category GeekQu
+ * @package  App\Command
+ * @author   GeekQu <iloves@live.com>
+ * @license  MIT https://github.com/GeekQu/ss-panel-v3-mod_Uim/blob/dev/LICENSE
+ * @link     https://github.com/GeekQu
+ */
+
 namespace App\Command;
 
 use App\Models\Node;
@@ -14,7 +29,7 @@ class PortAutoChange
      */
     private const Config = [
         // 取端口范围最小值，新的端口将是之间的随机数
-        'port_min' => 8192,
+        'port_min' => 23333,
 
         // 取端口范围最大值，新的端口将是之间的随机数
         'port_max' => 65535,
@@ -26,7 +41,7 @@ class PortAutoChange
 
         // 例外的节点，填写节点 ID，英文逗号分隔
         // 此处提供的节点将不会进行端口更换
-        // 当原先的承载端口被更换时，也会偏移回去
+        // 即使当原先的承载端口被更换时，也会将例外节点的端口偏移回去
         'exception_node_id' => array(),
     ];
 
@@ -39,10 +54,10 @@ class PortAutoChange
                     ->orwhere('sort', 10);
             }
         )
+            ->where('mu_only', '>=', '0')
             ->where('type', '1')
             ->get();
         foreach ($nodes as $node) {
-            if ($node->mu_only == -1) continue;
             $mu_nodes = Node::where('sort', 9)->where('type', '1')
                 ->where(
                     static function ($query) use ($node) {
@@ -88,17 +103,18 @@ class PortAutoChange
                     }
                 )
                 ->where('node_class', '>=', $mu_node->node_class)
+                ->where('mu_only', '>=', '0')
                 ->where('type', '1')
                 ->get();
             for ($i = 0; $i <= 10; $i++) {
-                $new_port = rand(self::Config['port_min'], self::Config['port_max']);
+                $new_port = rand((int) self::Config['port_min'], (int) self::Config['port_max']);
                 if (Node::where('sort', 9)->where('server', '=', $new_port)->first() == null && User::where('port', '=', $new_port)->first() == null) {
                     break;
                 }
             }
             $number = (count($array) / count($mu_port_nodes)) * 100;
-            echo ('超过百分比：' . $number . PHP_EOL);
             if ($number >= self::Config['mu_node_port_change_percent']) {
+                echo ('超过百分比：' . $number . '%'. PHP_EOL);
                 echo ('#' . $mu_node->id . ' - 单端口承载节点 - ' . $mu_node->name . ' - 更换了新的端口 ' . $new_port . PHP_EOL);
                 $mu_node->server = $new_port;
                 $mu_node->save();
@@ -112,7 +128,7 @@ class PortAutoChange
                             if ($node_port == $new_port) {
                                 if (strpos($mu_port_node->server, ($port . '#')) !== false) {
                                     for ($i = 0; $i <= 10; $i++) {
-                                        $new_mu_node_port = rand(self::Config['port_min'], self::Config['port_max']);
+                                        $new_mu_node_port = rand((int) self::Config['port_min'], (int) self::Config['port_max']);
                                         if ($new_mu_node_port != $new_port && Node::where('port', '=', $new_mu_node_port)->first() == null && User::where('port', '=', $new_mu_node_port)->first() == null) {
                                             break;
                                         }
