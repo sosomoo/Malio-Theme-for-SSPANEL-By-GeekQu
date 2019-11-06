@@ -444,7 +444,8 @@ class Tools
         $item = [
             'host' => '',
             'path' => '',
-            'tls' => ''
+            'tls' => '',
+            "verify_cert" => true
         ];
         $item['add'] = $server[0];
         if ($server[1] == '0' || $server[1] == '') {
@@ -480,6 +481,10 @@ class Tools
             }
             if (array_key_exists('relayserver', $item)) {
                 $item['add'] = $item['relayserver'];
+                unset($item['relayserver']);
+                if ($item['tls']=='tls'){
+                    $item['verify_cert']=false;
+                }
             }
             if (array_key_exists('outside_port', $item)) {
                 $item['port'] = (int) $item['outside_port'];

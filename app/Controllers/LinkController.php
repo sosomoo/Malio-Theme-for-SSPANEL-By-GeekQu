@@ -445,12 +445,10 @@ class LinkController extends BaseController
                 $v2ray_tls = ', over-tls=false, certificate=1';
                 if (($v2ray['net'] == 'tcp' && $v2ray['tls'] == 'tls') || $v2ray['tls'] == 'tls') {
                     $v2ray_tls = ', over-tls=true, tls-host=' . $v2ray['add'];
-                    if (array_key_exists('relayserver', $v2ray)) {
-                            if ($v2ray['relayserver']!=""){
-                                $v2ray_tls.=', certificate=0';
-                            }
+                    if ($v2ray['verify_cert']) {
+                                $v2ray_tls.=', certificate=1';
                         }else{
-                        $v2ray_tls.=', certificate=1';
+                        $v2ray_tls.=', certificate=0';
                     }
 
                 }
@@ -608,10 +606,10 @@ class LinkController extends BaseController
                         $sss['plugin-opts']['mode'] = 'websocket';
                         if (strpos($item['obfs_param'], 'security=tls')) {
                             $sss['plugin-opts']['tls'] = true;
-                            if (array_key_exists('relayserver', $item)) {
-                                if ($item['relayserver']!=""){
+                            if ($item['verify_cert']==false) {
+
                                     $sss['plugin-opts']['skip-cert-verify']=true;
-                                }
+
                             }
                         }
                         $sss['plugin-opts']['host'] = $item['host'];
@@ -661,10 +659,10 @@ class LinkController extends BaseController
                 $v2rays['tls'] = true;
             }
 
-            if (array_key_exists('relayserver', $item) && array_key_exists('tls', $v2rays)) {
-                if ($item['relayserver']!="" && $v2rays['tls']){
+            if ($v2rays['verify_cert']==false) {
+
                     $v2rays['skip-cert-verify']=true;
-                }
+
             }
             if (isset($opts['source']) && $opts['source'] != '') {
                 $v2rays['class'] = $item['class'];
@@ -835,11 +833,11 @@ class LinkController extends BaseController
                 $obfs .= '&obfs=none';
             }
             if ($obfs!='&obfs=none'){
-                if (array_key_exists('relayserver', $item)) {
-                    if ($item['relayserver']!="" && $item['tls'] == 'tls'){
+
+                    if ($item['verify_cert']==false){
                         $obfs.="&allowInsecure=1";
                     }
-                }
+
             }
             $return .= ('vmess://' . Tools::base64_url_encode(
                 'chacha20-poly1305:' . $item['id'] .
