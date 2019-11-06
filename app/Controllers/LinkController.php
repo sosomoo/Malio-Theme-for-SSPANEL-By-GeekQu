@@ -608,6 +608,11 @@ class LinkController extends BaseController
                         $sss['plugin-opts']['mode'] = 'websocket';
                         if (strpos($item['obfs_param'], 'security=tls')) {
                             $sss['plugin-opts']['tls'] = true;
+                            if (array_key_exists('relayserver', $item)) {
+                                if ($item['relayserver']!=""){
+                                    $sss['plugin-opts']['skip-cert-verify']=true;
+                                }
+                            }
                         }
                         $sss['plugin-opts']['host'] = $item['host'];
                         $sss['plugin-opts']['path'] = $item['path'];
@@ -654,6 +659,12 @@ class LinkController extends BaseController
                 }
             } elseif (($item['net'] == 'tcp' && $item['tls'] == 'tls') || $item['net'] == 'tls') {
                 $v2rays['tls'] = true;
+            }
+
+            if (array_key_exists('relayserver', $item) && array_key_exists('tls', $v2rays)) {
+                if ($item['relayserver']!="" && $v2rays['tls']){
+                    $v2rays['skip-cert-verify']=true;
+                }
             }
             if (isset($opts['source']) && $opts['source'] != '') {
                 $v2rays['class'] = $item['class'];
