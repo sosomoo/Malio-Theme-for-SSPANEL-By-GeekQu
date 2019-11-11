@@ -280,7 +280,7 @@ class Tools
 
         $relay_able_list = Config::getSupportParam('relay_able_protocol');
 
-        return in_array($user->protocol, $relay_able_list) || Config::get('relay_insecure_mode') == 'true';
+        return in_array($user->protocol, $relay_able_list) || Config::get('relay_insecure_mode') == true;
     }
 
     public static function has_conflict_rule($input_rule, $ruleset, $edit_rule_id = 0, $origin_node_id = 0, $user_id = 0)
@@ -769,9 +769,10 @@ class Tools
 
     /** 
      * Add files and sub-directories in a folder to zip file. 
-     * @param string $folder 
+     * 
+     * @param string     $folder 
      * @param ZipArchive $zipFile 
-     * @param int $exclusiveLength Number of text to be exclusived from the file path. 
+     * @param int        $exclusiveLength Number of text to be exclusived from the file path. 
      */
     public static function folderToZip($folder, &$zipFile, $exclusiveLength)
     {

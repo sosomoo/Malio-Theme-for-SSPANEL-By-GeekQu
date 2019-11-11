@@ -89,7 +89,7 @@ class LinkController extends BaseController
             $find = true;
         }
 
-        $emoji = ((isset($opts['emoji']) && $opts['emoji'] == '1') || Config::get('add_emoji_to_node_name') == 'true'
+        $emoji = ((isset($opts['emoji']) && $opts['emoji'] == '1') || Config::get('add_emoji_to_node_name')
             ? 1
             : 0);
 
@@ -172,7 +172,7 @@ class LinkController extends BaseController
         }
 
         // 记录订阅日志
-        if (Config::get('subscribeLog') == 'true') {
+        if (Config::get('subscribeLog')) {
             self::Subscribe_log($user, $subscribe_type, $request->getHeaderLine('User-Agent'));
         }
 
@@ -233,7 +233,7 @@ class LinkController extends BaseController
                     . '; total=' . $user->transfer_enable
                     . '; expire=' . strtotime($user->class_expire))
             );
-        $newResponse->getBody()->write($content);
+        $newResponse->write($content);
 
         return $newResponse;
     }

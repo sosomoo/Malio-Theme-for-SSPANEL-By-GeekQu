@@ -697,9 +697,6 @@ ALTER TABLE `paylist`
 ALTER TABLE `paylist`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;ALTER TABLE `user_traffic_log` CHANGE `u` `u` BIGINT(20) NOT NULL, CHANGE `d` `d` BIGINT(20) NOT NULL;
 
-ALTER TABLE `user` ADD `discord` BIGINT NULL AFTER `telegram_id`; 
-
-
 --
 -- 用户订阅日志
 --

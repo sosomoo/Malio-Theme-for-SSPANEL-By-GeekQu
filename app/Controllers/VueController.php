@@ -39,7 +39,7 @@ class VueController extends BaseController
             }
         }
 
-        if (Config::get('enable_telegram') == 'true') {
+        if (Config::get('enable_telegram') == true) {
             $login_text = TelegramSessionManager::add_login_session();
             $login = explode('|', $login_text);
             $login_token = $login[0];
@@ -68,6 +68,7 @@ class VueController extends BaseController
             'isLogin' => $user->isLogin,
             'enable_telegram' => Config::get('enable_telegram'),
             'enable_mylivechat' => Config::get('enable_mylivechat'),
+            'enable_flag' => Config::get('enable_flag'),
             'payment_type' => Config::get('payment_system'),
         );
 

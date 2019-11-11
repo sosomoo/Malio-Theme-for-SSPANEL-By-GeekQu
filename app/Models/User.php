@@ -40,7 +40,7 @@ class User extends Model
     public function getGravatarAttribute()
     {
         $hash = md5(strtolower(trim($this->attributes['email'])));
-        return 'https://gravatar.loli.net/avatar/' . $hash;
+        return 'https://gravatar.loli.net/avatar/' . $hash."?&d=identicon";
     }
 
     public function isAdmin()
@@ -351,6 +351,7 @@ class User extends Model
             $this->attributes['method'],
             $this->attributes['protocol'],
             $this->attributes['obfs'],
+            $this->attributes['obfs_param'],
             $this->online_ip_count(),
             $this->lastSsTime(),
             $used_traffic,
@@ -417,31 +418,30 @@ class User extends Model
         $logs = DetectBanLog::where('user_id', $this->attributes['id'])->orderBy("id", "desc")->first();
         return $logs->detect_number;
     }
-    public function yesterdayIncome()
-    {
-        return Code::where('usedatetime', 'like', date('Y-m-d%', strtotime('-1 days')))->sum(number);
-    }
 
-    public function todayIncome()
+    public function calIncome($req)
     {
-        return Code::where('usedatetime', 'like', date('Y-m-d%'))->sum(number);
+    	switch($req)
+    	{
+    		case "yesterday":
+    			$number = Code::whereDate('usedatetime', '=', date('Y-m-d',strtotime('-1 days')))->sum('number');
+    			break;
+    		case "today":
+    			$number = Code::whereDate('usedatetime', '=', date('Y-m-d'))->sum('number');
+    			break;
+    		case "this month":
+    			$number = Code::whereMonth('usedatetime', '=', date('m'))->sum('number');
+    			break;
+    		case "last month":
+    			$number = Code::whereMonth('usedatetime', '=', date('m',strtotime('last month')))->sum('number');
+    			break;
+    		default:
+    			$number = Code::sum('number');
+    			break;
+    	}
+    	return is_null($number)?0:$number;
     }
-
-    public function thisMonthIncome()
-    {
-        return Code::where('usedatetime', 'like', date('Y-m%'))->sum(number);
-    }
-
-    public function lastMonthIncome()
-    {
-        return Code::where('usedatetime', 'like', date('Y-m%', strtotime('-1 months')))->sum(number);
-    }
-
-    public function totalIncome()
-    {
-        return Code::where('usedatetime', 'like', date('%'))->sum(number);
-    }
-
+    
     public function paidUserCount()
     {
         return self::where('class', '!=', '0')->count();
