@@ -148,9 +148,6 @@ $app->group('/user', function () {
     // getUserAllURL
     $this->get('/getUserAllURL', App\Controllers\UserController::class . ':getUserAllURL');
 
-    // getPcClient
-    $this->get('/getPcClient', App\Controllers\UserController::class . ':getPcClient');
-
     //Reconstructed Payment System
     $this->post('/payment/purchase', App\Services\Payment::class . ':purchase');
     $this->get('/payment/return', App\Services\Payment::class . ':returnHTML');
