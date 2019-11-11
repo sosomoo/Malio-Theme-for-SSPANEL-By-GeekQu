@@ -52,7 +52,7 @@ class UserController extends BaseController
         if (in_array($node->sort, [0, 10]) && $node->mu_only != -1) {
             $mu_port_migration = Config::get('mu_port_migration');
         } else {
-            $mu_port_migration = 'false';
+            $mu_port_migration = false;
         }
 
         /*
@@ -61,7 +61,7 @@ class UserController extends BaseController
          */
         $users_raw = User::where(
             static function ($query) use ($node, $mu_port_migration) {
-                if ($mu_port_migration == 'true') {
+                if ($mu_port_migration) {
                     $query->where(
                         static function ($query1) use ($node) {
                             if ($node->node_group != 0) {
@@ -92,7 +92,7 @@ class UserController extends BaseController
         )->where('enable', 1)->where("detect_ban", 0)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
 
         // 单端口承载用户
-        if ($mu_port_migration == 'true') {
+        if ($mu_port_migration) {
             $mu_users_raw = User::where(
                 static function ($query) use ($node) {
                     $query->where(
@@ -134,7 +134,7 @@ class UserController extends BaseController
 
         $users = array();
 
-        if (Config::get('keep_connect') == 'true') {
+        if (Config::get('keep_connect')) {
             foreach ($users_raw as $user_raw) {
                 if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
                     $user_raw = Tools::keyFilter($user_raw, $key_list);
@@ -298,7 +298,7 @@ class UserController extends BaseController
             return $this->echoJson($response, $res);
         }
 
-        if (Config::get('enable_auto_detect_ban') == 'true') {
+        if (Config::get('enable_auto_detect_ban')) {
             $detect_Users = array();
             if (count($data) > 0) {
                 foreach ($data as $log) {
@@ -358,10 +358,10 @@ class UserController extends BaseController
             if ($User == null) {
                 continue;
             }
-            if ($User->detect_ban == 1 || ($User->is_admin && Config::get('auto_detect_ban_allow_admin') == 'true') || in_array($User->id, Config::get('auto_detect_ban_allow_users'))) {
+            if ($User->detect_ban == 1 || ($User->is_admin && Config::get('auto_detect_ban_allow_admin')) || in_array($User->id, Config::get('auto_detect_ban_allow_users'))) {
                 continue;
             }
-            if (Config::get('auto_detect_ban_type') == '1') {
+            if (Config::get('auto_detect_ban_type') == 1) {
                 $last_DetectBanLog = DetectBanLog::where('user_id', $user_id)->orderBy("id", "desc")->first();
                 $last_all_detect_number = (
                     $last_DetectBanLog == null
