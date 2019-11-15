@@ -13,7 +13,7 @@ use App\Services\Gateway\ChenPay;
 use App\Utils\Hash;
 use App\Utils\Tools;
 use App\Services\Config;
-
+use App\Services\DefaultConfig;
 use App\Utils\GA;
 use App\Models\Node;
 use App\Utils\DNSoverHTTPS;
@@ -32,6 +32,8 @@ class XCat
     public function boot()
     {
         switch ($this->argv[1]) {
+            case ('detectConfigs'):
+                return $this->detectConfigs();
             case ('portAutoChange'):
                 return PortAutoChange::index();
             case ('alipay'):
@@ -366,5 +368,10 @@ class XCat
             $expire_in = 86400 + time();
             echo Hash::cookieHash($user->pass, $expire_in) . ' ' . $expire_in;
         }
+    }
+
+    public function detectConfigs()
+    {
+        echo DefaultConfig::detectConfigs();
     }
 }
