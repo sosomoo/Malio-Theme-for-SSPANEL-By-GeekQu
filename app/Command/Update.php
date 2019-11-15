@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Services\Config;
+use App\Services\DefaultConfig;
 
 class Update
 {
@@ -16,6 +17,10 @@ class Update
             echo('备份失败，迁移终止' . PHP_EOL);
             return false;
         }
+
+        echo(PHP_EOL);
+        // 检查并创建新增的配置项
+        echo DefaultConfig::detectConfigs();
 
         echo(PHP_EOL);
 

@@ -2,12 +2,23 @@
 
 namespace App\Services;
 
+use App\Models\GConfig;
+
 class Config
 {
     // TODO: remove
     public static function get($key)
     {
         return $_ENV[$key];
+    }
+
+    public static function getdb($key)
+    {
+        $value = GConfig::find($key);
+        if ($value === null) {
+            $value = DefaultConfig::firstOrCreate($key);
+        }
+        return $value;
     }
 
     public static function getPublicConfig()

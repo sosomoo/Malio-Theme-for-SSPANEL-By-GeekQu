@@ -314,6 +314,14 @@ $app->group('/admin', function () {
     $this->get('/sys', App\Controllers\AdminController::class . ':sys');
     $this->get('/logout', App\Controllers\AdminController::class . ':logout');
     $this->post('/payback/ajax', App\Controllers\AdminController::class . ':ajax_payback');
+
+    // Config Mange
+    $this->group('/config', function () {
+        $this->get('/telegram', App\Controllers\Admin\GConfigController::class . ':telegram');
+        $this->post('/telegram/ajax', App\Controllers\Admin\GConfigController::class . ':telegram_ajax');
+        $this->get('/telegram/{key}/edit', App\Controllers\Admin\GConfigController::class . ':telegram_edit');
+        $this->put('/telegram/{key}', App\Controllers\Admin\GConfigController::class . ':telegram_update');
+    });
 })->add(new Admin());
 
 // mu
