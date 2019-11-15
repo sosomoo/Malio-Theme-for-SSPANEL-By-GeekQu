@@ -8,32 +8,6 @@ use App\Models\GConfig;
 
 class GConfigController extends AdminController
 {
-    public function index($ajax_url, $tpl_path)
-    {
-        $table_config['total_column'] = array(
-            'op'             => '操作',
-            'name'           => '配置名称',
-            'key'            => '配置名',
-            'value'          => '配置值',
-            'operator_id'    => '操作员 ID',
-            'operator_name'  => '操作员名称',
-            'operator_email' => '操作员邮箱',
-            'last_update'    => '修改时间'
-        );
-        $table_config['default_show_column'] = array();
-        foreach ($table_config['total_column'] as $column => $value) {
-            $table_config['default_show_column'][] = $column;
-        }
-        $table_config['ajax_url'] = $ajax_url;
-        return $this->view()->assign('table_config', $table_config)->fetch($tpl_path);
-    }
-
-    public function edit($key, $tpl_path)
-    {
-        $config = GConfig::find($key);
-        return $this->view()->assign('edit_config', $config)->fetch($tpl_path);
-    }
-
     public function update($request, $response, $args)
     {
         $key  = trim($args['key']);
@@ -58,13 +32,29 @@ class GConfigController extends AdminController
 
     public function telegram($request, $response, $args)
     {
-        return self::index('telegram/ajax', 'admin/config/telegram/index.tpl');
+        $table_config['total_column'] = array(
+            'op'             => '操作',
+            'name'           => '配置名称',
+            'key'            => '配置名',
+            'value'          => '配置值',
+            'operator_id'    => '操作员 ID',
+            'operator_name'  => '操作员名称',
+            'operator_email' => '操作员邮箱',
+            'last_update'    => '修改时间'
+        );
+        $table_config['default_show_column'] = array();
+        foreach ($table_config['total_column'] as $column => $value) {
+            $table_config['default_show_column'][] = $column;
+        }
+        $table_config['ajax_url'] = 'telegram/ajax';
+        return $this->view()->assign('table_config', $table_config)->fetch('admin/config/telegram/index.tpl');
     }
 
     public function telegram_edit($request, $response, $args)
     {
         $key = trim($args['key']);
-        return self::edit($key, 'admin/config/telegram/edit.tpl');
+        $config = GConfig::find($key);
+        return $this->view()->assign('edit_config', $config)->fetch('admin/config/telegram/edit.tpl');
     }
 
     public function telegram_update($request, $response, $args)
