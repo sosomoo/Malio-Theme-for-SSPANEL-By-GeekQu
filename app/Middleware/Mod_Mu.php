@@ -30,7 +30,7 @@ class Mod_Mu
             }
         }
 
-        if (Config::get('newIndex') == 'true'){
+        if (Config::get('checkNodeIp')){
 
             $node = Node::where('node_ip', 'LIKE', $_SERVER['REMOTE_ADDR'] . '%')->first();
             if ($node == null && $_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
