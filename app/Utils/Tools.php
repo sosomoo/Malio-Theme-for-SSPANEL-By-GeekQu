@@ -499,7 +499,7 @@ class Tools
     {
         $server = explode(';', $node);
         $item = [
-            'host' => 'windowsupdate.microsoft.com',
+            'host' => 'microsoft.com',
             'path' => '',
             'net' => 'ws',
             'tls' => ''
