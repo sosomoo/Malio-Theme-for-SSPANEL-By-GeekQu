@@ -138,7 +138,7 @@ class LinkController extends BaseController
         ];
 
         // 请求路径以及查询参数
-        $path = ($request->getPath() . $request->getQuery());
+        $path = ($request->getUri()->getPath() . $request->getUri()->getQuery());
 
         $getBody = '';
         foreach ($sub_type_array as $key => $value) {
