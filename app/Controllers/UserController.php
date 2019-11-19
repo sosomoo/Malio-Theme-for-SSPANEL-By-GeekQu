@@ -1968,4 +1968,19 @@ class UserController extends BaseController
 
         return $newResponse;
     }
+
+    /** 
+     * 清理订阅缓存
+     * 
+     * @param Request  $request 
+     * @param Response $response 
+     * @param array    $args
+     */
+    public function cleanSubCache($request, $response, $args)
+    {
+        $user_path = (BASE_PATH . '/storage/SubscribeCache/' . $this->user->id . '/');
+        Tools::delDirAndFile($user_path);
+
+        return $response->withStatus(302)->withHeader('Location', '/user');
+    }
 }

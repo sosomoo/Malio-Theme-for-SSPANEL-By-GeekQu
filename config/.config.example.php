@@ -323,6 +323,8 @@ $_ENV['mu_port_migration'] = false;       //为后端直接下发偏移后的端
 $_ENV['relay_port_migration'] = false;    //为中转规则下发偏移后的端口，此项未经测试
 $_ENV['add_emoji_to_node_name'] = false;  //为部分订阅中默认添加 emoji
 $_ENV['add_appName_to_ss_uri'] = true;    //为 SS 节点名称中添加站点名
+$_ENV['enable_sub_cache'] = false;        //订阅信息缓存
+$_ENV['sub_cache_time'] = 3600;           //订阅信息缓存有效时间 (分钟)
 
 // 审计自动封禁开关
 $_ENV['enable_auto_detect_ban'] = false;

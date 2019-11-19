@@ -294,11 +294,22 @@ table tr td:first-child {
 										<li>
 											<a class="" data-toggle="tab" href="#info_center"><i class="icon icon-lg">flight_takeoff</i>&nbsp;连接信息</a>
 										</li>
+										<li>
+											<a class="" data-toggle="tab" href="#other"><i class="icon icon-lg">add_circle</i>&nbsp;其他</a>
+										</li>
 									</ul>
 								</nav>
 
 								<div class="card-inner">
 									<div class="tab-content">
+
+
+										<div class="tab-pane fade" id="other">
+                                            <p>清理订阅缓存：
+                                                <a class="kaobei copy-text btn btn-subscription" type="button" href="/user/cleanSubCache">点击清理</a>
+                                            </p>
+										</div>
+
 
 										<div class="tab-pane fade" id="info_center">
 											<p>您的链接信息：</p>

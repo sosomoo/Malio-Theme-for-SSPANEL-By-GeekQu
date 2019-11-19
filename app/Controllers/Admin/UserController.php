@@ -582,4 +582,13 @@ class UserController extends AdminController
         ];
         return json_encode($info, true);
     }
+
+    public function cleanSubCache($request, $response, $args)
+    {
+        $id = $args['id'];
+        $user_path = (BASE_PATH . '/storage/SubscribeCache/' . $id . '/');
+        Tools::delDirAndFile($user_path);
+
+        return $response->withStatus(302)->withHeader('Location', '/admin/user');
+    }
 }

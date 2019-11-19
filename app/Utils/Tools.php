@@ -793,4 +793,25 @@ class Tools
         }
         closedir($handle);
     }
+
+    /** 
+     * 清空文件夹
+     * 
+     * @param string $dirName 
+     */
+    public static function delDirAndFile($dirPath)
+    {
+        if ($handle = opendir($dirPath)){
+            while (false !== ($item = readdir($handle))){
+                if ($item != '.' && $item != '..'){
+                    if (is_dir($dirPath . '/' . $item)){
+                        self::delDirAndFile($dirPath . '/' . $item);
+                    } else {
+                        unlink($dirPath . '/' . $item);
+                    }
+                }
+            }
+            closedir($handle);
+        }
+    }
 }

@@ -158,6 +158,9 @@ $app->group('/user', function () {
 
     // getPcClient
     $this->get('/getPcClient', App\Controllers\UserController::class . ':getPcClient');
+
+    // CleanSubCache
+    $this->get('/cleanSubCache', App\Controllers\UserController::class . ':cleanSubCache');
 })->add(new Auth());
 
 $app->group('/payment', function () {
@@ -314,6 +317,9 @@ $app->group('/admin', function () {
     $this->get('/sys', App\Controllers\AdminController::class . ':sys');
     $this->get('/logout', App\Controllers\AdminController::class . ':logout');
     $this->post('/payback/ajax', App\Controllers\AdminController::class . ':ajax_payback');
+
+    // CleanSubCache
+    $this->get('/user/{id}/cleanSubCache', App\Controllers\Admin\UserController::class . ':cleanSubCache');
 
     // Config Mange
     $this->group('/config', function () {

@@ -13,6 +13,7 @@ use App\Utils\Tools;
 use App\Utils\URL;
 use App\Services\Config;
 use App\Services\AppsProfiles;
+use Ramsey\Uuid\Uuid;
 
 /**
  *  HomeController
@@ -136,16 +137,28 @@ class LinkController extends BaseController
             5 => 'V2Ray + SS + SSR'
         ];
 
+        // 请求路径以及查询参数
+        $path = ($request->getPath() . $request->getQuery());
+
         $getBody = '';
         foreach ($sub_type_array as $key => $value) {
             if ($key != 'sub' && isset($opts[$key])) {
                 $int = (int) $opts[$key];
                 $class = ('get' . $value['class']);
                 if ($int >= 1) {
+                    if (Config::get('enable_sub_cache') === true) {
+                        $content = self::getSubscribeCache($user, $path);
+                        if ($content === false) {
+                            $content = self::$class($user, $int, $opts, $Rule, $find, $emoji);
+                        }
+                        self::SubscribeCache($user, $path, $content);
+                    } else {
+                        $content = self::$class($user, $int, $opts, $Rule, $find, $emoji);
+                    }
                     $getBody = self::getBody(
                         $user,
                         $response,
-                        self::$class($user, $int, $opts, $Rule, $find, $emoji),
+                        $content,
                         $value['filename']
                     );
                     $subscribe_type = $value['class'];
@@ -163,10 +176,19 @@ class LinkController extends BaseController
                 $int = 1;
             }
             $subscribe_type = $sub_int_type[$int];
+            if (Config::get('enable_sub_cache') === true) {
+                $content = self::getSubscribeCache($user, $path);
+                if ($content === false) {
+                    $content = self::getSub($user, $int, $opts, $Rule, $find, $emoji);
+                }
+                self::SubscribeCache($user, $path, $content);
+            } else {
+                $content = self::getSub($user, $int, $opts, $Rule, $find, $emoji);
+            }
             $getBody = self::getBody(
                 $user,
                 $response,
-                self::getSub($user, $int, $opts, $Rule, $find, $emoji),
+                $content,
                 $value['filename']
             );
         }
@@ -177,6 +199,49 @@ class LinkController extends BaseController
         }
 
         return $getBody;
+    }
+
+    /**
+     * 获取订阅文件缓存
+     *
+     * @param object $user 用户
+     * @param string $path 路径以及查询参数
+     *
+     */
+    private static function getSubscribeCache($user, $path)
+    {
+        $user_path = (BASE_PATH . '/storage/SubscribeCache/' . $user->id . '/');
+        if (!is_dir($user_path)) mkdir($user_path);
+        $user_path_hash = ($user_path . Uuid::uuid3(Uuid::NAMESPACE_DNS, $path)->toString());
+        if (!is_file($user_path_hash)) return false;
+        $filemtime = filemtime($user_path_hash);
+        if ($filemtime === false) {
+            unlink($user_path_hash);
+            return false;
+        }
+        if ((time() - $filemtime) >= (Config::get('sub_cache_time') * 60)) {
+            unlink($user_path_hash);
+            return false;
+        }
+        
+        return file_get_contents($user_path_hash);
+    }
+
+    /**
+     * 订阅文件写入缓存
+     *
+     * @param object $user 用户
+     * @param string $path 路径以及查询参数
+     *
+     */
+    private static function SubscribeCache($user, $path, $content)
+    {
+        $user_path = (BASE_PATH . '/storage/SubscribeCache/' . $user->id . '/');
+        if (!is_dir($user_path)) mkdir($user_path);
+        $user_path_hash = ($user_path . Uuid::uuid3(Uuid::NAMESPACE_DNS, $path)->toString());
+        $file = fopen($user_path_hash, 'wb');
+        fwrite($file, $content);
+        fclose($file);
     }
 
     /**
