@@ -93,8 +93,13 @@ class YMQ extends AbstractPayment
         $data['sign'] = $this->sign($params);
         $contents = utf8_encode($this->post($data));
         $result = json_decode($contents,true);
-        return json_encode(['code' => $result['code'], "msg"=>$result['msg'],'url' => $result['data']['qr'], 'pid' => $data['out_order_sn'],
-            "pay_way"=>$type,"expire_in"=>$result['data']['expire_in']]);
+        if (array_key_exists('data', $result)){
+            return json_encode(['code' => $result['code'], "msg"=>$result['msg'],'url' => $result['data']['qr'], 'pid' => $data['out_order_sn'],
+                "pay_way"=>$type,"expire_in"=>$result['data']['expire_in']]);
+        }else{
+            return json_encode(['code' => $result['code'], "msg"=>$result['msg'], 'pid' => $data['out_order_sn']]);
+        }
+
         //$result = json_decode($this->post($data), true);
         //$result['pid'] = $pl->tradeno;
         //return json_encode($result);
