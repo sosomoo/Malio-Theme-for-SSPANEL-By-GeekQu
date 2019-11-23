@@ -418,28 +418,32 @@ class User extends Model
         return $logs->detect_number;
     }
     public function yesterdayIncome()
-    {
-        return Code::where('usedatetime', 'like', date('Y-m-d%', strtotime('-1 days')))->sum(number);
+    {   $number = Code::where('usedatetime', 'like', date('Y-m-d%', strtotime('-1 days')))->sum('number');
+        return is_null($number)?0:$number;
     }
 
     public function todayIncome()
     {
-        return Code::where('usedatetime', 'like', date('Y-m-d%'))->sum(number);
+        $number = Code::where('usedatetime', 'like', date('Y-m-d%'))->sum('number');
+        return is_null($number)?0:$number;
     }
 
     public function thisMonthIncome()
     {
-        return Code::where('usedatetime', 'like', date('Y-m%'))->sum(number);
+        $number = Code::where('usedatetime', 'like', date('Y-m%'))->sum('number');
+        return is_null($number)?0:$number;
     }
 
     public function lastMonthIncome()
     {
-        return Code::where('usedatetime', 'like', date('Y-m%', strtotime('-1 months')))->sum(number);
+        $number = Code::where('usedatetime', 'like', date('Y-m%', strtotime('-1 months')))->sum('number');
+        return is_null($number)?0:$number;
     }
 
     public function totalIncome()
     {
-        return Code::where('usedatetime', 'like', date('%'))->sum(number);
+        $number = Code::where('usedatetime', 'like', date('%'))->sum('number');
+        return is_null($number)?0:$number;
     }
 
     public function paidUserCount()
