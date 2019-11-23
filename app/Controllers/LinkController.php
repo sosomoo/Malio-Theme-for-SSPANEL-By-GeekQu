@@ -444,7 +444,13 @@ class LinkController extends BaseController
                 }
                 $v2ray_tls = ', over-tls=false, certificate=1';
                 if (($v2ray['net'] == 'tcp' && $v2ray['tls'] == 'tls') || $v2ray['tls'] == 'tls') {
-                    $v2ray_tls = ', over-tls=true, tls-host=' . $v2ray['add'] . ', certificate=1';
+                    $v2ray_tls = ', over-tls=true, tls-host=' . $v2ray['add'];
+                    if ($v2ray['verify_cert']) {
+                                $v2ray_tls.=', certificate=1';
+                        }else{
+                        $v2ray_tls.=', certificate=0';
+                    }
+
                 }
                 $v2ray_obfs = '';
                 if ($v2ray['net'] == 'ws' || $v2ray['net'] == 'http') {
@@ -600,6 +606,11 @@ class LinkController extends BaseController
                         $sss['plugin-opts']['mode'] = 'websocket';
                         if (strpos($item['obfs_param'], 'security=tls')) {
                             $sss['plugin-opts']['tls'] = true;
+                            if ($item['verify_cert']==false) {
+
+                                    $sss['plugin-opts']['skip-cert-verify']=true;
+
+                            }
                         }
                         $sss['plugin-opts']['host'] = $item['host'];
                         $sss['plugin-opts']['path'] = $item['path'];
@@ -646,6 +657,12 @@ class LinkController extends BaseController
                 }
             } elseif (($item['net'] == 'tcp' && $item['tls'] == 'tls') || $item['net'] == 'tls') {
                 $v2rays['tls'] = true;
+            }
+
+            if ($v2rays['verify_cert']==false) {
+
+                    $v2rays['skip-cert-verify']=true;
+
             }
             if (isset($opts['source']) && $opts['source'] != '') {
                 $v2rays['class'] = $item['class'];
@@ -811,8 +828,16 @@ class LinkController extends BaseController
                 $obfs .= ($item['tls'] == 'tls'
                     ? '&tls=1'
                     : '&tls=0');
+
             } else {
                 $obfs .= '&obfs=none';
+            }
+            if ($obfs!='&obfs=none'){
+
+                    if ($item['verify_cert']==false){
+                        $obfs.="&allowInsecure=1";
+                    }
+
             }
             $return .= ('vmess://' . Tools::base64_url_encode(
                 'chacha20-poly1305:' . $item['id'] .
