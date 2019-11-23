@@ -659,7 +659,7 @@ class LinkController extends BaseController
                 $v2rays['tls'] = true;
             }
 
-            if ($v2rays['verify_cert']==false) {
+            if ($item['verify_cert']==false) {
 
                     $v2rays['skip-cert-verify']=true;
 
