@@ -16,7 +16,9 @@ use App\Services\Config;
 use App\Utils\Telegram;
 
 abstract class AbstractPayment
-{
+{   function randFloat($min = 0, $max = 1) {
+    return $min + mt_rand() / mt_getrandmax() * ($max - $min);
+}
     abstract public function purchase($request, $response, $args);
 
     abstract public function notify($request, $response, $args);
@@ -39,6 +41,9 @@ abstract class AbstractPayment
         $p->save();
         $user = User::find($p->userid);
         $user->money += $p->total;
+        if (Config::get("double_probability")>$this->randFloat()){
+            $user->money += rand(0,$p->total);
+        }
         $user->save();
         $codeq = new Code();
         $codeq->code = $method;
