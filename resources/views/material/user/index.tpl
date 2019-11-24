@@ -494,7 +494,7 @@ table tr td:first-child {
 													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://github.com/2dust/v2rayNG/releases"><i class="material-icons">save_alt</i> 下载</a> V2rayNG - [ SS/VMess ]：</p>
-													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/v2rayNG"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/V2rayNG"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://rink.hockeyapp.net/recruit/2113783c503645abb0a5ec6317e1a169"><i class="material-icons">save_alt</i> 下载</a> Surfboard - [ SS ]：</p>
