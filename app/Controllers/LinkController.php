@@ -803,9 +803,6 @@ class LinkController extends BaseController
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
-            if ($item['net'] == 'kcp') {
-                continue;
-            }
             if ($find) {
                 $item['remark'] = $item['ps'];
                 $item = ConfController::getMatchProxy($item, $Rule);
@@ -829,9 +826,14 @@ class LinkController extends BaseController
                     ? '&tls=1'
                     : '&tls=0');
 
-            } else {
+            } elseif($item['net'] == 'kcp' || $item['net'] == 'mkcp'){
+                $obfs .='obfsParam={"header":'.'"'.($item['type'] == ''||$item['type'] == 'noop'
+                        ? 'none'
+                        : $item['type']).'"'.'}&obfs=mkcp';
+            }else {
                 $obfs .= '&obfs=none';
             }
+
             if ($obfs!='&obfs=none'){
 
                     if ($item['verify_cert']==false){

@@ -465,7 +465,7 @@ class Tools
             }
         }
         if (count($server) >= 5) {
-            if (in_array($item['net'], array('kcp', 'http'))) {
+            if (in_array($item['net'], array('kcp', 'http','mkcp'))) {
                 $item['type'] = $server[4];
             } elseif ($server[4] == 'ws') {
                 $item['net'] = 'ws';
