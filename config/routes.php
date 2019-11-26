@@ -128,7 +128,6 @@ $app->group('/user', function () {
     $this->post('/gaset', App\Controllers\UserController::class . ':GaSet');
     $this->get('/gareset', App\Controllers\UserController::class . ':GaReset');
     $this->get('/telegram_reset', App\Controllers\UserController::class . ':telegram_reset');
-    $this->get('/discord_reset', App\Controllers\UserController::class . ':discord_reset');
     $this->post('/resetport', App\Controllers\UserController::class . ':ResetPort');
     $this->post('/specifyport', App\Controllers\UserController::class . ':SpecifyPort');
     $this->post('/pacset', App\Controllers\UserController::class . ':PacSet');
@@ -300,15 +299,6 @@ $app->group('/admin', function () {
     $this->post('/payback/ajax', App\Controllers\AdminController::class . ':ajax_payback');
 })->add(new Admin());
 
-// API
-$app->group('/api', function () {
-    $this->get('/token/{token}', App\Controllers\ApiController::class . ':token');
-    $this->post('/token', App\Controllers\ApiController::class . ':newToken');
-    $this->get('/node', App\Controllers\ApiController::class . ':node')->add(new Api());
-    $this->get('/user/{id}', App\Controllers\ApiController::class . ':userInfo')->add(new Api());
-    $this->get('/sublink', App\Controllers\Client\ClientApiController::class . ':GetSubLink');
-});
-
 // mu
 $app->group('/mod_mu', function () {
     $this->get('/nodes/{id}/info', App\Controllers\Mod_Mu\NodeController::class . ':get_info');
@@ -367,6 +357,7 @@ $app->get('/gettransfer', App\Controllers\VueController::class . ':getTransfer')
 $app->get('/getCaptcha', App\Controllers\VueController::class . ':getCaptcha');
 $app->post('/getChargeLog', App\Controllers\VueController::class . ':getChargeLog');
 $app->get('/getnodelist', App\Controllers\VueController::class . ':getNodeList');
+$app->get('/nodeinfo/{id}', App\Controllers\VueController::class . ':getNodeInfo');
 
 /**
  * chenPay
