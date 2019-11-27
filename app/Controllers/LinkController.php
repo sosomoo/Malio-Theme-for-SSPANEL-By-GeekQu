@@ -318,7 +318,7 @@ class LinkController extends BaseController
             // v2
             $v2_items = URL::getAllVMessUrl($user, 1, $emoji);
             foreach ($v2_items as $item) {
-                if (!in_array($item['net'], ['ws', 'tcp'])) {
+                if (!in_array($item['net'], ['ws', 'tcp','kcp','quic','h2'])) {
                     continue;
                 }
                 $item['remark'] = $item['ps'];
@@ -353,7 +353,7 @@ class LinkController extends BaseController
             // v2
             $v2_items = URL::getAllVMessUrl($user, 1, $emoji);
             foreach ($v2_items as $item) {
-                if (!in_array($item['net'], ['ws', 'tcp'])) {
+                if (!in_array($item['net'], ['ws', 'tcp','kcp','quic','h2'])) {
                     continue;
                 }
                 $tls = ($item['tls'] == 'tls'
@@ -434,7 +434,7 @@ class LinkController extends BaseController
             $v2ray_name = '';
             $v2rays = URL::getAllVMessUrl($user, 1, $emoji);
             foreach ($v2rays as $v2ray) {
-                if ($v2ray['net'] == 'kcp' || $v2ray['net'] == 'quic') {
+                if (in_array($v2ray['net'], array( 'kcp', 'quic','h2'))){
                     continue;
                 }
                 if (strpos($v2ray['ps'], '回国') or strpos($v2ray['ps'], 'China')) {
@@ -633,7 +633,7 @@ class LinkController extends BaseController
         // v2
         $items = URL::getAllVMessUrl($user, 1, $emoji);
         foreach ($items as $item) {
-            if (in_array($item['net'], array('kcp', 'http', 'quic'))) {
+            if (in_array($item['net'], array('kcp', 'http', 'quic','h2'))) {
                 continue;
             }
             $v2rays = [
@@ -803,6 +803,9 @@ class LinkController extends BaseController
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
+            if (in_array($item['net'], array( 'http', 'quic','h2'))) {
+                continue;
+            }
             if ($find) {
                 $item['remark'] = $item['ps'];
                 $item = ConfController::getMatchProxy($item, $Rule);
@@ -951,11 +954,18 @@ class LinkController extends BaseController
                     $protocol .= ('&wspath=' . $item['path'] .
                         '&wsHost=' . $item['host']);
                     break;
+                case "h2":
+                    $protocol .= ('&h2Path=' . $item['path'] .
+                        '&h2Host=' . $item['host']);
+                    break;
             }
             $tls = ($item['tls'] == 'tls' || $item['net'] == 'tls'
                 ? '&tls=1'
                 : '&tls=0');
-            $mux = '&mux=1&muxConcurrency=8';
+            if ($item['verify_cert']==false && ($item['tls'] == 'tls' || $item['net'] == 'tls')) {
+                $tls .='&allowInsecure=1';
+            }
+            $mux = '&mux=&muxConcurrency=8';
             $return .= ('vmess://' . base64_encode(
                 'auto:' . $item['id'] .
                     '@' . $item['add'] . ':' . $item['port']
