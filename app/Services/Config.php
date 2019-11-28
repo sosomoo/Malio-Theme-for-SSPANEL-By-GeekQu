@@ -31,7 +31,6 @@ class Config
             'sspanelAnalysis' => self::get('sspanelAnalysis'),
             'enable_donate' => self::get('enable_donate'),
             'enable_telegram' => self::get('enable_telegram'),
-            'enable_discord' => self::get('enable_discord'),
             'payment_system' => self::get('payment_system'),
             'enable_mylivechat' => self::get('enable_mylivechat'),
             'mylivechat_id' => self::get('mylivechat_id'),
@@ -46,6 +45,8 @@ class Config
             'custom_invite_price' => self::get('custom_invite_price'),
             'captcha_provider' => self::get('captcha_provider'),
             'enable_email_verify' => self::get('enable_email_verify'),
+            'subscribe_client' => self::get('subscribe_client')
+            'enable_email_verify' => self::get('enable_email_verify'),
             'protocol_specify' => self::get('protocol_specify'),
             'subscribeLog' => self::get('subscribeLog'),
             'subscribeLog_keep_days' => self::get('subscribeLog_keep_days'),
@@ -54,8 +55,7 @@ class Config
             'auto_detect_ban_number' => self::get('auto_detect_ban_number'),
             'auto_detect_ban_time' => self::get('auto_detect_ban_time'),
             'auto_detect_ban' => self::get('auto_detect_ban'),
-            'subscribe_client' => self::get('subscribe_client')
-        ];
+         ];
     }
 
     public static function getDbConfig()

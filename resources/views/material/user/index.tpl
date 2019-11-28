@@ -611,12 +611,15 @@ table tr td:first-child {
         var myShakeEvent = new Shake({
             threshold: 15
         });
+
         myShakeEvent.start();
         window.addEventListener('shake', shakeEventDidOccur, false);
+
         function shakeEventDidOccur() {
             if ("vibrate" in navigator) {
                 navigator.vibrate(500);
             }
+
             $.ajax({
                 type: "POST",
                 url: "/user/checkin",
@@ -631,7 +634,7 @@ table tr td:first-child {
                         $$.getElementById('checkin-btn').innerHTML = checkedmsgGE;
                         $("#result").modal();
                         $$.getElementById('msg').innerHTML = data.msg;
-                        $$.getElementById('remain').innerHTML = data.traffic;
+                        $$.getElementById('remain').innerHTML = data.trafficInfo['unUsedTraffic'];
                         $('.bar.remain.color').css('width', (data.unflowtraffic - ({$user->u}+{$user->d})) / data.unflowtraffic * 100 + '%');
                     } else {
                         $("#result").modal();
@@ -648,6 +651,7 @@ table tr td:first-child {
         }
     };
 
+
     $(document).ready(function () {
         $("#checkin").click(function () {
             $.ajax({
@@ -663,7 +667,7 @@ table tr td:first-child {
                         $$.getElementById('checkin-btn').innerHTML = checkedmsgGE;
                         $("#result").modal();
                         $$.getElementById('msg').innerHTML = data.msg;
-                        $$.getElementById('remain').innerHTML = data.traffic;
+                        $$.getElementById('remain').innerHTML = data.trafficInfo['unUsedTraffic'];
                         $('.bar.remain.color').css('width', (data.unflowtraffic - ({$user->u}+{$user->d})) / data.unflowtraffic * 100 + '%');
                     } else {
                         $("#result").modal();
@@ -716,7 +720,7 @@ table tr td:first-child {
                         $$.getElementById('checkin-btn').innerHTML = checkedmsgGE;
                         $("#result").modal();
                         $$.getElementById('msg').innerHTML = data.msg;
-                        $$.getElementById('remain').innerHTML = data.traffic;
+                        $$.getElementById('remain').innerHTML = data.trafficInfo['unUsedTraffic'];
                         $('.bar.remain.color').css('width', (data.unflowtraffic - ({$user->u}+{$user->d})) / data.unflowtraffic * 100 + '%');
                     } else {
                         $("#result").modal();
