@@ -803,7 +803,7 @@ class LinkController extends BaseController
         // v2ray
         $items = URL::getAllVMessUrl($user, 1);
         foreach ($items as $item) {
-            if (in_array($item['net'], array( 'http', 'quic','h2'))) {
+            if (in_array($item['net'], array( 'http', 'quic'))) {
                 continue;
             }
             if ($find) {
@@ -833,11 +833,23 @@ class LinkController extends BaseController
                 $obfs .='obfsParam={"header":'.'"'.($item['type'] == ''||$item['type'] == 'noop'
                         ? 'none'
                         : $item['type']).'"'.'}&obfs=mkcp';
-            }else {
+            }
+              elseif ($item['net'] == 'h2'){
+                  $obfs .= ($item['host'] != ''
+                      ? ('&obfsParam=' . $item['host'] .
+                          '&path=' . $item['path'] . '&obfs=h2')
+                      : ('&obfsParam=' . $item['add'] .
+                          '&path=' . $item['path'] . '&obfs=h2'));
+                  $obfs .= ($item['tls'] == 'tls'
+                      ? '&tls=1'
+                      : '&tls=0');
+                }
+
+            else {
                 $obfs .= '&obfs=none';
             }
 
-            if ($obfs!='&obfs=none'){
+            if ($obfs!='&obfs=none' && $item['net'] != 'h2'){
 
                     if ($item['verify_cert']==false){
                         $obfs.="&allowInsecure=1";
