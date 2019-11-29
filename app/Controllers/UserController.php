@@ -378,6 +378,8 @@ class UserController extends BaseController
         $user->money -= $price;
         $user->save();
 
+        $user->cleanSubCache();
+
         $res['ret'] = 1;
         $res['msg'] = $user->port;
         return $response->getBody()->write(json_encode($res));
@@ -423,6 +425,8 @@ class UserController extends BaseController
 
         $user->money -= $price;
         $user->save();
+
+        $user->cleanSubCache();
 
         $res['ret'] = 1;
         $res['msg'] = '钦定成功';
@@ -1493,6 +1497,8 @@ class UserController extends BaseController
 
         $user->save();
 
+        $user->cleanSubCache();
+
         if (!URL::SSCanConnect($user)) {
             $res['ret'] = 1;
             $res['msg'] = '设置成功，但您目前的协议，混淆，加密方式设置会导致 Shadowsocks原版客户端无法连接，请您自行更换到 ShadowsocksR 客户端。';
@@ -1599,6 +1605,7 @@ class UserController extends BaseController
 
         Radius::Add($user, $pwd);
 
+        $user->cleanSubCache();
 
         return $this->echoJson($response, $res);
     }
@@ -1733,6 +1740,7 @@ class UserController extends BaseController
 
         if (Config::get('enable_kill') == true) {
             Auth::logout();
+            $user->cleanSubCache();
             $user->kill_user();
             $res['ret'] = 1;
             $res['msg'] = '您的帐号已经从我们的系统中删除。欢迎下次光临!';
@@ -1783,6 +1791,7 @@ class UserController extends BaseController
     {
         $user = $this->user;
         $user->clean_link();
+        $user->cleanSubCache();
         return $response->withStatus(302)->withHeader('Location', '/user');
     }
 
@@ -1857,6 +1866,8 @@ class UserController extends BaseController
         $user->protocol = $scheme['protocol'];
         $user->obfs = $scheme['obfs'];
         $user->save();
+
+        $user->cleanSubCache();
 
         $res['ret'] = 1;
         $res['msg'] = '切换' . $scheme['name'] . '成功';
@@ -1970,9 +1981,11 @@ class UserController extends BaseController
      */
     public function cleanSubCache($request, $response, $args)
     {
-        $user_path = (BASE_PATH . '/storage/SubscribeCache/' . $this->user->id . '/');
-        Tools::delDirAndFile($user_path);
+        $this->user->cleanSubCache();
 
-        return $response->withStatus(302)->withHeader('Location', '/user');
+        $res['ret'] = 1;
+        $res['msg'] = '清理成功';
+
+        return $this->echoJson($response, $res);
     }
 }

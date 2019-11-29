@@ -453,4 +453,16 @@ class User extends Model
         $reason = DetectRule::where('id', '=', $reason_id->list_id)->get();
         return $reason[0]->text;
     }
+
+    /** 
+     * 清理订阅缓存
+     */
+    public function cleanSubCache()
+    {
+        $id = $this->attributes['id'];
+        $user_path = (BASE_PATH . '/storage/SubscribeCache/' . $id . '/');
+        if (is_dir($user_path)) {
+            Tools::delDirAndFile($user_path);
+        }
+    }
 }
