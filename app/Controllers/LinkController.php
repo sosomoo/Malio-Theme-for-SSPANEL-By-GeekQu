@@ -146,9 +146,12 @@ class LinkController extends BaseController
                 $int = (int) $opts[$key];
                 $class = ('get' . $value['class']);
                 if ($int >= 1) {
+                    $Cache = false;
                     if (Config::get('enable_sub_cache') === true) {
+                        $Cache = true;
                         $content = self::getSubscribeCache($user, $path);
                         if ($content === false) {
+                            $Cache = false;
                             $content = self::$class($user, $int, $opts, $Rule, $find, $emoji);
                         }
                         self::SubscribeCache($user, $path, $content);
@@ -159,7 +162,8 @@ class LinkController extends BaseController
                         $user,
                         $response,
                         $content,
-                        $value['filename']
+                        $value['filename'],
+                        $Cache
                     );
                     $subscribe_type = $value['class'];
                     break;
@@ -176,9 +180,12 @@ class LinkController extends BaseController
                 $int = 1;
             }
             $subscribe_type = $sub_int_type[$int];
+            $Cache = false;
             if (Config::get('enable_sub_cache') === true) {
+                $Cache = true;
                 $content = self::getSubscribeCache($user, $path);
                 if ($content === false) {
+                    $Cache = false;
                     $content = self::getSub($user, $int, $opts, $Rule, $find, $emoji);
                 }
                 self::SubscribeCache($user, $path, $content);
@@ -189,7 +196,8 @@ class LinkController extends BaseController
                 $user,
                 $response,
                 $content,
-                $value['filename']
+                $value['filename'],
+                $Cache
             );
         }
 
@@ -276,8 +284,9 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getBody($user, $response, $content, $filename)
+    public static function getBody($user, $response, $content, $filename, $Cache)
     {
+        $CacheInfo = ($Cache === true ? 'HIT from Disktank' : 'MISS');
         $newResponse = $response
             ->withHeader(
                 'Content-type',
@@ -290,6 +299,10 @@ class LinkController extends BaseController
             ->withHeader(
                 'Content-Disposition',
                 ' attachment; filename=' . $filename
+            )
+            ->withHeader(
+                'X-Cache',
+                ' ' . $CacheInfo
             )
             ->withHeader(
                 'Subscription-Userinfo',
