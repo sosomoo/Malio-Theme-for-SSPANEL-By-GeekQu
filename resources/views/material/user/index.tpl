@@ -294,11 +294,22 @@ table tr td:first-child {
 										<li>
 											<a class="" data-toggle="tab" href="#info_center"><i class="icon icon-lg">flight_takeoff</i>&nbsp;连接信息</a>
 										</li>
+										<li>
+											<a class="" data-toggle="tab" href="#other"><i class="icon icon-lg">add_circle</i>&nbsp;其他</a>
+										</li>
 									</ul>
 								</nav>
 
 								<div class="card-inner">
 									<div class="tab-content">
+
+
+										<div class="tab-pane fade" id="other">
+                                            <p>清理订阅缓存：
+                                                <a class="kaobei copy-text btn btn-subscription" type="button" href="/user/cleanSubCache">点击清理</a>
+                                            </p>
+										</div>
+
 
 										<div class="tab-pane fade" id="info_center">
 											<p>您的链接信息：</p>
@@ -413,15 +424,15 @@ table tr td:first-child {
 											</div>
 
 											<div class="tab-pane fade" id="sub_center_windows">
-												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="{if $config["subscribe_client"]=='true'}/user/getPcClient?type=ss-win{else}https://github.com/shadowsocks/shadowsocks-windows/releases{/if}"><i class="material-icons">save_alt</i> 下载</a> SS - [ SS ]：</p>
+												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="{if $config["subscribe_client"]===true}/user/getPcClient?type=ss-win{else}https://github.com/shadowsocks/shadowsocks-windows/releases{/if}"><i class="material-icons">save_alt</i> 下载</a> SS - [ SS ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/Shadowsocks"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 													<p>使用方式：<a id="win_ss" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ss","#win_ss","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="{if $config["subscribe_client"]=='true'}/user/getPcClient?type=ssd-win{else}https://github.com/CGDF-Github/SSD-Windows/releases{/if}"><i class="material-icons">save_alt</i> 下载</a> SSD - [ SS ]：</p>
+												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="{if $config["subscribe_client"]===true}/user/getPcClient?type=ssd-win{else}https://github.com/CGDF-Github/SSD-Windows/releases{/if}"><i class="material-icons">save_alt</i> 下载</a> SSD - [ SS ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssd"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a id="win_ssd" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssd","#win_ssd","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="{if $config["subscribe_client"]=='true'}/user/getPcClient?type=ssr-win{else}https://github.com/shadowsocksrr/shadowsocksr-csharp/releases{/if}"><i class="material-icons">save_alt</i> 下载</a> SSR(R) - [ SS/SSR ]：</p>
+												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="{if $config["subscribe_client"]===true}/user/getPcClient?type=ssr-win{else}https://github.com/shadowsocksrr/shadowsocksr-csharp/releases{/if}"><i class="material-icons">save_alt</i> 下载</a> SSR(R) - [ SS/SSR ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/ShadowsocksR"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="win_ssr" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssr","#win_ssr","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 												<hr/>
@@ -631,7 +642,7 @@ table tr td:first-child {
                         $$.getElementById('checkin-btn').innerHTML = checkedmsgGE;
                         $("#result").modal();
                         $$.getElementById('msg').innerHTML = data.msg;
-                        $$.getElementById('remain').innerHTML = data.traffic;
+                        $$.getElementById('remain').innerHTML = data.trafficInfo['unUsedTraffic'];
                         $('.bar.remain.color').css('width', (data.unflowtraffic - ({$user->u}+{$user->d})) / data.unflowtraffic * 100 + '%');
                     } else {
                         $("#result").modal();
@@ -663,7 +674,7 @@ table tr td:first-child {
                         $$.getElementById('checkin-btn').innerHTML = checkedmsgGE;
                         $("#result").modal();
                         $$.getElementById('msg').innerHTML = data.msg;
-                        $$.getElementById('remain').innerHTML = data.traffic;
+                        $$.getElementById('remain').innerHTML = data.trafficInfo['unUsedTraffic'];
                         $('.bar.remain.color').css('width', (data.unflowtraffic - ({$user->u}+{$user->d})) / data.unflowtraffic * 100 + '%');
                     } else {
                         $("#result").modal();
@@ -716,7 +727,7 @@ table tr td:first-child {
                         $$.getElementById('checkin-btn').innerHTML = checkedmsgGE;
                         $("#result").modal();
                         $$.getElementById('msg').innerHTML = data.msg;
-                        $$.getElementById('remain').innerHTML = data.traffic;
+                        $$.getElementById('remain').innerHTML = data.trafficInfo['unUsedTraffic'];
                         $('.bar.remain.color').css('width', (data.unflowtraffic - ({$user->u}+{$user->d})) / data.unflowtraffic * 100 + '%');
                     } else {
                         $("#result").modal();

@@ -2,12 +2,23 @@
 
 namespace App\Services;
 
+use App\Models\GConfig;
+
 class Config
 {
     // TODO: remove
     public static function get($key)
     {
         return $_ENV[$key];
+    }
+
+    public static function getdb($key)
+    {
+        $value = GConfig::find($key);
+        if ($value === null) {
+            $value = DefaultConfig::firstOrCreate($key);
+        }
+        return $value;
     }
 
     public static function getPublicConfig()
@@ -31,7 +42,6 @@ class Config
             'sspanelAnalysis' => self::get('sspanelAnalysis'),
             'enable_donate' => self::get('enable_donate'),
             'enable_telegram' => self::get('enable_telegram'),
-            'enable_discord' => self::get('enable_discord'),
             'payment_system' => self::get('payment_system'),
             'enable_mylivechat' => self::get('enable_mylivechat'),
             'mylivechat_id' => self::get('mylivechat_id'),

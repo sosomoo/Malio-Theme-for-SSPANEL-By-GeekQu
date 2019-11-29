@@ -280,7 +280,7 @@ class Tools
 
         $relay_able_list = Config::getSupportParam('relay_able_protocol');
 
-        return in_array($user->protocol, $relay_able_list) || Config::get('relay_insecure_mode') == 'true';
+        return in_array($user->protocol, $relay_able_list) || Config::get('relay_insecure_mode') == true;
     }
 
     public static function has_conflict_rule($input_rule, $ruleset, $edit_rule_id = 0, $origin_node_id = 0, $user_id = 0)
@@ -514,7 +514,7 @@ class Tools
     {
         $server = explode(';', $node);
         $item = [
-            'host' => 'windowsupdate.microsoft.com',
+            'host' => 'microsoft.com',
             'path' => '',
             'net' => 'ws',
             'tls' => ''
@@ -604,7 +604,7 @@ class Tools
                     $port[substr($item['port'], 0, strpos($item['port'], '#'))] = (int) substr($item['port'], strpos($item['port'], '#') + 1);
                 }
             } else {
-                $$type = (int) $item['port'];
+                $type = (int) $item['port'];
             }
         }
 
@@ -788,9 +788,10 @@ class Tools
 
     /** 
      * Add files and sub-directories in a folder to zip file. 
-     * @param string $folder 
+     * 
+     * @param string     $folder 
      * @param ZipArchive $zipFile 
-     * @param int $exclusiveLength Number of text to be exclusived from the file path. 
+     * @param int        $exclusiveLength Number of text to be exclusived from the file path. 
      */
     public static function folderToZip($folder, &$zipFile, $exclusiveLength)
     {
@@ -810,5 +811,26 @@ class Tools
             }
         }
         closedir($handle);
+    }
+
+    /** 
+     * 清空文件夹
+     * 
+     * @param string $dirName 
+     */
+    public static function delDirAndFile($dirPath)
+    {
+        if ($handle = opendir($dirPath)){
+            while (false !== ($item = readdir($handle))){
+                if ($item != '.' && $item != '..'){
+                    if (is_dir($dirPath . '/' . $item)){
+                        self::delDirAndFile($dirPath . '/' . $item);
+                    } else {
+                        unlink($dirPath . '/' . $item);
+                    }
+                }
+            }
+            closedir($handle);
+        }
     }
 }
