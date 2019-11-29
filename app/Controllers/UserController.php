@@ -1771,14 +1771,6 @@ class UserController extends BaseController
         return $this->view()->display('user/disable.tpl');
     }
 
-    public function discord_reset($request, $response, $args)
-    {
-        $user = $this->user;
-        $user->discord = 0;
-        $user->save();
-        return $response->withStatus(302)->withHeader('Location', '/user/edit');
-    }
-
     public function telegram_reset($request, $response, $args)
     {
         $user = $this->user;

@@ -79,7 +79,7 @@ $_ENV['reg_method'] = 'chacha20-ietf';						//注册时默认加密方式
 $_ENV['reg_protocol'] = 'auth_aes128_sha1';					//注册时默认协议
 $_ENV['reg_protocol_param'] = '';					//注册时默认协议参数
 $_ENV['reg_obfs'] = 'http_simple';							//注册时默认混淆方式
-$_ENV['reg_obfs_param'] = 'www.jd.hk';						//注册时默认混淆参数
+$_ENV['reg_obfs_param'] = '';			//注册时默认混淆参数 设置单端口后 这边必须配置！填写www.jd.hk就行
 $_ENV['reg_forbidden_ip'] = '127.0.0.0/8,::1/128';	//注册时默认禁止访问IP列表，半角英文逗号分割
 $_ENV['min_port'] = 10000;							//用户端口池最小值
 $_ENV['max_port'] = 65535;							//用户端口池最大值
@@ -136,7 +136,6 @@ $_ENV['subscribeLog_keep_days'] = 7;		    //订阅记录保留天数
 
 //Bot 设置--------------------------------------------------------------------------------------------
 #通用
-$_ENV['qrcode'] = 'zxing_local';				//二维码解码方式，online，phpzbar，zxing_online，zxing_local
 $_ENV['finance_public'] = true;			//财务报告是否向群公开
 $_ENV['enable_welcome_message'] = true;	//机器人发送欢迎消息
 
