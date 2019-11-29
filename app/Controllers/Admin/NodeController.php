@@ -97,7 +97,7 @@ class NodeController extends AdminController
             CloudflareDriver::updateRecord($domain_name[0], $node->node_ip);
         }
 
-        if (Config::get('sendAddNode_Telegram')) {
+        if (Config::get('sendAddNode_Telegram') === true) {
             Telegram::Send(
                 str_replace(
                     '%node_name%',
@@ -194,7 +194,7 @@ class NodeController extends AdminController
 
         $node->save();
 
-        if (Config::get('sendUpdateNode_Telegram')) {
+        if (Config::get('sendUpdateNode_Telegram') === true) {
             Telegram::Send(
                 str_replace(
                     '%node_name%',
@@ -224,7 +224,7 @@ class NodeController extends AdminController
             return $response->getBody()->write(json_encode($rs));
         }
 
-        if (Config::get('sendDeleteNode_Telegram')) {
+        if (Config::get('sendDeleteNode_Telegram') === true) {
             Telegram::Send(
                 str_replace(
                     '%node_name%',

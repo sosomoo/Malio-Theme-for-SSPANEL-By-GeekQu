@@ -160,7 +160,7 @@ class Job
         EmailVerify::where('expire_in', '<', time() - 86400 * 3)->delete();
         system('rm ' . BASE_PATH . '/storage/*.png', $ret);
 
-        if (Config::get('sendDailyJob_Telegram')) {
+        if (Config::get('sendDailyJob_Telegram') === true) {
             Telegram::Send(Config::get('sendDailyJob_Msg'));
         }
 
@@ -491,7 +491,7 @@ class Job
                         );
                     }
 
-                    if (Config::get('sendNodeOffline_Telegram')) {
+                    if (Config::get('sendNodeOffline_Telegram') === true) {
                         Telegram::Send($notice_text);
                     }
 
@@ -544,7 +544,7 @@ class Job
                         );
                     }
 
-                    if (Config::get('sendNodeOnline_Telegram')) {
+                    if (Config::get('sendNodeOnline_Telegram') === true) {
                         Telegram::Send($notice_text);
                     }
 
@@ -873,7 +873,7 @@ class Job
                                 Config::get('sendNodeGFW_Msg')
                             );
                         }
-                        if (Config::get('sendNodeGFW_Telegram')) {
+                        if (Config::get('sendNodeGFW_Telegram') === true) {
                             Telegram::Send($notice_text);
                         }
                         $file_node = fopen(BASE_PATH . '/storage/' . $node->id . '.gfw', 'wb+');
@@ -904,7 +904,7 @@ class Job
                                 Config::get('sendNodeGFW_recover_Msg')
                             );
                         }
-                        if (Config::get('sendNodeGFW_recover_Telegram')) {
+                        if (Config::get('sendNodeGFW_recover_Telegram') === true) {
                             Telegram::Send($notice_text);
                         }
                         unlink(BASE_PATH . '/storage/' . $node->id . '.gfw');

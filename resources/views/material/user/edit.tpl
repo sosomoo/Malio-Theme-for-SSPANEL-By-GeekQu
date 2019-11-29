@@ -40,7 +40,7 @@
 
 
 
-{if !$config['protocol_specify']}
+{if $config['protocol_specify']===false}
 				<div class="card margin-bottom-no">
 					<div class="card-main">
 						<div class="card-inner">

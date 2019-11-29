@@ -90,7 +90,7 @@ class LinkController extends BaseController
             $find = true;
         }
 
-        $emoji = ((isset($opts['emoji']) && $opts['emoji'] == '1') || Config::get('add_emoji_to_node_name')
+        $emoji = ((isset($opts['emoji']) && $opts['emoji'] == '1') || Config::get('add_emoji_to_node_name') === true
             ? 1
             : 0);
 
@@ -194,7 +194,7 @@ class LinkController extends BaseController
         }
 
         // 记录订阅日志
-        if (Config::get('subscribeLog')) {
+        if (Config::get('subscribeLog') === true) {
             self::Subscribe_log($user, $subscribe_type, $request->getHeaderLine('User-Agent'));
         }
 

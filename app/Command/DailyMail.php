@@ -52,7 +52,7 @@ class DailyMail
 
         $sts = new Analytics();
 
-        if (Config::get('sendDiary_Telegram')) {
+        if (Config::get('sendDiary_Telegram') === true) {
             Telegram::Send(
                 str_replace(
                     array(

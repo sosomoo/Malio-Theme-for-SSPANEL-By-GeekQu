@@ -61,7 +61,7 @@ class UserController extends BaseController
          */
         $users_raw = User::where(
             static function ($query) use ($node, $mu_port_migration) {
-                if ($mu_port_migration) {
+                if ($mu_port_migration === true) {
                     $query->where(
                         static function ($query1) use ($node) {
                             if ($node->node_group != 0) {
@@ -92,7 +92,7 @@ class UserController extends BaseController
         )->where('enable', 1)->where("detect_ban", 0)->where('expire_in', '>', date('Y-m-d H:i:s'))->get();
 
         // 单端口承载用户
-        if ($mu_port_migration) {
+        if ($mu_port_migration === true) {
             $mu_users_raw = User::where(
                 static function ($query) use ($node) {
                     $query->where(
@@ -134,7 +134,7 @@ class UserController extends BaseController
 
         $users = array();
 
-        if (Config::get('keep_connect')) {
+        if (Config::get('keep_connect') === true) {
             foreach ($users_raw as $user_raw) {
                 if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
                     $user_raw = Tools::keyFilter($user_raw, $key_list);
@@ -298,7 +298,7 @@ class UserController extends BaseController
             return $this->echoJson($response, $res);
         }
 
-        if (Config::get('enable_auto_detect_ban')) {
+        if (Config::get('enable_auto_detect_ban') === true) {
             $detect_Users = array();
             if (count($data) > 0) {
                 foreach ($data as $log) {
@@ -358,7 +358,7 @@ class UserController extends BaseController
             if ($User == null) {
                 continue;
             }
-            if ($User->detect_ban == 1 || ($User->is_admin && Config::get('auto_detect_ban_allow_admin')) || in_array($User->id, Config::get('auto_detect_ban_allow_users'))) {
+            if ($User->detect_ban == 1 || ($User->is_admin && Config::get('auto_detect_ban_allow_admin') === true) || in_array($User->id, Config::get('auto_detect_ban_allow_users'))) {
                 continue;
             }
             if (Config::get('auto_detect_ban_type') == 1) {

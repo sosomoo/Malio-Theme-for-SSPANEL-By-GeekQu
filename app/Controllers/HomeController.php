@@ -49,7 +49,7 @@ class HomeController extends BaseController
             $login_number = '';
         }
 
-        if (!Config::get('newIndex') && Config::get('theme') == 'material') {
+        if (Config::get('newIndex') === false && Config::get('theme') == 'material') {
             return $response->write($this->view()->fetch('indexold.tpl'));
         } else {
             return $response->write($this->view()
@@ -190,11 +190,11 @@ class HomeController extends BaseController
     public function getDocCenter($request, $response, $args)
     {
         $user = Auth::getUser();
-        if (!$user->isLogin && !Config::get('enable_documents')) {
+        if (!$user->isLogin && Config::get('enable_documents') === false) {
             $newResponse = $response->withStatus(302)->withHeader('Location', '/');
             return $newResponse;
         }
-        $basePath = Config::get('remote_documents') ? Config::get('documents_source') : '/docs/GeekQu';
+        $basePath = Config::get('remote_documents') === true ? Config::get('documents_source') : '/docs/GeekQu';
         return $this->view()
             ->assign('appName', Config::get('documents_name'))
             ->assign('basePath', $basePath)
