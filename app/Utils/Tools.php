@@ -585,7 +585,7 @@ class Tools
                     $port[substr($item['port'], 0, strpos($item['port'], '#'))] = (int) substr($item['port'], strpos($item['port'], '#') + 1);
                 }
             } else {
-                $$type = (int) $item['port'];
+                $type = (int) $item['port'];
             }
         }
 
