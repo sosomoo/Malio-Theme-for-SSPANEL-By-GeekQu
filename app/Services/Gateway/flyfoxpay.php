@@ -41,7 +41,7 @@ class Pays
         ];
         $string = http_build_query($data);
         $sign = $this->getsign($data);
-        return 'https://pay.ncepay.com/submit.php?' . $string . '&sign=' . $sign . '&sign_type=MD5';
+        return 'https://api.jxspay.cn/submit/?' . $string . '&sign=' . $sign . '&sign_type=MD5';
     }
 
     /**
