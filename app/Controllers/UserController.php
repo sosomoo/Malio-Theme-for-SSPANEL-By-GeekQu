@@ -468,9 +468,6 @@ class UserController extends BaseController
             if ($user->is_admin == 0 && $node->node_group != $user->node_group && $node->node_group != 0) {
                 continue;
             }
-            if ($user->is_admin==0 && $user->class<$node->node_class){
-                continue;
-            }
             if ($node->sort == 9) {
                 $mu_user = User::where('port', '=', $node->server)->first();
                 $mu_user->obfs_param = $this->user->getMuMd5();
