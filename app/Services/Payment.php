@@ -20,8 +20,6 @@ class Payment
         switch ($method) {
             case ('codepay'):
                 return new Codepay();
-            case ('doiampay'):
-                return new DoiAMPay();
             case ('paymentwall'):
                 return new PaymentWall();
             case ('spay'):
@@ -30,8 +28,6 @@ class Payment
                 return new AopF2F();
             case ('chenAlipay'):
                 return new ChenPay();
-            case ('trimepay'):
-                return new TrimePay(Config::get('trimepay_secret'));
             case ('bitpayx'):
                 return new BitPayX(Config::get('bitpay_secret'));
             case("tomatopay"):

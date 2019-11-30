@@ -62,7 +62,7 @@ class UserController extends BaseController
 
         $GtSdk = null;
         $recaptcha_sitekey = null;
-        if (Config::get('enable_checkin_captcha') == 'true') {
+        if (Config::get('enable_checkin_captcha') == true) {
             switch (Config::get('captcha_provider')) {
                 case 'recaptcha':
                     $recaptcha_sitekey = Config::get('recaptcha_sitekey');
@@ -132,7 +132,7 @@ class UserController extends BaseController
 
     public function donate($request, $response, $args)
     {
-        if (Config::get('enable_donate') != 'true') {
+        if (Config::get('enable_donate') != true) {
             exit(0);
         }
 
@@ -288,7 +288,7 @@ class UserController extends BaseController
             $res['ret'] = 1;
             $res['msg'] = '充值成功，充值的金额为' . $codeq->number . '元。';
 
-            if (Config::get('enable_donate') == 'true') {
+            if (Config::get('enable_donate') == true) {
                 if ($this->user->is_hide == 1) {
                     Telegram::Send('姐姐姐姐，一位不愿透露姓名的大老爷给我们捐了 ' . $codeq->number . ' 元呢~');
                 } else {
@@ -399,6 +399,8 @@ class UserController extends BaseController
         $user->money -= $price;
         $user->save();
 
+        $user->cleanSubCache();
+
         $res['ret'] = 1;
         $res['msg'] = $user->port;
         return $response->getBody()->write(json_encode($res));
@@ -444,6 +446,8 @@ class UserController extends BaseController
 
         $user->money -= $price;
         $user->save();
+
+        $user->cleanSubCache();
 
         $res['ret'] = 1;
         $res['msg'] = '钦定成功';
@@ -497,19 +501,19 @@ class UserController extends BaseController
             }
             $array_node = array();
 
-            $array_node['id']=$node->id;
-            $array_node['class']=$node->node_class;
-            $array_node['name']=$node->name;
+            $array_node['id'] = $node->id;
+            $array_node['class'] = $node->node_class;
+            $array_node['name'] = $node->name;
             if ($node->sort == 13) {
                 $server = Tools::ssv2Array($node->server);
                 $array_node['server'] = $server['add'];
             } else {
                 $array_node['server'] = $node->server;
             }
-            $array_node['sort']=$node->sort;
-            $array_node['info']=$node->info;
-            $array_node['mu_only']=$node->mu_only;
-            $array_node['group']=$node->node_group;
+            $array_node['sort'] = $node->sort;
+            $array_node['info'] = $node->info;
+            $array_node['mu_only'] = $node->mu_only;
+            $array_node['group'] = $node->node_group;
 
             $array_node['raw_node'] = $node;
             $regex = Config::get('flag_regex');
@@ -540,7 +544,7 @@ class UserController extends BaseController
             // 0: new node; -1: offline; 1: online
             $node_heartbeat = $node->node_heartbeat + 300;
             $array_node['online'] = -1;
-            if (!in_array($sort, array(0, 7, 8, 10, 11, 12, 13)) || $node_heartbeat == 300 ) {
+            if (!in_array($sort, array(0, 7, 8, 10, 11, 12, 13)) || $node_heartbeat == 300) {
                 $array_node['online'] = 0;
             } elseif ($node_heartbeat > time()) {
                 $array_node['online'] = 1;
@@ -554,8 +558,8 @@ class UserController extends BaseController
                 }
             }
 
-            $array_node['traffic_used'] = (int)Tools::flowToGB($node->node_bandwidth);
-            $array_node['traffic_limit'] = (int)Tools::flowToGB($node->node_bandwidth_limit);
+            $array_node['traffic_used'] = (int) Tools::flowToGB($node->node_bandwidth);
+            $array_node['traffic_limit'] = (int) Tools::flowToGB($node->node_bandwidth_limit);
             if ($node->node_speedlimit == 0.0) {
                 $array_node['bandwidth'] = 0;
             } elseif ($node->node_speedlimit >= 1024.00) {
@@ -577,7 +581,7 @@ class UserController extends BaseController
             ->assign('user', $user)
             ->registerClass('URL', URL::class)
             ->display('user/node.tpl');
-	}
+    }
 
 
     public function node_old($request, $response, $args)
@@ -593,7 +597,7 @@ class UserController extends BaseController
         $node_prefix = array();
         $node_flag_file = array();
         $node_method = array();
-        $a = 0;//命名的什么JB变量
+        $a = 0; //命名的什么JB变量
         $node_order = array();
         $node_alive = array();
         $node_prealive = array();
@@ -649,9 +653,9 @@ class UserController extends BaseController
                     }
 
                     if ($node->node_bandwidth_limit == 0) {
-                        $node_bandwidth[$name_cheif] = (int)($node->node_bandwidth / 1024 / 1024 / 1024) . ' GB 已用';
+                        $node_bandwidth[$name_cheif] = (int) ($node->node_bandwidth / 1024 / 1024 / 1024) . ' GB 已用';
                     } else {
-                        $node_bandwidth[$name_cheif] = (int)($node->node_bandwidth / 1024 / 1024 / 1024) . ' GB / ' . (int)($node->node_bandwidth_limit / 1024 / 1024 / 1024) . ' GB - ' . $node->bandwidthlimit_resetday . ' 日重置';
+                        $node_bandwidth[$name_cheif] = (int) ($node->node_bandwidth / 1024 / 1024 / 1024) . ' GB / ' . (int) ($node->node_bandwidth_limit / 1024 / 1024 / 1024) . ' GB - ' . $node->bandwidthlimit_resetday . ' 日重置';
                     }
 
                     if ($node_tempalive != '暂无数据') {
@@ -670,14 +674,14 @@ class UserController extends BaseController
 
                 $nodeLoad = $node->getNodeLoad();
                 if (isset($nodeLoad[0]['load'])) {
-                    $node_latestload[$name_cheif] = ((float)(explode(' ', $nodeLoad[0]['load']))[0]) * 100;
+                    $node_latestload[$name_cheif] = ((float) (explode(' ', $nodeLoad[0]['load']))[0]) * 100;
                 } else {
                     $node_latestload[$name_cheif] = null;
                 }
 
                 $node_prefix[$name_cheif][] = $node;
 
-                if (Config::get('enable_flag') == 'true') {
+                if (Config::get('enable_flag') == true) {
                     $regex = Config::get('flag_regex');
                     $matches = array();
                     preg_match($regex, $name_cheif, $matches);
@@ -685,8 +689,8 @@ class UserController extends BaseController
                 }
             }
         }
-        $node_prefix = (object)$node_prefix;
-        $node_order = (object)$node_order;
+        $node_prefix = (object) $node_prefix;
+        $node_order = (object) $node_order;
         $tools = new Tools();
         return $this->view()->assign('relay_rules', $relay_rules)->assign('node_class', $node_class)->assign('node_isv6', $node_isv6)->assign('tools', $tools)->assign('node_method', $node_method)->assign('node_muport', $node_muport)->assign('node_bandwidth', $node_bandwidth)->assign('node_heartbeat', $node_heartbeat)->assign('node_prefix', $node_prefix)->assign('node_flag_file', $node_flag_file)->assign('node_prealive', $node_prealive)->assign('node_order', $node_order)->assign('user', $user)->assign('node_alive', $node_alive)->assign('node_latestload', $node_latestload)->registerClass('URL', URL::class)->display('user/node.tpl');
     }
@@ -791,11 +795,11 @@ class UserController extends BaseController
         foreach ($totallogin as $single) {
             //if(isset($useripcount[$single->userid]))
             {
-            if (!isset($userloginip[$single->ip])) {
-                //$useripcount[$single->userid]=$useripcount[$single->userid]+1;
-                $location = $iplocation->getlocation($single->ip);
-                $userloginip[$single->ip] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
-            }
+                if (!isset($userloginip[$single->ip])) {
+                    //$useripcount[$single->userid]=$useripcount[$single->userid]+1;
+                    $location = $iplocation->getlocation($single->ip);
+                    $userloginip[$single->ip] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                }
             }
         }
 
@@ -804,16 +808,16 @@ class UserController extends BaseController
             {
                 $single->ip = Tools::getRealIp($single->ip);
                 $is_node = Node::where('node_ip', $single->ip)->first();
-            if ($is_node) {
-                continue;
-            }
+                if ($is_node) {
+                    continue;
+                }
 
 
-            if (!isset($userip[$single->ip])) {
-                //$useripcount[$single->userid]=$useripcount[$single->userid]+1;
-                $location = $iplocation->getlocation($single->ip);
-                $userip[$single->ip] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
-            }
+                if (!isset($userip[$single->ip])) {
+                    //$useripcount[$single->userid]=$useripcount[$single->userid]+1;
+                    $location = $iplocation->getlocation($single->ip);
+                    $userip[$single->ip] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                }
             }
         }
 
@@ -1258,7 +1262,7 @@ class UserController extends BaseController
 
     public function ticket($request, $response, $args)
     {
-        if (Config::get('enable_ticket') != 'true') {
+        if (Config::get('enable_ticket') != true) {
             exit(0);
         }
         $pageNum = $request->getQueryParams()['page'] ?? 1;
@@ -1352,11 +1356,11 @@ class UserController extends BaseController
                 )
             );
             $opts = array('http' =>
-                array(
-                    'method' => 'POST',
-                    'header' => 'Content-type: application/x-www-form-urlencoded',
-                    'content' => $postdata
-                ));
+            array(
+                'method' => 'POST',
+                'header' => 'Content-type: application/x-www-form-urlencoded',
+                'content' => $postdata
+            ));
             $context = stream_context_create($opts);
             file_get_contents('https://sc.ftqq.com/' . $ScFtqq_SCKEY . '.send', false, $context);
         }
@@ -1539,12 +1543,6 @@ class UserController extends BaseController
             return $response->getBody()->write(json_encode($res));
         }
 
-        if ($user->discord != 0) {
-            $res['ret'] = 0;
-            $res['msg'] = '您绑定了 Discord ，所以此项并不能被修改。';
-            return $response->getBody()->write(json_encode($res));
-        }
-
         if ($wechat == '' || $type == '') {
             $res['ret'] = 0;
             $res['msg'] = '非法输入';
@@ -1614,6 +1612,8 @@ class UserController extends BaseController
         }
 
         $user->save();
+
+        $user->cleanSubCache();
 
         if (!URL::SSCanConnect($user)) {
             $res['ret'] = 1;
@@ -1721,6 +1721,7 @@ class UserController extends BaseController
 
         Radius::Add($user, $pwd);
 
+        $user->cleanSubCache();
 
         return $this->echoJson($response, $res);
     }
@@ -1784,7 +1785,7 @@ class UserController extends BaseController
 
     public function doCheckIn($request, $response, $args)
     {
-        if (Config::get('enable_checkin_captcha') == 'true') {
+        if (Config::get('enable_checkin_captcha') == true) {
             switch (Config::get('captcha_provider')) {
                 case 'recaptcha':
                     $recaptcha = $request->getParam('recaptcha');
@@ -1853,8 +1854,9 @@ class UserController extends BaseController
             return $this->echoJson($response, $res);
         }
 
-        if (Config::get('enable_kill') == 'true') {
+        if (Config::get('enable_kill') == true) {
             Auth::logout();
+            $user->cleanSubCache();
             $user->kill_user();
             $res['ret'] = 1;
             $res['msg'] = '您的帐号已经从我们的系统中删除。欢迎下次光临!';
@@ -1893,14 +1895,6 @@ class UserController extends BaseController
         return $this->view()->display('user/disable.tpl');
     }
 
-    public function discord_reset($request, $response, $args)
-    {
-        $user = $this->user;
-        $user->discord = 0;
-        $user->save();
-        return $response->withStatus(302)->withHeader('Location', '/user/edit');
-    }
-
     public function telegram_reset($request, $response, $args)
     {
         $user = $this->user;
@@ -1913,6 +1907,7 @@ class UserController extends BaseController
     {
         $user = $this->user;
         $user->clean_link();
+        $user->cleanSubCache();
         return $response->withStatus(302)->withHeader('Location', '/user');
     }
 
@@ -1988,8 +1983,11 @@ class UserController extends BaseController
         $user->obfs = $scheme['obfs'];
         $user->save();
 
+        $user->cleanSubCache();
+
         $res['ret'] = 1;
         $res['msg'] = '切换' . $scheme['name'] . '成功';
+
         return $this->echoJson($response, $res);
     }
 
@@ -2000,23 +1998,24 @@ class UserController extends BaseController
         $return = '';
         switch ($type) {
             case 'ss':
-                $return .= URL::getAllUrl($user, 0, 1).PHP_EOL;
-            break;
+                $return .= URL::getAllUrl($user, 0, 1) . PHP_EOL;
+                break;
             case 'ssr':
-                $return .= URL::getAllUrl($user, 0, 0).PHP_EOL;
-            break;
+                $return .= URL::getAllUrl($user, 0, 0) . PHP_EOL;
+                break;
             case 'ssd':
-                $return .= URL::getAllSSDUrl($user).PHP_EOL;
-            break;
+                $return .= URL::getAllSSDUrl($user) . PHP_EOL;
+                break;
             case 'v2ray':
-                $return .= URL::getAllVMessUrl($user).PHP_EOL;
-            break;
+                $return .= URL::getAllVMessUrl($user) . PHP_EOL;
+                break;
             default:
                 $return .= '悟空别闹！';
-            break;
+                break;
         }
         $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=node.txt');
-        $newResponse->getBody()->write($return);
+        $newResponse->write($return);
+
         return $newResponse;
     }
 

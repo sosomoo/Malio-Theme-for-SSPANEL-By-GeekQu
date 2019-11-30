@@ -3,12 +3,13 @@
 namespace App\Command;
 
 use App\Services\Config;
+use App\Services\DefaultConfig;
 
 class Update
 {
     public static function update($xcat)
     {
-        global $System_Config;
+        global $_ENV;
         $copy_result = copy(BASE_PATH . '/config/.config.php', BASE_PATH . '/config/.config.php.bak');
         if ($copy_result == true) {
             echo ('备份成功' . PHP_EOL);
@@ -17,7 +18,11 @@ class Update
             return false;
         }
 
-        echo (PHP_EOL);
+        echo(PHP_EOL);
+        // 检查并创建新增的配置项
+        echo DefaultConfig::detectConfigs();
+
+        echo(PHP_EOL);
 
         echo('开始升级客户端...' . PHP_EOL);
         Job::updatedownload();
@@ -33,17 +38,17 @@ class Update
         $config_new = file_get_contents(BASE_PATH . '/config/.config.example.php');
 
         //执行版本升级
-        $version_old = $System_Config['version'] ?? 0;
+        $version_old = $_ENV['version'] ?? 0;
         self::old_to_new($version_old);
 
         //将旧config迁移到新config上
         $migrated = array();
-        foreach ($System_Config as $key => $value_reserve) {
+        foreach ($_ENV as $key => $value_reserve) {
             if ($key == 'config_migrate_notice' || $key == 'version') {
                 continue;
             }
 
-            $regex = '/System_Config\[\'' . $key . '\'\].*?;/s';
+            $regex = '/_ENV\[\'' . $key . '\'\].*?;/s';
             $matches_new = array();
             preg_match($regex, $config_new, $matches_new);
             if (isset($matches_new[0]) == false) {
@@ -55,20 +60,18 @@ class Update
             preg_match($regex, $config_old, $matches_old);
 
             $config_new = str_replace($matches_new[0], $matches_old[0], $config_new);
-            $migrated[] = 'System_Config[\'' . $key . '\']';
+            $migrated[] = '_ENV[\'' . $key . '\']';
         }
         echo (PHP_EOL);
 
         //检查新增了哪些config
-        $regex_new = '/System_Config\[\'.*?\'\]/s';
+        $regex_new = '/_ENV\[\'.*?\'\]/s';
         $matches_new_all = array();
         preg_match_all($regex_new, $config_new, $matches_new_all);
         $differences = array_diff($matches_new_all[0], $migrated);
         foreach ($differences as $difference) {
-            if (
-                $difference == 'System_Config[\'config_migrate_notice\']' ||
-                $difference == 'System_Config[\'version\']'
-            ) {
+            if ($difference == '_ENV[\'config_migrate_notice\']' ||
+                $difference == '_ENV[\'version\']') {
                 continue;
             }
             //匹配注释
@@ -97,7 +100,7 @@ class Update
         echo ('新增配置项通常带有默认值，因此通常即使不作任何改动网站也可以正常运行' . PHP_EOL);
 
         //输出notice
-        $regex_notice = '/System_Config\[\'config_migrate_notice\'\].*?(?=\';)/s';
+        $regex_notice = '/_ENV\[\'config_migrate_notice\'\].*?(?=\';)/s';
         $matches_notice = array();
         preg_match($regex_notice, $config_new, $matches_notice);
         $notice_new = $matches_notice[0];
@@ -109,10 +112,10 @@ class Update
                 strpos($notice_new, '=') //查找'='之后的第一个'\''，然后substr其后面的notice
             ) + 1
         );
-        echo ('以下是迁移附注：');
-        if (isset($System_Config['config_migrate_notice'])) {
-            if ($System_Config['config_migrate_notice'] != $notice_new) {
-                echo ($notice_new);
+        echo('以下是迁移附注：');
+        if (isset($_ENV['config_migrate_notice'])) {
+            if ($_ENV['config_migrate_notice'] != $notice_new) {
+                echo($notice_new);
             }
         } else {
             echo ($notice_new);
@@ -136,11 +139,6 @@ class Update
 
     public static function old_to_new($version_old)
     {
-        if ($version_old <= 0) {
-            echo ('执行升级：0 -> 1');
-            $conn = mysqli_connect(Config::get('db_host'), Config::get('db_username'), Config::get('db_password'), Config::get('db_database'));
-            mysqli_query($conn, 'ALTER TABLE user ADD discord BIGINT NULL AFTER telegram_id');
-        }
     }
 
     public static function update_malio_config($xcat)

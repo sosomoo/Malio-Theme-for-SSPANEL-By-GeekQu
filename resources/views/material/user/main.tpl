@@ -33,7 +33,7 @@
             <a class="dropdown-toggle padding-left-no padding-right-no" data-toggle="dropdown">
                 {if $user->isLogin}
                 <span class="access-hide">{$user->user_name}</span>
-                <span class="icon icon-cd margin-right">account_circle</span>
+                <span class="avatar avatar-sm"><img src="{$user->gravatar}"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
                 <li>
@@ -43,6 +43,9 @@
                 <li>
                     <a class="padding-right-cd waves-attach" href="/user/logout"><span
                                 class="icon icon-lg margin-right">exit_to_app</span>登出</a>
+                </li>
+                <li> 
+                    <a href="//en.gravatar.com/" target="view_window"><i class="icon icon-lg margin-right">insert_photo</i>设置头像</a>
                 </li>
             </ul>
             {else}
@@ -85,7 +88,7 @@
                             <a href="/user/trafficlog"><i class="icon icon-lg">hourglass_empty</i>&nbsp;流量记录</a>
                         </li>
 
-                    {if $config['subscribeLog']=='true'}
+                    {if $config['subscribeLog']===true}
                         <li>
                             <a href="/user/subscribe_log"><i class="icon icon-lg">important_devices</i>&nbsp;订阅记录</a>
                         </li>

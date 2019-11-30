@@ -14,6 +14,9 @@
                     <div class="card-main">
                         <div class="card-inner">
                             <p>系统中所有用户的列表。</p>
+                            <p>
+                                付费用户：{$user->paidUserCount()}
+                            </p>
                             <p>显示表项:
                                 {include file='table/checkbox.tpl'}
                             </p>
@@ -144,6 +147,7 @@
                 {"data": "method"},
                 {"data": "protocol"},
                 {"data": "obfs"},
+                {"data": "obfs_param"},
                 {"data": "online_ip_count", "orderable": false},
                 {"data": "last_ss_time", "orderable": false},
                 {"data": "used_traffic"},

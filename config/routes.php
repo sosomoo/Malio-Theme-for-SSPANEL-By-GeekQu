@@ -60,6 +60,8 @@ $app->post('/notify', App\Controllers\HomeController::class . ':notify');
 $app->get('/tos', App\Controllers\HomeController::class . ':tos');
 $app->get('/staff', App\Controllers\HomeController::class . ':staff');
 $app->post('/telegram_callback', App\Controllers\HomeController::class . ':telegram');
+$app->post('/tomato_back/{type}', 'App\Services\Payment:notify');
+$app->get('/tomato_back/{type}', 'App\Services\Payment:notify');
 
 // User Center
 $app->group('/user', function () {
@@ -129,7 +131,6 @@ $app->group('/user', function () {
     $this->post('/gaset', App\Controllers\UserController::class . ':GaSet');
     $this->get('/gareset', App\Controllers\UserController::class . ':GaReset');
     $this->get('/telegram_reset', App\Controllers\UserController::class . ':telegram_reset');
-    $this->get('/discord_reset', App\Controllers\UserController::class . ':discord_reset');
     $this->post('/resetport', App\Controllers\UserController::class . ':ResetPort');
     $this->post('/specifyport', App\Controllers\UserController::class . ':SpecifyPort');
     $this->post('/pacset', App\Controllers\UserController::class . ':PacSet');
@@ -155,11 +156,11 @@ $app->group('/user', function () {
     $this->post('/payment/bitpay/purchase', App\Services\BitPayment::class . ':purchase');
     $this->get('/payment/bitpay/return', App\Services\BitPayment::class . ':returnHTML');
 
-    // Malio
-    $this->get('/money', App\Controllers\UserController::class . ':getmoney');
-    $this->get('/shop/getplaninfo', App\Controllers\UserController::class . ':getPlanInfo');
-    $this->post('/shop/buytrafficpackage', App\Controllers\UserController::class . ':buyTrafficPackage');
-    $this->get('/share-account', App\Controllers\UserController::class . ':share_account');
+    // getPcClient
+    $this->get('/getPcClient', App\Controllers\UserController::class . ':getPcClient');
+
+    // CleanSubCache
+    $this->get('/cleanSubCache', App\Controllers\UserController::class . ':cleanSubCache');
 })->add(new Auth());
 
 $app->group('/payment', function () {
@@ -313,27 +314,22 @@ $app->group('/admin', function () {
     $this->get('/profile', App\Controllers\AdminController::class . ':profile');
     $this->get('/invite', App\Controllers\AdminController::class . ':invite');
     $this->post('/invite', App\Controllers\AdminController::class . ':addInvite');
+    $this->post('/chginvite', App\Controllers\AdminController::class . ':chgInvite');
     $this->get('/sys', App\Controllers\AdminController::class . ':sys');
     $this->get('/logout', App\Controllers\AdminController::class . ':logout');
     $this->post('/payback/ajax', App\Controllers\AdminController::class . ':ajax_payback');
+
+    // CleanSubCache
+    $this->get('/user/{id}/cleanSubCache', App\Controllers\Admin\UserController::class . ':cleanSubCache');
+
+    // Config Mange
+    $this->group('/config', function () {
+        $this->get('/telegram', App\Controllers\Admin\GConfigController::class . ':telegram');
+        $this->post('/telegram/ajax', App\Controllers\Admin\GConfigController::class . ':telegram_ajax');
+        $this->get('/telegram/{key}/edit', App\Controllers\Admin\GConfigController::class . ':telegram_edit');
+        $this->put('/telegram/{key}', App\Controllers\Admin\GConfigController::class . ':telegram_update');
+    });
 })->add(new Admin());
-
-// API
-$app->group('/api', function () {
-    $this->get('/token/{token}', App\Controllers\ApiController::class . ':token');
-    $this->post('/token', App\Controllers\ApiController::class . ':newToken');
-    $this->get('/node', App\Controllers\ApiController::class . ':node')->add(new Api());
-    $this->get('/user/{id}', App\Controllers\ApiController::class . ':userInfo')->add(new Api());
-    $this->get('/sublink', App\Controllers\Client\ClientApiController::class . ':GetSubLink');
-});
-
-// mu
-$app->group('/mu', function () {
-    $this->get('/users', App\Controllers\Mu\UserController::class . ':index');
-    $this->post('/users/{id}/traffic', App\Controllers\Mu\UserController::class . ':addTraffic');
-    $this->post('/nodes/{id}/online_count', App\Controllers\Mu\NodeController::class . ':onlineUserLog');
-    $this->post('/nodes/{id}/info', App\Controllers\Mu\NodeController::class . ':info');
-})->add(new Mu());
 
 // mu
 $app->group('/mod_mu', function () {
@@ -393,6 +389,7 @@ $app->get('/gettransfer', App\Controllers\VueController::class . ':getTransfer')
 $app->get('/getCaptcha', App\Controllers\VueController::class . ':getCaptcha');
 $app->post('/getChargeLog', App\Controllers\VueController::class . ':getChargeLog');
 $app->get('/getnodelist', App\Controllers\VueController::class . ':getNodeList');
+$app->get('/nodeinfo/{id}', App\Controllers\VueController::class . ':getNodeInfo');
 
 /**
  * chenPay

@@ -62,7 +62,7 @@ class FuncController extends BaseController
                 $server = null;
             }
 
-            if (Config::get('relay_port_migration') == 'true') {
+            if (Config::get('relay_port_migration') === true) {
                 foreach ($rules as $rule) {
                     $dis = $this->get_dis_node_info($rule['dist_node_id']);
                     if ($dis != null) {

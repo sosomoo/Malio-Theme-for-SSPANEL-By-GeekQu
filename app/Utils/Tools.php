@@ -280,7 +280,7 @@ class Tools
 
         $relay_able_list = Config::getSupportParam('relay_able_protocol');
 
-        return in_array($user->protocol, $relay_able_list) || Config::get('relay_insecure_mode') == 'true';
+        return in_array($user->protocol, $relay_able_list) || Config::get('relay_insecure_mode') == true;
     }
 
     public static function has_conflict_rule($input_rule, $ruleset, $edit_rule_id = 0, $origin_node_id = 0, $user_id = 0)
@@ -386,6 +386,13 @@ class Tools
         }
         return $object;
     }
+    public static function relayRulePortCheck($rules){
+        $res = array();
+        foreach($rules as $value) {
+            $res[$value->port][] = $value->port;
+        }
+        return count($res)==count($rules);
+    }
 
     public static function getRelayNodeIp($source_node, $dist_node)
     {
@@ -444,16 +451,16 @@ class Tools
         $item = [
             'host' => '',
             'path' => '',
-            'tls' => ''
+            'tls' => '',
+            "verify_cert" => true
         ];
         $item['add'] = $server[0];
         if ($server[1] == '0' || $server[1] == '') {
             $item['port'] = 443;
         } else {
-            $item['port'] = (int)$server[1];
-
+            $item['port'] = (int) $server[1];
         }
-        $item['aid'] = (int)$server[2];
+        $item['aid'] = (int) $server[2];
         $item['net'] = 'tcp';
         $item['type'] = 'none';
         if (count($server) >= 4) {
@@ -465,7 +472,7 @@ class Tools
             }
         }
         if (count($server) >= 5) {
-            if (in_array($item['net'], array('kcp', 'http'))) {
+            if (in_array($item['net'], array('kcp', 'http','mkcp'))) {
                 $item['type'] = $server[4];
             } elseif ($server[4] == 'ws') {
                 $item['net'] = 'ws';
@@ -482,9 +489,12 @@ class Tools
             if (array_key_exists('relayserver', $item)) {
                 $item['add'] = $item['relayserver'];
                 unset($item['relayserver']);
+                if ($item['tls']=='tls'){
+                    $item['verify_cert']=false;
+                }
             }
             if (array_key_exists('outside_port', $item)) {
-                $item['port'] = (int)$item['outside_port'];
+                $item['port'] = (int) $item['outside_port'];
                 unset($item['outside_port']);
             }
             if (isset($item['inside_port'])) {
@@ -504,7 +514,7 @@ class Tools
     {
         $server = explode(';', $node);
         $item = [
-            'host' => 'windowsupdate.microsoft.com',
+            'host' => 'microsoft.com',
             'path' => '',
             'net' => 'ws',
             'tls' => ''
@@ -513,7 +523,7 @@ class Tools
         if ($server[1] == '0' || $server[1] == '') {
             $item['port'] = 443;
         } else {
-            $item['port'] = (int)$server[1];
+            $item['port'] = (int) $server[1];
         }
         if (count($server) >= 4) {
             $item['net'] = $server[3];
@@ -539,7 +549,7 @@ class Tools
                 unset($item['relayserver']);
             }
             if (array_key_exists('outside_port', $item)) {
-                $item['port'] = (int)$item['outside_port'];
+                $item['port'] = (int) $item['outside_port'];
                 unset($item['outside_port']);
             }
         }
@@ -594,7 +604,7 @@ class Tools
                     $port[substr($item['port'], 0, strpos($item['port'], '#'))] = (int) substr($item['port'], strpos($item['port'], '#') + 1);
                 }
             } else {
-                $$type = (int) $item['port'];
+                $type = (int) $item['port'];
             }
         }
 
@@ -602,5 +612,225 @@ class Tools
             'type' => $type,
             'port' => $port
         ];
+    }
+
+    // 请将冷门的国家或地区放置在上方，热门的中继起源放置在下方
+    // 以便于兼容如：【上海 -> 美国】等节点名称
+    private static $emoji = [
+        "🇦🇷" => [
+            "阿根廷"
+        ],
+        "🇦🇹" => [
+            "奥地利",
+            "维也纳"
+        ],
+        "🇦🇺" => [
+            "澳大利亚",
+            "悉尼"
+        ],
+        "🇧🇷" => [
+            "巴西",
+            "圣保罗"
+        ],
+        "🇨🇦" => [
+            "加拿大",
+            "蒙特利尔",
+            "温哥华"
+        ],
+        "🇨🇭" => [
+            "瑞士",
+            "苏黎世"
+        ],
+        "🇩🇪" => [
+            "德国",
+            "法兰克福"
+        ],
+        "🇫🇮" => [
+            "芬兰",
+            "赫尔辛基"
+        ],
+        "🇫🇷" => [
+            "法国",
+            "巴黎"
+        ],
+        "🇬🇧" => [
+            "英国",
+            "伦敦"
+        ],
+        "🇮🇩" => [
+            "印尼",
+            "印度尼西亚",
+            "雅加达"
+        ],
+        "🇮🇪" => [
+            "爱尔兰",
+            "都柏林"
+        ],
+        "🇮🇳" => [
+            "印度",
+            "孟买"
+        ],
+        "🇮🇹" => [
+            "意大利",
+            "米兰"
+        ],
+        "🇰🇵" => [
+            "朝鲜"
+        ],
+        "🇲🇾" => [
+            "马来西亚"
+        ],
+        "🇳🇱" => [
+            "荷兰",
+            "阿姆斯特丹"
+        ],
+        "🇵🇭" => [
+            "菲律宾"
+        ],
+        "🇷🇴" => [
+            "罗马尼亚"
+        ],
+        "🇷🇺" => [
+            "俄罗斯",
+            "伯力",
+            "莫斯科",
+            "圣彼得堡",
+            "西伯利亚",
+            "新西伯利亚"
+        ],
+        "🇸🇬" => [
+            "新加坡"
+        ],
+        "🇹🇭" => [
+            "泰国",
+            "曼谷"
+        ],
+        "🇹🇷" => [
+            "土耳其",
+            "伊斯坦布尔"
+        ],
+        "🇺🇲" => [
+            "美国",
+            "波特兰",
+            "俄勒冈",
+            "凤凰城",
+            "费利蒙",
+            "硅谷",
+            "拉斯维加斯",
+            "洛杉矶",
+            "圣克拉拉",
+            "西雅图",
+            "芝加哥",
+            "沪美"
+        ],
+        "🇻🇳" => [
+            "越南"
+        ],
+        "🇿🇦" => [
+            "南非"
+        ],
+        "🇰🇷" => [
+            "韩国",
+            "首尔"
+        ],
+        "🇲🇴" => [
+            "澳门"
+        ],
+        "🇯🇵" => [
+            "日本",
+            "东京",
+            "大阪",
+            "埼玉",
+            "沪日"
+        ],
+        "🇹🇼" => [
+            "台湾",
+            "台北",
+            "台中"
+        ],
+        "🇭🇰" => [
+            "香港",
+            "深港"
+        ],
+        "🇨🇳" => [
+            "中国",
+            "江苏",
+            "北京",
+            "上海",
+            "深圳",
+            "杭州",
+            "徐州",
+            "宁波",
+            "镇江"
+        ]
+    ];
+
+    public static function addEmoji($Name)
+    {
+        $done = [
+            'index' => -1,
+            'emoji' => ''
+        ];
+        foreach (self::$emoji as $key => $value) {
+            foreach ($value as $item) {
+                $index = strpos($Name, $item);
+                if ($index !== false) {
+                    $done['index'] = $index;
+                    $done['emoji'] = $key;
+                    continue 2;
+                }
+            }
+        }
+        return ($done['index'] == -1
+            ? $Name
+            : ($done['emoji'] . ' ' . $Name));
+    }
+
+    /** 
+     * Add files and sub-directories in a folder to zip file. 
+     * 
+     * @param string     $folder 
+     * @param ZipArchive $zipFile 
+     * @param int        $exclusiveLength Number of text to be exclusived from the file path. 
+     */
+    public static function folderToZip($folder, &$zipFile, $exclusiveLength)
+    {
+        $handle = opendir($folder);
+        while (false !== $f = readdir($handle)) {
+            if ($f != '.' && $f != '..') {
+                $filePath = "$folder/$f";
+                // Remove prefix from file path before add to zip. 
+                $localPath = substr($filePath, $exclusiveLength);
+                if (is_file($filePath)) {
+                    $zipFile->addFile($filePath, $localPath);
+                } elseif (is_dir($filePath)) {
+                    // Add sub-directory. 
+                    $zipFile->addEmptyDir($localPath);
+                    self::folderToZip($filePath, $zipFile, $exclusiveLength);
+                }
+            }
+        }
+        closedir($handle);
+    }
+
+    /** 
+     * 清空文件夹
+     * 
+     * @param string $dirName 
+     */
+    public static function delDirAndFile($dirPath)
+    {
+        if ($handle = opendir($dirPath)){
+            while (false !== ($item = readdir($handle))){
+                if ($item != '.' && $item != '..'){
+                    if (is_dir($dirPath . '/' . $item)){
+                        self::delDirAndFile($dirPath . '/' . $item);
+                    } else {
+                        unlink($dirPath . '/' . $item);
+                    }
+                }
+            }
+            closedir($handle);
+        }
     }
 }

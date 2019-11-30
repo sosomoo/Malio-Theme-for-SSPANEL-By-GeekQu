@@ -2,18 +2,23 @@
 
 namespace App\Services;
 
+use App\Models\GConfig;
+
 class Config
 {
+    // TODO: remove
     public static function get($key)
     {
-        global $System_Config;
-        return $System_Config[$key];
+        return $_ENV[$key];
     }
 
-    public static function set($key, $value)
+    public static function getdb($key)
     {
-        global $System_Config;
-        $System_Config[$key] = $value;
+        $value = GConfig::find($key);
+        if ($value === null) {
+            $value = DefaultConfig::firstOrCreate($key);
+        }
+        return $value;
     }
 
     public static function getPublicConfig()
@@ -38,7 +43,6 @@ class Config
             'sspanelAnalysis' => self::get('sspanelAnalysis'),
             'enable_donate' => self::get('enable_donate'),
             'enable_telegram' => self::get('enable_telegram'),
-            'enable_discord' => self::get('enable_discord'),
             'payment_system' => self::get('payment_system'),
             'enable_mylivechat' => self::get('enable_mylivechat'),
             'mylivechat_id' => self::get('mylivechat_id'),
@@ -60,7 +64,8 @@ class Config
             'auto_detect_ban_type' => self::get('auto_detect_ban_type'),
             'auto_detect_ban_number' => self::get('auto_detect_ban_number'),
             'auto_detect_ban_time' => self::get('auto_detect_ban_time'),
-            'auto_detect_ban' => self::get('auto_detect_ban')
+            'auto_detect_ban' => self::get('auto_detect_ban'),
+            'subscribe_client' => self::get('subscribe_client')
         ];
     }
 
@@ -93,9 +98,8 @@ class Config
 
     public static function getMuKey()
     {
-        global $System_Config;
-        $muKeyList = array_key_exists('muKeyList', $System_Config) ? $System_Config['muKeyList'] : ['　'];
-        return array_merge(explode(',', $System_Config['muKey']), $muKeyList);
+        $muKeyList = array_key_exists('muKeyList', $_ENV) ? $_ENV['muKeyList'] : ['　'];
+        return array_merge(explode(',', $_ENV['muKey']), $muKeyList);
     }
 
     public static function getSupportParam($type)
