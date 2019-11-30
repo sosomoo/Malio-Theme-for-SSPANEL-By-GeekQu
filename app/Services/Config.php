@@ -64,7 +64,8 @@ class Config
             'auto_detect_ban_number' => self::get('auto_detect_ban_number'),
             'auto_detect_ban_time' => self::get('auto_detect_ban_time'),
             'auto_detect_ban' => self::get('auto_detect_ban'),
-            'subscribe_client' => self::get('subscribe_client')
+            'subscribe_client' => self::get('subscribe_client'),
+            'enable_sub_cache' => self::get('enable_sub_cache')
         ];
     }
 
