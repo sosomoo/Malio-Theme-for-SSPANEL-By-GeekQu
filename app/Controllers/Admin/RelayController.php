@@ -38,7 +38,7 @@ class RelayController extends AdminController
         )->orderBy('name')->get();
         foreach ($source_nodes as $node) {
             if ($node->sort == 12) {
-                $node->name .= 'V2ray中转，Port代表中转监听端口';
+                $node->name .= ' 正在使用V2ray后端 ';
             }
         }
         $dist_nodes = Node::where(
@@ -53,9 +53,9 @@ class RelayController extends AdminController
         foreach ($dist_nodes as $node) {
             if ($node->sort == 11 || $node->sort == 12) {
                 $node_explode = Tools::v2Array($node->server);
-                $node->name = $node->name;
+                $node->name = $node->name . ' 如果是V2ray后端 请设置成 ' . $node_explode['port'];
             } else {
-                $node->name .= ' 如果是V2ray中转,无法食用';
+                $node->name .= ' 如果是V2ray后端 请不要设置，用户页面设置 ';
             }
         }
 
@@ -79,9 +79,9 @@ class RelayController extends AdminController
 
         if ($source_node->sort == 12) {
             $rules = Relay::Where('source_node_id', $source_node_id)->get();
-            if (!Tools::relayRulePortCheck($rules)) {
+            if (count($rules) > 0) {
                 $rs['ret'] = 0;
-                $rs['msg'] = '端口冲突请,请更换一个';
+                $rs['msg'] = 'v2ray中转一个起点一个rule';
                 return $response->getBody()->write(json_encode($rs));
             }
         }
@@ -164,9 +164,9 @@ class RelayController extends AdminController
         foreach ($dist_nodes as $node) {
             if ($node->sort == 11 || $node->sort == 12) {
                 $node_explode = Tools::v2Array($node->server);
-                $node->name = $node->name . 'V2ray中转，Port代表中转监听端口';
+                $node->name = $node->name . ' 如果是V2ray后端 请设置成' . $node_explode['port'];
             } else {
-                $node->name .= ' 如果是V2ray中转,无法食用';
+                $node->name .= ' 如果是V2ray后端 请不要设置，用户页面设置 ';
             }
         }
 

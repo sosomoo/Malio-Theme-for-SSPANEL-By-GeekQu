@@ -2,26 +2,27 @@
 
 namespace App\Middleware;
 
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use App\Services\Auth as AuthService;
 
 class Admin
 {
-    /**
-     * @param \Slim\Http\Request    $request
-     * @param \Slim\Http\Response   $response
-     * @param callable              $next
-     *
-     * @return \Slim\Http\Response
-     */
-    public function __invoke($request, $response, $next)
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
     {
+        //$response->getBody()->write('BEFORE');
         $user = AuthService::getUser();
         if (!$user->isLogin) {
-            return $response->withStatus(302)->withHeader('Location', '/auth/login');
+            $newResponse = $response->withStatus(302)->withHeader('Location', '/auth/login');
+            return $newResponse;
         }
+
         if (!$user->isAdmin()) {
-            return $response->withStatus(302)->withHeader('Location', '/user');
+            $newResponse = $response->withStatus(302)->withHeader('Location', '/user');
+            return $newResponse;
         }
-        return $next($request, $response);
+
+        $response = $next($request, $response);
+        return $response;
     }
 }

@@ -126,10 +126,15 @@ class RelayController extends UserController
             }
         )->where('type', 1)->where(
             static function ($query) {
-                $query->Where('sort', 10);
+                $query->Where('sort', 10)
+                    ->orWhere('sort', 12);
             }
         )->where('node_class', '<=', $user->class)->orderBy('name')->get();
-
+        foreach ($source_nodes as $node) {
+            if ($node->sort == 12) {
+                $node->name .= ' 正在使用V2ray后端 ';
+            }
+        }
         $dist_nodes = Node::where(
             static function ($query) use ($user) {
                 $query->Where('node_group', '=', $user->node_group)
@@ -138,7 +143,9 @@ class RelayController extends UserController
         )->where('type', 1)->where(
             static function ($query) {
                 $query->Where('sort', 0)
-                    ->orWhere('sort', 10);
+                    ->orWhere('sort', 10)
+                    ->orWhere('sort', 11)
+                    ->orWhere('sort', 12);
             }
         )->where('node_class', '<=', $user->class)->orderBy('name')->get();
 
@@ -154,6 +161,16 @@ class RelayController extends UserController
             $mu_user = User::where('port', $port_raw->server)->first();
             if ($mu_user->is_multi_user == 1) {
                 $ports[] = $port_raw->server;
+            }
+        }
+
+        foreach ($dist_nodes as $node) {
+            if ($node->sort == 11 || $node->sort == 12) {
+                $node_explode = Tools::v2Array($node->server);
+                $ports[] = $node_explode['port'];
+                $node->name = $node->name . ' 如果是V2ray后端 请设置成 ' . $node_explode['port'];
+            } else {
+                $node->name = $node->name . ' 如果是V2ray后端 请设置成 ' . $user->port;
             }
         }
 
@@ -178,7 +195,8 @@ class RelayController extends UserController
             }
         )->where('type', 1)->where(
             static function ($query) {
-                $query->Where('sort', 10);
+                $query->Where('sort', 10)
+                    ->orWhere('sort', 12);
             }
         )->where('node_class', '<=', $user->class)->first();
         if ($source_node == null) {
@@ -205,7 +223,8 @@ class RelayController extends UserController
             static function ($query) {
                 $query->Where('sort', 0)
                     ->orWhere('sort', 10)
-                    ->orWhere('sort', 11);
+                    ->orWhere('sort', 11)
+                    ->orWhere('sort', 12);
             }
         )->where('node_class', '<=', $user->class)->first();
 
@@ -228,7 +247,12 @@ class RelayController extends UserController
                     ->orWhere('node_group', '=', 0);
             }
         )->where('type', 1)->where('sort', 9)->where('node_class', '<=', $user->class)->first();
-        if (($port_raw == null && $port != $user->port)) {
+        $v2ray_port_raw = '';
+        if ($dist_node->sort == 12 || $dist_node->sort == 11) {
+            $node_explode = Tools::v2Array($dist_node->server);
+            $v2ray_port_raw = $node_explode['port'];
+        }
+        if (($port_raw == null && $port != $user->port && $v2ray_port_raw == '') || ($v2ray_port_raw != '' && ($port != $user->port && $port != $v2ray_port_raw))) {
             $rs['ret'] = 0;
             $rs['msg'] = '端口错误';
             return $response->getBody()->write(json_encode($rs));
@@ -292,10 +316,15 @@ class RelayController extends UserController
             }
         )->where('type', 1)->where(
             static function ($query) {
-                $query->Where('sort', 10);
+                $query->Where('sort', 10)
+                    ->orWhere('sort', 12);
             }
         )->where('node_class', '<=', $user->class)->orderBy('name')->get();
-
+        foreach ($source_nodes as $node) {
+            if ($node->sort == 12) {
+                $node->name .= ' 正在使用V2ray后端 ';
+            }
+        }
         $dist_nodes = Node::where(
             static function ($query) use ($user) {
                 $query->Where('node_group', '=', $user->node_group)
@@ -305,7 +334,8 @@ class RelayController extends UserController
             static function ($query) {
                 $query->Where('sort', 0)
                     ->orWhere('sort', 10)
-                    ->orWhere('sort', 11);
+                    ->orWhere('sort', 11)
+                    ->orWhere('sort', 12);
             }
         )->where('node_class', '<=', $user->class)->orderBy('name')->get();
 
@@ -323,7 +353,15 @@ class RelayController extends UserController
                 $ports[] = $port_raw->server;
             }
         }
-
+        foreach ($dist_nodes as $node) {
+            if ($node->sort == 11 || $node->sort == 12) {
+                $node_explode = Tools::v2Array($node->server);
+                $ports[] = $node_explode['port'];
+                $node->name = $node->name . ' 如果是V2ray后端 请设置成: ' . $node_explode['port'];
+            } else {
+                $node->name = $node->name . ' 如果是V2ray后端 请设置成 ' . $user->port;
+            }
+        }
 
         $ports[] = $user->port;
         $ports = array_unique($ports);
@@ -352,7 +390,8 @@ class RelayController extends UserController
             }
         )->where('type', 1)->where(
             static function ($query) {
-                $query->Where('sort', 10);
+                $query->Where('sort', 10)
+                    ->orWhere('sort', 12);
             }
         )->where('node_class', '<=', $user->class)->first();
         if ($source_node == null) {
@@ -370,7 +409,8 @@ class RelayController extends UserController
             static function ($query) {
                 $query->Where('sort', 0)
                     ->orWhere('sort', 10)
-                    ->orWhere('sort', 11);
+                    ->orWhere('sort', 11)
+                    ->orWhere('sort', 12);
             }
         )->where('node_class', '<=', $user->class)->first();
 
@@ -393,7 +433,12 @@ class RelayController extends UserController
                     ->orWhere('node_group', '=', 0);
             }
         )->where('type', 1)->where('sort', 9)->where('node_class', '<=', $user->class)->first();
-        if (($port_raw == null && $port != $user->port)) {
+        $v2ray_port_raw = '';
+        if ($dist_node->sort == 12 || $dist_node->sort == 11) {
+            $node_explode = Tools::v2Array($dist_node->server);
+            $v2ray_port_raw = $node_explode['port'];
+        }
+        if (($port_raw == null && $port != $user->port && $v2ray_port_raw == '') || ($v2ray_port_raw != '' && ($port != $user->port && $port != $v2ray_port_raw))) {
             $rs['ret'] = 0;
             $rs['msg'] = '端口错误';
             return $response->getBody()->write(json_encode($rs));

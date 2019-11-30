@@ -60,20 +60,11 @@
                 </div>
 
 
-                 <div class="card">
-							<div class="card-main">
-								<div class="card-inner">
-
-									<div class="form-group">
-										<div class="row">
-											<div class="col-md-10 col-md-push-1">
-												<button class="btn btn-block btn-brand waves-attach waves-light" onclick="location.href='/user/ticket/create'">创建新工单</button>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+                <div class="fbtn-container">
+                    <div class="fbtn-inner">
+                        <a class="fbtn fbtn-lg fbtn-brand-accent" href="/user/ticket/create">+</a>
+                    </div>
+                </div>
             </section>
         </div>
     </div>

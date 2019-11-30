@@ -14,20 +14,6 @@
                 <div class="card">
                     <div class="card-main">
                         <div class="card-inner">
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-10 col-md-push-1">
-                                        <a class="btn btn-block btn-brand waves-attach waves-light" href="/admin/user/{$edit_user->id}/cleanSubCache">清空订阅缓存</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-main">
-                        <div class="card-inner">
                             <div class="form-group form-group-label">
                                 <label class="floating-label" for="email">邮箱</label>
                                 <input class="form-control maxwidth-edit" id="email" type="email"

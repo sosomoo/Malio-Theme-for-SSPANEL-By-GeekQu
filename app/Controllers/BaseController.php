@@ -5,8 +5,6 @@ namespace App\Controllers;
 use App\Models\User;
 use App\Services\View;
 use App\Services\Auth;
-use Slim\Http\Response;
-use Psr\Http\Message\ResponseInterface;
 use Smarty;
 
 /**
@@ -42,18 +40,13 @@ class BaseController
     {
         return $this->view;
     }
-
-    // TODO: remove
     /**
-     * Output JSON
-     *
-     * @param Response      $response
-     * @param array|object  $resource
-     *
-     * @return ResponseInterface
+     * @param $response
+     * @param $res
+     * @return mixed
      */
-    public function echoJson(Response $response, $resource)
+    public function echoJson($response, $res)
     {
-        return $response->withJson($resource);
+        return $response->getBody()->write(json_encode($res));
     }
 }

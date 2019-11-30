@@ -4,8 +4,11 @@ namespace App\Services;
 
 class Auth
 {
+    protected $driver;
 
-    protected $user;
+    public function __construct()
+    {
+    }
 
     private static function getDriver()
     {
@@ -17,18 +20,9 @@ class Auth
         self::getDriver()->login($uid, $time);
     }
 
-    /**
-     * Get current user(cached)
-     *
-     * @return \App\Models\User
-     */
     public static function getUser()
     {
-        global $user;
-        if ($user === null) {
-            $user = self::getDriver()->getUser();
-        }
-        return $user;
+        return self::getDriver()->getUser();
     }
 
     public static function logout()

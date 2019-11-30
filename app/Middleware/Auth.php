@@ -2,27 +2,25 @@
 
 namespace App\Middleware;
 
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use App\Services\Auth as AuthService;
 
 class Auth
 {
-    /**
-     * @param \Slim\Http\Request    $request
-     * @param \Slim\Http\Response   $response
-     * @param callable              $next
-     *
-     * @return \Slim\Http\Response
-     */
-    public function __invoke($request, $response, $next)
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
     {
         $user = AuthService::getUser();
         if (!$user->isLogin) {
-            return $response->withStatus(302)->withHeader('Location', '/auth/login');
+            $newResponse = $response->withStatus(302)->withHeader('Location', '/auth/login');
+            return $newResponse;
         }
         $enablePages = array('/user/disable', '/user/backtoadmin', '/user/logout');
         if ($user->enable == 0 && !in_array($_SERVER['REQUEST_URI'], $enablePages)) {
-            return $response->withStatus(302)->withHeader('Location', '/user/disable');
+            $newResponse = $response->withStatus(302)->withHeader('Location', '/user/disable');
+            return $newResponse;
         }
-        return $next($request, $response);
+        $response = $next($request, $response);
+        return $response;
     }
 }

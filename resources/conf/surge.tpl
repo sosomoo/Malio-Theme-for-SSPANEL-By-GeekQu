@@ -14,7 +14,7 @@ enhanced-mode-by-rule = false
 exclude-simple-hostnames = true
 ipv6 = true
 replica = false
-{if $surge >= 3}
+{if $surge == 3}
 http-listen = 0.0.0.0:8234
 socks5-listen = 0.0.0.0:8235
 internet-test-url = http://baidu.com
@@ -41,7 +41,7 @@ use-keyword-filter = false
 {$ProxyGroups}
 
 [Rule]
-{if $surge >= 3}
+{if $surge == 3}
 RULE-SET,SYSTEM,🍎 Only
 RULE-SET,https://raw.githubusercontent.com/lhie1/Rules/master/Surge3/Proxy.list,🍃 Proxy
 RULE-SET,https://raw.githubusercontent.com/lhie1/Rules/master/Surge3/Domestic.list,🍂 Domestic
@@ -58,7 +58,18 @@ FINAL,☁️ Others,dns-failed
 [Host]
 localhost = 127.0.0.1
 syria.sy = 127.0.0.1
-
+*.1688.com = server:223.6.6.6
+*.fliggy.com = server:223.6.6.6
+*.aliqin.com = server:223.6.6.6
+*.tmall.com = server:223.6.6.6
+*.taobao.com = server:223.6.6.6
+*.ali*.com = server:223.6.6.6
+*.upyun.com = server:223.6.6.6
+*.mmstat.com = server:223.6.6.6
+*.jd.com = server:119.29.29.29
+*.qq.com = server:119.29.29.29
+*buyimg.com = server:119.29.29.29
+*gtimg.* = server:119.29.29.29
 {literal}
 [URL Rewrite]
 // Google_Service_HTTPS_Jump

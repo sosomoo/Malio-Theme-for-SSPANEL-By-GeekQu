@@ -8,22 +8,16 @@ use App\Services\Config;
 use App\Utils\AliPay;
 use App\Utils\TelegramSessionManager;
 use App\Utils\TelegramProcess;
+use App\Utils\Spay_tool;
 use App\Utils\Geetest;
 use App\Utils\Tools;
-use Slim\Http\{Request, Response};
-use Psr\Http\Message\ResponseInterface;
 
 /**
  *  HomeController
  */
 class HomeController extends BaseController
 {
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function index($request, $response, $args): ResponseInterface
+    public function index()
     {
         $GtSdk = null;
         $recaptcha_sitekey = null;
@@ -39,7 +33,7 @@ class HomeController extends BaseController
             }
         }
 
-        if (Config::get('enable_telegram') == true) {
+        if (Config::get('enable_telegram') == 'true') {
             $login_text = TelegramSessionManager::add_login_session();
             $login = explode('|', $login_text);
             $login_token = $login[0];
@@ -49,10 +43,10 @@ class HomeController extends BaseController
             $login_number = '';
         }
 
-        if (Config::get('newIndex') === false && Config::get('theme') == 'material') {
-            return $response->write($this->view()->fetch('indexold.tpl'));
+        if (Config::get('newIndex') != 'true' && Config::get('theme') == 'material') {
+            return $this->view()->display('indexold.tpl');
         } else {
-            return $response->write($this->view()
+            return $this->view()
                 ->assign('geetest_html', $GtSdk)
                 ->assign('login_token', $login_token)
                 ->assign('login_number', $login_number)
@@ -61,120 +55,72 @@ class HomeController extends BaseController
                 ->assign('enable_regcaptcha', Config::get('enable_reg_captcha'))
                 ->assign('base_url', Config::get('baseUrl'))
                 ->assign('recaptcha_sitekey', $recaptcha_sitekey)
-                ->fetch('index.tpl'));
+                ->display('index.tpl');
         }
     }
 
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function indexold($request, $response, $args): ResponseInterface
+    public function indexold()
     {
-        return $response->write($this->view()->fetch('indexold.tpl'));
+        return $this->view()->display('indexold.tpl');
     }
 
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function code($request, $response, $args): ResponseInterface
+    public function code()
     {
         $codes = InviteCode::where('user_id', '=', '0')->take(10)->get();
-        return $response->write($this->view()->assign('codes', $codes)->fetch('code.tpl'));
+        return $this->view()->assign('codes', $codes)->display('code.tpl');
     }
 
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function tos($request, $response, $args): ResponseInterface
+    public function down()
+    { }
+
+    public function tos()
     {
-        return $response->write($this->view()->fetch('tos.tpl'));
+        return $this->view()->display('tos.tpl');
     }
 
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function staff($request, $response, $args): ResponseInterface
+    public function staff()
     {
-        return $response->write($this->view()->fetch('staff.tpl'));
+        return $this->view()->display('staff.tpl');
     }
 
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function telegram($request, $response, $args): ResponseInterface
+    public function telegram($request, $response, $args)
     {
-        $token = $request->getQueryParam('token');
+        $token = $request->getQueryParams()['token'] ?? '';
+
         if ($token == Config::get('telegram_request_token')) {
             TelegramProcess::process();
-            $result = '1';
         } else {
-            $result = '0';
+            echo ('不正确请求！');
         }
-        return $response->write($result);
     }
 
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function page404($request, $response, $args): ResponseInterface
+    public function page404($request, $response, $args)
     {
-        return $response->write($this->view()->fetch('404.tpl'));
+        return $this->view()->display('404.tpl');
     }
 
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function page405($request, $response, $args): ResponseInterface
+    public function page405($request, $response, $args)
     {
-        return $response->write($this->view()->fetch('405.tpl'));
+        return $this->view()->display('405.tpl');
     }
 
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function page500($request, $response, $args): ResponseInterface
+    public function page500($request, $response, $args)
     {
-        return $response->write($this->view()->fetch('500.tpl'));
+        return $this->view()->display('500.tpl');
     }
 
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function getOrderList($request, $response, $args): ResponseInterface
+    public function getOrderList($request, $response, $args)
     {
         $key = $request->getParam('key');
         if (!$key || $key != Config::get('key')) {
             $res['ret'] = 0;
             $res['msg'] = '错误';
-            return $response->write(json_encode($res));
+            return $response->getBody()->write(json_encode($res));
         }
-        return $response->write(json_encode(['data' => AliPay::getList()]));
+        return $response->getBody()->write(json_encode(['data' => AliPay::getList()]));
     }
 
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function setOrder($request, $response, $args): ResponseInterface
+    public function setOrder($request, $response, $args)
     {
         $key = $request->getParam('key');
         $sn = $request->getParam('sn');
@@ -182,23 +128,23 @@ class HomeController extends BaseController
         if (!$key || $key != Config::get('key')) {
             $res['ret'] = 0;
             $res['msg'] = '错误';
-            return $response->write(json_encode($res));
+            return $response->getBody()->write(json_encode($res));
         }
-        return $response->write(json_encode(['res' => AliPay::setOrder($sn, $url)]));
+        return $response->getBody()->write(json_encode(['res' => AliPay::setOrder($sn, $url)]));
     }
 
     public function getDocCenter($request, $response, $args)
     {
         $user = Auth::getUser();
-        if (!$user->isLogin && Config::get('enable_documents') === false) {
+        if (!$user->isLogin && Config::get('enable_documents') != 'true') {
             $newResponse = $response->withStatus(302)->withHeader('Location', '/');
             return $newResponse;
         }
-        $basePath = Config::get('remote_documents') === true ? Config::get('documents_source') : '/docs/GeekQu';
+        $basePath = Config::get('remote_documents') == 'true' ? Config::get('documents_source') : '/docs/GeekQu';
         return $this->view()
             ->assign('appName', Config::get('documents_name'))
             ->assign('basePath', $basePath)
-            ->fetch('doc/index.tpl');
+            ->display('doc/index.tpl');
     }
 
     public function getSubLink($request, $response, $args)
