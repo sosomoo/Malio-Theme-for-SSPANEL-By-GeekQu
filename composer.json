@@ -23,6 +23,7 @@
         "lokielse/omnipay-alipay": "*",
         "khanamiryan/qrcode-detector-decoder": "*",
         "remotelyliving/php-dns": "3.0.6",
+        "stripe/stripe-php": "7.0.0",
         "symfony/yaml": "^4.4@dev"
     },
     "autoload": {

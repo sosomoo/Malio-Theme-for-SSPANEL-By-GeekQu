@@ -86,10 +86,10 @@ class RelayController extends UserController
                     if ($single_path->end_node->id == $path->begin_node->id) {
                         $path->begin_node = $single_path->begin_node;
                         if ($path->begin_node->isNodeAccessable() == false) {
-                            $path->path = '<font color="#FF0000">' . $single_path->begin_node->name . '</font>' . ' → ' . $path->path;
+                            $path->path = '' . $single_path->begin_node->name . '' . ' <i class="fas fa-long-arrow-alt-right"></i> ' . $path->path;
                             $path->status = '阻断';
                         } else {
-                            $path->path = $single_path->begin_node->name . ' → ' . $path->path;
+                            $path->path = $single_path->begin_node->name . ' <i class="fas fa-long-arrow-alt-right"></i> ' . $path->path;
                             $path->status = '通畅';
                         }
 
@@ -100,10 +100,10 @@ class RelayController extends UserController
                     if ($path->end_node->id == $single_path->begin_node->id) {
                         $path->end_node = $single_path->end_node;
                         if ($single_path->end_node->isNodeAccessable() == false) {
-                            $path->path = $path->path . ' → ' . '<font color="#FF0000">' . $single_path->end_node->name . '</font>';
+                            $path->path = $path->path . ' <i class="fas fa-long-arrow-alt-right"></i> ' . '' . $single_path->end_node->name . '';
                             $path->status = '阻断';
                         } else {
-                            $path->path = $path->path . ' → ' . $single_path->end_node->name;
+                            $path->path = $path->path . ' <i class="fas fa-long-arrow-alt-right"></i> ' . $single_path->end_node->name;
                         }
 
                         $pathset->offsetUnset($index);

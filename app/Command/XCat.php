@@ -108,6 +108,8 @@ class XCat
                 return $this->getCookie();
             case ('iptest'):
                 return $this->iptest();
+            case ('GenerateUUIDforAllUsers'):
+                return Malio::GenerateUUIDforAllUsers();
 			default:
                 return $this->defaultAction();
         }

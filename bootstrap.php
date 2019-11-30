@@ -18,6 +18,7 @@ require BASE_PATH.'/vendor/autoload.php';
 
 require BASE_PATH."/config/.config.php";
 
+require BASE_PATH."/config/.malio_config.php";
 
 
 Boot::setDebug();

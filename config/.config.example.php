@@ -199,6 +199,18 @@ $_ENV['payment_system'] = 'none';
 $_ENV['yft_secret'] = '';
 $_ENV['yft_accesskey'] = '';
 
+# Stripe
+$System_Config['stripe_key'] = '';
+$System_Config['stripe_webhook_endpoint_secret'] = '';
+
+# payssion
+$System_Config['payssion_api_key'] = '';
+$System_Config['payssion_secret_key'] = '';
+
+#yft支付设置
+$System_Config['yft_secret']='';
+$System_Config['yft_accesskey']='';
+
 #codepay码支付
 #wiki地址:https://goo.gl/dRwRDi  http://t.cn/RnsWjtB
 $_ENV['codepay_id'] = '';					//码支付ID
@@ -231,6 +243,7 @@ $_ENV['zfbjk_qrcodeurl'] = '';
 #   客服和技术 24x7 在线支持： https://t.me/joinchat/GLKSKhUnE4GvEAPgqtChAQ
 $_ENV['bitpay_secret'] = '';
 
+
 #PayJs
 $_ENV['payjs_mchid'] = '';
 $_ENV['payjs_key'] = '';
@@ -249,6 +262,25 @@ $_ENV['tomatopay'] = [
             'token' => "" // 安全验证码
         ],
  ];
+
+
+#tomatopay番茄云支付
+#使用教程:https://swapidc.fanqieui.com/?t/329.html  tg群 https://t.me/fanqiepay
+$System_Config['tomatopay'] = [
+    'wxpay'=>[
+        'mchid' => '',   // 商户号
+        'account' => '', //您在番茄云支付的登录邮箱
+        'token' => '' // 安全验证码
+    ],
+    'alipay'=>[
+        'mchid' => '',   // 商户号
+        'account' => '', //您在番茄云支付的登录邮箱
+        'token' => '' // 安全验证码
+    ],
+];
+
+# flyfox
+$System_Config['flyfoxpay']=['config'=>['hid'=>'******','key'=>'********','mail'=>'*******@****.***']];
 
 
 //其他面板显示设置------------------------------------------------------------------------------------------

@@ -12,6 +12,7 @@ namespace App\Services\Gateway;
 use App\Models\Paylist;
 use App\Services\Auth;
 use App\Services\Config;
+use App\Services\MalioConfig;
 use App\Services\View;
 
 class BitPayX extends AbstractPayment
@@ -86,29 +87,38 @@ class BitPayX extends AbstractPayment
     {
         $price = $request->getParam('price');
         $type = $request->getParam('type');
+        $mobile = $request->getParam('mobile');
         // file_put_contents(BASE_PATH.'/bitpay_purchase.log', $price . "  " . $type . "\r\n", FILE_APPEND);
         if ($price <= 0) {
             return json_encode(['errcode' => -1, 'errmsg' => '请输入合理的金额。']);
+        }
+        if (MalioConfig::get('bitpyax_alipay_type') == 'ALIGLOBAL' && $type == 'ALIPAY') {
+            $type = 'ALIGLOBAL';
         }
         $user = Auth::getUser();
         $pl = new Paylist();
         $pl->userid = $user->id;
         $pl->total = $price;
         $pl->tradeno = self::generateGuid();
+        $pl->datetime = time(); // date("Y-m-d H:i:s");
         $pl->save();
         $data['merchant_order_id'] = $pl->tradeno;
         $data['price_amount'] = (float)$price;
         $data['price_currency'] = 'CNY';
-        if ($type === 'WECHAT' || $type === 'ALIPAY') {
+        if ($type === 'WECHAT') {
             $data['pay_currency'] = $type;
         }
+        if ($type === 'ALIGLOBAL' || $type === 'ALIPAY') {
+            $data['pay_currency'] = $type;
+        }
+        $data['mobile'] = $mobile;
         $data['title'] = '支付单号：' . $pl->tradeno;
         $data['description'] = '充值：' . $price . ' 元';
         $data['callback_url'] = Config::get('baseUrl') . '/payment/notify';
 
         $data['success_url'] = Config::get('baseUrl') . '/user/payment/return?merchantTradeNo=';
         $data['success_url'] .= $pl->tradeno;
-        $data['cancel_url'] = $data['success_url'];
+        $data['cancel_url'] = Config::get('baseUrl') . '/user/code';
 
         $str_to_sign = $this->prepareSignId($pl->tradeno);
         $data['token'] = $this->sign($str_to_sign);
@@ -116,9 +126,27 @@ class BitPayX extends AbstractPayment
         $result['pid'] = $pl->tradeno;
         // file_put_contents(BASE_PATH.'/bitpay_purchase.log', json_encode($data)."\r\n", FILE_APPEND);
         // file_put_contents(BASE_PATH.'/bitpay_purchase.log', json_encode($result)."\r\n", FILE_APPEND);
+        $qrcode_url = '';
+        $click_url = '';
         if ($result['status'] === 200 || $result['status'] === 201) {
             $result['payment_url'] .= '&lang=zh';
-            return json_encode(array('url' => $result['payment_url'], 'errcode' => 0, 'pid' => $pl->id));
+            if ($result['invoice'] && $result['invoice']['pay_currency']) {
+                $pay_currency = $result['invoice']['pay_currency'];
+                $order_id = $result['invoice']['order_id'];
+                $base_url = 'https://www.zhihu.com/qrcode?url=';
+                if ($pay_currency === 'ALIPAY') {
+                    $click_url = 'https://qrcode.icedropper.com/invoices/?id=' . $order_id . '&type=ALIPAY';
+                    $qrcode_url = $base_url . $click_url;
+                } else if ($pay_currency === 'ALIGLOBAL') {
+                    $click_url = 'https://qrcode.oceanlunettes.com/invoices/?id=' . $order_id . '&type=ALIGLOBAL';
+                    $qrcode_url = $base_url . $click_url;
+                } else if ($pay_currency === 'WECHAT') {
+                    $qrcode_url = $base_url . $result['invoice']['qrcode'];
+                    $click_url = "#";
+                }
+            }
+            // file_put_contents(BASE_PATH.'/bitpay_purchase.log', json_encode($result) . "\r\n" . $qrcode_url . "\r\n", FILE_APPEND);
+            return json_encode(array('url' => $result['payment_url'], 'qrcode_url' => $qrcode_url, 'click_url' => $click_url, 'errcode' => 0, 'pid' => $pl->tradeno));
         }
         return json_encode(['errcode' => -1, 'errmsg' => $result . error]);
     }
@@ -150,7 +178,7 @@ class BitPayX extends AbstractPayment
         $isPaid = $data !== null && $data['status'] !== null && $data['status'] === 'PAID';
         // file_put_contents(BASE_PATH.'/bitpay_notify.log', $resultVerify."\r\n".$isPaid."\r\n", FILE_APPEND);
         if ($resultVerify && $isPaid) {
-            $this->postPayment($data['merchant_order_id'], 'BitPayX');
+            $this->postPayment($data['merchant_order_id'], 'BitPayX ' . $data['merchant_order_id']);
             // echo 'SUCCESS';
             $return = [];
             $return['status'] = 200;
@@ -165,7 +193,7 @@ class BitPayX extends AbstractPayment
 
     public function getPurchaseHTML()
     {
-        return View::getSmarty()->fetch('user/bitpayx.tpl');
+        return 1;
     }
 
     public function getReturnHTML($request, $response, $args)
@@ -199,3 +227,4 @@ class BitPayX extends AbstractPayment
         return json_encode($return);
     }
 }
+

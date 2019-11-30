@@ -33,8 +33,11 @@ class YftPayUtil
         //待请求参数数组
         $para = YftPayUtil::buildRequestPara($para_temp);
         $sHtml = "<form id='paysubmit' name='paysubmit' action='https://payment.pi.do/pay/subOrder/zfb' accept-charset='utf-8' method='POST'>";
+
+        $params = '';
         foreach ($para as $key => $val) {
             $sHtml .= "<input type='hidden' name='" . $key . "' value='" . $val . "'/>";
+            $params = $params.'&'.$key.'='.$val;
         }
         if ($pay_config->pay_config["type"] == "aliPay") {
             $sHtml .= "<input type='hidden' name='subject' value='余额充值'/>";
@@ -44,7 +47,9 @@ class YftPayUtil
         //submit按钮控件请不要含有name属性
         $sHtml = $sHtml . "</form>";
         $sHtml = $sHtml . "<script>document.forms['paysubmit'].submit();</script>";
-        return $sHtml;
+        //return $sHtml;
+        $url =  'https://payment.pi.do/pay/subOrder/zfb?trade_no='.$ss_order_no.'&subject=topup'.$params;
+        return json_encode(array('url' => $url, 'errcode' => 0));
     }
 
     /**

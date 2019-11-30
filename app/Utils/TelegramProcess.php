@@ -1,15 +1,32 @@
 <?php
-    
-    namespace App\Utils;
-    
-    use App\Models\User;
-    use App\Services\Config;
-    use App\Controllers\LinkController;
-    use TelegramBot\Api\Client;
-    use TelegramBot\Api\Exception;
-    use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-    
-    class TelegramProcess
+
+namespace App\Utils;
+
+use App\Models\User;
+use App\Services\Config;
+use App\Services\MalioConfig;
+use App\Controllers\LinkController;
+use TelegramBot\Api\Client;
+use TelegramBot\Api\Exception;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+
+class TelegramProcess
+{
+    private static $all_rss = [
+        'clean_link' => '重置订阅',
+        '?sub=1' => 'SSR订阅',
+        '?sub=3' => 'V2ray订阅',
+        '?sub=5' => 'Shadowrocket',
+        '?sub=4' => 'Kitsunebi or V2rayNG or BifrostV',
+        '?surge=2' => 'Surge 2.x',
+        '?surge=3' => 'Surge 3.x',
+        '?ssd=1' => 'SSD',
+        '?clash=1' => 'Clash',
+        '?surfboard=1' => 'Surfboard',
+        '?quantumult=3' => 'Quantumult(完整配置)'
+    ];
+
+    private static function callback_bind_method($bot, $callback)
     {
         private static $all_rss = [
             'clean_link' => '重置订阅',
@@ -67,6 +84,8 @@
                 }
                 $bot->sendMessage($message->getChat()->getId(), $reply_message, $parseMode = null, $disablePreview = false, $replyToMessageId = $reply_to);
             }
+        } else {
+            $reply['message'] = '您未绑定本站账号，您可以进入网站的 "我的账号" 页面，点击绑定您的账号';
         }
     
         private static function needbind_method($bot, $message, $command, $user, $reply_to = null)
@@ -289,7 +308,18 @@
                         } else {
                             $reply['message'] = null;
                         }
-                }
+                    }
+                    if ($message->getNewChatMember() != null && Config::get('enable_welcome_message') == 'true') {
+                        $reply['message'] = '欢迎 ' . $message->getNewChatMember()->getFirstName() . ' ' . $message->getNewChatMember()->getLastName();
+                    } else {
+                        $reply['message'] = null;
+                    }
+
+                    if ($user == null && $message->getNewChatMember() != null && MalioConfig::get('force_user_to_bind_tg_when_join_group') == true) {
+                        $remove_message = $bot->sendMessage($message->getChat()->getId(), '您未绑定本站账号，无法加入此群组。您可以进入网站的 “我的账号” 页面绑定您的账号。', $parseMode = null, $disablePreview = false, $replyToMessageId = $reply_to, $replyMarkup = $reply['mark']);
+                        $bot->kickChatMember($message->getChat()->getId(), $message->getFrom()->getId(), time()+60);
+                        $bot->deleteMessage($message->getChat()->getId(), $remove_message->getMessageId());
+                    }
             }
     
             $bot->sendMessage($message->getChat()->getId(), $reply['message'], $parseMode = null, $disablePreview = false, $replyToMessageId = $reply_to, $replyMarkup = $reply['markup']);

@@ -13,6 +13,7 @@ use App\Models\Coupon;
 use App\Models\Bought;
 use App\Models\Ticket;
 use App\Services\Config;
+use App\Services\MalioConfig;
 use App\Services\Gateway\ChenPay;
 use App\Services\BitPayment;
 use App\Services\Payment;
@@ -48,6 +49,8 @@ use App\Utils\URL;
 use App\Utils\DatatablesHelper;
 use App\Services\Mail;
 
+use TelegramBot\Api\BotApi;
+
 /**
  *  HomeController
  */
@@ -73,7 +76,15 @@ class UserController extends BaseController
 
         $Ann = Ann::orderBy('date', 'desc')->first();
 
+        if (!$paybacks_sum = Payback::where("ref_by", $this->user->id)->sum('ref_get')) {
+            $paybacks_sum = 0;
+        }
+
+        $class_left_days = floor((strtotime($this->user->class_expire)-time())/86400)+1;
+
         return $this->view()
+            ->assign('class_left_days', $class_left_days)
+            ->assign('paybacks_sum', $paybacks_sum)
             ->assign('subInfo', LinkController::getSubinfo($this->user, 0))
             ->assign('ssr_sub_token', $ssr_sub_token)
             ->assign('display_ios_class', Config::get('display_ios_class'))
@@ -103,7 +114,15 @@ class UserController extends BaseController
         $pageNum = $request->getQueryParams()['page'] ?? 1;
         $codes = Code::where('type', '<>', '-2')->where('userid', '=', $this->user->id)->orderBy('id', 'desc')->paginate(15, ['*'], 'page', $pageNum);
         $codes->setPath('/user/code');
-        return $this->view()->assign('codes', $codes)->assign('pmw', Payment::purchaseHTML())->assign('bitpay', BitPayment::purchaseHTML())->display('user/code.tpl');
+
+        $bought_pageNum = 1;
+        if (isset($request->getQueryParams()["bought"])) {
+            $bought_pageNum = $request->getQueryParams()["bought"];
+        }
+        $shops = Bought::where("userid", $this->user->id)->orderBy("id", "desc")->paginate(5, ['*'], 'bought', $bought_pageNum);
+        $shops->setPath('/user/code');
+
+        return $this->view()->assign('shops', $shops)->assign('codes', $codes)->assign('pmw', Payment::purchaseHTML())->assign('bitpay', BitPayment::purchaseHTML())->display('user/code.tpl');
     }
 
     public function orderDelete($request, $response, $args)
@@ -314,7 +333,7 @@ class UserController extends BaseController
 
         if ($code == '') {
             $res['ret'] = 0;
-            $res['msg'] = '二维码不能为空';
+            $res['msg'] = '6位验证码不能为空';
             return $response->getBody()->write(json_encode($res));
         }
 
@@ -322,13 +341,15 @@ class UserController extends BaseController
         $rcode = $ga->verifyCode($user->ga_token, $code);
         if (!$rcode) {
             $res['ret'] = 0;
-            $res['msg'] = '测试错误';
+            $res['msg'] = '未成功开启';
             return $response->getBody()->write(json_encode($res));
         }
 
+        $user->ga_enable = 1;
+        $user->save();
 
         $res['ret'] = 1;
-        $res['msg'] = '测试成功';
+        $res['msg'] = '成功开启二步验证';
         return $response->getBody()->write(json_encode($res));
     }
 
@@ -441,7 +462,7 @@ class UserController extends BaseController
 
         $user->ga_token = $secret;
         $user->save();
-        return $response->withStatus(302)->withHeader('Location', '/user/edit');
+        return $response->withStatus(302)->withHeader('Location', '/user/profile');
     }
 
 
@@ -691,7 +712,25 @@ class UserController extends BaseController
         switch ($node->sort) {
             case 0:
                 if ((($user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin) && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
-                    return $this->view()->assign('node', $node)->assign('user', $user)->assign('mu', $mu)->assign('relay_rule_id', $relay_rule_id)->registerClass('URL', URL::class)->display('user/nodeinfo.tpl');
+                    $nodes_muport = array();
+                    if($node->mu_only != -1) {
+                        $nodes = Node::where('type', 1)->orderBy('node_class')->orderBy('name')->get();
+                        foreach($nodes as $node_mu){
+                            if ($node_mu->sort == 9) {
+                                $mu_user = User::where('port', '=', $node_mu->server)->first();
+                                $mu_user->obfs_param = $this->user->getMuMd5();
+                                $nodes_muport[] = array('server' => $node_mu, 'user' => $mu_user);
+                            }
+                        }
+                    }
+                    return $this->view()
+                        ->assign('nodes_muport', $nodes_muport)
+                        ->assign('node', $node)
+                        ->assign('user', $user)
+                        ->assign('mu', $mu)
+                        ->assign('relay_rule_id', $relay_rule_id)
+                        ->registerClass('URL', URL::class)
+                        ->display('user/nodeinfo.tpl');
                 }
                 break;
             case 1:
@@ -782,8 +821,14 @@ class UserController extends BaseController
             }
         }
 
+        $bind_token = TelegramSessionManager::add_bind_session($this->user);
 
-        return $this->view()->assign('userip', $userip)->assign('userloginip', $userloginip)->assign('paybacks', $paybacks)->display('user/profile.tpl');
+        return $this->view()
+            ->assign('telegram_bot', Config::get('telegram_bot'))
+            ->assign('bind_token', $bind_token)
+            ->assign('userip', $userip)
+            ->assign('userloginip', $userloginip)
+            ->assign('paybacks', $paybacks)->display('user/profile.tpl');
     }
 
 
@@ -797,7 +842,25 @@ class UserController extends BaseController
 
     public function tutorial($request, $response, $args)
     {
-        return $this->view()->display('user/tutorial.tpl');
+        $ssr_sub_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
+        $opts = $request->getQueryParams();
+        if ($opts['os'] == 'faq') {
+            return $this->view()->display('user/tutorial/faq.tpl');
+        }
+        if ($opts['os'] != '' && $opts['client'] != '') {
+            $url = 'user/tutorial/'.$opts['os'].'-'.$opts['client'].'.tpl';
+            return $this->view()
+                ->assign('subInfo', LinkController::getSubinfo($this->user, 0))
+                ->assign('ssr_sub_token', $ssr_sub_token)
+                ->assign('mergeSub', Config::get('mergeSub'))
+                ->assign('subUrl', Config::get('subUrl'))
+                ->assign('user', $this->user)
+                ->registerClass('URL', URL::class)
+                ->assign('baseUrl', Config::get('baseUrl'))
+                ->display($url);
+        } else {
+            return $this->view()->display('user/tutorial.tpl');
+        }
     }
 
 
@@ -818,7 +881,10 @@ class UserController extends BaseController
 
         $config_service = new Config();
 
+        $ssr_sub_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
+
         return $this->view()
+            ->assign('ssr_sub_token', $ssr_sub_token)
             ->assign('user', $this->user)
             ->assign('schemes', Config::get('user_agreement_scheme'))
             ->assign('themes', $themes)
@@ -1035,7 +1101,7 @@ class UserController extends BaseController
 
         if ($coupon == null) {
             $res['ret'] = 0;
-            $res['msg'] = '优惠码无效';
+            $res['msg'] = '此优惠码无效';
             return $response->getBody()->write(json_encode($res));
         }
 
@@ -1057,7 +1123,9 @@ class UserController extends BaseController
 
         $res['ret'] = 1;
         $res['name'] = $shop->name;
-        $res['credit'] = $coupon->credit . ' %';
+        $res['credit'] = $coupon->credit;
+        $res['onetime'] = $coupon->onetime;
+        $res['shop'] = $coupon->shop;
         $res['total'] = $shop->price * ((100 - $coupon->credit) / 100) . '元';
 
         return $response->getBody()->write(json_encode($res));
@@ -1142,13 +1210,10 @@ class UserController extends BaseController
         } else {
             $bought->renew = time() + $shop->auto_renew * 86400;
         }
-
-        $bought->coupon = $code;
-
-
         if (isset($onetime)) {
-            $price = $shop->price;
+            $bought->renew = 0;
         }
+        $bought->coupon = $code;
         $bought->price = $price;
         $bought->save();
 
@@ -1240,23 +1305,49 @@ class UserController extends BaseController
         $ticket->datetime = time();
         $ticket->save();
 
-        if (Config::get('mail_ticket') == true && $markdown != '') {
+        $new_ticket = Ticket::where('userid', $this->user->id)->where('title', $ticket->title)->orderBy('id','desc')->first();
+        $ticket_url = Config::get('baseUrl').'/admin/ticket/'.$new_ticket->id.'/view';
+
+        if (Config::get('mail_ticket') == 'true') {
             $adminUser = User::where('is_admin', '=', '1')->get();
             foreach ($adminUser as $user) {
-                $subject = Config::get('appName') . '-新工单被开启';
+                $subject = '新工单被开启';
                 $to = $user->email;
-                $text = '管理员，有人开启了新的工单，请您及时处理。';
+                $text = '有新工单需要您处理';
                 try {
-                    Mail::send($to, $subject, 'news/warn.tpl', [
-                        'user' => $user, 'text' => $text
-                    ], []);
+                    Mail::send($to, $subject, 'ticket/new_ticket.tpl', [
+                        'user' => $this->user, 'admin' =>$user, 'text' => $text, 'title' => $title, 'content' => $content, 'ticket_url' =>$ticket_url 
+                    ], [
+                    ]);
                 } catch (Exception $e) {
-                    echo $e->getMessage();
                 }
             }
         }
 
-        if (Config::get('useScFtqq') == true && $markdown != '') {
+        /* notify admins on telegram */
+        if (Config::get('enable_telegram') == 'true') {
+            $messageText = 'Hi，管理员'.PHP_EOL.'有新工单需要您处理'.PHP_EOL.PHP_EOL.$this->user->user_name.': '.$title.PHP_EOL.$content;
+            $keyboard = new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
+                [
+                    [
+                        ['text' => '回复工单', 'url' => $ticket_url]
+                    ]
+                ]
+            );
+            $bot = new BotApi(Config::get('telegram_token'));
+            $adminUser = User::where('is_admin', '=', '1')->get();
+            foreach ($adminUser as $user) {
+                if ($user->telegram_id != null) {
+                    try {
+                        $bot->sendMessage($user->telegram_id, $messageText, null, null, null, $keyboard);
+                    } catch (Exception $e) {
+                        
+                    }
+                }
+            }
+        }
+
+        if (Config::get('useScFtqq') == 'true') {
             $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
             $postdata = http_build_query(
                 array(
@@ -1305,74 +1396,99 @@ class UserController extends BaseController
             return $newResponse;
         }
 
-        if ($status == 1 && $ticket_main->status != $status) {
-            if (Config::get('mail_ticket') == true && $markdown != '') {
-                $adminUser = User::where('is_admin', '=', '1')->get();
-                foreach ($adminUser as $user) {
-                    $subject = Config::get('appName') . '-工单被重新开启';
-                    $to = $user->email;
-                    $text = '管理员，有人重新开启了<a href="' . Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view">工单</a>，请您及时处理。';
-                    try {
-                        Mail::send($to, $subject, 'news/warn.tpl', [
-                            'user' => $user, 'text' => $text
-                        ], []);
-                    } catch (Exception $e) {
-                        echo $e->getMessage();
+        if ($content != '这条工单已被关闭') {
+            if ($status == 1 && $ticket_main->status != $status) {
+                if (Config::get('mail_ticket') == 'true') {
+                    $adminUser = User::where('is_admin', '=', '1')->get();
+                    foreach ($adminUser as $user) {
+                        $subject = Config::get('appName') . '-工单被重新开启';
+                        $to = $user->email;
+                        $text = '管理员，有人重新开启了<a href="' . Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view">工单</a>，请您及时处理。';
+                        try {
+                            Mail::send($to, $subject, 'news/warn.tpl', [
+                                'user' => $user, 'text' => $text
+                            ], [
+                            ]);
+                        } catch (Exception $e) {
+                        }
                     }
                 }
-            }
-            if (Config::get('useScFtqq') == true && $markdown != '') {
-                $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
-                $postdata = http_build_query(
-                    array(
-                        'text' => Config::get('appName') . '-工单被重新开启',
-                        'desp' => $markdown
-                    )
-                );
-                $opts = array('http' =>
-                array(
-                    'method' => 'POST',
-                    'header' => 'Content-type: application/x-www-form-urlencoded',
-                    'content' => $postdata
-                ));
-                $context = stream_context_create($opts);
-                file_get_contents('https://sc.ftqq.com/' . $ScFtqq_SCKEY . '.send', false, $context);
-                $useScFtqq = Config::get('ScFtqq_SCKEY');
-            }
-        } else {
-            if (Config::get('mail_ticket') == true && $markdown != '') {
-                $adminUser = User::where('is_admin', '=', '1')->get();
-                foreach ($adminUser as $user) {
-                    $subject = Config::get('appName') . '-工单被回复';
-                    $to = $user->email;
-                    $text = '管理员，有人回复了<a href="' . Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view">工单</a>，请您及时处理。';
-                    try {
-                        Mail::send($to, $subject, 'news/warn.tpl', [
-                            'user' => $user, 'text' => $text
-                        ], []);
-                    } catch (Exception $e) {
-                        echo $e->getMessage();
+                if (Config::get('useScFtqq') == 'true') {
+                    $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
+                    $postdata = http_build_query(
+                        array(
+                            'text' => Config::get('appName') . '-工单被重新开启',
+                            'desp' => $markdown
+                        )
+                    );
+                    $opts = array('http' =>
+                        array(
+                            'method' => 'POST',
+                            'header' => 'Content-type: application/x-www-form-urlencoded',
+                            'content' => $postdata
+                        ));
+                    $context = stream_context_create($opts);
+                    file_get_contents('https://sc.ftqq.com/' . $ScFtqq_SCKEY . '.send', false, $context);
+                    $useScFtqq = Config::get('ScFtqq_SCKEY');
+                }
+            } else {
+                if (Config::get('mail_ticket') == 'true') {
+                    $adminUser = User::where('is_admin', '=', '1')->get();
+                    $ticket_url = Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view';
+                    foreach ($adminUser as $user) {
+                        $subject = '工单被回复';
+                        $to = $user->email;
+                        $text = '有人回复了工单，请您及时处理';
+                        try {
+                            Mail::send($to, $subject, 'ticket/ticket_replay_admin.tpl', [
+                                'user' => $this->user, 'text' => $text, 'ticket_url' => $ticket_url, 'content' => $content, 'title' => $ticket_main->title
+                            ], [
+                            ]);
+                        } catch (Exception $e) {
+                        }
                     }
                 }
-            }
-            if (Config::get('useScFtqq') == true && $markdown != '') {
-                $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
-                $postdata = http_build_query(
-                    array(
-                        'text' => Config::get('appName') . '-工单被回复',
-                        'desp' => $markdown
-                    )
-                );
-                $opts = array('http' =>
-                array(
-                    'method' => 'POST',
-                    'header' => 'Content-type: application/x-www-form-urlencoded',
-                    'content' => $postdata
-                ));
-                $context = stream_context_create($opts);
-                file_get_contents('https://sc.ftqq.com/' . $ScFtqq_SCKEY . '.send', false, $context);
+                if (Config::get('enable_telegram') == 'true') {
+                    $messageText = 'Hi，管理员'.PHP_EOL.'有人回复了工单，请您及时处理'.PHP_EOL.PHP_EOL.$this->user->user_name.': '.$ticket_main->title.PHP_EOL.$content;
+                    $ticket_url = Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view';
+                    $keyboard = new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
+                        [
+                            [
+                                ['text' => '回复工单', 'url' => $ticket_url]
+                            ]
+                        ]
+                    );
+                    $bot = new BotApi(Config::get('telegram_token'));
+                    $adminUser = User::where('is_admin', '=', '1')->get();
+                    foreach ($adminUser as $user) {
+                        if ($user->telegram_id != null) {
+                            try {
+                                $bot->sendMessage($user->telegram_id, $messageText, null, null, null, $keyboard);
+                            } catch (Exception $e) {
+                            }
+                        }
+                    }
+                }
+                if (Config::get('useScFtqq') == 'true') {
+                    $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
+                    $postdata = http_build_query(
+                        array(
+                            'text' => Config::get('appName') . '-工单被回复',
+                            'desp' => $markdown
+                        )
+                    );
+                    $opts = array('http' =>
+                        array(
+                            'method' => 'POST',
+                            'header' => 'Content-type: application/x-www-form-urlencoded',
+                            'content' => $postdata
+                        ));
+                    $context = stream_context_create($opts);
+                    file_get_contents('https://sc.ftqq.com/' . $ScFtqq_SCKEY . '.send', false, $context);
+                }
             }
         }
+        
 
         $antiXss = new AntiXSS();
 
@@ -1409,7 +1525,7 @@ class UserController extends BaseController
         $ticketset->setPath('/user/ticket/' . $id . '/view');
 
 
-        return $this->view()->assign('ticketset', $ticketset)->assign('id', $id)->display('user/ticket_view.tpl');
+        return $this->view()->assign('ticketset', $ticketset)->assign('ticket_status', $ticket_main->status)->assign('id', $id)->display('user/ticket_view.tpl');
     }
 
 
@@ -1914,78 +2030,76 @@ class UserController extends BaseController
         return $this->view()->assign('logs', $logs)->assign('iplocation', $iplocation)->display('user/subscribe_log.tpl');
     }
 
-    /** 
-     * 获取包含订阅信息的客户端压缩档
-     * 
-     * @param Request  $request 
-     * @param Response $response 
-     * @param array    $args
-     */
-    public function getPcClient($request, $response, $args)
+    public function getmoney($request, $response, $args)
     {
-        $zipArc = new \ZipArchive();
-        $user_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
-        $type = trim($request->getQueryParams()['type']);
-        // 临时文件存放路径
-        $temp_file_path = '../storage/';
-        // 客户端文件存放路径
-        $client_path = '../resources/clients/';
-        switch ($type) {
-            case 'ss-win':
-                $temp_file_path .= $type . '_' . $user_token . '.zip';
-                $user_config_file_name = 'gui-config.json';
-                $content = LinkController::getSSPcConf($this->user);
-                $client_path .= $type . '/';
-                break;
-            case 'ssd-win':
-                $temp_file_path .= $type . '_' . $user_token . '.zip';
-                $user_config_file_name = 'gui-config.json';
-                $content = LinkController::getSSDPcConf($this->user);
-                $client_path .= $type . '/';
-                break;
-            case 'ssr-win':
-                $temp_file_path .= $type . '_' . $user_token . '.zip';
-                $user_config_file_name = 'gui-config.json';
-                $content = LinkController::getSSRPcConf($this->user);
-                $client_path .= $type . '/';
-                break;
-            default:
-                return 'gg';
-        }
-        // 文件存在则先删除
-        if (is_file($temp_file_path)) {
-            unlink($temp_file_path);
-        }
-        // 超链接文件内容
-        $site_url_content = '[InternetShortcut]' . PHP_EOL . 'URL=' . Config::get('baseUrl');
-        // 创建 zip 并添加内容
-        $zipArc->open($temp_file_path, \ZipArchive::CREATE);
-        $zipArc->addFromString($user_config_file_name, $content);
-        $zipArc->addFromString('点击访问_' . Config::get('appName') . '.url', $site_url_content);
-        Tools::folderToZip($client_path, $zipArc, strlen($client_path));
-        $zipArc->close();
-
-        $newResponse = $response->withHeader('Content-type', ' application/octet-stream')->withHeader('Content-Disposition', ' attachment; filename=' . $type . '.zip');
-        $newResponse->write(file_get_contents($temp_file_path));
-        unlink($temp_file_path);
-
-        return $newResponse;
-    }
-
-    /** 
-     * 清理订阅缓存
-     * 
-     * @param Request  $request 
-     * @param Response $response 
-     * @param array    $args
-     */
-    public function cleanSubCache($request, $response, $args)
-    {
-        $this->user->cleanSubCache();
-
+        $user = $this->user;
+        $res['money'] = $user->money;
         $res['ret'] = 1;
-        $res['msg'] = '清理成功';
-
         return $this->echoJson($response, $res);
     }
+    
+    public function getPlanInfo($request, $response, $args)
+    {
+        $plan_time = $request->getQueryParams()['time'];
+        $plan_num = $request->getQueryParams()['num'];
+        if (empty($plan_num) || empty($plan_time)) {
+            $res['ret'] = 0;
+            return $this->echoJson($response, $res); 
+        }
+        $shop_id = (MalioConfig::get('plan_shop_id'))[$plan_num][$plan_time];
+        $shop = Shop::where('id', $shop_id)->first();
+        $res['id'] = $shop_id;
+        $res['name'] = $shop->name;
+        $res['price'] = $shop->price;
+        $res['ret'] = 1;
+        return $this->echoJson($response, $res);
+    }
+
+    public function buyTrafficPackage($request, $response, $args)
+    {
+        $shopId = $request->getParam('shopid');
+        $shop = Shop::where('id', $shopId)->where('status', 1)->first();
+        if ($shop == null) {
+            $res['ret'] = 0;
+            $res['msg'] = '非法请求';
+            return $response->getBody()->write(json_encode($res));
+        }
+
+        $price = $shop->price;
+        $user = $this->user;
+
+        if (!$user->isLogin) {
+            $res['ret'] = -1;
+            return $response->getBody()->write(json_encode($res));
+        }
+        if (bccomp($user->money, $price, 2) == -1) {
+            $res['ret'] = 0;
+            $res['msg'] = '喵喵喵~ 当前余额不足，总价为' . $price . '元。</br><a href="/user/code">点击进入充值界面</a>';
+            return $response->getBody()->write(json_encode($res));
+        }
+
+        $user->money = bcsub($user->money, $price, 2);
+        $traffic = $shop->bandwidth();
+        $user->transfer_enable += $traffic * 1024 * 1024 * 1024;
+        $user->save();
+
+        $bought = new Bought();
+        $bought->userid = $user->id;
+        $bought->shopid = $shop->id;
+        $bought->datetime = time();
+        $bought->coupon = '';
+        $bought->renew = 0;
+        $bought->price = $price;
+        $bought->save();
+
+        $res['ret'] = 1;
+        $res['msg'] = '购买成功';
+
+        return $response->getBody()->write(json_encode($res));
+    }
+
+    public function share_account($request, $response, $args)
+    {
+        return $this->view()->display('user/share_account.tpl'); 
+    } 
 }

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\InviteCode;
 use App\Services\Config;
+use App\Services\MalioConfig;
 use App\Utils\Check;
 use App\Utils\Tools;
 use App\Utils\Radius;
@@ -16,9 +17,11 @@ use App\Services\Mail;
 use App\Models\User;
 use App\Models\LoginIp;
 use App\Models\EmailVerify;
+use App\Models\SmsVerify;
 use App\Utils\GA;
 use App\Utils\Geetest;
 use App\Utils\TelegramSessionManager;
+use Ramsey\Uuid\Uuid;
 
 /**
  *  AuthController
@@ -51,10 +54,23 @@ class AuthController extends BaseController
             $login_number = '';
         }
 
+        $welcome = '';
+        $time = date('G');
+        if ($time <= 4) {
+            $welcome = 'Good Night';
+        } else if ($time <= 12) {
+            $welcome = 'Good Morning';
+        } else if ($time <=18) {
+            $welcome = 'Good Afternoon';
+        } else {
+            $welcome = 'Good Evening';
+        }
+
         return $this->view()
             ->assign('geetest_html', $GtSdk)
             ->assign('login_token', $login_token)
             ->assign('login_number', $login_number)
+            ->assign('welcome', $welcome)
             ->assign('telegram_bot', Config::get('telegram_bot'))
             ->assign('base_url', Config::get('baseUrl'))
             ->assign('recaptcha_sitekey', $recaptcha_sitekey)
@@ -149,7 +165,7 @@ class AuthController extends BaseController
             $rcode = $ga->verifyCode($user->ga_token, $code);
 
             if (!$rcode) {
-                $res['ret'] = 0;
+                $res['ret'] = 2;
                 $res['msg'] = '两步验证码错误，如果您是丢失了生成器或者错误地设置了这个选项，您可以尝试重置密码，即可取消这个选项。';
                 return $response->getBody()->write(json_encode($res));
             }
@@ -229,7 +245,6 @@ class AuthController extends BaseController
                     break;
             }
         }
-
 
         return $this->view()
             ->assign('geetest_html', $GtSdk)
@@ -312,6 +327,84 @@ class AuthController extends BaseController
         return $response->getBody()->write(json_encode($res));
     }
 
+    public function sendSMS($request, $response, $next)
+    {
+        if (MalioConfig::get('enable_sms_verify') == true) {
+            $phone = $request->getParam('phone');
+            $phone = trim($phone);
+
+            $area_code = $request->getParam('area_code');
+
+            $full_phone = $area_code.$phone;
+
+            if ($phone == '' || $area_code == '') {
+                $res['ret'] = 0;
+                $res['msg'] = '请填写完整的手机号';
+                return $response->getBody()->write(json_encode($res));
+            }
+
+            $ipcount = SmsVerify::where('ip', '=', $_SERVER['REMOTE_ADDR'])->where('expire_in', '>', time())->count();
+            if ($ipcount >= (int)MalioConfig::get('sms_verify_iplimit')) {
+                $res['ret'] = 0;
+                $res['msg'] = '此IP请求次数过多';
+                return $response->getBody()->write(json_encode($res));
+            }
+
+            $code = Tools::genRandomNum(6);
+
+            $pamas = array(
+                'access_key' => MalioConfig::get('globalsent_access_key'),
+                'mobile' => $full_phone,
+                'content' => '您的注册验证码是 '.$code
+            );
+            
+            $url = 'https://api.globalsent.com/send?'.http_build_query($pamas);
+            
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            $return = curl_exec($ch);
+            curl_close($ch);
+            $return = json_decode($return);
+            
+            if ($return->code != '0000') {
+                $res['ret'] = 0;
+                $res['msg'] = '发送短信验证码失败';
+                return $return->code;
+                return $response->getBody()->write(json_encode($res));
+            } else {
+                $sv = new SmsVerify();
+                $sv->expire_in = time() + Config::get('email_verify_ttl');
+                $sv->ip = $_SERVER['REMOTE_ADDR'];
+                $sv->phone = $full_phone;
+                $sv->code = $code;
+                $sv->save();
+                $res['ret'] = 1;
+                $res['msg'] = '验证码发送成功，请查收短信。';
+                return $response->getBody()->write(json_encode($res));
+            }
+
+            /*
+{
+    "code": "0000",
+    "data": {
+        "send_id": "312312312",
+        "mobile": "861212131212",
+        "messages": "\u3010Malio\u4e91\u3011test",
+        "count": 1,
+        "per_price": 0.06,
+        "count_price": 0.06
+    },
+    "message": ""
+}
+            */
+        }
+        $res['ret'] = 0;
+        return $response->getBody()->write(json_encode($res));
+    }
+
     public function registerHandle($request, $response)
     {
         if (Config::get('register_mode') === 'close') {
@@ -333,6 +426,15 @@ class AuthController extends BaseController
         $wechat = $request->getParam('wechat');
         $wechat = trim($wechat);
         // check code
+
+        $sms_code = $request->getParam('sms_code');
+        $sms_code = trim($sms_code);
+        $phone = $request->getParam('phone');
+        $phone = trim($phone);
+
+        $area_code = $request->getParam('area_code');
+
+        $full_phone = $area_code.$phone;
 
 
         if (Config::get('enable_reg_captcha') === true) {
@@ -360,7 +462,7 @@ class AuthController extends BaseController
 
         //dumplin：1、邀请人等级为0则邀请码不可用；2、邀请人invite_num为可邀请次数，填负数则为无限
         $c = InviteCode::where('code', $code)->first();
-        if ($c == null) {
+        if ($c == null && MalioConfig::get('code_required') == true) {
             if (Config::get('register_mode') === 'invite') {
                 $res['ret'] = 0;
                 $res['msg'] = '邀请码无效';
@@ -374,13 +476,13 @@ class AuthController extends BaseController
                 return $response->getBody()->write(json_encode($res));
             }
 
-            if ($gift_user->class == 0) {
+            if ($gift_user->class == 0 && MalioConfig::get('code_required') == true) {
                 $res['ret'] = 0;
                 $res['msg'] = '邀请人不是VIP';
                 return $response->getBody()->write(json_encode($res));
             }
 
-            if ($gift_user->invite_num == 0) {
+            if ($gift_user->invite_num == 0 && MalioConfig::get('code_required') == true) {
                 $res['ret'] = 0;
                 $res['msg'] = '邀请人可用邀请次数为0';
                 return $response->getBody()->write(json_encode($res));
@@ -393,6 +495,19 @@ class AuthController extends BaseController
             $res['ret'] = 0;
             $res['msg'] = '邮箱无效';
             return $response->getBody()->write(json_encode($res));
+        }
+        $email_postfix = '@'.(explode("@",$email)[1]);
+        if (in_array($email_postfix, MalioConfig::get('register_email_black_list')) == true) {
+            $res['ret'] = 0;
+            $res['msg'] = '邮箱后缀已被拉黑';
+            return $response->getBody()->write(json_encode($res));
+        }
+        if (MalioConfig::get('enable_register_email_restrict') == true) {
+            if (in_array($email_postfix, MalioConfig::get('register_email_white_list')) == false) {
+                $res['ret'] = 0;
+                $res['msg'] = '小老弟还会发送post请求啊';
+                return $response->getBody()->write(json_encode($res));
+            }
         }
         // check email
         $user = User::where('email', $email)->first();
@@ -411,6 +526,15 @@ class AuthController extends BaseController
             }
         }
 
+        if (MalioConfig::get('enable_sms_verify') == true) {
+            $smscount = SmsVerify::where('phone', '=', $full_phone)->where('code', '=', $sms_code)->where('expire_in', '>', time())->first();
+            if ($smscount == null) {
+                $res['ret'] = 0;
+                $res['msg'] = '您的短信验证码不正确';
+                return $response->getBody()->write(json_encode($res));
+            }
+        }
+
         // check pwd length
         if (strlen($passwd) < 8) {
             $res['ret'] = 0;
@@ -425,6 +549,7 @@ class AuthController extends BaseController
             return $response->getBody()->write(json_encode($res));
         }
 
+        /*
         if ($imtype == '' || $wechat == '') {
             $res['ret'] = 0;
             $res['msg'] = '请填上你的联络方式';
@@ -440,6 +565,11 @@ class AuthController extends BaseController
         if (Config::get('enable_email_verify') == true) {
             EmailVerify::where('email', '=', $email)->delete();
         }
+
+        if (MalioConfig::get('enable_sms_verify') == true) {
+            SmsVerify::where('phone', '=', $full_phone)->delete();
+        }
+
         // do reg user
         $user = new User();
 
@@ -468,16 +598,23 @@ class AuthController extends BaseController
         $user->auto_reset_day = Config::get('reg_auto_reset_day');
         $user->auto_reset_bandwidth = Config::get('reg_auto_reset_bandwidth');
         $user->money = 0;
+        if ($full_phone == '') {
+        	$user->phone = null;
+        } else {
+            $user->phone = $full_phone;	
+        }
 
         //dumplin：填写邀请人，写入邀请奖励
         $user->ref_by = 0;
         if (($c != null) && $c->user_id != 0) {
             $gift_user = User::where('id', '=', $c->user_id)->first();
-            $user->ref_by = $c->user_id;
-            $user->money = Config::get('invite_get_money');
-            $gift_user->transfer_enable += Config::get('invite_gift') * 1024 * 1024 * 1024;
-            --$gift_user->invite_num;
-            $gift_user->save();
+            if ($gift_user->invite_num > 0) {
+                $user->ref_by = $c->user_id;
+                $user->money = Config::get('invite_get_money');
+                $gift_user->transfer_enable += Config::get('invite_gift') * 1024 * 1024 * 1024;
+                --$gift_user->invite_num;
+                $gift_user->save();
+            };
         }
 
 
@@ -500,6 +637,11 @@ class AuthController extends BaseController
 
         $user->ga_token = $secret;
         $user->ga_enable = 0;
+
+
+        /* malio 增加UUID */
+        $user->uuid = Uuid::uuid3(Uuid::NAMESPACE_DNS, ($user->passwd) . Config::get('key') . $user->id)->toString();
+        /* malio end */
 
 
         if ($user->save()) {

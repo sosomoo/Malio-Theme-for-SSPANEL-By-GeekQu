@@ -17,6 +17,10 @@ use App\Utils\DatatablesHelper;
 
 use App\Controllers\AdminController;
 
+use App\Utils\Telegram;
+
+use TelegramBot\Api\BotApi;
+
 class TicketController extends AdminController
 {
     public function index($request, $response, $args)
@@ -52,23 +56,35 @@ class TicketController extends AdminController
 
 
         $ticket_main = Ticket::where('id', '=', $id)->where('rootid', '=', 0)->first();
-
-        //if($status==1&&$ticket_main->status!=$status)
-        {
-            $adminUser = User::where('id', '=', $ticket_main->userid)->get();
-        foreach ($adminUser as $user) {
-            $subject = Config::get('appName') . '-工单被回复';
-            $to = $user->email;
-            $text = '您好，有人回复了<a href="' . Config::get('baseUrl') . '/user/ticket/' . $ticket_main->id . '/view">工单</a>，请您查看。';
-            try {
-                Mail::send($to, $subject, 'news/warn.tpl', [
-                    'user' => $user, 'text' => $text
-                ], [
-                ]);
-            } catch (Exception $e) {
-                echo $e->getMessage();
-            }
+        $user = User::where('id','=', $ticket_main->userid)->first();
+        $ticket_url = Config::get('baseUrl') . '/user/ticket/' . $ticket_main->id . '/view';
+        
+        $subject = '您提出的工单已被回复';
+        $to = $user->email;
+        $text = '管理员已回复您提出的工单';
+        try {
+            Mail::send($to, $subject, 'ticket/ticket_reply.tpl', [
+                'user' => $user, 'text' => $text, 'content' => $content, 'title' => $ticket_main->title, 'ticket_url' => $ticket_url
+            ], [
+            ]);
+        } catch (Exception $e) {
         }
+
+        if (Config::get('enable_telegram') == 'true' && $user->telegram_id != null) {
+            $messageText = 'Hi，'.$user->user_name.PHP_EOL.'管理员已回复您提出的工单'.PHP_EOL.PHP_EOL.'工单标题: '.$ticket_main->title.PHP_EOL.'回复内容: '.$content;
+            $keyboard = new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
+                [
+                    [
+                        ['text' => '回复工单', 'url' => $ticket_url]
+                    ]
+                ]
+            );
+            $bot = new BotApi(Config::get('telegram_token'));
+            try {
+                $bot->sendMessage($user->telegram_id, $messageText, null, null, null, $keyboard);
+            } catch (Exception $e) {
+                
+            }
         }
 
         $antiXss = new AntiXSS();
