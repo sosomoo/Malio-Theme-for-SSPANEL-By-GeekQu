@@ -154,7 +154,7 @@
           {if ($v2server['net']=="ws" && $v2server['tls']=="tls")||$v2server['net']=="tls"||($v2server['net']=="tcp" && $v2server['tls']=="tls")}
           <div class="mb-2">TLS: <code>TLS</code></div>
           {/if}
-          <div class="mb-2">VMess链接: <code><a class="copy-text" data-clipboard-text="{URL::getV2Url($user, $node['raw_node'])}">点击复制</a></code></div>
+          <div class="mb-2">VMess链接: <code>{URL::getV2Url($user, $node['raw_node'])}</code></div>
         </div>
       </div>
     </div>
@@ -164,22 +164,23 @@
   {/foreach}
 
   {include file='user/scripts.tpl'}
-</body>
+  <input id="tmp_input" style="display: none;">
 
-<div class="modal fade" tabindex="-1" role="dialog" id="nodeinfo">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">节点信息</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <iframe id="infoifram" seamless style="border: none;width: 100%;height: 600px;"></iframe>
+  <div class="modal fade" tabindex="-1" role="dialog" id="nodeinfo">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">节点信息</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <iframe id="infoifram" seamless style="border: none;width: 100%;height: 600px;"></iframe>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</body>
 
 </html>
