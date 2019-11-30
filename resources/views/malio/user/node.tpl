@@ -127,7 +127,7 @@
   </div>
 
   {foreach $nodes as $node}
-  {if $user->class >= $node->class}
+  {if $user->class >= $node['class']}
   {if $node['sort'] == 11}
   <div class="modal fade" tabindex="-1" role="dialog" id="node-modal-{$node['id']}">
     <div class="modal-dialog" role="document">
