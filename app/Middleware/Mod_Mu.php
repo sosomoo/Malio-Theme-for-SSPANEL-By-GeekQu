@@ -31,22 +31,23 @@ class Mod_Mu
             }
         }
 
-        if (MalioConfig::get('enable_webapi_ip_verification') == true) {
-            $node = Node::where('node_ip', 'LIKE', $_SERVER['REMOTE_ADDR'] . '%')->first();
-            if ($node == null && $_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
-                $res['ret'] = 0;
-                $res['data'] = 'token or source is invalid, Your ip address is ' . $_SERVER['REMOTE_ADDR'];
-                $response->getBody()->write(json_encode($res));
-                return $response;
-            }
+        if (Config::get('checkNodeIp')){
 
             $node = Node::where('node_ip', 'LIKE', $_SERVER['REMOTE_ADDR'] . '%')->first();
             if ($node == null && $_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
                 $res['ret'] = 0;
-                $res['data'] = 'token or source is invalid, Your ip address is ' . $_SERVER['REMOTE_ADDR'];
+                $res['data'] = 'source is invalid, Your ip address is ' . $_SERVER['REMOTE_ADDR'];
                 $response->getBody()->write(json_encode($res));
                 return $response;
             }
+        }
+
+
+        if ($auth == false) {
+            $res['ret'] = 0;
+            $res['data'] = 'token is invalid';
+            $response->getBody()->write(json_encode($res));
+            return $response;
         }
 
         $response = $next($request, $response);

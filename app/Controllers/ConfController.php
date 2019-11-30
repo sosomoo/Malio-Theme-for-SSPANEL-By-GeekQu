@@ -16,6 +16,7 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Services\Config;
+use App\Utils\ConfRender;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 
@@ -32,6 +33,22 @@ class ConfController extends BaseController
 {
 
     /**
+     * YAML 转数组
+     *
+     * @param string $Content YAML 字符串
+     *
+     * @return string
+     */
+    public static function YAML2Array($Content)
+    {
+        try {
+            return Yaml::parse($Content);
+        } catch (ParseException $exception) {
+            return printf('无法解析 YAML 字符串: %s', $exception->getMessage());
+        }
+    }
+
+    /**
      *  从远端自定义配置文件生成 Surge 托管配置
      *
      * @param object $User          用户
@@ -41,13 +58,8 @@ class ConfController extends BaseController
      *
      * @return string
      */
-    public static function getSurgeConfs($User, $AllProxys, $Nodes, $SourceContent)
+    public static function getSurgeConfs($User, $AllProxys, $Nodes, $Configs, $local = false)
     {
-        try {
-            $Configs = Yaml::parse($SourceContent);
-        } catch (ParseException $exception) {
-            return printf('无法解析 YAML 字符串: %s', $exception->getMessage());
-        }
         $General = self::getSurgeConfGeneral($Configs['General']);
         $Proxys = (isset($Configs['Proxy'])
             ? self::getSurgeConfProxy($Configs['Proxy'])
@@ -62,7 +74,7 @@ class ConfController extends BaseController
         );
         $ProxyGroup = self::getSurgeProxyGroup2String($ProxyGroups);
 
-        $Rule = self::getSurgeConfRule($Configs['Rule']);
+        $Rule = self::getSurgeConfRule($Configs['Rule'], $local);
         $Conf = '#!MANAGED-CONFIG '
             . Config::get('baseUrl') . $_SERVER['REQUEST_URI'] .
             "\n\n#---------------------------------------------------#" .
@@ -302,8 +314,15 @@ class ConfController extends BaseController
      *
      * @return string
      */
-    public static function getSurgeConfRule($Rules)
+    public static function getSurgeConfRule($Rules, $local)
     {
+        // 加载本地规则文件
+        if ($local) {
+            $render = ConfRender::getTemplateRender();
+            return $render->fetch(trim($Rules['source']));
+        }
+
+        // 加载远程规则文件
         $return = '';
         if (isset($Rules['source']) && $Rules['source'] != '') {
             $sourceURL = trim($Rules['source']);
@@ -337,13 +356,8 @@ class ConfController extends BaseController
      *
      * @return string
      */
-    public static function getClashConfs($User, $AllProxys, $SourceContent)
+    public static function getClashConfs($User, $AllProxys, $Configs, $local = false)
     {
-        try {
-            $Configs = Yaml::parse($SourceContent);
-        } catch (ParseException $exception) {
-            return printf('无法解析 YAML 字符串: %s', $exception->getMessage());
-        }
         if (isset($Configs['Proxy']) || count($Configs['Proxy']) != 0) {
             $tmpProxys = array_merge($AllProxys, $Configs['Proxy']);
         } else {
@@ -375,7 +389,7 @@ class ConfController extends BaseController
             "\n\n"
             . Yaml::dump($tmp, 4, 2) .
             "\n\n"
-            . self::getClashConfRule($Configs['Rule']);
+            . self::getClashConfRule($Configs['Rule'], $local);
 
         return $Conf;
     }
@@ -459,8 +473,15 @@ class ConfController extends BaseController
      *
      * @return string
      */
-    public static function getClashConfRule($Rules)
+    public static function getClashConfRule($Rules, $local)
     {
+        // 加载本地规则文件
+        if ($local) {
+            $render = ConfRender::getTemplateRender();
+            return $render->fetch(trim($Rules['source']));
+        }
+
+        // 加载远程规则文件
         $return = ('Rule:' . PHP_EOL);
         if (isset($Rules['source']) && $Rules['source'] != '') {
             $sourceURL = trim($Rules['source']);

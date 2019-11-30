@@ -139,11 +139,8 @@ class URL
         return $new_user;
     }
 
-    public static function getAllItems(
-        $user,
-        $is_mu = 0,
-        $is_ss = 0
-    ) {
+    public static function getAllItems($user, $is_mu = 0, $is_ss = 0, $emoji = 0)
+    {
         $return_array = array();
         if ($user->is_admin) {
             $nodes = Node::where(
@@ -206,12 +203,12 @@ class URL
                     if (($relay_rule != null) && $relay_rule->dist_node() != null) {
                         $relay_rule_id = $relay_rule->id;
                     }
-                    $item = self::getItem($user, $node, 0, $relay_rule_id, $is_ss);
+                    $item = self::getItem($user, $node, 0, $relay_rule_id, $is_ss, $emoji);
                     if ($item != null) {
                         $return_array[] = $item;
                     }
                 } else {
-                    $item = self::getItem($user, $node, 0, 0, $is_ss);
+                    $item = self::getItem($user, $node, 0, 0, $is_ss, $emoji);
                     if ($item != null) {
                         $return_array[] = $item;
                     }
@@ -225,12 +222,12 @@ class URL
                         if (($relay_rule != null) && $relay_rule->dist_node() != null) {
                             $relay_rule_id = $relay_rule->id;
                         }
-                        $item = self::getItem($user, $node, $mu_node->server, $relay_rule_id, $is_ss);
+                        $item = self::getItem($user, $node, $mu_node->server, $relay_rule_id, $is_ss, $emoji);
                         if ($item != null) {
                             $return_array[] = $item;
                         }
                     } else {
-                        $item = self::getItem($user, $node, $mu_node->server, 0, $is_ss);
+                        $item = self::getItem($user, $node, $mu_node->server, 0, $is_ss, $emoji);
                         if ($item != null) {
                             $return_array[] = $item;
                         }
@@ -272,7 +269,7 @@ class URL
      *
      * @return string
      */
-    public static function get_NewAllUrl($user, $is_ss, $getV2rayPlugin, $Rule, $find)
+    public static function get_NewAllUrl($user, $is_ss, $getV2rayPlugin, $Rule, $find, $emoji = 0)
     {
         $return_url = '';
         if (strtotime($user->expire_in) < time()) {
@@ -280,14 +277,14 @@ class URL
         }
         if ($getV2rayPlugin === 0) {
             $items = array_merge(
-                self::getAllItems($user, 0, $is_ss),
-                self::getAllItems($user, 1, $is_ss)
+                self::getAllItems($user, 0, $is_ss, $emoji),
+                self::getAllItems($user, 1, $is_ss, $emoji)
             );
         } else {
             $items = array_merge(
-                self::getAllItems($user, 0, $is_ss),
-                self::getAllItems($user, 1, $is_ss),
-                self::getAllV2RayPluginItems($user)
+                self::getAllItems($user, 0, $is_ss, $emoji),
+                self::getAllItems($user, 1, $is_ss, $emoji),
+                self::getAllV2RayPluginItems($user, $emoji)
             );
         }
         if ($find) {
@@ -329,7 +326,9 @@ class URL
         if ($is_ss == 2) {
             $personal_info = $item['method'] . ':' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port'];
             $ssurl = 'ss://' . Tools::base64_url_encode($personal_info);
-            $ssurl .= '#' . rawurlencode(Config::get('appName') . ' - ' . $item['remark']);
+            $ssurl .= (Config::get('add_appName_to_ss_uri') == 'true'
+                ? '#' . rawurlencode(Config::get('appName') . ' - ' . $item['remark'])
+                : '#' . rawurlencode($item['remark']));
         } else {
             $personal_info = $item['method'] . ':' . $item['passwd'];
             $ssurl = 'ss://' . Tools::base64_url_encode($personal_info) . '@' . $item['address'] . ':' . $item['port'];
@@ -345,11 +344,13 @@ class URL
                 if ($item['obfs_param'] != '' && $item['obfs'] != 'v2ray') {
                     $plugin .= ';obfs-host=' . $item['obfs_param'];
                 }
-                $ssurl .= '?plugin=' . rawurlencode($plugin);
+                $ssurl .= '/?plugin=' . rawurlencode($plugin) . '&group=' . Tools::base64_url_encode(Config::get('appName'));
+            } else {
+                $ssurl .= '/?group=' . Tools::base64_url_encode(Config::get('appName'));
             }
-            $ssurl .= '#' . rawurlencode(
-                $item['remark']
-            );
+            $ssurl .= (Config::get('add_appName_to_ss_uri') == 'true'
+                ? '#' . rawurlencode(Config::get('appName') . ' - ' . $item['remark'])
+                : '#' . rawurlencode($item['remark']));
         }
         return $ssurl;
     }
@@ -361,7 +362,8 @@ class URL
      *
      * @return array
      */
-    public static function getAllV2RayPluginItems($user) {
+    public static function getAllV2RayPluginItems($user, $emoji = 0)
+    {
         $return_array = array();
         if ($user->is_admin) {
             $nodes = Node::where('sort', 13)
@@ -382,7 +384,7 @@ class URL
                 ->get();
         }
         foreach ($nodes as $node) {
-            $item = self::getV2RayPluginItem($user, $node);
+            $item = self::getV2RayPluginItem($user, $node, $emoji);
             if ($item != null) {
                 $return_array[] = $item;
             }
@@ -399,14 +401,16 @@ class URL
      *
      * @return array
      */
-    public static function getV2RayPluginItem($user, $node)
+    public static function getV2RayPluginItem($user, $node, $emoji = 0)
     {
         // 非 AEAD 加密无法使用
         if (!in_array($user->method, Config::getSupportParam('ss_aead_method'))) {
             return null;
         }
         $return_array = Tools::ssv2Array($node->server);
-        $return_array['remark'] = $node->name;
+        $return_array['remark'] = ($emoji == 1
+            ? Tools::addEmoji($node->name)
+            : $node->name);
         $return_array['address'] = $return_array['add'];
         $return_array['method'] = $user->method;
         $return_array['passwd'] = $user->passwd;
@@ -427,11 +431,13 @@ class URL
         return $return_array;
     }
 
-    public static function getV2Url($user, $node, $arrout = 0)
+    public static function getV2Url($user, $node, $arrout = 0, $emoji = 0)
     {
         $item = Tools::v2Array($node->server);
         $item['v'] = '2';
-        $item['ps'] = $node->name;
+        $item['ps'] = ($emoji == 1
+            ? Tools::addEmoji($node->name)
+            : $node->name);
         $item['id'] = $user->getUuid();
         $item['class'] = $node->node_class;
         if ($arrout == 0) {
@@ -443,7 +449,7 @@ class URL
         return $item;
     }
 
-    public static function getAllVMessUrl($user, $arrout = 0)
+    public static function getAllVMessUrl($user, $arrout = 0, $emoji = 0)
     {
         if ($user->is_admin) {
             $nodes = Node::where(
@@ -475,12 +481,12 @@ class URL
         if ($arrout == 0) {
             $result = '';
             foreach ($nodes as $node) {
-                $result .= (self::getV2Url($user, $node, $arrout) . "\n");
+                $result .= (self::getV2Url($user, $node, $arrout, $emoji) . "\n");
             }
         } else {
             $result = [];
             foreach ($nodes as $node) {
-                $result[] = self::getV2Url($user, $node, $arrout);
+                $result[] = self::getV2Url($user, $node, $arrout, $emoji);
             }
         }
         return $result;
@@ -686,7 +692,7 @@ class URL
     * obfs
     * obfs_param
     */
-    public static function getItem($user, $node, $mu_port = 0, $relay_rule_id = 0, $is_ss = 0)
+    public static function getItem($user, $node, $mu_port = 0, $relay_rule_id = 0, $is_ss = 0, $emoji = 0)
     {
         $relay_rule = Relay::where('id', $relay_rule_id)->where(
             static function ($query) use ($user) {
@@ -735,9 +741,15 @@ class URL
         }
         $return_array['passwd'] = $user->passwd;
         $return_array['method'] = $user->method;
-        $return_array['remark'] = $node_name;
+        $return_array['remark'] = ($emoji == 1
+            ? Tools::addEmoji($node_name)
+            : $node_name);
         $return_array['class'] = $node->node_class;
         $return_array['group'] = Config::get('appName');
+        $return_array['ratio'] = ($relay_rule != null
+            ? $node->traffic_rate + $relay_rule->dist_node()->traffic_rate
+            : $node->traffic_rate);
+
         return $return_array;
     }
 
@@ -746,36 +758,49 @@ class URL
         return clone $user;
     }
 
-    public static function getUserTraffic($user, $type)
+    public static function getUserInfo($user, $type, $traffic_class_expire)
     {
-        $group_name = Config::get('appName');
-        if (strtotime($user->expire_in) > time()) {
-            if ($user->transfer_enable == 0) {
-                $userTraffic = '剩余流量：0.00%';
+        $return = '';
+
+        // 订阅信息
+        $info_array = (count(Config::get('sub_message')) != 0
+            ? (array) Config::get('sub_message')
+            : []);
+
+        if ($traffic_class_expire !== 0) {
+            // 用户账户及流量信息
+            if (strtotime($user->expire_in) > time()) {
+                if ($user->transfer_enable == 0) {
+                    $info_array[] = '剩余流量：0.00%';
+                } else {
+                    $info_array[] = '剩余流量：' . number_format(($user->transfer_enable - $user->u - $user->d) / $user->transfer_enable * 100, 2) . '% ' . $user->unusedTraffic();
+                }
+                $info_array[] = '过期时间：' . $user->class_expire;
             } else {
-                $userTraffic = '剩余流量：' . number_format(($user->transfer_enable - $user->u - $user->d) / $user->transfer_enable * 100, 2) . '% ' . $user->unusedTraffic();
+                $info_array[] = '账户已过期，请续费后使用';
             }
-            $userClassExpire = '过期时间：' . $user->class_expire;
-        } else {
-            $userTraffic = '账户已过期，请续费后使用';
-            $userClassExpire = '账户已过期，请续费后使用';
         }
-        switch ($type) {
-            case 1: // SSR
-                $getUserTraffic = 'ssr://' . Tools::base64_url_encode('www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=' . Tools::base64_url_encode($userTraffic) . '&group=' . Tools::base64_url_encode($group_name)) . PHP_EOL;
-                $getUserClassExpiration = 'ssr://' . Tools::base64_url_encode('www.google.com:1:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=' . Tools::base64_url_encode($userClassExpire) . '&group=' . Tools::base64_url_encode($group_name)) . PHP_EOL;
-                break;
-            case 2: // SS
-                $getUserTraffic = 'ss://' . Tools::base64_url_encode('chacha20:YnJlYWt3YWxs@www.google.com:2') . '#' . rawurlencode($userTraffic) . PHP_EOL;
-                $getUserClassExpiration = 'ss://' . Tools::base64_url_encode('chacha20:YnJlYWt3YWxs@www.google.com:2') . '#' . rawurlencode($userClassExpire) . PHP_EOL;
-                break;
-            case 3: // V2
-                $userTrafficArray = ['v' => '2', 'ps' => $userTraffic, 'add' => 'www.google.com', 'port' => '3', 'id' => '2661b5f8-8062-34a5-9371-a44313a75b6b', 'aid' => '16', 'net' => 'tcp', 'type' => 'none', 'host' => '', 'tls' => ''];
-                $userClassExpirationArray = ['v' => '2', 'ps' => $userClassExpire, 'add' => 'www.google.com', 'port' => '3', 'id' => '2661b5f8-8062-34a5-9371-a44313a75b6b', 'aid' => '16', 'net' => 'tcp', 'type' => 'none', 'host' => '', 'tls' => ''];
-                $getUserTraffic = 'vmess://' . base64_encode(json_encode($userTrafficArray, JSON_UNESCAPED_UNICODE)) . PHP_EOL;
-                $getUserClassExpiration = 'vmess://' . base64_encode(json_encode($userClassExpirationArray, JSON_UNESCAPED_UNICODE)) . PHP_EOL;
-                break;
+
+        $group_name = Config::get('appName');
+        foreach ($info_array as $item) {
+            switch ($type) {
+                case 'ss':
+                    $return .= 'ss://' . Tools::base64_url_encode('chacha20:breakwall') . '@www.google.com:10086' . '/?group=' . Tools::base64_url_encode($group_name) . '#' . rawurlencode($item) . PHP_EOL;
+                    break;
+                case 'ssr':
+                    $return .= 'ssr://' . Tools::base64_url_encode('www.google.com:10086:auth_chain_a:chacha20:tls1.2_ticket_auth:YnJlYWt3YWxs/?obfsparam=&protoparam=&remarks=' . Tools::base64_url_encode($item) . '&group=' . Tools::base64_url_encode($group_name)) . PHP_EOL;
+                    break;
+                case 'v2ray':
+                    $v2ray = ['v' => '2', 'ps' => $item, 'add' => 'www.google.com', 'port' => '10086', 'id' => '2661b5f8-8062-34a5-9371-a44313a75b6b', 'aid' => '2', 'net' => 'tcp', 'type' => 'none', 'host' => '', 'tls' => ''];
+                    $return .= 'vmess://' . base64_encode(json_encode($v2ray, JSON_UNESCAPED_UNICODE)) . PHP_EOL;
+                    break;
+                case 'quantumult_v2':
+                    $quantumult_v2 = base64_encode($item . ' = vmess, ' . 'www.google.com' . ', ' . '10086' . ', chacha20-ietf-poly1305, "2661b5f8-8062-34a5-9371-a44313a75b6b", group=' . $group_name . '_v2') . PHP_EOL;
+                    $return .= 'vmess://' . base64_encode($quantumult_v2) . PHP_EOL;
+                    break;
+            }
         }
-        return $getUserTraffic . $getUserClassExpiration;
+
+        return $return;
     }
 }

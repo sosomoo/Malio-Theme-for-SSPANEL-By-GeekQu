@@ -160,7 +160,10 @@ class Job
         Speedtest::where('datetime', '<', time() - 86400 * 3)->delete();
         EmailVerify::where('expire_in', '<', time() - 86400 * 3)->delete();
         system('rm ' . BASE_PATH . '/storage/*.png', $ret);
-        Telegram::Send('姐姐姐姐，数据库被清理了，感觉身体被掏空了呢~');
+
+        if (Config::get('sendDailyJob_Telegram') == 'true') {
+            Telegram::Send(Config::get('sendDailyJob_Msg'));
+        }
 
         //auto reset
         $boughts = Bought::all();
@@ -526,15 +529,25 @@ class Job
                                         );
                                     }
 
-                                    $notice_text = '喵喵喵~ ' . $node->name . ' 节点掉线了喵~域名解析被切换到了 ' . $Temp_node->name . ' 上了喵~';
+                                    $notice_text = str_replace(
+                                        array('%node_name%', '%Temp_node_name%'),
+                                        array($node->name, $Temp_node->name),
+                                        Config::get('sendNodeOffline_Update_Msg')
+                                    );
                                 }
                             }
                         } else {
-                            $notice_text = '喵喵喵~ ' . $node->name . ' 节点掉线了喵~';
+                            $notice_text = str_replace(
+                                '%node_name%',
+                                $node->name,
+                                Config::get('sendNodeOffline_Msg')
+                            );
                         }
                     }
 
-                    Telegram::Send($notice_text);
+                    if (Config::get('sendNodeOffline_Telegram') == 'true') {
+                        Telegram::Send($notice_text);
+                    }
 
                     $myfile = fopen(
                         BASE_PATH . '/storage/' . $node->id . '.offline',
@@ -614,13 +627,23 @@ class Job
                                 }
                             }
 
-                            $notice_text = '喵喵喵~ ' . $node->name . ' 节点恢复了喵~域名解析被切换回来了喵~';
+                            $notice_text = str_replace(
+                                '%node_name%',
+                                $node->name,
+                                Config::get('sendNodeOnline_Update_Msg')
+                            );
                         } else {
-                            $notice_text = '喵喵喵~ ' . $node->name . ' 节点恢复了喵~';
+                            $notice_text = str_replace(
+                                '%node_name%',
+                                $node->name,
+                                Config::get('sendNodeOnline_Msg')
+                            );
                         }
                     }
 
-                    Telegram::Send($notice_text);
+                    if (Config::get('sendNodeOnline_Telegram') == 'true') {
+                        Telegram::Send($notice_text);
+                    }
 
                     unlink(BASE_PATH . '/storage/' . $node->id . '.offline');
                 }
@@ -975,14 +998,24 @@ class Job
                                                 $record_id
                                             );
                                         }
-                                        $notice_text = '喵喵喵~ ' . $node->name . ' 节点被墙了喵~域名解析被切换到了 ' . $Temp_node->name . ' 上了喵~';
+                                        $notice_text = str_replace(
+                                            array('%node_name%', '%Temp_node_name%'),
+                                            array($node->name, $Temp_node->name),
+                                            Config::get('sendNodeGFW_Update_Msg')
+                                        );
                                     }
                                 }
                             } else {
-                                $notice_text = '喵喵喵~ ' . $node->name . ' 节点被墙了喵~';
+                                $notice_text = str_replace(
+                                    '%node_name%',
+                                    $node->name,
+                                    Config::get('sendNodeGFW_Msg')
+                                );
                             }
                         }
-                        Telegram::Send($notice_text);
+                        if (Config::get('sendNodeGFW_Telegram') == 'true') {
+                            Telegram::Send($notice_text);
+                        }
                         $file_node = fopen(BASE_PATH . '/storage/' . $node->id . '.gfw', 'wb+');
                         fclose($file_node);
                     } else {
@@ -1035,12 +1068,22 @@ class Job
                                         );
                                     }
                                 }
-                                $notice_text = '喵喵喵~ ' . $node->name . ' 节点恢复了喵~域名解析被切换回来了喵~';
+                                $notice_text = str_replace(
+                                    '%node_name%',
+                                    $node->name,
+                                    Config::get('sendNodeGFW_recover_Update_Msg')
+                                );
                             } else {
-                                $notice_text = '喵喵喵~ ' . $node->name . ' 节点恢复了喵~';
+                                $notice_text = str_replace(
+                                    '%node_name%',
+                                    $node->name,
+                                    Config::get('sendNodeGFW_recover_Msg')
+                                );
                             }
                         }
-                        Telegram::Send($notice_text);
+                        if (Config::get('sendNodeGFW_recover_Telegram') == 'true') {
+                            Telegram::Send($notice_text);
+                        }
                         unlink(BASE_PATH . '/storage/' . $node->id . '.gfw');
                     }
                 }

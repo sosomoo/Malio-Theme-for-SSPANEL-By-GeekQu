@@ -147,6 +147,9 @@ $app->group('/user', function () {
     // getUserAllURL
     $this->get('/getUserAllURL', App\Controllers\UserController::class . ':getUserAllURL');
 
+    // getPcClient
+    $this->get('/getPcClient', App\Controllers\UserController::class . ':getPcClient');
+
     //Reconstructed Payment System
     $this->post('/payment/purchase', App\Services\Payment::class . ':purchase');
     $this->get('/payment/return', App\Services\Payment::class . ':returnHTML');
@@ -313,6 +316,7 @@ $app->group('/admin', function () {
     $this->get('/profile', App\Controllers\AdminController::class . ':profile');
     $this->get('/invite', App\Controllers\AdminController::class . ':invite');
     $this->post('/invite', App\Controllers\AdminController::class . ':addInvite');
+    $this->post('/chginvite', App\Controllers\AdminController::class . ':chgInvite');
     $this->get('/sys', App\Controllers\AdminController::class . ':sys');
     $this->get('/logout', App\Controllers\AdminController::class . ':logout');
     $this->post('/payback/ajax', App\Controllers\AdminController::class . ':ajax_payback');

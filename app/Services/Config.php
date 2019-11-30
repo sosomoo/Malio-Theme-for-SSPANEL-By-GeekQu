@@ -4,16 +4,10 @@ namespace App\Services;
 
 class Config
 {
+    // TODO: remove
     public static function get($key)
     {
-        global $System_Config;
-        return $System_Config[$key];
-    }
-
-    public static function set($key, $value)
-    {
-        global $System_Config;
-        $System_Config[$key] = $value;
+        return $_ENV[$key];
     }
 
     public static function getPublicConfig()
@@ -60,7 +54,8 @@ class Config
             'auto_detect_ban_type' => self::get('auto_detect_ban_type'),
             'auto_detect_ban_number' => self::get('auto_detect_ban_number'),
             'auto_detect_ban_time' => self::get('auto_detect_ban_time'),
-            'auto_detect_ban' => self::get('auto_detect_ban')
+            'auto_detect_ban' => self::get('auto_detect_ban'),
+            'subscribe_client' => self::get('subscribe_client')
         ];
     }
 
@@ -93,9 +88,8 @@ class Config
 
     public static function getMuKey()
     {
-        global $System_Config;
-        $muKeyList = array_key_exists('muKeyList', $System_Config) ? $System_Config['muKeyList'] : ['　'];
-        return array_merge(explode(',', $System_Config['muKey']), $muKeyList);
+        $muKeyList = array_key_exists('muKeyList', $_ENV) ? $_ENV['muKeyList'] : ['　'];
+        return array_merge(explode(',', $_ENV['muKey']), $muKeyList);
     }
 
     public static function getSupportParam($type)
