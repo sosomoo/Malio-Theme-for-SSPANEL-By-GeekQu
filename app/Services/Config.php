@@ -18,7 +18,7 @@ class Config
         if ($value === null) {
             $value = DefaultConfig::firstOrCreate($key);
         }
-        return $value;
+        return $value->value();
     }
 
     public static function getPublicConfig()
