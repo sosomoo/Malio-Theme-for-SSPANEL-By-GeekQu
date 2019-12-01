@@ -80,11 +80,6 @@ class IDtPay extends AbstractPayment
 
     public function notify($request, $response, $args)
     {
-        $filepath = '/tmp/tg_' . "debug" . '.txt';
-        $fh = fopen($filepath, 'w+');
-        $string = "asdfasdfasdfasdf";
-        fwrite($fh, $string);
-        fclose($fh);
         $pid = $_GET['out_trade_no'];
         $p = Paylist::where('tradeno', '=', $pid)->first();
         if ($p->status == 1) {
