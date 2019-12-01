@@ -5,6 +5,7 @@ namespace App\Services\Gateway;
 use App\Services\Auth;
 use App\Models\Paylist;
 use App\Services\Config;
+use App\Services\View;
 
 require_once("IDt/epay_submit.class.php");
 require_once("IDt/epay_notify.class.php");
@@ -79,32 +80,49 @@ class IDtPay extends AbstractPayment
 
     public function notify($request, $response, $args)
     {
+        $filepath = '/tmp/tg_' . "debug" . '.txt';
+        $fh = fopen($filepath, 'w+');
+        $string = "asdfasdfasdfasdf";
+        fwrite($fh, $string);
+        fclose($fh);
+        $pid = $_GET['out_trade_no'];
+        $p = Paylist::where('tradeno', '=', $pid)->first();
+        if ($p->status == 1) {
+            $success = 1;
+        } else {
+            $settings = Config::get("idtpay");
+            $alipay_config = array(
+                'partner' => $settings['partner'],
+                'key' => $settings['key'],
+                'sign_type' => $settings['sign_type'],
+                'input_charset' => $settings['input_charset'],
+                'transport' => $settings['transport'],
+                'apiurl' => $settings['apiurl']
+            );
 
-        $settings = Config::get("idtpay");
-        $alipay_config = array(
-            'partner' => $settings['partner'],
-            'key' => $settings['key'],
-            'sign_type' => $settings['sign_type'],
-            'input_charset' => $settings['input_charset'],
-            'transport' => $settings['transport'],
-            'apiurl' => $settings['apiurl']
-        );
+            //计算得出通知验证结果
+            $alipayNotify = new AlipayNotify($alipay_config);
+            $verify_result = $alipayNotify->verifyNotify();
 
-        //计算得出通知验证结果
-        $alipayNotify = new AlipayNotify($alipay_config);
-        $verify_result = $alipayNotify->verifyNotify();
+            if($verify_result) {
 
-        if($verify_result) {
+                if ($_GET['trade_status'] == 'TRADE_SUCCESS') {
+                    $this->postPayment($_GET['out_trade_no'], "IDtPay");
+                    $success = 1;
+                }
+                else {
+                    $success = 0;
+                }
 
-            if ($_GET['trade_status'] == 'TRADE_SUCCESS') {
-                $this->postPayment($_GET['out_trade_no'], "IDtPay");
             }
-            return $response->write('success');
-
-       }
-        else {
-            //验证失败
-            return $response->write('fail');
+            else {
+                $success = 0;
+            }
+        }
+        if ($success==1){
+            echo "success";
+        }else{
+            echo "fail";
         }
     }
     public function getReturnHTML($request, $response, $args)
