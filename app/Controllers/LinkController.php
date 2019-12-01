@@ -331,31 +331,37 @@ class LinkController extends BaseController
         }
         $userapiUrl = Config::get('subUrl') . self::GenerateSSRSubCode($user->id, 0);
         $return_info = [
-            'link' => $userapiUrl,
+            'link'            => '',
             // sub
-            'ss' => $userapiUrl . '?sub=2',
-            'ssr' => $userapiUrl . '?sub=1',
-            'v2ray' => $userapiUrl . '?sub=3',
-            'v2ray_ss' => $userapiUrl . '?sub=4',
-            'v2ray_ss_ssr' => $userapiUrl . '?sub=5',
+            'ss'              => '?sub=2',
+            'ssr'             => '?sub=1',
+            'v2ray'           => '?sub=3',
+            'v2ray_ss'        => '?sub=4',
+            'v2ray_ss_ssr'    => '?sub=5',
             // apps
-            'ssd' => $userapiUrl . '?ssd=1',
-            'clash' => $userapiUrl . '?clash=1',
-            'clashr' => $userapiUrl . '?clash=2',
-            'surge' => $userapiUrl . '?surge=' . $int,
-            'surge_node' => $userapiUrl . '?surge=1',
-            'surge2' => $userapiUrl . '?surge=2',
-            'surge3' => $userapiUrl . '?surge=3',
-            'surge4' => $userapiUrl . '?surge=4',
-            'surfboard' => $userapiUrl . '?surfboard=1',
-            'quantumult' => $userapiUrl . '?quantumult=' . $int,
-            'quantumult_v2' => $userapiUrl . '?quantumult=1',
-            'quantumult_sub' => $userapiUrl . '?quantumult=2',
-            'quantumult_conf' => $userapiUrl . '?quantumult=3',
-            'shadowrocket' => $userapiUrl . '?shadowrocket=1',
-            'kitsunebi' => $userapiUrl . '?kitsunebi=1'
+            'ssd'             => '?ssd=1',
+            'clash'           => '?clash=1',
+            'clashr'          => '?clash=2',
+            'surge'           => '?surge=' . $int,
+            'surge_node'      => '?surge=1',
+            'surge2'          => '?surge=2',
+            'surge3'          => '?surge=3',
+            'surge4'          => '?surge=4',
+            'surfboard'       => '?surfboard=1',
+            'quantumult'      => '?quantumult=' . $int,
+            'quantumult_v2'   => '?quantumult=1',
+            'quantumult_sub'  => '?quantumult=2',
+            'quantumult_conf' => '?quantumult=3',
+            'shadowrocket'    => '?shadowrocket=1',
+            'kitsunebi'       => '?kitsunebi=1'
         ];
-        return $return_info;
+
+        return array_map(
+            function($item) use ($userapiUrl) {
+                return ($userapiUrl . $item);
+            },
+            $return_info
+        );
     }
 
     /**
