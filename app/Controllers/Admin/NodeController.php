@@ -194,7 +194,7 @@ class NodeController extends AdminController
 
         $node->save();
 
-        if (Config::getdb('Telegram.enable.UpdateNode') != 0) {
+        if (Config::getdb('Telegram.enable.UpdateNode') !== '0') {
             Telegram::Send(
                 str_replace(
                     '%node_name%',
