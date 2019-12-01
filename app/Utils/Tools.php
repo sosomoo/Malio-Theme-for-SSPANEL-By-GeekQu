@@ -386,6 +386,13 @@ class Tools
         }
         return $object;
     }
+    public static function relayRulePortCheck($rules){
+        $res = array();
+        foreach($rules as $value) {
+            $res[$value->port][] = $value->port;
+        }
+        return count($res)==count($rules);
+    }
 
     public static function getRelayNodeIp($source_node, $dist_node)
     {

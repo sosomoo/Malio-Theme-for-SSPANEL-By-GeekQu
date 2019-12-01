@@ -240,6 +240,21 @@ $_ENV['bitpay_secret']='';
 $_ENV['payjs_mchid']='';
 $_ENV['payjs_key']='';
 
+#tomatopay番茄云支付
+#使用教程:https://swapidc.fanqieui.com/?t/329.html  tg群 https://t.me/fanqiepay
+$_ENV['tomatopay'] = [
+        'wxpay'=>[
+            'mchid' => '',   // 商户号
+            'account' => '', //您在番茄云支付的登录邮箱
+            'token' => "" // 安全验证码
+        ],
+        'alipay'=>[
+            'mchid' => '',   // 商户号
+            'account' => '', //您在番茄云支付的登录邮箱
+            'token' => "" // 安全验证码
+        ],
+ ];
+
 
 $_ENV['idtpay']=[
     'partner'=>"", //商户号
