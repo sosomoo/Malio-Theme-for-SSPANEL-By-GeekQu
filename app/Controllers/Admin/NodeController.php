@@ -97,12 +97,12 @@ class NodeController extends AdminController
             CloudflareDriver::updateRecord($domain_name[0], $node->node_ip);
         }
 
-        if (Config::get('sendAddNode_Telegram') === true) {
+        if (Config::getdb('sendAddNode_Telegram') !== '0') {
             Telegram::Send(
                 str_replace(
                     '%node_name%',
                     $request->getParam('name'),
-                    Config::get('sendAddNode_Msg')
+                    Config::getdb('sendAddNode_Msg')
                 )
             );
         }
@@ -194,12 +194,12 @@ class NodeController extends AdminController
 
         $node->save();
 
-        if (Config::get('sendUpdateNode_Telegram') === true) {
+        if (Config::getdb('sendUpdateNode_Telegram') != 0) {
             Telegram::Send(
                 str_replace(
                     '%node_name%',
                     $request->getParam('name'),
-                    Config::get('sendUpdateNode_Msg')
+                    Config::getdb('sendUpdateNode_Msg')
                 )
             );
         }
@@ -224,12 +224,12 @@ class NodeController extends AdminController
             return $response->getBody()->write(json_encode($rs));
         }
 
-        if (Config::get('sendDeleteNode_Telegram') === true) {
+        if (Config::getdb('sendDeleteNode_Telegram') !== '0') {
             Telegram::Send(
                 str_replace(
                     '%node_name%',
                     $node->name,
-                    Config::get('sendDeleteNode_Msg')
+                    Config::getdb('sendDeleteNode_Msg')
                 )
             );
         }

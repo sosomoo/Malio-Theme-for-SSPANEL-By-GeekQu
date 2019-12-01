@@ -160,8 +160,8 @@ class Job
         EmailVerify::where('expire_in', '<', time() - 86400 * 3)->delete();
         system('rm ' . BASE_PATH . '/storage/*.png', $ret);
 
-        if (Config::get('sendDailyJob_Telegram') === true) {
-            Telegram::Send(Config::get('sendDailyJob_Msg'));
+        if (Config::getdb('Telegram.enable.DailyJob') !== '0') {
+            Telegram::Send(Config::getdb('Telegram.msg.DailyJob'));
         }
 
         //auto reset
@@ -487,11 +487,11 @@ class Job
                         $notice_text = str_replace(
                             '%node_name%',
                             $node->name,
-                            Config::get('sendNodeOffline_Msg')
+                            Config::getdb('Telegram.msg.NodeOffline')
                         );
                     }
 
-                    if (Config::get('sendNodeOffline_Telegram') === true) {
+                    if (Config::getdb('Telegram.enable.NodeOffline') !== '0') {
                         Telegram::Send($notice_text);
                     }
 
@@ -540,11 +540,11 @@ class Job
                         $notice_text = str_replace(
                             '%node_name%',
                             $node->name,
-                            Config::get('sendNodeOnline_Msg')
+                            Config::getdb('Telegram.msg.NodeOnline')
                         );
                     }
 
-                    if (Config::get('sendNodeOnline_Telegram') === true) {
+                    if (Config::getdb('Telegram.enable.NodeOnline') !== '0') {
                         Telegram::Send($notice_text);
                     }
 
@@ -870,10 +870,10 @@ class Job
                             $notice_text = str_replace(
                                 '%node_name%',
                                 $node->name,
-                                Config::get('sendNodeGFW_Msg')
+                                Config::getdb('Telegram.msg.NodeGFW')
                             );
                         }
-                        if (Config::get('sendNodeGFW_Telegram') === true) {
+                        if (Config::getdb('Telegram.enable.NodeGFW') !== '0') {
                             Telegram::Send($notice_text);
                         }
                         $file_node = fopen(BASE_PATH . '/storage/' . $node->id . '.gfw', 'wb+');
@@ -901,10 +901,10 @@ class Job
                             $notice_text = str_replace(
                                 '%node_name%',
                                 $node->name,
-                                Config::get('sendNodeGFW_recover_Msg')
+                                Config::getdb('Telegram.msg.NodeGFW_recover')
                             );
                         }
-                        if (Config::get('sendNodeGFW_recover_Telegram') === true) {
+                        if (Config::getdb('Telegram.enable.NodeGFW_recover') !== '0') {
                             Telegram::Send($notice_text);
                         }
                         unlink(BASE_PATH . '/storage/' . $node->id . '.gfw');
