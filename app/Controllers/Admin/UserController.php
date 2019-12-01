@@ -589,6 +589,9 @@ class UserController extends AdminController
         $user_path = (BASE_PATH . '/storage/SubscribeCache/' . $id . '/');
         Tools::delDirAndFile($user_path);
 
-        return $response->withStatus(302)->withHeader('Location', '/admin/user');
+        $res['ret'] = 1;
+        $res['msg'] = '清理成功';
+
+        return $this->echoJson($response, $res);
     }
 }
