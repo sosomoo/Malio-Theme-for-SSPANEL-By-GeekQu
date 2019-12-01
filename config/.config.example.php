@@ -257,13 +257,13 @@ $_ENV['tomatopay'] = [
 
 
 $_ENV['idtpay']=[
-    'partner'=>"", //商户号
-    'key' =>"", //商户key
+    'partner'=>"1023", //商户号
+    'key' =>"kPqNrRcoWeeqncRRd2qd2z5DRpkAcpLA", //商户key
     'sign_type'=>strtoupper('MD5'),
     'input_charset'=>strtolower('utf-8'),
     'subjects'=>["内存",'手抓饼'], //商品名称
     'transport'=>'https' ,//访问模式,根据自己的服务器是否支持ssl访问，若支持请选择https；若不支持请选择http
-    'apiurl'=>'http://', //http开头
+    'apiurl'=>'http://bwg.233888.xyz', //http开头
     'appname'=>$_ENV['appName'],
 
 ];
