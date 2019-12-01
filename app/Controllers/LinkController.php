@@ -58,12 +58,8 @@ class LinkController extends BaseController
         $token = $args['token'];
 
         //$builder->getPhrase();
-        $Elink = Link::where('token', '=', $token)->first();
+        $Elink = Link::where('type', 11)->where('token', '=', $token)->first();
         if ($Elink == null) {
-            return null;
-        }
-
-        if ($Elink->type != 11) {
             return null;
         }
 
