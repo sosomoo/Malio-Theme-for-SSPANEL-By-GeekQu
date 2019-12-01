@@ -136,4 +136,16 @@ class TomatoPay extends AbstractPayment
 </script>
 ';
     }
+    public function getReturnHTML($request, $response, $args)
+    {
+        // TODO: Implement getReturnHTML() method.
+    }
+    public function getStatus($request, $response, $args)
+    {
+        $return = [];
+        $p = Paylist::where('tradeno', $_POST['pid'])->first();
+        $return['ret'] = 1;
+        $return['result'] = $p->status;
+        return json_encode($return);
+    }
 }
