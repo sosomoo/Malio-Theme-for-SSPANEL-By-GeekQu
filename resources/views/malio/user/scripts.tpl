@@ -46,10 +46,10 @@
   function sendData() {
     $crisp.push(["set", "user:email", "{$user->email}"], ["set", "user:nickname", "{$user->user_name}"]);
     $crisp.push(["set", "session:data", [[
-      ["等级", "{$user->class}"],
-      ["等级过期", "class_expire"],
-      ["账号余额", "￥{$user->money}"],
-      ["剩余流量", "{$user->unusedTraffic()}"]
+      ["Class", "{$user->class}"],
+      ["Class Expire", "{$user->class_expire}"],
+      ["Money", "￥{$user->money}"],
+      ["Unused Traffic", "{$user->unusedTraffic()}"]
     ]]]);
   }
   sendData();
