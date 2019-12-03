@@ -98,35 +98,37 @@ class XCat
                 return $this->resetPort();
             case ('resetAllPort'):
                 return $this->resetAllPort();
-        	case ('update'):
-			    return Update::update($this);
+            case ('update'):
+                return Update::update($this);
             case ('sendDailyUsageByTG'):
                 return $this->sendDailyUsageByTG();
-			case ('npmbuild'):
+            case ('npmbuild'):
                 return $this->npmbuild();
             case ('getCookie'):
                 return $this->getCookie();
             case ('iptest'):
                 return $this->iptest();
-			default:
+            case ('delSubCache'):
+                return $this->delSubCache();
+            default:
                 return $this->defaultAction();
         }
     }
 
     public function defaultAction()
     {
-        echo(PHP_EOL . '用法： php xcat [选项]' . PHP_EOL);
-        echo('常用选项:' . PHP_EOL);
-        echo('  createAdmin - 创建管理员帐号' . PHP_EOL);
-        echo('  setTelegram - 设置 Telegram 机器人' . PHP_EOL);
-        echo('  cleanRelayRule - 清除所有中转规则' . PHP_EOL);
-        echo('  resetPort - 重置单个用户端口' . PHP_EOL);
-        echo('  resetAllPort - 重置所有用户端口' . PHP_EOL);
-        echo('  initdownload - 下载 SSR 程序至服务器' . PHP_EOL);
-        echo('  initdocuments - 下载用户使用文档至服务器' . PHP_EOL);
-        echo('  initQQWry - 下载 IP 解析库' . PHP_EOL);
-        echo('  resetTraffic - 重置所有用户流量' . PHP_EOL);
-        echo('  update - 更新并迁移配置' . PHP_EOL);
+        echo (PHP_EOL . '用法： php xcat [选项]' . PHP_EOL);
+        echo ('常用选项:' . PHP_EOL);
+        echo ('  createAdmin - 创建管理员帐号' . PHP_EOL);
+        echo ('  setTelegram - 设置 Telegram 机器人' . PHP_EOL);
+        echo ('  cleanRelayRule - 清除所有中转规则' . PHP_EOL);
+        echo ('  resetPort - 重置单个用户端口' . PHP_EOL);
+        echo ('  resetAllPort - 重置所有用户端口' . PHP_EOL);
+        echo ('  initdownload - 下载 SSR 程序至服务器' . PHP_EOL);
+        echo ('  initdocuments - 下载用户使用文档至服务器' . PHP_EOL);
+        echo ('  initQQWry - 下载 IP 解析库' . PHP_EOL);
+        echo ('  resetTraffic - 重置所有用户流量' . PHP_EOL);
+        echo ('  update - 更新并迁移配置' . PHP_EOL);
     }
 
     public function resetPort()
@@ -163,9 +165,9 @@ class XCat
     {
         $rules = Relay::all();
         foreach ($rules as $rule) {
-            echo($rule->id . "\n");
+            echo ($rule->id . "\n");
             if ($rule->source_node_id == 0) {
-                echo($rule->id . "被删除！\n");
+                echo ($rule->id . "被删除！\n");
                 $rule->delete();
                 continue;
             }
@@ -173,7 +175,7 @@ class XCat
             $ruleset = Relay::where('user_id', $rule->user_id)->orwhere('user_id', 0)->get();
             $maybe_rule_id = Tools::has_conflict_rule($rule, $ruleset, $rule->id);
             if ($maybe_rule_id != 0) {
-                echo($rule->id . "被删除！\n");
+                echo ($rule->id . "被删除！\n");
                 $rule->delete();
             }
         }
@@ -206,7 +208,7 @@ class XCat
             fwrite(STDOUT, "Press [y] to create admin..... 按下[Y]确认来确认创建管理员账户..... \n");
             $y = trim(fgets(STDIN));
         } elseif (count($this->argv) === 4) {
-            [, , $email, $passwd] = $this->argv;
+            [,, $email, $passwd] = $this->argv;
             $y = 'y';
         }
 
@@ -271,32 +273,32 @@ class XCat
     public function setTelegram()
     {
         $bot = new BotApi(Config::get('telegram_token'));
-        $ch= curl_init();
-        curl_setopt ($ch, CURLOPT_URL, sprintf('https://api.telegram.org/bot%s/deleteWebhook', Config::get('telegram_token')));
-        curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, sprintf('https://api.telegram.org/bot%s/deleteWebhook', Config::get('telegram_token')));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         $deleteWebhookReturn = json_decode(curl_exec($ch));
         curl_close($ch);
         if ($deleteWebhookReturn->ok && $deleteWebhookReturn->result && $bot->setWebhook(Config::get('baseUrl') . '/telegram_callback?token=' . Config::get('telegram_request_token')) == 1) {
-            echo('设置成功！' . PHP_EOL);
+            echo ('设置成功！' . PHP_EOL);
         }
     }
 
     public function initQQWry()
     {
-        echo('开始下载纯真 IP 数据库....');
+        echo ('开始下载纯真 IP 数据库....');
         $qqwry = file_get_contents('https://qqwry.mirror.noc.one/QQWry.Dat?from=sspanel_uim');
         if ($qqwry != '') {
             $fp = fopen(BASE_PATH . '/storage/qqwry.dat', 'wb');
             if ($fp) {
                 fwrite($fp, $qqwry);
                 fclose($fp);
-                echo('纯真 IP 数据库下载成功！');
+                echo ('纯真 IP 数据库下载成功！');
             } else {
-                echo('纯真 IP 数据库保存失败！');
+                echo ('纯真 IP 数据库保存失败！');
             }
         } else {
-            echo('下载失败！请重试，或在 https://github.com/SukkaW/qqwry-mirror/issues/new 反馈！');
+            echo ('下载失败！请重试，或在 https://github.com/SukkaW/qqwry-mirror/issues/new 反馈！');
         }
     }
 
@@ -335,11 +337,12 @@ class XCat
         }
     }
 
-	public function npmbuild(){
-		chdir(BASE_PATH . '/uim-index-dev');
-		system('npm install');
-		system('npm run build');
-		system('cp -u ../public/vuedist/index.html ../resources/views/material/index.tpl');
+    public function npmbuild()
+    {
+        chdir(BASE_PATH . '/uim-index-dev');
+        system('npm install');
+        system('npm run build');
+        system('cp -u ../public/vuedist/index.html ../resources/views/material/index.tpl');
     }
 
     public function iptest()
@@ -355,8 +358,8 @@ class XCat
                     $ip = DNSoverHTTPS::gethostbyName($server); // returns a collection of DNS A Records
                 }
             }
-            if ($server!="" and $ip !="") {
-                echo "Server: ".$server." ip address: ".$ip."\n";
+            if ($server != "" and $ip != "") {
+                echo "Server: " . $server . " ip address: " . $ip . "\n";
             }
         }
     }
@@ -373,5 +376,18 @@ class XCat
     public function detectConfigs()
     {
         echo DefaultConfig::detectConfigs();
+    }
+
+    public function delSubCache()
+    {
+        if (Config::get('enable_sub_cache') === true) {
+            if (Tools::delSubCache() === true) {
+                echo (PHP_EOL . '订阅缓存清理成功.' . PHP_EOL);
+            } else {
+                echo (PHP_EOL . '订阅缓存清理失败.' . PHP_EOL);
+            }
+        } else {
+            echo (PHP_EOL . '订阅缓存未开启.' . PHP_EOL);
+        }
     }
 }

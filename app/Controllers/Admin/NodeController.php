@@ -107,6 +107,8 @@ class NodeController extends AdminController
             );
         }
 
+        Tools::delSubCache();
+
         $rs['ret'] = 1;
         $rs['msg'] = '节点添加成功';
         return $response->getBody()->write(json_encode($rs));
@@ -204,6 +206,8 @@ class NodeController extends AdminController
             );
         }
 
+        Tools::delSubCache();
+
         $rs['ret'] = 1;
         $rs['msg'] = '修改成功';
         return $response->getBody()->write(json_encode($rs));
@@ -233,6 +237,8 @@ class NodeController extends AdminController
                 )
             );
         }
+
+        Tools::delSubCache();
 
         $rs['ret'] = 1;
         $rs['msg'] = '删除成功';

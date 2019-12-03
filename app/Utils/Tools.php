@@ -767,12 +767,12 @@ class Tools
             : ($done['emoji'] . ' ' . $Name));
     }
 
-    /** 
-     * Add files and sub-directories in a folder to zip file. 
-     * 
-     * @param string     $folder 
-     * @param ZipArchive $zipFile 
-     * @param int        $exclusiveLength Number of text to be exclusived from the file path. 
+    /**
+     * Add files and sub-directories in a folder to zip file.
+     *
+     * @param string     $folder
+     * @param ZipArchive $zipFile
+     * @param int        $exclusiveLength Number of text to be exclusived from the file path.
      */
     public static function folderToZip($folder, &$zipFile, $exclusiveLength)
     {
@@ -780,12 +780,12 @@ class Tools
         while (false !== $f = readdir($handle)) {
             if ($f != '.' && $f != '..') {
                 $filePath = "$folder/$f";
-                // Remove prefix from file path before add to zip. 
+                // Remove prefix from file path before add to zip.
                 $localPath = substr($filePath, $exclusiveLength);
                 if (is_file($filePath)) {
                     $zipFile->addFile($filePath, $localPath);
                 } elseif (is_dir($filePath)) {
-                    // Add sub-directory. 
+                    // Add sub-directory.
                     $zipFile->addEmptyDir($localPath);
                     self::folderToZip($filePath, $zipFile, $exclusiveLength);
                 }
@@ -794,10 +794,10 @@ class Tools
         closedir($handle);
     }
 
-    /** 
+    /**
      * 清空文件夹
-     * 
-     * @param string $dirName 
+     *
+     * @param string $dirName
      */
     public static function delDirAndFile($dirPath)
     {
@@ -813,5 +813,19 @@ class Tools
             }
             closedir($handle);
         }
+    }
+
+    /**
+     * 清空订阅缓存
+     */
+    public static function delSubCache()
+    {
+        if (Config::get('enable_sub_cache') === true) {
+            $path = (BASE_PATH . '/storage/SubscribeCache/');
+            //rm -rf /home/happy/baidu/*
+            $a = system('rm -rf ' . $path . '*');
+            return ($a === false ?: true);
+        }
+        return true;
     }
 }
