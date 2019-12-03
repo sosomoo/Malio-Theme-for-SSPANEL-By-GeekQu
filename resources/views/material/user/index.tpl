@@ -306,7 +306,7 @@ table tr td:first-child {
 
 										<div class="tab-pane fade" id="other">
                                             <p>清理订阅缓存：
-                                                <a class="kaobei copy-text btn btn-subscription" type="button" href="/user/cleanSubCache">点击清理</a>
+                                                <button class="kaobei btn btn-subscription" type="button" id="delSubCache">点击清理</button>
                                             </p>
 										</div>
 
@@ -758,6 +758,32 @@ table tr td:first-child {
 
 {/if}
 
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#delSubCache").click(function () {
+            $.ajax({
+                type: "get",
+                url: "user/cleanSubCache",
+                success: (data) => {
+                    if (data.ret) {
+                        $("#result").modal();
+                        $$.getElementById('msg').innerHTML = data.msg;
+                    } else {
+                        $("#result").modal();
+                        $$.getElementById('msg').innerHTML = data.msg;
+                    }
+                },
+                error: (jqXHR) => {
+                    $("#result").modal();
+                    $$.getElementById('msg').innerHTML = `${
+                            data.msg
+                            } 出现了一些错误`;
+                }
+            })
+        })
+    })
 </script>
 
 {if $recaptcha_sitekey != null}
