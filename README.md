@@ -1,5 +1,6 @@
 # 请勿泄露源码给他人，当你让他人为你debug或进行其他操作时，切勿让他访问你网站的全部代码，尤其是不认识的人。泄露源码对你我都没好处。
 # 不能删改页面底部的 Powered by SSPANEL. Theme by editXY，不能删改staff页面的任何信息。
+## 删除Powered by SSPANEL可能会导致你的网站被D，删除 Theme by editXY 可能导致你的网站被取消授权。
 
 本主题包含了SSPANEL的完整代码，需要删除原来的面板，然后全新安装（数据库通用），操作前请备份面板
 
