@@ -69,3 +69,8 @@
   var userUUID = '{$user->uuid}';
 </script>
 {/if}
+
+<script>
+  var code = "UG93ZXJlZCBieSA8YSBocmVmPSIvc3RhZmYiPlNTUEFORUw8L2E+IDxkaXYgY2xhc3M9ImJ1bGxldCI+PC9kaXY+IFRoZW1lIGJ5IDxhIGhyZWY9Imh0dHBzOi8vdC5tZS9lZGl0WFkiIHRhcmdldD0iYmxhbmsiPmVkaXRYWTwvYT4=";
+  $('#copyright').html(atob(code));
+</script>

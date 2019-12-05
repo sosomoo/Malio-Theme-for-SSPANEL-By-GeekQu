@@ -67,11 +67,7 @@
             </div>
             <div class="simple-footer">
               Copyright &copy; 2019 {$config["appName"]}
-              <div class="mt-2">
-                Powered by <a href="/staff">SSPANEL</a>
-                <div class="bullet"></div>
-                Theme by <a href="https://t.me/editXY" target="blank">editXY</a>
-              </div>
+              <div class="mt-2" id="copyright"></div>
             </div>
           </div>
         </div>
@@ -133,6 +129,11 @@
         reset();
       });
     })
+  </script>
+
+  <script>
+    var code = "UG93ZXJlZCBieSA8YSBocmVmPSIvc3RhZmYiPlNTUEFORUw8L2E+IDxkaXYgY2xhc3M9ImJ1bGxldCI+PC9kaXY+VGhlbWUgYnkgPGEgaHJlZj0iaHR0cHM6Ly90Lm1lL2VkaXRYWSIgdGFyZ2V0PSJibGFuayI+ZWRpdFhZPC9hPg==";
+    $('#copyright').html(atob(code));
   </script>
 </body>
 
