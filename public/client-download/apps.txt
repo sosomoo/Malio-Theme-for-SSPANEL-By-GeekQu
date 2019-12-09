@@ -14,3 +14,4 @@ kitsunebi.apk
 surfboard.apk
 ssr.7z
 netch.7z
+clash-for-android.apk

@@ -88,6 +88,8 @@
                 <div class="card card-hero" onclick="location='/user/tutorial?os=android&client=v2rayng'">
                 {else if $malio_config['android_client'] == 'kitsunebi'}
                 <div class="card card-hero" onclick="location='/user/tutorial?os=android&client=kitsunebi'">
+                {else if $malio_config['android_client'] == 'clash'}
+                <div class="card card-hero" onclick="location='/user/tutorial?os=android&client=clash'">
                 {/if}
                   <div class="card-header os-card android-card">
                     <div class="card-icon">
