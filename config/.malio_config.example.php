@@ -40,7 +40,7 @@ $Malio_Config['bitpyax_alipay_type'] = 'ALIPAY';   // bitpayx 支付宝充值的
 
 ####### 支付系统 #######
 // 支付系统写 none 意味着不启用此收款方式
-// 支付宝目前支持 bitpayx、tomatopay
+// 支付宝目前支持 bitpayx、tomatopay、f2fpay
 $Malio_Config['mups_alipay'] = 'bitpayx';   // Malio 聚合支付系统里面的 支付宝 要用的支付平台  
 // 微信支付目前支持 bitpayx
 $Malio_Config['mups_wechat'] = 'bitpayx';   // Malio 聚合支付系统里面的 微信支付 要用的支付平台

@@ -64,6 +64,23 @@ class MalioPay extends AbstractPayment
                         );
                     }
                     return json_encode($return);
+                case ('f2fpay'):
+                    $f2fpay = new AopF2F();
+                    $result = $f2fpay->purchase_maliopay($type, $price);
+                    if ($result['errcode'] == 0) {
+                        $return = array(
+                            'ret' => 1,
+                            'type' => 'qrcode',
+                            'tradeno' => $result['tradeno'],
+                            'url' => $result['url']
+                        );
+                    } else {
+                        $return = array(
+                            'ret' => 0,
+                            'msg' => $result['errmsg']
+                        );
+                    }
+                    return json_encode($return);
             }
         } else if ($type == 'wechat') {
             $payment_system = MalioConfig::get('mups_wechat');
@@ -184,6 +201,19 @@ class MalioPay extends AbstractPayment
                 }
 
                 return 'tomatopay';
+            case ('f2fpay'):
+                $f2fpay = new AopF2F();
+                $gateway = $f2fpay->createGateway();
+                $aliRequest = $gateway->completePurchase();
+                $aliRequest->setParams($_POST);
+        
+                $aliResponse = $aliRequest->send();
+                $pid = $aliResponse->data('out_trade_no');
+                if ($aliResponse->isPaid()) {
+                    $this->postPayment($pid, '支付宝');
+                    die('success'); //The response should be 'success' only
+                }
+                return 'f2fpay';
             default:
                 return 'failed';
         }
