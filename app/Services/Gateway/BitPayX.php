@@ -151,6 +151,64 @@ class BitPayX extends AbstractPayment
         return json_encode(['errcode' => -1, 'errmsg' => $result . error]);
     }
 
+    public function purchase_maliopay($type, $price)
+    {
+        $user = Auth::getUser();
+        $pl = new Paylist();
+        $pl->userid = $user->id;
+        $pl->total = $price;
+        $pl->tradeno = self::generateGuid();
+        $pl->datetime = time(); // date("Y-m-d H:i:s");
+        $pl->save();
+
+        $data['merchant_order_id'] = $pl->tradeno;
+        $data['price_amount'] = (float)$price;
+        $data['price_currency'] = 'CNY';
+        $type = strtoupper($type);
+        if ($type === 'WECHAT') {
+            $data['pay_currency'] = $type;
+        }
+        if ($type === 'ALIGLOBAL' || $type === 'ALIPAY') {
+            $data['pay_currency'] = $type;
+        }
+
+        $data['mobile'] = false;
+        $data['title'] = '支付单号：' . $pl->tradeno;
+        $data['description'] = '充值：' . $price . ' 元';
+        $data['callback_url'] = Config::get('baseUrl') . '/payment/notify?paysys=bitpayx';
+
+        $data['success_url'] = Config::get('baseUrl') . '/user/payment/return?merchantTradeNo='.$pl->tradeno.'&tradeno='.$pl->tradeno;
+        $data['cancel_url'] = Config::get('baseUrl') . '/user/code';
+
+        $str_to_sign = $this->prepareSignId($pl->tradeno);
+        $data['token'] = $this->sign($str_to_sign);
+        $result = json_decode($this->mprequest($data), true);
+        $result['pid'] = $pl->tradeno;
+        $qrcode_url = '';
+        $click_url = '';
+        if ($result['status'] === 200 || $result['status'] === 201) {
+            $result['payment_url'] .= '&lang=zh';
+            if ($result['invoice'] && $result['invoice']['pay_currency']) {
+                $pay_currency = $result['invoice']['pay_currency'];
+                $order_id = $result['invoice']['order_id'];
+                $base_url = 'https://www.zhihu.com/qrcode?url=';
+                if ($pay_currency === 'ALIPAY') {
+                    $click_url = 'https://qrcode.icedropper.com/invoices/?id=' . $order_id . '&type=ALIPAY';
+                    $qrcode_url = $base_url . $click_url;
+                } else if ($pay_currency === 'ALIGLOBAL') {
+                    $click_url = 'https://qrcode.oceanlunettes.com/invoices/?id=' . $order_id . '&type=ALIGLOBAL';
+                    $qrcode_url = $base_url . $click_url;
+                } else if ($pay_currency === 'WECHAT') {
+                    $qrcode_url = $result['invoice']['qrcode'];
+                    $click_url = "#";
+                }
+            }
+            return array('url' => $result['payment_url'], 'qrcode_url' => $qrcode_url, 'click_url' => $click_url, 'errcode' => 0, 'tradeno' => $pl->tradeno);
+        }
+
+        return ['errcode' => -1, 'errmsg' => $result];
+    }
+
     public function notify($request, $response, $args)
     {
         if (!$this->bitpayAppSecret || $this->bitpayAppSecret === '') {

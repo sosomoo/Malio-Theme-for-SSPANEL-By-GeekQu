@@ -403,28 +403,41 @@
                   <div class="col-12">
                     <div class="section-title">选择支付方式</div>
                     <div class="colors row">
-                      <div id="alipay" class="color col-12 col-md-2 col-lg-2 active" onclick="selectItem('payment','alipay')">
-                        <i class="fab fa-alipay" style="font-size: 1.1rem;vertical-align: -1px;margin-right: 2px;"></i> 支付宝
-                      </div>
-                      {if $config['payment_system'] != 'f2fpay' && $config['payment_system'] != 'spay' && $config['payment_system'] != 'payssion'}
-                      <div id="wechat" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','wechat')">
-                        <i class="malio-wechat-pay" style="font-size: 1.1rem;vertical-align: -1px;"></i> 微信支付
-                      </div>
-                      {/if}
-                      {if $config['payment_system'] == 'bitpayx'}
-                      <div id="crypto" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','crypto')">
-                        <i class="fab fa-btc"></i> 数字货币
-                      </div>
-                      {/if}
-                      {if $config['payment_system'] == 'codepay' || $config['payment_system'] == 'flyfoxpay'}
-                      <div id="qqpay" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','qqpay')">
-                        <i class="fab fa-qq"></i> QQ支付
-                      </div>
-                      {/if}
-                      {if $config['payment_system'] == 'payssion'}
-                      <div id="unionpay" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','unionpay')">
-                        <i class="malio-unionpay"></i> 银联支付
-                      </div>
+                      {if $config['payment_system'] != malio}
+                        <div id="alipay" class="color col-12 col-md-2 col-lg-2 active" onclick="selectItem('payment','alipay')">
+                          <i class="fab fa-alipay" style="font-size: 1.1rem;vertical-align: -1px;margin-right: 2px;"></i> 支付宝
+                        </div>
+                        {if $config['payment_system'] != 'f2fpay' && $config['payment_system'] != 'spay' && $config['payment_system'] != 'payssion'}
+                        <div id="wechat" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','wechat')">
+                          <i class="malio-wechat-pay" style="font-size: 1.1rem;vertical-align: -1px;"></i> 微信支付
+                        </div>
+                        {/if}
+                        {if $config['payment_system'] == 'bitpayx'}
+                        <div id="crypto" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','crypto')">
+                          <i class="fab fa-btc"></i> 数字货币
+                        </div>
+                        {/if}
+                        {if $config['payment_system'] == 'codepay' || $config['payment_system'] == 'flyfoxpay'}
+                        <div id="qqpay" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','qqpay')">
+                          <i class="fab fa-qq"></i> QQ支付
+                        </div>
+                        {/if}
+                        {if $config['payment_system'] == 'payssion'}
+                        <div id="unionpay" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','unionpay')">
+                          <i class="malio-unionpay"></i> 银联支付
+                        </div>
+                        {/if}
+                      {else}
+                        {if $malio_config['mups_alipay'] != 'none'}
+                        <div id="alipay" class="color col-12 col-md-2 col-lg-2 active" onclick="selectItem('payment','alipay')">
+                          <i class="fab fa-alipay" style="font-size: 1.1rem;vertical-align: -1px;margin-right: 2px;"></i> 支付宝
+                        </div>
+                        {/if}
+                        {if $malio_config['mups_wechat'] != 'none'}
+                        <div id="wechat" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','wechat')">
+                          <i class="malio-wechat-pay" style="font-size: 1.1rem;vertical-align: -1px;"></i> 微信支付
+                        </div>
+                        {/if}
                       {/if}
                     </div>
                     <p class="text-muted">* 默认抵扣账户余额</p>
@@ -805,6 +818,26 @@
 </div>
 {/if}
 
+{if $config['payment_system'] == 'malio'}
+<div class="modal fade" tabindex="-1" role="dialog" id="maliopay-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">支付</h5>
+      </div>
+      <div class="modal-body">
+        <div style="text-align: center">
+          点击“继续支付”打开支付页面支付<br>
+          支付到账需要一段时间，请勿关闭或刷新此页面</div>
+      </div>
+      <div class="modal-footer bg-whitesmoke br">
+        <a id="to-maliopay" href="##" type="button" target="blank" class="btn btn-primary">继续支付</a>
+      </div>
+    </div>
+  </div>
+</div>
+{/if}
+
 {if $malio_config['shop_enable_traffic_package'] == true && $user->class > 0}
 <div class="modal fade" tabindex="-1" role="dialog" id="traffic-package-modal">
   <div class="modal-dialog" role="document">
@@ -831,6 +864,7 @@
   </div>
 </div>
 {/if}
+
 
 {if $malio_config['shop_style'] == 'legacy'}
 <div class="modal fade" tabindex="-1" role="dialog" id="legacy-modal-1">

@@ -2102,6 +2102,11 @@ class UserController extends BaseController
     public function share_account($request, $response, $args)
     {
         return $this->view()->display('user/share_account.tpl'); 
+    }
+
+    public function qrcode($request, $response, $args)
+    {
+        return $this->view()->display('user/qrcode.tpl'); 
     } 
 
     public function getPcClient($request, $response, $args)
