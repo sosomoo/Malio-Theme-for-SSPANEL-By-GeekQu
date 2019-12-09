@@ -64,7 +64,10 @@ class GConfigController extends AdminController
 
     public function telegram_ajax($request, $response, $args)
     {
-        $configs = GConfig::where('key', 'LIKE', "%Telegram%")->get();
+        $start = $request->getParam("start");
+        $limit_length = $request->getParam('length');
+        $configs = GConfig::skip($start)->where('key', 'LIKE', "%Telegram%")->limit($limit_length)->get();
+        $total_conut = GConfig::where('key', 'LIKE', "%Telegram%")->count();
         $data = [];
         foreach ($configs as $config) {
             $tempdata = [];
@@ -88,13 +91,15 @@ class GConfigController extends AdminController
                         $tempdata['value'] = '未知';
                         break;
                 }
+            } else {
+                $tempdata['value'] = '(请在编辑页面查看)';
             }
             $data[] = $tempdata;
         }
         $info = [
             'draw' => $request->getParam('draw'),
-            'recordsTotal' => count($configs),
-            'recordsFiltered' => count($configs),
+            'recordsTotal' => $total_conut,
+            'recordsFiltered' => $total_conut,
             'data' => $data
         ];
 
