@@ -102,6 +102,7 @@ $Malio_Config['enable_index_subinfo'] = true;    // 是否在首页显示订阅�
 $Malio_Config['index_subinfo_buttons_align'] = false;   // 是否开启首页订阅链接按钮的对齐
 $Malio_Config['index_show_alert_to_tutorial'] = false;   // 首页是否一直显示进入教程的横幅 （此项设置为false后，新用户的首页依旧会显示引导进入教程的横幅）
 $Malio_Config['enable_index_popup_ann'] = false;   //  是否在用户登录后弹出重要公告
+$Malio_Config['enable_index_popup_ann_time'] = false;   //  重要公告弹窗是否24小时只弹一次
 $Malio_Config['index_popup_ann_content'] = '仅在有重大通知时使用，否则会降低用户体验，可以使用HTML标签';   //  重要公告的内容
 
 $Malio_Config['enable_share'] = true;   // 是否显示共享账号
