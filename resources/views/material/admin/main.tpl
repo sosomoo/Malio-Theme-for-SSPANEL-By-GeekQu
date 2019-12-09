@@ -119,6 +119,11 @@
                         <li><a href="/admin/alive"><i class="icon icon-lg">important_devices</i>&nbsp;在线IP</a></li>
                     </ul>
 
+                    <a class="waves-attach" data-toggle="collapse" href="#ui_menu_user">配置</a>
+                    <ul class="menu-collapse collapse in" id="ui_menu_user">
+                        <li><a href="/admin/config/telegram"><i class="icon icon-lg">supervisor_account</i>&nbsp;Telegram</a></li>
+                    </ul>
+
                     <a class="waves-attach" data-toggle="collapse" href="#ui_menu_detect">审计</a>
                     <ul class="menu-collapse collapse in" id="ui_menu_detect">
                         <li><a href="/admin/detect"><i class="icon icon-lg">account_balance</i>&nbsp;审计规则</a></li>
