@@ -523,7 +523,7 @@
                         $sendtext = "商品详情：\n";
                         $shops = Shop::where("status", 1)->orderBy("name")->get();
                         foreach ($shops as $shop) {
-                            $sendtext .= "\n[".$shop->id."]".$shop->name."[价格] ".$shop->price."[流量] ".$shop->bandwidth;
+                            $sendtext .= "\n[".$shop->id."]".$shop->name."[价格] ".$shop->price."[流量] ".$shop->bandwidth();
                         }
                         $bot->sendMessage($message->getChat()->getId(), $sendtext, $parseMode = null, $disablePreview = false, $replyToMessageId = $reply_to);
                         break;
