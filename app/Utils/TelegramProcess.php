@@ -445,7 +445,7 @@
                         }
 
                         $user->money = $user->money - $price;
-                        $user->save();
+
 
                         // if ($disableothers == 1) {
                         //     $boughts = Bought::where("userid", $user->id)->get();
@@ -472,10 +472,11 @@
                             $price = $shop->price;
                         }
                         $bought->price = $price;
-                        $bought->save();
-                        $shop->buy($user);
                         $sendtext = "购买成功";
                         $bot->sendMessage($message->getChat()->getId(), $sendtext, $parseMode = null, $disablePreview = false, $replyToMessageId = $reply_to);
+                        $bought->save();
+                        $shop->buy($user);
+                        $user->save();
                         break;
                     case 'generatecode':
                         if (!$user->is_admin) {
