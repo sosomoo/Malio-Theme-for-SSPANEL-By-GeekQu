@@ -502,12 +502,6 @@
                         }
                         $bot->sendMessage($message->getChat()->getId(), $sendtext, $parseMode = null, $disablePreview = false, $replyToMessageId = $reply_to);
                         break;
-                    case 'sub':
-                        $ssr_sub_token = LinkController::GenerateSSRSubCode($user->id, 0);
-                        $SubUrl = Config::get('baseUrl').'/link/'.$ssr_sub_token.'?mu=0';
-                        $sendtext = '您的订阅链接为：'.$SubUrl;
-                        $bot->sendMessage($message->getChat()->getId(), $sendtext, $parseMode = null, $disablePreview = false, $replyToMessageId = $reply_to);
-                        break;
                     case 'invite':
                         $code = InviteCode::where('user_id', $user->id)->first();
 
@@ -516,9 +510,15 @@
                         $bot->sendMessage($message->getChat()->getId(), $sendtext, $parseMode = null, $disablePreview = false, $replyToMessageId = $reply_to);
                         break;
                     case 'nodes':
-
                         $sendtext = "节点列表：\n";
-                        $Nodes = Node::where('sort', 0)->where('node_ip', "<>", "")->where('node_ip', "<>", 'NULL')->get();
+                        $Nodes = Node::where('node_ip', '<>', null)->where('node_ip', "<>", "")->where(
+                            static function ($query) {
+                                $query->where('sort', '=', 0)
+                                    ->orWhere('sort', '=', 10)
+                                    ->orWhere('sort', '=', 12)
+                                    ->orWhere('sort', '=', 13);
+                            }
+                        )->get();
                         foreach ($Nodes as $Node) {
                             $sendtext .= "\n[".$Node->id."]".$Node->name;
                         }
@@ -671,7 +671,7 @@
             $user = User::where('telegram_id', $message->getFrom()->getId())->first();
             if ($message->getChat()->getId() > 0) {
                 //个人
-                $commands = array("ping", "chat", "checkin", "help", "setclass", "setdate", "setmoney", "setconnector", "setrole", "setspeed", "generatecode", "delnode", "info", "sub", "nodes", "store", "buy", "redeem", "my", "invite", "store", "ban", "active", "find", "topip", "toptr");
+                $commands = array("ping", "chat", "checkin", "help", "setclass", "setdate", "setmoney", "setconnector", "setrole", "setspeed", "generatecode", "delnode", "info", "nodes", "store", "buy", "redeem", "my", "invite", "store", "ban", "active", "find", "topip", "toptr","rss");
                 if(in_array($command, $commands)){
                     $bot->sendChatAction($message->getChat()->getId(), 'typing');
                 }
@@ -756,7 +756,6 @@
                         break;
                     case 'help':
                         $help_list = "/help - 获取当前聊天中可用的指令列表
-/about - 关于
 /my - 获取账户信息
 /checkin - 签到
 /invite - 获取邀请链接
@@ -939,7 +938,6 @@
                         break;
                     case 'help':
                         $help_list_group = "/help - 获取当前聊天中可用的指令列表
-/about - 关于
 /my - 获取账户信息
 /checkin - 签到
 /invite - 获取邀请链接
@@ -987,7 +985,7 @@
                 // or initialize with botan.io tracker api key
                 // $bot = new \TelegramBot\Api\Client('YOUR_BOT_API_TOKEN', 'YOUR_BOTAN_TRACKER_API_KEY');
 
-                $command_list = array("ping", "chat", "help", "prpr", "checkin", "setclass", "setdate", "setmoney", "setconnector", "setrole", "setspeed", "generatecode", "delnode", "info", "sub", "nodes", "store", "buy", "redeem", "my", "invite", "store", "buy", "ban", "active", "find", "topip", "toptr",'rss');
+                $command_list = array("ping", "chat", "help", "prpr", "checkin", "setclass", "setdate", "setmoney", "setconnector", "setrole", "setspeed", "generatecode", "delnode", "info", "sub", "nodes", "store", "buy", "redeem", "my", "invite", "store", "buy", "ban", "active", "find", "topip", "toptr","rss");
                 foreach ($command_list as $command) {
                     $bot->command($command, function ($message) use ($bot, $command) {
                         TelegramProcess::telegram_process($bot, $message, $command);
