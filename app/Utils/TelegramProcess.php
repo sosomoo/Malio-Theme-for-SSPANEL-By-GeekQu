@@ -458,6 +458,7 @@
                         $bought->userid = $user->id;
                         $bought->shopid = $shop->id;
                         $bought->datetime = time();
+                        $autorenew=0;
                         if ($autorenew == 0 || $shop->auto_renew == 0) {
                             $bought->renew = 0;
                         } else {
@@ -511,14 +512,7 @@
                         break;
                     case 'nodes':
                         $sendtext = "节点列表：\n";
-                        $Nodes = Node::where('node_ip', '<>', null)->where('node_ip', "<>", "")->where(
-                            static function ($query) {
-                                $query->where('sort', '=', 0)
-                                    ->orWhere('sort', '=', 10)
-                                    ->orWhere('sort', '=', 12)
-                                    ->orWhere('sort', '=', 13);
-                            }
-                        )->get();
+                        $Nodes = Node::where('type', 1)->orderBy('name')->get();
                         foreach ($Nodes as $Node) {
                             $sendtext .= "\n[".$Node->id."]".$Node->name;
                         }
@@ -529,7 +523,7 @@
                         $sendtext = "商品详情：\n";
                         $shops = Shop::where("status", 1)->orderBy("name")->get();
                         foreach ($shops as $shop) {
-                            $sendtext .= "\n[".$shop->id."]".$shop->name;
+                            $sendtext .= "\n[".$shop->id."]".$shop->name."[价格] ".$shop->price."[流量] ".$shop->bandwidth;
                         }
                         $bot->sendMessage($message->getChat()->getId(), $sendtext, $parseMode = null, $disablePreview = false, $replyToMessageId = $reply_to);
                         break;
@@ -760,7 +754,6 @@
 /checkin - 签到
 /invite - 获取邀请链接
 /nodes - 获取节点列表(仅限私聊)
-/sub - 获取或重置订阅链接(仅限私聊)
 /store - 打开商店面板(仅限私聊)
 /buy <商品ID> [优惠码] - 直接购买商品(仅限私聊)
 /redeem <充值码> - 兑换充值码(仅限私聊)
@@ -942,7 +935,6 @@
 /checkin - 签到
 /invite - 获取邀请链接
 /nodes - 获取节点列表(仅限私聊)
-/sub - 获取或重置订阅链接(仅限私聊)
 /store - 打开商店面板(仅限私聊)
 /rss - 获取订阅(仅限私聊)
 /buy <商品ID> [优惠码] - 直接购买商品(仅限私聊)
@@ -985,7 +977,7 @@
                 // or initialize with botan.io tracker api key
                 // $bot = new \TelegramBot\Api\Client('YOUR_BOT_API_TOKEN', 'YOUR_BOTAN_TRACKER_API_KEY');
 
-                $command_list = array("ping", "chat", "help", "prpr", "checkin", "setclass", "setdate", "setmoney", "setconnector", "setrole", "setspeed", "generatecode", "delnode", "info", "sub", "nodes", "store", "buy", "redeem", "my", "invite", "store", "buy", "ban", "active", "find", "topip", "toptr","rss");
+                $command_list = array("ping", "chat", "help", "prpr", "checkin", "setclass", "setdate", "setmoney", "setconnector", "setrole", "setspeed", "generatecode", "delnode", "info", "nodes", "store", "buy", "redeem", "my", "invite", "store", "buy", "ban", "active", "find", "topip", "toptr","rss");
                 foreach ($command_list as $command) {
                     $bot->command($command, function ($message) use ($bot, $command) {
                         TelegramProcess::telegram_process($bot, $message, $command);
