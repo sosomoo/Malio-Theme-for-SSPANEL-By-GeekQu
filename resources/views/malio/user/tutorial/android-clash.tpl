@@ -152,8 +152,9 @@
                         <div class="row">
                           <div class="left-text col-xs-12 col-md-6 col-lg-6">
                             <label class="step-no">2.</label>
-                            <p>打开客户端，点击 Profiles，点击 + New Profile，选择 URL，然后将 Name 填写为 {$config['appName']} ，将托管配置链接粘贴到URL的框内，点击右上角 <i class="fas fa-check"></i> 按钮即可。</p>
-                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['clash']}"><i class="malio-clash"></i> 复制 Clash 托管配置链接</a>
+                            <p>点击这个按钮 👇👇👇</p>
+                            <a href="##" class="btn btn-icon icon-left btn-primary btn-app btn-lg btn-round" onclick="importSublink('clash')"><i class="malio-clash"></i> 一键导入托管配置到 Clash for Android</a>
+                            <p class="text-muted" style="font-size: 13px">一键导入不成功？<a href="#manual-import" class="text-muted "><u>试试手动导入</u> →</a></p>
                           </div>
                           <div class="right-pic col-xs-12 col-md-6 col-lg-6">
                             <div class="tutorial-pic">
@@ -177,6 +178,23 @@
                         </div>
                       </li>
                     </ul>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <h3 style="margin-top: 50px;margin-bottom: 30px;">🤔</h3>
+                </div>
+                <div class="card">
+                  <div class="card-body">
+                    <div class="faq">
+                      <div class="row mt-2 mb-2">
+                        <div class="col-sm-6 col-xs-12 col-md-6 col-lg-6" id="manual-import">
+                          <h6>Clash for Android 无法一键导入，如何手动导入配置？</h6>
+                          <p class="mb-4 font-13">
+                            <a href="##" class="copy-text" data-clipboard-text="{$subInfo['clash']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}">点此复制 Clash 托管配置链接</a>， 打开客户端，点击 Profiles，点击 + New Profile，选择 URL，然后将 Name 填写为 {$config['appName']} ，将托管配置链接粘贴到 URL 的框内，点击右上角 ✓ 按钮即可。
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
