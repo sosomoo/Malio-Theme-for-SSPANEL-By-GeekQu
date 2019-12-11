@@ -150,6 +150,14 @@ $_ENV['telegram_bot'] = '_bot';				//Telegram 机器人账号
 $_ENV['telegram_group_quiet'] = true;		//Telegram 机器人在群组中不回应
 $_ENV['telegram_request_token'] = '';		//Telegram 机器人请求Key，随意设置，由大小写英文和数字组成，更新这个参数之后请 php xcat setTelegram
 
+# 新的 Telegram BOT
+$_ENV['new_telegram_enable']        = false;		//是否开启Telegram Bot
+$_ENV['new_telegram_token']         = '';			//Telegram Bot 的 Token，跟 Father Bot 申请
+$_ENV['new_telegram_username']      = '';		    //Telegram Bot 用户名
+$_ENV['new_telegram_group_quiet']   = true;		    //Telegram Bot 在群组中不回应
+$_ENV['new_telegram_group_chatid']  = '';		    //Telegram 群组会话 ID，把 Bot 拉进群里之后跟他 /ping 一下即可得到。
+$_ENV['new_telegram_request_token'] = '';		    //Telegram 机器人请求验证 Key，随意设置，由大小写英文和数字组成，更新这个参数之后请 php xcat setNewTelegram
+
 
 //沟通设置--------------------------------------------------------------------------------------------
 #客服系统设置，注册地址 https://www.mylivechat.com

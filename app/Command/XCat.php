@@ -110,6 +110,8 @@ class XCat
                 return $this->iptest();
             case ('delSubCache'):
                 return $this->delSubCache();
+            case ('setNewTelegram'):
+                return $this->setNewTelegram();
             default:
                 return $this->defaultAction();
         }
@@ -281,6 +283,19 @@ class XCat
         curl_close($ch);
         if ($deleteWebhookReturn->ok && $deleteWebhookReturn->result && $bot->setWebhook(Config::get('baseUrl') . '/telegram_callback?token=' . Config::get('telegram_request_token')) == 1) {
             echo ('设置成功！' . PHP_EOL);
+        }
+    }
+
+    public function setNewTelegram()
+    {
+        $WebhookUrl = (Config::get('baseUrl') . '/TelegramCallback?token=' . Config::get('new_telegram_request_token'));
+        $telegram = new \Telegram\Bot\Api(Config::get('new_telegram_token'));
+        $response = $telegram->setWebhook(['url' => $WebhookUrl]);
+        $response = json_decode($response, true);
+        if ($response['ok'] === true) {
+            echo("设置成功！");
+        } else {
+            echo("设置失败！");
         }
     }
 

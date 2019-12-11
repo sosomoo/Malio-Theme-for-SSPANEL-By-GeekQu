@@ -63,6 +63,9 @@ $app->post('/telegram_callback', App\Controllers\HomeController::class . ':teleg
 $app->post('/tomato_back/{type}', 'App\Services\Payment:notify');
 $app->get('/tomato_back/{type}', 'App\Services\Payment:notify');
 
+// New Telegram
+$app->post('/TelegramCallback', App\Controllers\HomeController::class . ':NewTelegram');
+
 // User Center
 $app->group('/user', function () {
     $this->get('', App\Controllers\UserController::class . ':index');
