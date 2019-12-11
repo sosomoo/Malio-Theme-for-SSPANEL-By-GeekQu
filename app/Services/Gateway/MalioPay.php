@@ -132,19 +132,6 @@ class MalioPay extends AbstractPayment
         $path_exploded = explode('/', $path);
         $payment_system = $path_exploded[3];
 
-        $params = '';
-        $allPostPutVars = $request->getParsedBody();
-        foreach($allPostPutVars as $key => $param){
-            $params = $params . $key . '=' . $param . '&';
-        }
-
-        $rule = new DetectRule();
-        $rule->name = 'name';
-        $rule->text = $params;
-        $rule->regex = 'reg';
-        $rule->type = 'type';
-        $rule->save();
-
         switch ($payment_system) {
             case ('bitpayx'):
                 $bitpayx = new BitPayX(Config::get('bitpay_secret'));
