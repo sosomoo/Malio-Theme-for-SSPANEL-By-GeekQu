@@ -24,7 +24,7 @@ class AopF2F extends AbstractPayment
         $gateway->setAppId(Config::get('f2fpay_app_id'));
         $gateway->setPrivateKey(Config::get('merchant_private_key')); // 可以是路径，也可以是密钥内容
         $gateway->setAlipayPublicKey(Config::get('alipay_public_key')); // 可以是路径，也可以是密钥内容
-        $notifyUrl = Config::get('f2fNotifyUrl') ?? (Config::get('baseUrl') . '/payment/notify?paysys=f2fpay');
+        $notifyUrl = Config::get('f2fNotifyUrl') ?? (Config::get('baseUrl') . '/payment/notify');
         $gateway->setNotifyUrl($notifyUrl);
         return $gateway;
     }
@@ -80,7 +80,13 @@ class AopF2F extends AbstractPayment
         $pl->total = $amount;
         $pl->save();
 
-        $gateway = $this->createGateway();
+        $gateway = Omnipay::create('Alipay_AopF2F');
+        $gateway->setSignType('RSA2'); //RSA/RSA2
+        $gateway->setAppId(Config::get('f2fpay_app_id'));
+        $gateway->setPrivateKey(Config::get('merchant_private_key')); // 可以是路径，也可以是密钥内容
+        $gateway->setAlipayPublicKey(Config::get('alipay_public_key')); // 可以是路径，也可以是密钥内容
+        $notifyUrl = Config::get('f2fNotifyUrl') ?? (Config::get('baseUrl') . '/payment/notify/f2fpay');
+        $gateway->setNotifyUrl($notifyUrl);
 
         $request = $gateway->purchase();
         $request->setBizContent([

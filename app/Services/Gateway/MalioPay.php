@@ -7,6 +7,9 @@ use App\Services\Auth;
 use App\Services\Config;
 use App\Models\Paylist;
 use App\Services\MalioConfig;
+use Omnipay\Omnipay;
+
+use App\Models\DetectRule;
 
 class MalioPay extends AbstractPayment
 {
@@ -20,7 +23,7 @@ class MalioPay extends AbstractPayment
         }
 
         if ($price < MalioConfig::get('mups_minimum_amount')) {
-            return json_encode(['ret' => 0, 'msg' => '充值最低金额为' . MalioConfig::get('mups_minimum_amount') . '元']);
+            return json_encode(['ret' => 0, 'errmsg' => '充值最低金额为' . MalioConfig::get('mups_minimum_amount') . '元']);
         }
 
         if ($price <= 0) {
@@ -125,7 +128,22 @@ class MalioPay extends AbstractPayment
 
     public function notify($request, $response, $args)
     {
-        $payment_system = $request->getParam('paysys');
+        $path = $request->getUri()->getPath();
+        $path_exploded = explode('/', $path);
+        $payment_system = $path_exploded[3];
+
+        $params = '';
+        $allPostPutVars = $request->getParsedBody();
+        foreach($allPostPutVars as $key => $param){
+            $params = $params . $key . '=' . $param . '&';
+        }
+
+        $rule = new DetectRule();
+        $rule->name = 'name';
+        $rule->text = $params;
+        $rule->regex = 'reg';
+        $rule->type = 'type';
+        $rule->save();
 
         switch ($payment_system) {
             case ('bitpayx'):
@@ -203,7 +221,13 @@ class MalioPay extends AbstractPayment
                 return 'tomatopay';
             case ('f2fpay'):
                 $f2fpay = new AopF2F();
-                $gateway = $f2fpay->createGateway();
+
+                $gateway = Omnipay::create('Alipay_AopF2F');
+                $gateway->setSignType('RSA2'); //RSA/RSA2
+                $gateway->setAppId(Config::get('f2fpay_app_id'));
+                $gateway->setPrivateKey(Config::get('merchant_private_key')); // 可以是路径，也可以是密钥内容
+                $gateway->setAlipayPublicKey(Config::get('alipay_public_key')); // 可以是路径，也可以是密钥内容
+
                 $aliRequest = $gateway->completePurchase();
                 $aliRequest->setParams($_POST);
         

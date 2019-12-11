@@ -175,7 +175,7 @@ class BitPayX extends AbstractPayment
         $data['mobile'] = false;
         $data['title'] = '支付单号：' . $pl->tradeno;
         $data['description'] = '充值：' . $price . ' 元';
-        $data['callback_url'] = Config::get('baseUrl') . '/payment/notify?paysys=bitpayx';
+        $data['callback_url'] = Config::get('baseUrl') . '/payment/notify/bitpayx';
 
         $data['success_url'] = Config::get('baseUrl') . '/user/payment/return?merchantTradeNo='.$pl->tradeno.'&tradeno='.$pl->tradeno;
         $data['cancel_url'] = Config::get('baseUrl') . '/user/code';
