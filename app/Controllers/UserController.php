@@ -1100,7 +1100,11 @@ class UserController extends BaseController
             $res['msg'] = '此优惠码无效';
             return $response->getBody()->write(json_encode($res));
         }
-
+        if ($coupon->expire < time()) {
+            $res['ret'] = 0;
+            $res['msg'] = '优惠码已过期';
+            return $response->getBody()->write(json_encode($res));
+        }
         if ($coupon->order($shop->id) == false) {
             $res['ret'] = 0;
             $res['msg'] = '此优惠码不可用于此商品';
