@@ -31,7 +31,10 @@ class StartCommand extends Command
         $Update = $this->getUpdate();
         $Message = $Update->getMessage();
         
-        if ($Message->getChat()->getId() > 0) {
+        // 消息会话 ID
+        $ChatID = $Message->getChat()->getId();
+
+        if ($ChatID > 0) {
             // 私人会话
 
             // 发送 '输入中' 会话状态

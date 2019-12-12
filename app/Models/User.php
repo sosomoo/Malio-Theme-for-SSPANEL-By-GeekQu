@@ -465,4 +465,27 @@ class User extends Model
             Tools::delDirAndFile($user_path);
         }
     }
+
+    /** 
+     * 签到
+     */
+    public function checkin()
+    {
+        $return = [
+            'ok'  = true,
+            'msg' = ''
+        ];
+        if (!$this->isAbleToCheckin()) {
+            $return['ok']  = false;
+            $return['msg'] = '您似乎已经签到过了...';
+        } else {
+            $traffic = random_int((int) Config::get('checkinMin'), (int) Config::get('checkinMax'));
+            $this->transfer_enable += Tools::toMB($traffic);
+            $this->last_check_in_time = time();
+            $this->save();
+            $return['msg'] = '获得了 ' . $traffic . 'MB 流量.';
+        }
+
+        return $return;
+    }
 }

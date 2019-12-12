@@ -2,32 +2,31 @@
 
 namespace App\Utils\Telegram\Commands;
 
-use App\Models\User;
 use App\Services\Config;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
 /**
- * Class HelpCommand.
+ * Class PingCommand.
  */
-class HelpCommand extends Command
+class PingCommand extends Command
 {
     /**
      * @var string Command Name
      */
-    protected $name = 'help';
+    protected $name = 'ping';
 
     /**
      * @var string Command Description
      */
-    protected $description = '菜单';
+    protected $description = '';
 
     /**
      * {@inheritdoc}
      */
     public function handle($arguments)
     {
-        $Update  = $this->getUpdate();
+        $Update = $this->getUpdate();
         $Message = $Update->getMessage();
 
         // 消息会话 ID
@@ -46,10 +45,16 @@ class HelpCommand extends Command
                 'username' => $Message->getFrom()->getUsername(),
             ];
 
+            $text = [
+                'Pong！',
+                '这个群组的 ID 是 ' . $ChatID . '.',
+            ];
+
             // 回送信息
             $this->replyWithMessage(
                 [
-                    'text' => '喵？',
+                    'text'       => implode(PHP_EOL ,$text),
+                    'parse_mode' => 'Markdown',
                 ]
             );
         } else {
@@ -63,10 +68,15 @@ class HelpCommand extends Command
             // 发送 '输入中' 会话状态
             $this->replyWithChatAction(['action' => Actions::TYPING]);
 
+            $text = [
+                'Pong！',
+                '这个群组的 ID 是 ' . $ChatID . '.',
+            ];
+
             // 回送信息
             $this->replyWithMessage(
                 [
-                    'text' => '喵？',
+                    'text' => implode(PHP_EOL ,$text),
                 ]
             );
         }

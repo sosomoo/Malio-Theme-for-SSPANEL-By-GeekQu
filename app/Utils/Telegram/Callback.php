@@ -2,10 +2,6 @@
 
 namespace App\Utils\Telegram;
 
-use App\Models\{Bought, InviteCode, InviteQueue, User};
-use App\Services\Config;
-use App\Utils\Tools;
-
 class Callback
 {
     public static function CallbackQueryMethod($user, $bot, $Callback)

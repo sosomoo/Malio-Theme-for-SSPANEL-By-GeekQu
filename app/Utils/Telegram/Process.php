@@ -17,6 +17,8 @@ class Process
                 [
                     Commands\HelpCommand::class,
                     Commands\StartCommand::class,
+                    Commands\PingCommand::class,
+                    Commands\CheckinCommand::class,
                 ]
             );
             $update = $bot->commandsHandler(true);
