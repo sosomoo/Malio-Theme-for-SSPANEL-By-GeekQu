@@ -135,11 +135,11 @@ class MalioPay extends AbstractPayment
         switch ($payment_system) {
             case ('bitpayx'):
                 $bitpayx = new BitPayX(Config::get('bitpay_secret'));
-                if (!$bitpayx->bitpayAppSecret || $bitpayx->bitpayAppSecret === '') {
+                if (!Config::get('bitpay_secret') || Config::get('bitpay_secret') === '') {
                     $return = [];
                     $return['status'] = 400;
                     echo json_encode($return);
-                    return;
+                    return $return;
                 }
                 $inputString = file_get_contents('php://input', 'r');
                 $inputStripped = str_replace(array("\r", "\n", "\t", "\v"), '', $inputString);
@@ -157,7 +157,7 @@ class MalioPay extends AbstractPayment
                 $resultVerify = $bitpayx->verify($str_to_sign, $inputJSON['token']);
                 $isPaid = $data !== null && $data['status'] !== null && $data['status'] === 'PAID';
                 if ($resultVerify && $isPaid) {
-                    $bitpayx->postPayment($data['merchant_order_id'], '在线支付 ' . $data['merchant_order_id']);
+                    $bitpayx->postPaymentMaliopay($data['merchant_order_id'], '在线支付 ' . $data['merchant_order_id']);
                     // echo 'SUCCESS';
                     $return = [];
                     $return['status'] = 200;
@@ -168,7 +168,7 @@ class MalioPay extends AbstractPayment
                     $return['status'] = 400;
                     echo json_encode($return);
                 }
-                return 'bitpayx';
+                return $return;
             case ('tomatopay'):
                 $type = $args['type'];
                 $settings = Config::get("tomatopay")[$type];
@@ -195,7 +195,7 @@ class MalioPay extends AbstractPayment
                     $p = Paylist::where('tradeno', '=', $order_data['out_trade_no'])->first();
                     $money = $p->total;
                     if ($p->status != 1) {
-                        $this->postPayment($order_data['out_trade_no'], "在线支付");
+                        $this->postPaymentMaliopay($order_data['out_trade_no'], "在线支付");
                         echo 'SUCCESS';
                     } else {
                         echo 'ERROR';
@@ -221,7 +221,7 @@ class MalioPay extends AbstractPayment
                 $aliResponse = $aliRequest->send();
                 $pid = $aliResponse->data('out_trade_no');
                 if ($aliResponse->isPaid()) {
-                    $this->postPayment($pid, '支付宝');
+                    $this->postPaymentMaliopay($pid, '支付宝');
                     die('success'); //The response should be 'success' only
                 }
                 return 'f2fpay';
