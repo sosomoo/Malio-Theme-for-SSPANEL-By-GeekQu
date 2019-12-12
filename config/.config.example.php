@@ -250,6 +250,34 @@ $_ENV['tomatopay'] = [
         ],
  ];
 
+#tomatopay番茄云支付
+#使用教程:https://swapidc.fanqieui.com/?t/329.html  tg群 https://t.me/fanqiepay
+$_ENV['tomatopay'] = [
+        'wxpay'=>[
+            'mchid' => '',   // 商户号
+            'account' => '', //您在番茄云支付的登录邮箱
+            'token' => "" // 安全验证码
+        ],
+        'alipay'=>[
+            'mchid' => '',   // 商户号
+            'account' => '', //您在番茄云支付的登录邮箱
+            'token' => "" // 安全验证码
+        ],
+ ];
+
+
+$_ENV['idtpay']=[
+    'partner'=>"", //商户号
+    'key' =>"", //商户key
+    'sign_type'=>strtoupper('MD5'),
+    'input_charset'=>strtolower('utf-8'),
+    'subjects'=>["内存",'手抓饼'], //商品名称
+    'transport'=>'https' ,//访问模式,根据自己的服务器是否支持ssl访问，若支持请选择https；若不支持请选择http
+    'apiurl'=>'https://pay.idt.xyz/', //http开头
+    'appname'=>$_ENV['appName'],
+
+];
+
 
 //其他面板显示设置------------------------------------------------------------------------------------------
 
