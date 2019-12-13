@@ -40,7 +40,7 @@ class HomeController extends BaseController
             }
         }
 
-        if (Config::get('enable_telegram') == true) {
+        if (Config::get('new_telegram_enable') == true) {
             $login_text = TelegramSessionManager::add_login_session();
             $login = explode('|', $login_text);
             $login_token = $login[0];
@@ -57,7 +57,7 @@ class HomeController extends BaseController
                 ->assign('geetest_html', $GtSdk)
                 ->assign('login_token', $login_token)
                 ->assign('login_number', $login_number)
-                ->assign('telegram_bot', Config::get('telegram_bot'))
+                ->assign('telegram_bot', Config::get('new_telegram_username'))
                 ->assign('enable_logincaptcha', Config::get('enable_login_captcha'))
                 ->assign('enable_regcaptcha', Config::get('enable_reg_captcha'))
                 ->assign('base_url', Config::get('baseUrl'))

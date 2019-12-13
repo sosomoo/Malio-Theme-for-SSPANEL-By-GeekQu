@@ -429,6 +429,7 @@
                                         {if $user->telegram_id == 0}
                                             <p>私聊发给 Telegram 机器人 <a href="https://t.me/{$telegram_bot}">@{$telegram_bot}</a> 以绑定
                                                 Telegram</p>
+                                            <p>手机如已安装 Telegram 可点击：<a class="btn btn-subscription" type="button" href="https://t.me/{$telegram_bot}?start={$bind_token}">一键绑定</a></p>
                                         {/if}
                                     {/if}
                                     <div class="form-group form-group-label">

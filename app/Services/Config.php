@@ -41,7 +41,7 @@ class Config
             'enable_analytics_code' => self::get('enable_analytics_code'),
             'sspanelAnalysis' => self::get('sspanelAnalysis'),
             'enable_donate' => self::get('enable_donate'),
-            'enable_telegram' => self::get('enable_telegram'),
+            'enable_telegram' => self::get('new_telegram_enable'),
             'payment_system' => self::get('payment_system'),
             'enable_mylivechat' => self::get('enable_mylivechat'),
             'mylivechat_id' => self::get('mylivechat_id'),

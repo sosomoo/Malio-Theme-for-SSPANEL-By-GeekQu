@@ -41,7 +41,7 @@ class AuthController extends BaseController
             }
         }
 
-        if (Config::get('enable_telegram') === true) {
+        if (Config::get('new_telegram_enable') === true) {
             $login_text = TelegramSessionManager::add_login_session();
             $login = explode('|', $login_text);
             $login_token = $login[0];
@@ -55,7 +55,7 @@ class AuthController extends BaseController
             ->assign('geetest_html', $GtSdk)
             ->assign('login_token', $login_token)
             ->assign('login_number', $login_number)
-            ->assign('telegram_bot', Config::get('telegram_bot'))
+            ->assign('telegram_bot', Config::get('new_telegram_username'))
             ->assign('base_url', Config::get('baseUrl'))
             ->assign('recaptcha_sitekey', $recaptcha_sitekey)
             ->display('auth/login.tpl');
@@ -530,7 +530,7 @@ class AuthController extends BaseController
             return $response->getBody()->write(json_encode($res));
         }
 
-        if (Config::get('enable_telegram') === true) {
+        if (Config::get('new_telegram_enable') === true) {
             $ret = TelegramSessionManager::check_login_session($token, $number);
             $res['ret'] = $ret;
             return $response->getBody()->write(json_encode($res));
@@ -542,7 +542,7 @@ class AuthController extends BaseController
 
     public function telegram_oauth($request, $response, $args)
     {
-        if (Config::get('enable_telegram') === true) {
+        if (Config::get('new_telegram_enable') === true) {
             $auth_data = $request->getQueryParams();
             if ($this->telegram_oauth_check($auth_data) === true) { // Looks good, proceed.
                 $telegram_id = $auth_data['id'];
@@ -565,7 +565,7 @@ class AuthController extends BaseController
     private function telegram_oauth_check($auth_data)
     {
         $check_hash = $auth_data['hash'];
-        $bot_token = Config::get('telegram_token');
+        $bot_token = Config::get('new_telegram_token');
         unset($auth_data['hash']);
         $data_check_arr = [];
         foreach ($auth_data as $key => $value) {

@@ -825,7 +825,7 @@ class UserController extends BaseController
             ->assign('isBlock', $isBlock)
             ->assign('Block', $Block)
             ->assign('bind_token', $bind_token)
-            ->assign('telegram_bot', Config::get('telegram_bot'))
+            ->assign('telegram_bot', Config::get('new_telegram_username'))
             ->assign('config_service', $config_service)
             ->registerClass('URL', URL::class)
             ->display('user/edit.tpl');
@@ -1912,11 +1912,11 @@ class UserController extends BaseController
         return $this->view()->assign('logs', $logs)->assign('iplocation', $iplocation)->display('user/subscribe_log.tpl');
     }
 
-    /** 
+    /**
      * 获取包含订阅信息的客户端压缩档
-     * 
-     * @param Request  $request 
-     * @param Response $response 
+     *
+     * @param Request  $request
+     * @param Response $response
      * @param array    $args
      */
     public function getPcClient($request, $response, $args)
@@ -1970,11 +1970,11 @@ class UserController extends BaseController
         return $newResponse;
     }
 
-    /** 
+    /**
      * 清理订阅缓存
-     * 
-     * @param Request  $request 
-     * @param Response $response 
+     *
+     * @param Request  $request
+     * @param Response $response
      * @param array    $args
      */
     public function cleanSubCache($request, $response, $args)
