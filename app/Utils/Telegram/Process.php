@@ -22,18 +22,23 @@ class Process
                 ]
             );
             $update = $bot->commandsHandler(true);
-
             if ($update->getCallbackQuery() !== null) {
                 $id = $update->getCallbackQuery()->getFrom()->getId();
-                $user = User::where('telegram_id', $id)->first();
+                $user = self::getUser($id);
                 Callback::CallbackQueryMethod($user, $bot, $update->getCallbackQuery());
             }
-
-            // $Message = $update->getMessage();
-            // $MessageData = $Message->getText();
-
+            if ($update->getMessage() !== null) {
+                $id = $update->getMessage()->getFrom()->getId();
+                $user = self::getUser($id);
+                Message::MessageMethod($user, $bot, $update->getMessage());
+            }
         } catch (Exception $e) {
             $e->getMessage();
         }
+    }
+
+    public static function getUser($telegram_id)
+    {
+        return User::where('telegram_id', $telegram_id)->first();
     }
 }

@@ -55,7 +55,7 @@ class CheckinCommand extends Command
             'username' => $Message->getFrom()->getUsername(),
         ];
 
-        $User = User::where('id', $SendUser['id'])->first();
+        $User = User::where('telegram_id', $SendUser['id'])->first();
         if ($User == null) {
             // 回送信息
             $this->replyWithMessage(
