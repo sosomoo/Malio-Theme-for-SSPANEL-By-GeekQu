@@ -42,8 +42,8 @@ class SPay extends AbstractPayment
 
         $data['total_fee'] = $total_fee;    //支付金额
         $data['partner'] = Config::get('alipay_id');    //spay合作者id
-        $data['notify_url'] = Config::get('baseUrl') . '/spay_back';    //不能有get参数 也就是?xxx=xxx&    xxx=xxx
-        $data['return_url'] = Config::get('baseUrl') . '/spay_back';    //不能有get参数 也就是?xxx=xxx&    xxx=xxx
+        $data['notify_url'] = Config::get('baseUrl') . '/spay_back/spay';    //不能有get参数 也就是?xxx=xxx&    xxx=xxx
+        $data['return_url'] = Config::get('baseUrl') . '/spay_back/spay';    //不能有get参数 也就是?xxx=xxx&    xxx=xxx
         $data['out_trade_no'] = $out_trade_no;    //商户唯一订单号
         $data['service'] = 'create_direct_pay_by_user';
         $i = 0;
@@ -129,7 +129,7 @@ class SPay extends AbstractPayment
             $(\'#readytopay\').modal();
             $("#readytopay").on(\'shown.bs.modal\', function () {
                 $.ajax({
-                    \'url\': "/user/payment/purchase",
+                    \'url\': "/user/payment/purchase/spay",
                     \'data\': {
                         \'price\': price,
                     },

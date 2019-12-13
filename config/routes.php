@@ -51,6 +51,8 @@ $app->add(new WhoopsMiddleware());
 // Home
 $app->post('/spay_back', App\Services\Payment::class . ':notify');
 $app->get('/spay_back', App\Services\Payment::class . ':notify');
+$app->post('/spay_back/{type}', App\Services\Payment::class . ':notify');
+$app->get('/spay_back/{type}', App\Services\Payment::class . ':notify');
 $app->get('/', App\Controllers\HomeController::class . ':index');
 $app->get('/indexold', App\Controllers\HomeController::class . ':indexold');
 $app->get('/404', App\Controllers\HomeController::class . ':page404');
@@ -152,7 +154,9 @@ $app->group('/user', function () {
 
     //Reconstructed Payment System
     $this->post('/payment/purchase', App\Services\Payment::class . ':purchase');
+    $this->post('/payment/purchase/{type}', App\Services\Payment::class . ':purchase');
     $this->get('/payment/return', App\Services\Payment::class . ':returnHTML');
+    $this->get('/payment/return/{type}', App\Services\Payment::class . ':returnHTML');
 
     // Crypto Payment - BTC, ETH, EOS, BCH, LTC etch
     $this->post('/payment/bitpay/purchase', App\Services\BitPayment::class . ':purchase');
@@ -161,10 +165,11 @@ $app->group('/user', function () {
 
 $app->group('/payment', function () {
     $this->post('/notify', App\Services\Payment::class . ':notify');
-    $this->get('/notify', App\Services\Payment::class . ':notify');
     $this->post('/notify/{type}', App\Services\Payment::class . ':notify');
+    $this->get('/notify', App\Services\Payment::class . ':notify');
+    $this->get('/notify/{type}', App\Services\Payment::class . ':notify');
     $this->post('/status', App\Services\Payment::class . ':getStatus');
-
+    $this->post('/status/{type}', App\Services\Payment::class . ':getStatus');
     $this->post('/bitpay/notify', App\Services\BitPayment::class . ':notify');
     $this->post('/bitpay/status', App\Services\BitPayment::class . ':getStatus');
 });

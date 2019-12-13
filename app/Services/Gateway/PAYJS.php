@@ -91,7 +91,7 @@ class PAYJS extends AbstractPayment
         //$data['type'] = $type;
         $data['out_trade_no'] = $pl->tradeno;
         $data['total_fee'] = (float) $price * 100;
-        $data['notify_url'] = Config::get('baseUrl') . '/payment/notify?way=payjs';
+        $data['notify_url'] = Config::get('baseUrl') . '/payment/notify/payjs?way=payjs';
         //$data['callback_url'] = Config::get('baseUrl') . '/user/code';
         $params = $this->prepareSign($data);
         $data['sign'] = $this->sign($params);

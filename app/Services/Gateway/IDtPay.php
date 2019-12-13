@@ -37,11 +37,11 @@ class IDtPay extends AbstractPayment
 
 
         /**************************请求参数**************************/
-        $notify_url = Config::get("baseUrl")."/payment/notify";
+        $notify_url = Config::get("baseUrl")."/payment/notify/idtpay";
         //需http://格式的完整路径，不能加?id=123这类自定义参数
 
         //页面跳转同步通知页面路径
-        $return_url = Config::get("baseUrl")."/user/payment/return";
+        $return_url = Config::get("baseUrl")."/user/payment/return/idtpay";
         //需http://格式的完整路径，不能加?id=123这类自定义参数，不能写成http://localhost/
 
         //商户订单号
@@ -212,7 +212,7 @@ class IDtPay extends AbstractPayment
             $("#msg").html("非法的金额!");
         }
         $.ajax({
-            \'url\':"/user/payment/purchase",
+            \'url\':"/user/payment/purchase/idtpay",
             \'data\':{
                 \'price\':price,
                 \'type\':type,

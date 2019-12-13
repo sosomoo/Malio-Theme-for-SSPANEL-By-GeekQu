@@ -13,10 +13,14 @@ use App\Services\Gateway\{
 };
 
 class Payment
-{
-    public static function getClient()
-    {
-        $method = Config::get('payment_system');
+{   public static function getPaymentSystem(){
+    $raw_methods = Config::get('payment_system');
+    return str_split($raw_methods,",");
+}
+    public static function getClient($method="")
+    {   if ($method==""|$method==null){
+            $method=self::getPaymentSystem()[0];
+        }
         switch ($method) {
             case ('codepay'):
                 return new Codepay();
@@ -46,31 +50,33 @@ class Payment
     }
 
     public static function notify($request, $response, $args)
-    {
-        return self::getClient()->notify($request, $response, $args);
+    {   $type = $args['type'];
+        return self::getClient($type)->notify($request, $response, $args);
     }
 
     public static function returnHTML($request, $response, $args)
-    {
-        return self::getClient()->getReturnHTML($request, $response, $args);
+    {   $type = $args['type'];
+        return self::getClient($type)->getReturnHTML($request, $response, $args);
     }
 
     public static function purchaseHTML()
-    {
-        if (self::getClient() != null) {
-            return self::getClient()->getPurchaseHTML();
+    {   $methods =self::getPaymentSystem();
+        $return_string ="";
+        foreach ($methods as $method){
+            if (self::getClient($method) != null) {
+                $return_string = $return_string . self::getClient($method)->getPurchaseHTML();
+            }
         }
-
-        return '';
+        return $return_string;
     }
 
     public static function getStatus($request, $response, $args)
-    {
-        return self::getClient()->getStatus($request, $response, $args);
+    {   $type = $args['type'];
+        return self::getClient($type)->getStatus($request, $response, $args);
     }
 
     public static function purchase($request, $response, $args)
-    {
-        return self::getClient()->purchase($request, $response, $args);
+    {   $type = $args['type'];
+        return self::getClient($type)->purchase($request, $response, $args);
     }
 }

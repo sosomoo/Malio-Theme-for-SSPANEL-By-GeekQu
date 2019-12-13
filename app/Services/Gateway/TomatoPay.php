@@ -106,7 +106,7 @@ class TomatoPay extends AbstractPayment
             $("#msg").html("非法的金额!");
         }
         $.ajax({
-            \'url\':"/user/payment/purchase",
+            \'url\':"/user/payment/purchase/tomatopay",
             \'data\':{
                 \'price\':price,
                 \'type\':type,

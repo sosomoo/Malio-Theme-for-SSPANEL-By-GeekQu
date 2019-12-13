@@ -23,7 +23,7 @@
         $("#readytopay").on('shown.bs.modal', function () {
             $.ajax({
                 type: "POST",
-                url: "/user/payment/purchase",
+                url: "/user/payment/purchase/f2fpay",
                 dataType: "json",
                 data: {
                     amount: $$getValue('amount')
@@ -62,7 +62,7 @@
     function f() {
         $.ajax({
             type: "POST",
-            url: "/payment/status",
+            url: "/payment/status/f2fpay",
             dataType: "json",
             data: {
                 pid: pid
