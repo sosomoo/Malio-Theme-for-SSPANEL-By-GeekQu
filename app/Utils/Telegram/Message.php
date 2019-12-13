@@ -2,6 +2,8 @@
 
 namespace App\Utils\Telegram;
 
+use App\Utils\TelegramSessionManager;
+
 class Message
 {
     public static function MessageMethod($user, $bot, $Message)
