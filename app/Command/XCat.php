@@ -290,12 +290,9 @@ class XCat
     {
         $WebhookUrl = (Config::get('baseUrl') . '/TelegramCallback?token=' . Config::get('new_telegram_request_token'));
         $telegram = new \Telegram\Bot\Api(Config::get('new_telegram_token'));
-        $response = $telegram->setWebhook(['url' => $WebhookUrl]);
-        $response = json_decode($response, true);
-        if ($response['ok'] === true) {
-            echo("设置成功！");
-        } else {
-            echo("设置失败！");
+        $telegram->removeWebhook();
+        if ($telegram->setWebhook(['url' => $WebhookUrl])) {
+            echo('Bot @' . $telegram->getMe()->getUsername() . ' 设置成功！');
         }
     }
 
