@@ -441,7 +441,7 @@ class User extends Model
     	}
     	return is_null($number)?0:$number;
     }
-    
+
     public function paidUserCount()
     {
         return self::where('class', '!=', '0')->count();
@@ -454,7 +454,7 @@ class User extends Model
         return $reason[0]->text;
     }
 
-    /** 
+    /**
      * 清理订阅缓存
      */
     public function cleanSubCache()
@@ -466,14 +466,14 @@ class User extends Model
         }
     }
 
-    /** 
+    /**
      * 签到
      */
     public function checkin()
     {
         $return = [
-            'ok'  = true,
-            'msg' = ''
+            'ok'  => true,
+            'msg' => ''
         ];
         if (!$this->isAbleToCheckin()) {
             $return['ok']  = false;
