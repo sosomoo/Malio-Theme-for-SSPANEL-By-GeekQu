@@ -140,6 +140,36 @@ class User extends Model
         )->toString();
     }
 
+    /*
+     * 总流量
+     */
+    public function enableTraffic()
+    {
+        $transfer_enable = $this->attributes['transfer_enable'];
+        return Tools::flowAutoShow($transfer_enable);
+    }
+
+    /*
+     * 总流量[GB]
+     */
+    public function enableTrafficInGB()
+    {
+        $transfer_enable = $this->attributes['transfer_enable'];
+        return Tools::flowToGB($transfer_enable);
+    }
+
+    /*
+     * 已用流量
+     */
+    public function usedTraffic()
+    {
+        $total = $this->attributes['u'] + $this->attributes['d'];
+        return Tools::flowAutoShow($total);
+    }
+
+    /*
+     * 已用流量占总流量的百分比
+     */
     public function trafficUsagePercent()
     {
         $total = $this->attributes['u'] + $this->attributes['d'];
@@ -153,24 +183,9 @@ class User extends Model
         return $percent;
     }
 
-    public function enableTraffic()
-    {
-        $transfer_enable = $this->attributes['transfer_enable'];
-        return Tools::flowAutoShow($transfer_enable);
-    }
-
-    public function enableTrafficInGB()
-    {
-        $transfer_enable = $this->attributes['transfer_enable'];
-        return Tools::flowToGB($transfer_enable);
-    }
-
-    public function usedTraffic()
-    {
-        $total = $this->attributes['u'] + $this->attributes['d'];
-        return Tools::flowAutoShow($total);
-    }
-
+    /*
+     * 剩余流量
+     */
     public function unusedTraffic()
     {
         $total = $this->attributes['u'] + $this->attributes['d'];
@@ -178,18 +193,75 @@ class User extends Model
         return Tools::flowAutoShow($transfer_enable - $total);
     }
 
+    /*
+     * 剩余流量占总流量的百分比
+     */
+    public function unusedTrafficPercent()
+    {
+        $transferEnable = $this->attributes['transfer_enable'];
+        if ($transferEnable == 0) {
+            return 0;
+        }
+        $unusedTraffic = $transferEnable - ($this->attributes['u'] + $this->attributes['d']);
+        $percent = $unusedTraffic / $transferEnable;
+        $percent = round($percent, 2);
+        $percent *= 100;
+        return $percent;
+    }
+
+    /*
+     * 今天使用的流量
+     */
     public function TodayusedTraffic()
     {
         $total = $this->attributes['u'] + $this->attributes['d'] - $this->attributes['last_day_t'];
         return Tools::flowAutoShow($total);
     }
 
+    /*
+     * 今天使用的流量占总流量的百分比
+     */
+    public function TodayusedTrafficPercent()
+    {
+        $transferEnable = $this->attributes['transfer_enable'];
+        if ($transferEnable == 0) {
+            return 0;
+        }
+        $TodayusedTraffic = $this->attributes['u'] + $this->attributes['d'] - $this->attributes['last_day_t'];
+        $percent = $TodayusedTraffic / $transferEnable;
+        $percent = round($percent, 2);
+        $percent *= 100;
+        return $percent;
+    }
+
+    /*
+     * 今天之前已使用的流量
+     */
     public function LastusedTraffic()
     {
         $total = $this->attributes['last_day_t'];
         return Tools::flowAutoShow($total);
     }
 
+    /*
+     * 今天之前已使用的流量占总流量的百分比
+     */
+    public function LastusedTrafficPercent()
+    {
+        $transferEnable = $this->attributes['transfer_enable'];
+        if ($transferEnable == 0) {
+            return 0;
+        }
+        $LastusedTraffic = $this->attributes['last_day_t'];
+        $percent = $LastusedTraffic / $transferEnable;
+        $percent = round($percent, 2);
+        $percent *= 100;
+        return $percent;
+    }
+
+    /*
+     * 是否可以签到
+     */
     public function isAbleToCheckin()
     {
         $last = $this->attributes['last_check_in_time'];
