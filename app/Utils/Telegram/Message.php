@@ -24,9 +24,19 @@ class Message
                 if ($user != null) {
                     $uid = TelegramSessionManager::verify_login_number($MessageData, $user->id);
                     if ($uid != 0) {
-                        $reply['message'] = '登录验证成功，邮箱：' . $user->email;
+                        $bot->sendMessage(
+                            [
+                                'chat_id' => $ChatID,
+                                'text'    => '登录验证成功，邮箱：' . $user->email,
+                            ]
+                        );
                     } else {
-                        $reply['message'] = '登录验证失败，数字无效';
+                        $bot->sendMessage(
+                            [
+                                'chat_id' => $ChatID,
+                                'text'    => '登录验证失败，数字无效',
+                            ]
+                        );
                     }
                 }
             }
