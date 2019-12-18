@@ -191,7 +191,7 @@ class Callback
                     case 'update_passwd':
                         $temp = Reply::getInlinekeyboard($user, 'index');
                         $user->passwd = Tools::genRandomChar(8);
-                        if (!$user->save()) {
+                        if ($user->save()) {
                             $sendMessage = [
                                 'chat_id'                   => $Data['ChatID'],
                                 'message_id'                => $Data['MessageID'],
