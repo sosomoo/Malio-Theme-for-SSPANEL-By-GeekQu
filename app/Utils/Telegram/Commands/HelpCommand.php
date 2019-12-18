@@ -4,6 +4,7 @@ namespace App\Utils\Telegram\Commands;
 
 use App\Models\User;
 use App\Services\Config;
+use App\Utils\Telegram\{Process, Reply};
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -46,10 +47,22 @@ class HelpCommand extends Command
                 'username' => $Message->getFrom()->getUsername(),
             ];
 
+            $user = Process::getUser($SendUser['id']);
+
+            $reply = Reply::getInlinekeyboard($user, 'index');
+
             // 回送信息
             $this->replyWithMessage(
                 [
-                    'text' => '喵？',
+                    'text'                      => $reply['text'],
+                    'parse_mode'                => 'Markdown',
+                    'disable_web_page_preview'  => false,
+                    'reply_to_message_id'       => null,
+                    'reply_markup'              => json_encode(
+                        [
+                            'inline_keyboard' => $reply['keyboard']
+                        ]
+                    ),
                 ]
             );
         } else {
