@@ -142,7 +142,7 @@ class Callback
     public static function UserHandler($user, $bot, $Callback, $Data, $SendUser)
     {
         $op = explode('.', $Data['CallbackData'])[1];
-        switch ($Data['CallbackData']) {
+        switch ($op) {
             case 'index':
                 // 用户中心
                 $temp = Reply::getInlinekeyboard($user, 'user.index');
