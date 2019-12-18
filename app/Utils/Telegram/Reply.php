@@ -90,9 +90,20 @@ class Reply
                 } else {
                     $text = '尊敬的用户您好：';
                 }
+                $keyboard = [
+                    [
+                        'text'          => '重置订阅链接',
+                        'callback_data' => 'user.edit.update_link'
+                    ],
+                    [
+                        'text'          => '重置链接密码',
+                        'callback_data' => 'user.edit.update_passwd'
+                    ]
+                ];
                 $return = [
                     'text'      => $text,
                     'keyboard'  => [
+                        $keyboard,
                         $back
                     ],
                 ];

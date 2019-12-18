@@ -3,6 +3,7 @@
 namespace App\Utils\Telegram;
 
 use App\Services\Config;
+use App\Utils\Tools;
 
 class Callback
 {
@@ -141,8 +142,9 @@ class Callback
      */
     public static function UserHandler($user, $bot, $Callback, $Data, $SendUser)
     {
-        $op = explode('.', $Data['CallbackData'])[1];
-        switch ($op) {
+        $CallbackDataExplode = explode('.', $Data['CallbackData']);
+        $op_1 = $CallbackDataExplode[1];
+        switch ($op_1) {
             case 'index':
                 // 用户中心
                 $temp = Reply::getInlinekeyboard($user, 'user.index');
@@ -167,20 +169,75 @@ class Callback
                 break;
             case 'edit':
                 // 资料编辑
-                $temp = Reply::getInlinekeyboard($user, 'user.edit');
-                $sendMessage = [
-                    'chat_id'                   => $Data['ChatID'],
-                    'message_id'                => $Data['MessageID'],
-                    'text'                      => '您可在此编辑您的资料或连接信息：',
-                    'parse_mode'                => 'Markdown',
-                    'disable_web_page_preview'  => false,
-                    'reply_to_message_id'       => null,
-                    'reply_markup'              => json_encode(
-                        [
-                            'inline_keyboard' => $temp['keyboard']
-                        ]
-                    ),
-                ];
+                $op_2 = $CallbackDataExplode[2];
+                switch ($op_2) {
+                    case 'update_link':
+                        $temp = Reply::getInlinekeyboard($user, 'index');
+                        $user->clean_link();
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => '订阅链接重置成功.',
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => $temp['keyboard']
+                                ]
+                            ),
+                        ];
+                        break;
+                    case 'update_passwd':
+                        $temp = Reply::getInlinekeyboard($user, 'index');
+                        $user->passwd = Tools::genRandomChar(8);
+                        if (!$user->save()) {
+                            $sendMessage = [
+                                'chat_id'                   => $Data['ChatID'],
+                                'message_id'                => $Data['MessageID'],
+                                'text'                      => '连接密码更新成功.' . PHP_EOL . '新密码为：' . $user->passwd,
+                                'parse_mode'                => 'Markdown',
+                                'disable_web_page_preview'  => false,
+                                'reply_to_message_id'       => null,
+                                'reply_markup'              => json_encode(
+                                    [
+                                        'inline_keyboard' => $temp['keyboard']
+                                    ]
+                                ),
+                            ];
+                        } else {
+                            $sendMessage = [
+                                'chat_id'                   => $Data['ChatID'],
+                                'message_id'                => $Data['MessageID'],
+                                'text'                      => '出现错误，连接密码更新失败，请联系管理员.',
+                                'parse_mode'                => 'Markdown',
+                                'disable_web_page_preview'  => false,
+                                'reply_to_message_id'       => null,
+                                'reply_markup'              => json_encode(
+                                    [
+                                        'inline_keyboard' => $temp['keyboard']
+                                    ]
+                                ),
+                            ];
+                        }
+                        break;
+                    default:
+                        $temp = Reply::getInlinekeyboard($user, 'user.edit');
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => '您可在此编辑您的资料或连接信息：',
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => $temp['keyboard']
+                                ]
+                            ),
+                        ];
+                        break;
+                }
                 if ($Data['AllowEditMessage']) {
                     // 消息可编辑
                     Process::SendPost('editMessageText', $sendMessage);
