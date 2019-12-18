@@ -38,14 +38,22 @@ class Callback
             }
         }
 
-        // 回调数据处理
-        self::CallbackDataHandler($user, $bot, $Callback, $Data, $SendUser);
+        switch (true) {
+            case (strpos($Data['CallbackData'], 'user.') === 0 && $user != null):
+                // 用户相关
+                self::UserHandler($user, $bot, $Callback, $Data, $SendUser);
+                break;
+            default:
+                // 回调数据处理
+                self::CallbackDataHandler($user, $bot, $Callback, $Data, $SendUser);
+                break;
+        }
     }
 
     /**
-     * 
+     *
      * 回调数据处理
-     * 
+     *
      */
     public static function CallbackDataHandler($user, $bot, $Callback, $Data, $SendUser)
     {
@@ -81,7 +89,11 @@ class Callback
                     'parse_mode'                => 'Markdown',
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
-                    'reply_markup'              => null,
+                    'reply_markup'              => json_encode(
+                        [
+                            'inline_keyboard' => Reply::getInlinekeyboard()
+                        ]
+                    ),
                 ];
                 if ($Data['AllowEditMessage']) {
                     // 消息可编辑
@@ -98,7 +110,76 @@ class Callback
                     'parse_mode'                => 'Markdown',
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
-                    'reply_markup'              => null,
+                    'reply_markup'              => json_encode(
+                        [
+                            'inline_keyboard' => Reply::getInlinekeyboard()
+                        ]
+                    ),
+                ];
+                if ($Data['AllowEditMessage']) {
+                    // 消息可编辑
+                    Process::SendPost('editMessageText', $sendMessage);
+                    return;
+                }
+                break;
+            default:
+                $sendMessage = [
+                    'chat_id'                   => $Data['ChatID'],
+                    'text'                      => '发生错误.',
+                    'parse_mode'                => 'Markdown',
+                ];
+                break;
+        }
+
+        $bot->sendMessage($sendMessage);
+    }
+
+    /**
+     *
+     * 用户相关回调数据处理
+     *
+     */
+    public static function UserHandler($user, $bot, $Callback, $Data, $SendUser)
+    {
+        $op = explode('.', $Data['CallbackData'])[1];
+        switch ($Data['CallbackData']) {
+            case 'index':
+                // 用户中心
+                $temp = Reply::getInlinekeyboard($user, 'user.index');
+                $sendMessage = [
+                    'chat_id'                   => $Data['ChatID'],
+                    'message_id'                => $Data['MessageID'],
+                    'text'                      => $temp['text'],
+                    'parse_mode'                => 'Markdown',
+                    'disable_web_page_preview'  => false,
+                    'reply_to_message_id'       => null,
+                    'reply_markup'              => json_encode(
+                        [
+                            'inline_keyboard' => $temp['keyboard']
+                        ]
+                    ),
+                ];
+                if ($Data['AllowEditMessage']) {
+                    // 消息可编辑
+                    Process::SendPost('editMessageText', $sendMessage);
+                    return;
+                }
+                break;
+            case 'edit':
+                // 资料编辑
+                $temp = Reply::getInlinekeyboard($user, 'user.edit');
+                $sendMessage = [
+                    'chat_id'                   => $Data['ChatID'],
+                    'message_id'                => $Data['MessageID'],
+                    'text'                      => '您可在此编辑您的资料或连接信息：',
+                    'parse_mode'                => 'Markdown',
+                    'disable_web_page_preview'  => false,
+                    'reply_to_message_id'       => null,
+                    'reply_markup'              => json_encode(
+                        [
+                            'inline_keyboard' => $temp['keyboard']
+                        ]
+                    ),
                 ];
                 if ($Data['AllowEditMessage']) {
                     // 消息可编辑

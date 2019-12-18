@@ -5,7 +5,7 @@ namespace App\Utils\Telegram;
 class Reply
 {
 
-    public static function getInlinekeyboard($user, $type)
+    public static function getInlinekeyboard($user = null, $type = null)
     {
         $back = [
             [
@@ -13,8 +13,10 @@ class Reply
                 'callback_data' => 'index'
             ]
         ];
+        if ($type === null) return $back;
         switch ($type) {
             case 'index':
+                // 主菜单
                 $notLogin = [
                     [
                         'text'          => '产品介绍',
@@ -60,6 +62,40 @@ class Reply
                         ],
                     ];
                 }
+                break;
+            case 'user.index':
+                // 用户中心
+                if ($user->class > 0) {
+                    $text = '尊敬的 VIP ' . $user->class . '您好：';
+                } else {
+                    $text = '尊敬的用户您好：';
+                }
+                $text .= (PHP_EOL . PHP_EOL .
+                    '当前余额：' .
+                    '在线设备：' .
+                    '端口速率：' .
+                    '上次使用：' .
+                    '过期时间：');
+                $return = [
+                    'text'      => $text,
+                    'keyboard'  => [
+                        $back
+                    ],
+                ];
+                break;
+            case 'user.edit':
+                // 资料编辑
+                if ($user->class > 0) {
+                    $text = '尊敬的 VIP ' . $user->class . '您好：';
+                } else {
+                    $text = '尊敬的用户您好：';
+                }
+                $return = [
+                    'text'      => $text,
+                    'keyboard'  => [
+                        $back
+                    ],
+                ];
                 break;
         }
 
