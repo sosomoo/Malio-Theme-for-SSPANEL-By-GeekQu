@@ -20,6 +20,7 @@ class Process
                     Commands\PingCommand::class,
                     Commands\CheckinCommand::class,
                     Commands\MyCommand::class,
+                    Commands\UnbindCommand::class,
                 ]
             );
             $update = $bot->commandsHandler(true);
