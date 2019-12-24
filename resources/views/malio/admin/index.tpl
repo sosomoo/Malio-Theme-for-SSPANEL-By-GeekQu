@@ -23,7 +23,17 @@
                 <div class="row">
 
                     <div class="col-xx-12 col-sm-6">
-
+                        <div class="card">
+                            <div class="card-main">
+                                <div class="card-inner">
+                                    <h5>收入情况</h5>
+                                    {foreach $days as $day}
+                                    <button class="mdl-button mdl-js-button mdl-button--raised" onclick="getIncome('{$day}')">{$day}</button>
+                                    {/foreach}
+                                    <p id="income_text" style="margin-top: 10px;">loading</p>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="card">
                             <div class="card-main">
@@ -184,6 +194,17 @@
 
                     <div class="col-xx-12 col-sm-6">
 
+                        <div class="card">
+                            <div class="card-main">
+                                <div class="card-inner">
+                                    <h5>注册新用户</h5>
+                                    {foreach $days as $day}
+                                    <button class="mdl-button mdl-js-button mdl-button--raised" onclick="getNewUsers('{$day}')">{$day}</button>
+                                    {/foreach}
+                                    <p id="newusers_text" style="margin-top: 10px;">loading</p>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="card">
                             <div class="card-main">
@@ -317,3 +338,66 @@
 
 
 {include file='admin/footer.tpl'}
+
+{literal}
+<script>
+    function getIncome(date) {
+        $.ajax({
+            type: "GET",
+            url: "/admin/api/analytics/income",
+            dataType: "json",
+            data: {
+                date: date,
+            },
+            success: function (data) {
+                console.log(data.ret);
+                if (data.success) {
+                    data = data.data;
+                    var html_text = `<h6>${data.date}的数据</h6>今日收入：${data.todayIncome}<br>昨日收入：${data.yesterdayIncome}<br>本周收入：${data.thisWeekIncome}<br>上周收入：${data.lastWeekIncome}<br>本月收入：${data.thisMonthIncome}<br>上月收入：${data.lastMonthIncome}`;
+                    $('#income_text').html(html_text);
+                } else {
+                    console.log(data.error)
+                }
+            }
+        })
+    }
+
+    function getNewUsers(date) {
+        $.ajax({
+            type: "GET",
+            url: "/admin/api/analytics/new-users",
+            dataType: "json",
+            data: {
+                date: date,
+            },
+            success: function (data) {
+                console.log(data.ret);
+                if (data.success) {
+                    data = data.data;
+                    var html_text = `<h6>${data.date}的数据</h6>今日新用户：${data.today}<br>昨日新用户：${data.yesterday}<br>本周新用户：${data.thisWeek}<br>上周新用户：${data.lastWeek}<br>本月新用户：${data.thisMonth}<br>上月新用户：${data.lastMonth}`;
+                    $('#newusers_text').html(html_text);
+                } else {
+                    console.log(data.error)
+                }
+            }
+        })
+    }
+
+    String.prototype.replaceAll = function (stringToFind, stringToReplace) {
+        if (stringToFind === stringToReplace) return this;
+        var temp = this;
+        var index = temp.indexOf(stringToFind);
+        while (index != -1) {
+            temp = temp.replace(stringToFind, stringToReplace);
+            index = temp.indexOf(stringToFind);
+        }
+        return temp;
+    };
+
+    var date = new Date();
+    date = date.toLocaleDateString();
+    date = date.replaceAll('/','-');
+    getIncome(date);
+    getNewUsers(date);
+</script>
+{/literal}

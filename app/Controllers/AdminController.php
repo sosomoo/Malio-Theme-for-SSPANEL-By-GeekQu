@@ -21,7 +21,16 @@ class AdminController extends UserController
     public function index($request, $response, $args)
     {
         $sts = new Analytics();
-        return $this->view()->assign('sts', $sts)->display('admin/index.tpl');
+
+        $days = [];
+
+        for ($i = 1; $i <= 7; $i++) {
+            $date_expression = '-'.$i.' days';
+            $day = strtotime($date_expression);
+            $days[] = date("Y-m-d", $day);
+        }
+
+        return $this->view()->assign('sts', $sts)->assign('days', $days)->display('admin/index.tpl');
     }
 
     public function node($request, $response, $args)
@@ -237,5 +246,80 @@ class AdminController extends UserController
 
         $body = $response->getBody();
         $body->write($datatables->generate());
+    }
+
+    public function getIncome($request, $response, $args)
+    {
+        $date = $request->getParam('date');
+        $date_in_timestamp = strtotime($date);
+        //$date_in_timestamp = strtotime('2019-12-12');
+
+        $stats = new Analytics();
+
+        $today_income = $stats->getIncome($date_in_timestamp, $date_in_timestamp+86400);
+        $yesterday_income = $stats->getIncome($date_in_timestamp-86400, $date_in_timestamp);
+
+        $first_day_of_this_week_timestamp = strtotime("last monday midnight",$date_in_timestamp);
+        $first_day_of_next_week_timestamp = strtotime("next monday midnight",$date_in_timestamp);
+        $this_week_income = $stats->getIncome($first_day_of_this_week_timestamp, $first_day_of_next_week_timestamp);
+        $first_day_of_last_week_timestamp = strtotime("last monday midnight",$date_in_timestamp-604800);
+        $last_week_income = $stats->getIncome($first_day_of_last_week_timestamp, $first_day_of_this_week_timestamp);
+
+        $first_day_of_this_month_timestamp = strtotime("first day of this month",$date_in_timestamp);
+        $first_day_of_next_month_timestamp = strtotime("first day of next month",$date_in_timestamp);
+        $this_month_income = $stats->getIncome($first_day_of_this_month_timestamp, $first_day_of_next_month_timestamp);
+        $first_day_of_last_month_timestamp = strtotime("first day of last month",$date_in_timestamp);
+        $last_moneth_income = $stats->getIncome($first_day_of_last_month_timestamp, $first_day_of_this_month_timestamp);
+
+        $res['success'] = true;
+        $res['error'] = '';
+        $res['message'] = '';
+        $res['data'] = array(
+            "date" => $date,
+            "todayIncome" => $today_income,
+            "yesterdayIncome" => $yesterday_income,
+            "thisWeekIncome" => $this_week_income,
+            "lastWeekIncome" => $last_week_income,
+            "thisMonthIncome" => $this_month_income,
+            "lastMonthIncome" => $last_moneth_income
+        );
+        return $response->getBody()->write(json_encode($res));
+    }
+
+    public function newUsers($request, $response, $args)
+    {
+        $date = $request->getParam('date');
+        $date_in_timestamp = strtotime($date);
+
+        $stats = new Analytics();
+
+        $today_users = $stats->getNewUsers($date_in_timestamp, $date_in_timestamp+86400);
+        $yesterday_users = $stats->getNewUsers($date_in_timestamp-86400, $date_in_timestamp);
+
+        $first_day_of_this_week_timestamp = strtotime("last monday midnight",$date_in_timestamp);
+        $first_day_of_next_week_timestamp = strtotime("next monday midnight",$date_in_timestamp);
+        $this_week_users = $stats->getNewUsers($first_day_of_this_week_timestamp, $first_day_of_next_week_timestamp);
+        $first_day_of_last_week_timestamp = strtotime("last monday midnight",$date_in_timestamp-604800);
+        $last_week_users = $stats->getNewUsers($first_day_of_last_week_timestamp, $first_day_of_this_week_timestamp);
+
+        $first_day_of_this_month_timestamp = strtotime("first day of this month",$date_in_timestamp);
+        $first_day_of_next_month_timestamp = strtotime("first day of next month",$date_in_timestamp);
+        $this_month_users = $stats->getNewUsers($first_day_of_this_month_timestamp, $first_day_of_next_month_timestamp);
+        $first_day_of_last_month_timestamp = strtotime("first day of last month",$date_in_timestamp);
+        $last_moneth_users = $stats->getNewUsers($first_day_of_last_month_timestamp, $first_day_of_this_month_timestamp);
+
+        $res['success'] = true;
+        $res['error'] = '';
+        $res['message'] = '';
+        $res['data'] = array(
+            "date" => $date,
+            "today" => $today_users,
+            "yesterday" => $yesterday_users,
+            "thisWeek" => $this_week_users,
+            "lastWeek" => $last_week_users,
+            "thisMonth" => $this_month_users,
+            "lastMonth" => $last_moneth_users
+        );
+        return $response->getBody()->write(json_encode($res));
     }
 }

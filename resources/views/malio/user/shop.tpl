@@ -539,7 +539,7 @@
                       {if {$shop->speedlimit()} != '0' }
                       <div class="pricing-item">
                         <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
-                        <div class="pricing-item-label">{$shop->speedlimit()} 最高速率</div>
+                        <div class="pricing-item-label">{$shop->speedlimit()}Mbps 最高速率</div>
                       </div>
                       {/if}
                       {if {$shop->reset()} != '0' }

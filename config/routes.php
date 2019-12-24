@@ -321,6 +321,10 @@ $app->group('/admin', function () {
     $this->get('/sys', App\Controllers\AdminController::class . ':sys');
     $this->get('/logout', App\Controllers\AdminController::class . ':logout');
     $this->post('/payback/ajax', App\Controllers\AdminController::class . ':ajax_payback');
+
+    // stats
+    $this->get('/api/analytics/income', App\Controllers\AdminController::class . ':getIncome');
+    $this->get('/api/analytics/new-users', App\Controllers\AdminController::class . ':newUsers');
 })->add(new Admin());
 
 // API
