@@ -204,6 +204,7 @@ class MalioPay extends AbstractPayment
                 }
                 return $return;
             case ('tomatopay'):
+                
                 $type = 'alipay';
                 $settings = Config::get("tomatopay")[$type];
                 $order_data = $_REQUEST;
@@ -212,6 +213,11 @@ class MalioPay extends AbstractPayment
                 $amount    = $order_data['total_fee'];          //获取递过来的总价格
                 $status    = $order_data['trade_status'];         //获取传递过来的交易状态
                 $signs    = $order_data['sign'];
+
+                if ($request->isGet()) {
+                    header("Location: /user/payment/return?tradeno=".$order_data['out_trade_no']);
+                    return 0;
+                }
 
                 $security  = array();
                 $security['out_trade_no']      = $invoiceid;
@@ -325,6 +331,9 @@ class MalioPay extends AbstractPayment
         $tradeno = $_GET['tradeno'];
         if ($tradeno == '' || $tradeno == null) {
             $tradeno = $_GET['source'];
+        }
+        if ($tradeno == '' || $tradeno == null) {
+            $tradeno = $_GET['out_trade_no'];
         }
         $p = Paylist::where('tradeno', '=', $tradeno)->first();
         $money = $p->total;
