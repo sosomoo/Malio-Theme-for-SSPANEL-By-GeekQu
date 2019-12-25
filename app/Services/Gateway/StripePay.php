@@ -62,9 +62,57 @@ class StripePay extends AbstractPayment
         } else {
             return json_encode(array('url' => $source['wechat']['qr_code_url'], 'errcode' => 0, 'pid' => $pl->id));
         }
+    }
 
-        return json_encode($source);
-        return json_encode(array('url' => $source['redirect']['url'], 'errcode' => 0, 'pid' => $pl->id));
+    public function purchase_maliopay($type, $price)
+    {
+        $user = Auth::getUser();
+        if ($type != 'alipay' and $type != 'wechat') {
+            return json_encode(['errcode' => -1, 'errmsg' => 'wrong payment.']);
+        }
+        $stripe_minimum_amount = MalioConfig::get('stripe_minimum_amount');
+        if ($price < $stripe_minimum_amount) {
+            return json_encode(['errcode' => -1, 'errmsg' => '充值最低金额为'.$stripe_minimum_amount.'元']);
+        }
+
+        $ch = curl_init();
+        $url = 'https://api.exchangeratesapi.io/latest?symbols=CNY&base='.strtoupper(MalioConfig::get('stripe_currency'));
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        $currency = json_decode(curl_exec($ch));
+        curl_close($ch);
+
+        $price_exchanged = ((double)$price) / ($currency->rates->CNY);
+
+        $source = Source::create([
+            'amount' => floor($price_exchanged * 100),
+            'currency' => MalioConfig::get('stripe_currency'),
+            'type' => $type,
+            'redirect' => [
+                'return_url' => Config::get('baseUrl') . '/user/payment/return',
+            ],
+        ]);
+
+        $pl = new Paylist();
+        $pl->userid = $user->id;
+        $pl->total = $price;
+        $pl->tradeno = $source['id'];
+        $pl->save();
+
+        if ($type == 'alipay') {
+            return array(
+                'url' => $source['redirect']['url'],
+                'errcode' => 0,
+                'tradeno' => $pl->tradeno
+            );
+        } else {
+            return array(
+                'url' => $source['wechat']['qr_code_url'],
+                'errcode' => 0,
+                'tradeno' => $pl->tradeno
+            );
+        }
     }
 
     public function notify($request, $response, $args)

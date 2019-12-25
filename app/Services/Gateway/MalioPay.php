@@ -8,8 +8,8 @@ use App\Services\Config;
 use App\Models\Paylist;
 use App\Services\MalioConfig;
 use Omnipay\Omnipay;
-
-use App\Models\DetectRule;
+use Stripe\Stripe;
+use Stripe\Charge;
 
 class MalioPay extends AbstractPayment
 {
@@ -84,6 +84,23 @@ class MalioPay extends AbstractPayment
                         );
                     }
                     return json_encode($return);
+                case ('stripe'):
+                    $stripe = new StripePay();
+                    $result = $stripe->purchase_maliopay($type, $price);
+                    if ($result['errcode'] == 0) {
+                        $return = array(
+                            'ret' => 1,
+                            'type' => 'url',
+                            'tradeno' => $result['tradeno'],
+                            'url' => $result['url']
+                        );
+                    } else {
+                        $return = array(
+                            'ret' => 0,
+                            'msg' => $result['errmsg']
+                        );
+                    }
+                    return json_encode($return);
             }
         } else if ($type == 'wechat') {
             $payment_system = MalioConfig::get('mups_wechat');
@@ -114,6 +131,23 @@ class MalioPay extends AbstractPayment
                             'type' => 'url',
                             'tradeno' => $result['tradeno'],
                             'url' => $result['code']
+                        );
+                    } else {
+                        $return = array(
+                            'ret' => 0,
+                            'msg' => $result['errmsg']
+                        );
+                    }
+                    return json_encode($return);
+                case ('stripe'):
+                    $stripe = new StripePay();
+                    $result = $stripe->purchase_maliopay($type, $price);
+                    if ($result['errcode'] == 0) {
+                        $return = array(
+                            'ret' => 1,
+                            'type' => 'qrcode',
+                            'tradeno' => $result['tradeno'],
+                            'url' => $result['url']
                         );
                     } else {
                         $return = array(
@@ -170,7 +204,7 @@ class MalioPay extends AbstractPayment
                 }
                 return $return;
             case ('tomatopay'):
-                $type = $args['type'];
+                $type = 'alipay';
                 $settings = Config::get("tomatopay")[$type];
                 $order_data = $_REQUEST;
                 $transid   = $order_data['trade_no'];       //转账交易号
@@ -225,6 +259,57 @@ class MalioPay extends AbstractPayment
                     die('success'); //The response should be 'success' only
                 }
                 return 'f2fpay';
+            case ('stripe'):
+                Stripe::setApiKey(Config::get('stripe_key'));
+                $endpoint_secret = Config::get('stripe_webhook_endpoint_secret');
+                $payload = @file_get_contents('php://input');
+                $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
+                $event = null;
+        
+                try {
+                    $event = \Stripe\Webhook::constructEvent(
+                        $payload,
+                        $sig_header,
+                        $endpoint_secret
+                    );
+                } catch (\UnexpectedValueException $e) {
+                    http_response_code(400);
+                    exit();
+                } catch (\Stripe\Error\SignatureVerification $e) {
+                    http_response_code(400);
+                    exit();
+                }
+        
+                switch ($event->type) {
+                    case 'source.chargeable':
+                        $source = $event->data->object;
+                        $charge = Charge::create([
+                            'amount' => $source['amount'],
+                            'currency' => $source['currency'],
+                            'source' => $source['id'],
+                          ]);
+                        if ($charge['status'] == 'succeeded') {
+                            $type = null;
+                            if ($source['type'] == 'alipay') {
+                                $type = '支付宝支付'; 
+                            } else if ($source['type'] == 'wechat') {
+                                $type = '微信支付';
+                            }
+                            $order = Paylist::where('tradeno', '=', $source['id'])->first();
+                            if ($order->status != 1) {
+                                $this->postPayment($source['id'], 'Stripe '.$type);
+                                echo 'SUCCESS';
+                            } else {
+                                echo 'ERROR';
+                            }
+                        }
+                        break;
+                    default:
+                        http_response_code(400);
+                        exit();
+                }
+        
+                http_response_code(200);
             default:
                 return 'failed';
         }
@@ -238,6 +323,9 @@ class MalioPay extends AbstractPayment
     public function getReturnHTML($request, $response, $args)
     {
         $tradeno = $_GET['tradeno'];
+        if ($tradeno == '' || $tradeno == null) {
+            $tradeno = $_GET['source'];
+        }
         $p = Paylist::where('tradeno', '=', $tradeno)->first();
         $money = $p->total;
         if ($p->status === 1) {
