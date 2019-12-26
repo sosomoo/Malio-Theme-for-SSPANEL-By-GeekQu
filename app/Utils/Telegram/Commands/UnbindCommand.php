@@ -66,7 +66,7 @@ class UnbindCommand extends Command
             $MessageText = trim($arguments);
 
             if ($MessageText == $User->email) {
-                $User->telegram_id == '';
+                $User->telegram_id = 0;
                 if ($User->save()) {
                     $text = '解绑成功.';
                 } else {
