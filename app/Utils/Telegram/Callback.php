@@ -397,7 +397,13 @@ class Callback
                             'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
-                            'reply_markup'              => null
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => [
+                                        Reply::getInlinekeyboard()
+                                    ]
+                                ]
+                            ),
                         ];
                         if ($Data['AllowEditMessage']) {
                             // 消息可编辑
@@ -425,7 +431,13 @@ class Callback
                             'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
-                            'reply_markup'              => null
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => [
+                                        Reply::getInlinekeyboard()
+                                    ]
+                                ]
+                            ),
                         ];
                         if ($Data['AllowEditMessage']) {
                             // 消息可编辑
