@@ -92,7 +92,9 @@ class Callback
                     'reply_to_message_id'       => null,
                     'reply_markup'              => json_encode(
                         [
-                            'inline_keyboard' => Reply::getInlinekeyboard()
+                            'inline_keyboard' => [
+                                Reply::getInlinekeyboard()
+                            ]
                         ]
                     ),
                 ];
@@ -113,7 +115,9 @@ class Callback
                     'reply_to_message_id'       => null,
                     'reply_markup'              => json_encode(
                         [
-                            'inline_keyboard' => Reply::getInlinekeyboard()
+                            'inline_keyboard' => [
+                                Reply::getInlinekeyboard()
+                            ]
                         ]
                     ),
                 ];

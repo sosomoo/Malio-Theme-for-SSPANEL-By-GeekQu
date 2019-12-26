@@ -66,16 +66,20 @@ class Reply
             case 'user.index':
                 // 用户中心
                 if ($user->class > 0) {
-                    $text = '尊敬的 VIP ' . $user->class . '您好：';
+                    $text = '尊敬的 VIP ' . $user->class . ' 您好：';
                 } else {
                     $text = '尊敬的用户您好：';
                 }
                 $text .= (PHP_EOL . PHP_EOL .
-                    '当前余额：' .
-                    '在线设备：' .
-                    '端口速率：' .
-                    '上次使用：' .
-                    '过期时间：');
+                    '当前余额：' . $user->money .
+                    PHP_EOL .
+                    '在线设备：' . ($user->node_connector != 0 ? $user->online_ip_count() . '/' . $user->node_connector : $user->online_ip_count() . '/ 不限制') .
+                    PHP_EOL .
+                    '端口速率：' . ($user->node_speedlimit != 0 ? $user->node_speedlimit . 'Mbps' : '无限制') .
+                    PHP_EOL .
+                    '上次使用：' . $user->lastSsTime() .
+                    PHP_EOL .
+                    '过期时间：' . $user->class_expire);
                 $return = [
                     'text'      => $text,
                     'keyboard'  => [

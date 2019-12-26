@@ -83,6 +83,9 @@ class UnbindCommand extends Command
             }
 
             $text = '发送 **/unbind 账户邮箱** 进行解绑.';
+            if ($MessageText != '') {
+                $text = '键入的 Email 地址与您的账户不匹配.';
+            }
 
             // 回送信息
             $this->replyWithMessage(
