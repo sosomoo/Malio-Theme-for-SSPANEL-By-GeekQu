@@ -313,7 +313,7 @@ class Callback
                         $userloginip = [];
                         foreach ($totallogin as $single) {
                             $location = $iplocation->getlocation($single->ip);
-                            $userloginip[] = date('Y-m-d H:i:s', $single->datetime) . ' 在 [' . $single->datetime . '] ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                            $userloginip[] = date('Y-m-d H:i:s', $single->datetime) . ' 在 [' . $single->ip . '] ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
                         }
                         $text = ('以下是您最近 10 次的登录记录：' .
                             PHP_EOL .
@@ -323,7 +323,7 @@ class Callback
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => 'Markdown',
+                            'parse_mode'                => null,
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -362,7 +362,7 @@ class Callback
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => 'Markdown',
+                            'parse_mode'                => null,
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
