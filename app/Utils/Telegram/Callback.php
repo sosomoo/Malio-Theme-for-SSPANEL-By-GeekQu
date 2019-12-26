@@ -2,8 +2,10 @@
 
 namespace App\Utils\Telegram;
 
+use App\Models\{LoginIp, Node, Ip};
 use App\Services\Config;
-use App\Utils\Tools;
+use App\Utils\{Tools, QQWry};
+
 
 class Callback
 {
@@ -154,6 +156,7 @@ class Callback
                 $op_2 = $CallbackDataExplode[2];
                 switch ($op_2) {
                     case 'update_link':
+                        // 重置订阅链接
                         $temp = Reply::getInlinekeyboard($user, 'index');
                         $user->clean_link();
                         $sendMessage = [
@@ -171,6 +174,7 @@ class Callback
                         ];
                         break;
                     case 'update_passwd':
+                        // 重置链接密码
                         $temp = Reply::getInlinekeyboard($user, 'index');
                         $user->passwd = Tools::genRandomChar(8);
                         if ($user->save()) {
@@ -202,6 +206,54 @@ class Callback
                                 ),
                             ];
                         }
+                        break;
+                    case 'encrypt':
+                        // 加密方式更改
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => 'ing.',
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => null
+                        ];
+                        break;
+                    case 'protocol':
+                        // 协议更改
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => 'ing.',
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => null
+                        ];
+                        break;
+                    case 'obfs':
+                        // 混淆更改
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => 'ing.',
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => null
+                        ];
+                        break;
+                    case 'sendemail':
+                        // 每日邮件设置更改
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => 'ing.',
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => null
+                        ];
                         break;
                     default:
                         $temp = Reply::getInlinekeyboard($user, 'user.edit');
@@ -256,27 +308,76 @@ class Callback
                 switch ($op_2) {
                     case 'login_log':
                         // 登录记录
+                        $iplocation = new QQWry();
+                        $totallogin = LoginIp::where('userid', '=', $user->id)->where('type', '=', 0)->orderBy('datetime', 'desc')->take(10)->get();
+                        $userloginip = [];
+                        foreach ($totallogin as $single) {
+                            $location = $iplocation->getlocation($single->ip);
+                            $userloginip[] = date('Y-m-d H:i:s', $single->datetime) . ' 在 [' . $single->datetime . '] ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                        }
+                        $text = ('以下是您最近 10 次的登录记录：' .
+                            PHP_EOL .
+                            PHP_EOL .
+                            implode(PHP_EOL, $userloginip));
                         $sendMessage = [
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
-                            'text'                      => 'ing.',
+                            'text'                      => $text,
                             'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
-                            'reply_markup'              => null
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => [
+                                        Reply::getInlinekeyboard()
+                                    ]
+                                ]
+                            ),
                         ];
+                        if ($Data['AllowEditMessage']) {
+                            // 消息可编辑
+                            Process::SendPost('editMessageText', $sendMessage);
+                            return;
+                        }
                         break;
                     case 'usage_log':
                         // 使用记录
+                        $iplocation = new QQWry();
+                        $total = Ip::where('datetime', '>=', time() - 300)->where('userid', '=', $user->id)->get();
+                        $userip = [];
+                        foreach ($total as $single) {
+                            $single->ip = Tools::getRealIp($single->ip);
+                            $is_node = Node::where('node_ip', $single->ip)->first();
+                            if ($is_node) {
+                                continue;
+                            }
+                            $location = $iplocation->getlocation($single->ip);
+                            $userip[$single->ip] = '[' . $single->ip . '] ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                        }
+                        $text = ('以下是您最近 5 分钟的使用 IP：' .
+                            PHP_EOL .
+                            PHP_EOL .
+                            implode(PHP_EOL, $userip));
                         $sendMessage = [
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
-                            'text'                      => 'ing.',
+                            'text'                      => $text,
                             'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
-                            'reply_markup'              => null
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => [
+                                        Reply::getInlinekeyboard()
+                                    ]
+                                ]
+                            ),
                         ];
+                        if ($Data['AllowEditMessage']) {
+                            // 消息可编辑
+                            Process::SendPost('editMessageText', $sendMessage);
+                            return;
+                        }
                         break;
                     case 'rebate_log':
                         // 返利记录
