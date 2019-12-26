@@ -127,20 +127,42 @@ class Reply
                 }
                 $keyboard = [
                     [
-                        'text'          => '重置订阅链接',
-                        'callback_data' => 'user.edit.update_link'
+                        [
+                            'text'          => '重置订阅链接',
+                            'callback_data' => 'user.edit.update_link'
+                        ],
+                        [
+                            'text'          => '重置链接密码',
+                            'callback_data' => 'user.edit.update_passwd'
+                        ]
                     ],
                     [
-                        'text'          => '重置链接密码',
-                        'callback_data' => 'user.edit.update_passwd'
-                    ]
+                        [
+                            'text'          => '更改加密方式',
+                            'callback_data' => 'user.edit.encrypt'
+                        ],
+                        [
+                            'text'          => '更改协议类型',
+                            'callback_data' => 'user.edit.protocol'
+                        ]
+                    ],
+                    [
+                        [
+                            'text'          => '更改混淆类型',
+                            'callback_data' => 'user.edit.obfs'
+                        ],
+                    ],
+                    [
+                        [
+                            'text'          => '每日邮件接收',
+                            'callback_data' => 'user.edit.sendemail'
+                        ],
+                    ],
+                    $back
                 ];
                 $return = [
                     'text'      => $text,
-                    'keyboard'  => [
-                        $keyboard,
-                        $back
-                    ],
+                    'keyboard'  => $keyboard,
                 ];
                 break;
         }
