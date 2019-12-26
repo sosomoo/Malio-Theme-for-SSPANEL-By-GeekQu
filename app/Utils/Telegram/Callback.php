@@ -149,28 +149,6 @@ class Callback
         $CallbackDataExplode = explode('.', $Data['CallbackData']);
         $op_1 = $CallbackDataExplode[1];
         switch ($op_1) {
-            case 'index':
-                // 用户中心
-                $temp = Reply::getInlinekeyboard($user, 'user.index');
-                $sendMessage = [
-                    'chat_id'                   => $Data['ChatID'],
-                    'message_id'                => $Data['MessageID'],
-                    'text'                      => $temp['text'],
-                    'parse_mode'                => 'Markdown',
-                    'disable_web_page_preview'  => false,
-                    'reply_to_message_id'       => null,
-                    'reply_markup'              => json_encode(
-                        [
-                            'inline_keyboard' => $temp['keyboard']
-                        ]
-                    ),
-                ];
-                if ($Data['AllowEditMessage']) {
-                    // 消息可编辑
-                    Process::SendPost('editMessageText', $sendMessage);
-                    return;
-                }
-                break;
             case 'edit':
                 // 资料编辑
                 $op_2 = $CallbackDataExplode[2];
@@ -248,15 +226,107 @@ class Callback
                     return;
                 }
                 break;
-            default:
+            case 'subscribe':
+                // 订阅中心
                 $sendMessage = [
                     'chat_id'                   => $Data['ChatID'],
-                    'text'                      => '发生错误.',
+                    'message_id'                => $Data['MessageID'],
+                    'text'                      => 'ing.',
                     'parse_mode'                => 'Markdown',
+                    'disable_web_page_preview'  => false,
+                    'reply_to_message_id'       => null,
+                    'reply_markup'              => null
                 ];
                 break;
-        }
+            case 'invite':
+                // 分享计划
+                $sendMessage = [
+                    'chat_id'                   => $Data['ChatID'],
+                    'message_id'                => $Data['MessageID'],
+                    'text'                      => 'ing.',
+                    'parse_mode'                => 'Markdown',
+                    'disable_web_page_preview'  => false,
+                    'reply_to_message_id'       => null,
+                    'reply_markup'              => null
+                ];
+                break;
+            default:
+                // 用户中心
+                $op_2 = $CallbackDataExplode[2];
+                switch ($op_2) {
+                    case 'login_log':
+                        // 登录记录
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => 'ing.',
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => null
+                        ];
+                        break;
+                    case 'usage_log':
+                        // 使用记录
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => 'ing.',
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => null
+                        ];
+                        break;
+                    case 'rebate_log':
+                        // 返利记录
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => 'ing.',
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => null
+                        ];
+                        break;
+                    case 'subscribe_log':
+                        // 订阅记录
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => 'ing.',
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => null
+                        ];
+                        break;
+                    default:
+                        $temp = Reply::getInlinekeyboard($user, 'user.index');
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => $temp['text'],
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => $temp['keyboard']
+                                ]
+                            ),
+                        ];
+                        if ($Data['AllowEditMessage']) {
+                            // 消息可编辑
+                            Process::SendPost('editMessageText', $sendMessage);
+                            return;
+                        }
 
+                        break;
+                }
+                break;
+        }
         $bot->sendMessage($sendMessage);
     }
 }

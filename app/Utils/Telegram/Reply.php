@@ -29,13 +29,25 @@ class Reply
                 ];
                 $isLogin = [
                     [
-                        'text'          => '用户中心',
-                        'callback_data' => 'user.index'
+                        [
+                            'text'          => '用户中心',
+                            'callback_data' => 'user.index'
+                        ],
+                        [
+                            'text'          => '资料编辑',
+                            'callback_data' => 'user.edit'
+                        ],
                     ],
                     [
-                        'text'          => '资料编辑',
-                        'callback_data' => 'user.edit'
-                    ]
+                        [
+                            'text'          => '订阅中心',
+                            'callback_data' => 'user.subscribe'
+                        ],
+                        [
+                            'text'          => '分享计划',
+                            'callback_data' => 'user.invite'
+                        ],
+                    ],
                 ];
                 if ($user != null) {
                     if ($user->isAdmin()) {
@@ -49,9 +61,7 @@ class Reply
                     }
                     $return = [
                         'text'      => $text,
-                        'keyboard'  => [
-                            $isLogin,
-                        ],
+                        'keyboard'  => $isLogin,
                     ];
                 } else {
                     $text = '游客您好，以下是 BOT 菜单：' . PHP_EOL . PHP_EOL . '本站用户请前往用户中心进行 Telegram 绑定操作.';
@@ -70,10 +80,33 @@ class Reply
                 } else {
                     $text = '尊敬的用户您好：';
                 }
+                $keyboard = [
+                    [
+                        [
+                            'text'          => '登录记录',
+                            'callback_data' => 'user.index.login_log'
+                        ],
+                        [
+                            'text'          => '使用记录',
+                            'callback_data' => 'user.index.usage_log'
+                        ],
+                    ],
+                    [
+                        [
+                            'text'          => '返利记录',
+                            'callback_data' => 'user.index.rebate_log'
+                        ],
+                        [
+                            'text'          => '订阅记录',
+                            'callback_data' => 'user.index.subscribe_log'
+                        ],
+                    ],
+                    $back
+                ];
                 $text .= (PHP_EOL . PHP_EOL .
                     '当前余额：' . $user->money .
                     PHP_EOL .
-                    '在线设备：' . ($user->node_connector != 0 ? $user->online_ip_count() . '/' . $user->node_connector : $user->online_ip_count() . '/ 不限制') .
+                    '在线设备：' . ($user->node_connector != 0 ? $user->online_ip_count() . ' / ' . $user->node_connector : $user->online_ip_count() . ' / 不限制') .
                     PHP_EOL .
                     '端口速率：' . ($user->node_speedlimit != 0 ? $user->node_speedlimit . 'Mbps' : '无限制') .
                     PHP_EOL .
@@ -82,9 +115,7 @@ class Reply
                     '过期时间：' . $user->class_expire);
                 $return = [
                     'text'      => $text,
-                    'keyboard'  => [
-                        $back
-                    ],
+                    'keyboard'  => $keyboard,
                 ];
                 break;
             case 'user.edit':
