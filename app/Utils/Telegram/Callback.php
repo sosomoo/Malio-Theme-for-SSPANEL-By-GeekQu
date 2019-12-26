@@ -418,7 +418,7 @@ class Callback
                         $temp = [];
                         foreach ($logs as $log) {
                             $location = $iplocation->getlocation($log->request_ip);
-                            $temp[] = $log->subscribe_type . '：' . $log->request_ip . ':' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']) . '：' . date('Y-m-d H:i:s', $log->request_time);
+                            $temp[] = $log->subscribe_type . '：' . $log->request_ip . ':' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']) . '：' . $log->request_time;
                         }
                         $text = ('以下是您最近 10 条订阅记录：' .
                             PHP_EOL .
