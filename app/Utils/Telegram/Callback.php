@@ -2,7 +2,7 @@
 
 namespace App\Utils\Telegram;
 
-use App\Models\{LoginIp, Node, Ip};
+use App\Models\{LoginIp, Node, Ip, Payback, UserSubscribeLog};
 use App\Services\Config;
 use App\Utils\{Tools, QQWry};
 
@@ -313,7 +313,7 @@ class Callback
                         $userloginip = [];
                         foreach ($totallogin as $single) {
                             $location = $iplocation->getlocation($single->ip);
-                            $userloginip[] = date('Y-m-d H:i:s', $single->datetime) . ' 在 [' . $single->ip . '] ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                            $userloginip[] = date('Y-m-d H:i:s', $single->datetime) . ' 在 「' . $single->ip . '」 ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
                         }
                         $text = ('以下是您最近 10 次的登录记录：' .
                             PHP_EOL .
@@ -323,7 +323,7 @@ class Callback
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => null,
+                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -352,7 +352,7 @@ class Callback
                                 continue;
                             }
                             $location = $iplocation->getlocation($single->ip);
-                            $userip[$single->ip] = '[' . $single->ip . '] ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                            $userip[$single->ip] = '「' . $single->ip . '」 ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
                         }
                         $text = ('以下是您最近 5 分钟的使用 IP：' .
                             PHP_EOL .
@@ -362,7 +362,7 @@ class Callback
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => null,
+                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -381,27 +381,57 @@ class Callback
                         break;
                     case 'rebate_log':
                         // 返利记录
+                        $paybacks = Payback::where('ref_by', $user->id)->orderBy('datetime', 'desc')->take(10)->get();
+                        $temp = [];
+                        foreach ($paybacks as $payback) {
+                            $temp[] = '#' . $payback->id . '：' . ($payback->user() != null ? $payback->user()->user_name : '已注销') . '：' . $payback->ref_get . ' 元';
+                        }
+                        $text = ('以下是您最近 10 条返利记录：' .
+                            PHP_EOL .
+                            PHP_EOL .
+                            implode(PHP_EOL, $temp));
                         $sendMessage = [
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
-                            'text'                      => 'ing.',
+                            'text'                      => $text,
                             'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => null
                         ];
+                        if ($Data['AllowEditMessage']) {
+                            // 消息可编辑
+                            Process::SendPost('editMessageText', $sendMessage);
+                            return;
+                        }
                         break;
                     case 'subscribe_log':
                         // 订阅记录
+                        $iplocation = new QQWry();
+                        $logs = UserSubscribeLog::orderBy('id', 'desc')->where('user_id', $user->id)->take(10)->get();
+                        $temp = [];
+                        foreach ($logs as $log) {
+                            $location = $iplocation->getlocation($log->request_ip);
+                            $temp[] = $log->subscribe_type . '：' . $log->request_ip . ':' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']) . '：' . date('Y-m-d H:i:s', $log->request_time);
+                        }
+                        $text = ('以下是您最近 10 条订阅记录：' .
+                            PHP_EOL .
+                            PHP_EOL .
+                            implode(PHP_EOL, $temp));
                         $sendMessage = [
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
-                            'text'                      => 'ing.',
+                            'text'                      => $text,
                             'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => null
                         ];
+                        if ($Data['AllowEditMessage']) {
+                            // 消息可编辑
+                            Process::SendPost('editMessageText', $sendMessage);
+                            return;
+                        }
                         break;
                     default:
                         $temp = Reply::getInlinekeyboard($user, 'user.index');
