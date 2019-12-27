@@ -1140,6 +1140,14 @@ class UserController extends BaseController
         $disableothers = $request->getParam('disableothers');
         $autorenew = $request->getParam('autorenew');
 
+        if (MalioConfig::get('shop_enable_trail_plan') == true && MalioConfig::get('shop_trail_plan_shopid') == $shop) {
+            $user = Auth::getUser();
+            $boughts = Bought::where('userid', $user->id)->get();
+            if ($boughts != null) {
+                return 0;
+            }
+        };
+
         $shop = Shop::where('id', $shop)->where('status', 1)->first();
 
         if ($shop == null) {
