@@ -47,10 +47,9 @@ class StartCommand extends Command
                 'username' => $Message->getFrom()->getUsername(),
             ];
             // 消息内容
-            $MessageText = $Message->getText();
-            if (strpos($MessageText, ' ') !== false) {
-                $MessageText = str_replace('/' . $this->name, '', $MessageText);
-                $BindCode = trim($MessageText);
+            $MessageText = trim($arguments);
+            if ($MessageText != '') {
+                $BindCode = $MessageText;
                 if (strlen($BindCode) == 16) {
                     $Uid = TelegramSessionManager::verify_bind_session($BindCode);
                     if ($Uid == 0) {

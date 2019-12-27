@@ -77,11 +77,6 @@ class Callback
                         ]
                     ),
                 ];
-                if ($Data['AllowEditMessage']) {
-                    // 消息可编辑
-                    Process::SendPost('editMessageText', $sendMessage);
-                    return;
-                }
                 break;
             case 'general.pricing':
                 // 产品介绍
@@ -100,11 +95,6 @@ class Callback
                         ]
                     ),
                 ];
-                if ($Data['AllowEditMessage']) {
-                    // 消息可编辑
-                    Process::SendPost('editMessageText', $sendMessage);
-                    return;
-                }
                 break;
             case 'general.terms':
                 // 服务条款
@@ -123,11 +113,6 @@ class Callback
                         ]
                     ),
                 ];
-                if ($Data['AllowEditMessage']) {
-                    // 消息可编辑
-                    Process::SendPost('editMessageText', $sendMessage);
-                    return;
-                }
                 break;
             default:
                 $sendMessage = [
@@ -135,9 +120,15 @@ class Callback
                     'text'                      => '发生错误.',
                     'parse_mode'                => 'Markdown',
                 ];
+                $Data['AllowEditMessage'] = false;
                 break;
         }
 
+        if ($Data['AllowEditMessage']) {
+            // 消息可编辑
+            Process::SendPost('editMessageText', $sendMessage);
+            return;
+        }
         $bot->sendMessage($sendMessage);
     }
 
@@ -245,14 +236,42 @@ class Callback
                         break;
                     case 'sendemail':
                         // 每日邮件设置更改
+                        $keyboard = [
+                            [
+                                [
+                                    'text'          => '更改开启/关闭',
+                                    'callback_data' => 'user.edit.sendemail.update'
+                                ]
+                            ],
+                            Reply::getInlinekeyboard()
+                        ];
+                        $op_3 = $CallbackDataExplode[3];
+                        switch ($op_3) {
+                            case 'update':
+                                $user->sendDailyMail = ($user->sendDailyMail == 0 ? 1 : 0);
+                                if ($user->save()) {
+                                    $text = '设置更改成功.';
+                                } else {
+                                    $text = '发生错误.';
+                                }
+                                break;
+                            default:
+                                $text = '每日邮件接收当前设置为：';
+                                $text .= ($user->sendDailyMail == 0 ? '不发送' : '发送');
+                                break;
+                        }
                         $sendMessage = [
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
-                            'text'                      => 'ing.',
+                            'text'                      => $text,
                             'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
-                            'reply_markup'              => null
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => $keyboard
+                                ]
+                            ),
                         ];
                         break;
                     default:
@@ -271,11 +290,6 @@ class Callback
                             ),
                         ];
                         break;
-                }
-                if ($Data['AllowEditMessage']) {
-                    // 消息可编辑
-                    Process::SendPost('editMessageText', $sendMessage);
-                    return;
                 }
                 break;
             case 'subscribe':
@@ -313,12 +327,15 @@ class Callback
                         $userloginip = [];
                         foreach ($totallogin as $single) {
                             $location = $iplocation->getlocation($single->ip);
-                            $userloginip[] = date('Y-m-d H:i:s', $single->datetime) . ' 在 「' . $single->ip . '」 ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                            $loginiplocation = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                            if (!in_array($loginiplocation, $userloginip)) {
+                                $userloginip[] = $loginiplocation;
+                            }
                         }
-                        $text = ('以下是您最近 10 次的登录记录：' .
+                        $text = ('以下是您最近 10 次的登录位置：' .
                             PHP_EOL .
                             PHP_EOL .
-                            implode(PHP_EOL, $userloginip));
+                            implode('、', $userloginip));
                         $sendMessage = [
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
@@ -334,11 +351,6 @@ class Callback
                                 ]
                             ),
                         ];
-                        if ($Data['AllowEditMessage']) {
-                            // 消息可编辑
-                            Process::SendPost('editMessageText', $sendMessage);
-                            return;
-                        }
                         break;
                     case 'usage_log':
                         // 使用记录
@@ -373,18 +385,13 @@ class Callback
                                 ]
                             ),
                         ];
-                        if ($Data['AllowEditMessage']) {
-                            // 消息可编辑
-                            Process::SendPost('editMessageText', $sendMessage);
-                            return;
-                        }
                         break;
                     case 'rebate_log':
                         // 返利记录
                         $paybacks = Payback::where('ref_by', $user->id)->orderBy('datetime', 'desc')->take(10)->get();
                         $temp = [];
                         foreach ($paybacks as $payback) {
-                            $temp[] = '#' . $payback->id . '：' . ($payback->user() != null ? $payback->user()->user_name : '已注销') . '：' . $payback->ref_get . ' 元';
+                            $temp[] = '`#' . $payback->id . '：' . ($payback->user() != null ? $payback->user()->user_name : '已注销') . '：' . $payback->ref_get . ' 元`';
                         }
                         $text = ('以下是您最近 10 条返利记录：' .
                             PHP_EOL .
@@ -405,11 +412,6 @@ class Callback
                                 ]
                             ),
                         ];
-                        if ($Data['AllowEditMessage']) {
-                            // 消息可编辑
-                            Process::SendPost('editMessageText', $sendMessage);
-                            return;
-                        }
                         break;
                     case 'subscribe_log':
                         // 订阅记录
@@ -418,12 +420,12 @@ class Callback
                         $temp = [];
                         foreach ($logs as $log) {
                             $location = $iplocation->getlocation($log->request_ip);
-                            $temp[] = $log->subscribe_type . '：' . $log->request_ip . ':' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']) . '：' . $log->request_time;
+                            $temp[] = '`' . $log->request_time . ' 在 <' . $log->request_ip . '> ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']) . '访问了 ' . $log->subscribe_type . ' 订阅`';
                         }
                         $text = ('以下是您最近 10 条订阅记录：' .
                             PHP_EOL .
                             PHP_EOL .
-                            implode(PHP_EOL, $temp));
+                            implode(PHP_EOL . PHP_EOL, $temp));
                         $sendMessage = [
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
@@ -439,11 +441,6 @@ class Callback
                                 ]
                             ),
                         ];
-                        if ($Data['AllowEditMessage']) {
-                            // 消息可编辑
-                            Process::SendPost('editMessageText', $sendMessage);
-                            return;
-                        }
                         break;
                     default:
                         $temp = Reply::getInlinekeyboard($user, 'user.index');
@@ -460,15 +457,14 @@ class Callback
                                 ]
                             ),
                         ];
-                        if ($Data['AllowEditMessage']) {
-                            // 消息可编辑
-                            Process::SendPost('editMessageText', $sendMessage);
-                            return;
-                        }
-
                         break;
                 }
                 break;
+        }
+        if ($Data['AllowEditMessage']) {
+            // 消息可编辑
+            Process::SendPost('editMessageText', $sendMessage);
+            return;
         }
         $bot->sendMessage($sendMessage);
     }
