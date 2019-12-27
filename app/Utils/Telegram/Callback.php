@@ -250,7 +250,8 @@ class Callback
                             case 'update':
                                 $user->sendDailyMail = ($user->sendDailyMail == 0 ? 1 : 0);
                                 if ($user->save()) {
-                                    $text = '设置更改成功.';
+                                    $text = '设置更改成功，每日邮件接收当前设置为：';
+                                    $text .= ($user->sendDailyMail == 0 ? '不发送' : '发送');
                                 } else {
                                     $text = '发生错误.';
                                 }
