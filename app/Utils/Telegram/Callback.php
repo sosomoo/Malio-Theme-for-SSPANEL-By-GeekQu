@@ -201,32 +201,39 @@ class Callback
                         break;
                     case 'encrypt':
                         // 加密方式更改
-                        $Encrypts = [];
-                        foreach (Config::getSupportParam('method') as $value) {
-                            $Encrypts[] = [
-                                'text'          => $value,
-                                'callback_data' => 'user.edit.encrypt|' . $value
-                            ];
-                        }
-                        $Encrypts = array_chunk($Encrypts, 2);
-                        $keyboard = [];
-                        foreach ($Encrypts as $Encrypt) {
-                            $keyboard[] = $Encrypt;
-                        }
-                        $keyboard[] = Reply::getInlinekeyboard();
-                        if (isset($CallbackDataExplode[1])) {
-                            if (in_array($CallbackDataExplode[1], Config::getSupportParam('method'))) {
-                                $user->method = $CallbackDataExplode[1];
-                                if ($user->save()) {
-                                    $text = '更改成功，您当前的加密方式为：' . $user->method;
+                        $keyboard = [
+                            Reply::getInlinekeyboard()
+                        ];
+                        if (Config::get('protocol_specify') === true) {
+                            if (isset($CallbackDataExplode[1])) {
+                                if (in_array($CallbackDataExplode[1], Config::getSupportParam('method')) && Config::get('protocol_specify') === true) {
+                                    $user->method = $CallbackDataExplode[1];
+                                    if ($user->save()) {
+                                        $text = '更改成功，您当前的加密方式为：' . $user->method;
+                                    } else {
+                                        $text = '发生错误，请重新选择.';
+                                    }
                                 } else {
                                     $text = '发生错误，请重新选择.';
                                 }
                             } else {
-                                $text = '发生错误，请重新选择.';
+                                $Encrypts = [];
+                                foreach (Config::getSupportParam('method') as $value) {
+                                    $Encrypts[] = [
+                                        'text'          => $value,
+                                        'callback_data' => 'user.edit.encrypt|' . $value
+                                    ];
+                                }
+                                $Encrypts = array_chunk($Encrypts, 2);
+                                $keyboard = [];
+                                foreach ($Encrypts as $Encrypt) {
+                                    $keyboard[] = $Encrypt;
+                                }
+                                $keyboard[] = Reply::getInlinekeyboard();
+                                $text = '您当前的加密方式为：' . $user->method;
                             }
                         } else {
-                            $text = '您当前的加密方式为：' . $user->method;
+                            $text = '当前不允许私自更改.';
                         }
                         $sendMessage = [
                             'chat_id'                   => $Data['ChatID'],
@@ -244,26 +251,103 @@ class Callback
                         break;
                     case 'protocol':
                         // 协议更改
+                        $keyboard = [
+                            Reply::getInlinekeyboard()
+                        ];
+                        if (Config::get('protocol_specify') === true) {
+                            if (isset($CallbackDataExplode[1])) {
+                                if (in_array($CallbackDataExplode[1], Config::getSupportParam('protocol')) && Config::get('protocol_specify') === true) {
+                                    $user->protocol = $CallbackDataExplode[1];
+                                    if ($user->save()) {
+                                        $text = '更改成功，您当前的协议为：' . $user->protocol;
+                                    } else {
+                                        $text = '发生错误，请重新选择.';
+                                    }
+                                } else {
+                                    $text = '发生错误，请重新选择.';
+                                }
+                            } else {
+                                $Protocols = [];
+                                foreach (Config::getSupportParam('protocol') as $value) {
+                                    $Protocols[] = [
+                                        'text'          => $value,
+                                        'callback_data' => 'user.edit.protocol|' . $value
+                                    ];
+                                }
+                                $Protocols = array_chunk($Protocols, 1);
+                                $keyboard = [];
+                                foreach ($Protocols as $Protocol) {
+                                    $keyboard[] = $Protocol;
+                                }
+                                $keyboard[] = Reply::getInlinekeyboard();
+                                $text = '您当前的协议为：' . $user->protocol;
+                            }
+                        } else {
+                            $text = '当前不允许私自更改.';
+                        }
                         $sendMessage = [
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
-                            'text'                      => 'ing.',
+                            'text'                      => $text,
                             'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
-                            'reply_markup'              => null
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => $keyboard
+                                ]
+                            ),
                         ];
                         break;
                     case 'obfs':
                         // 混淆更改
+                        $keyboard = [
+                            Reply::getInlinekeyboard()
+                        ];
+                        if (Config::get('protocol_specify') === true) {
+                            if (isset($CallbackDataExplode[1])) {
+                                if (in_array($CallbackDataExplode[1], Config::getSupportParam('obfs')) && Config::get('protocol_specify') === true) {
+                                    $user->obfs = $CallbackDataExplode[1];
+                                    if ($user->save()) {
+                                        $text = '更改成功，您当前的协议为：' . $user->obfs;
+                                    } else {
+                                        $text = '发生错误，请重新选择.';
+                                    }
+                                } else {
+                                    $text = '发生错误，请重新选择.';
+                                }
+                            } else {
+                                $Obfss = [];
+                                foreach (Config::getSupportParam('obfs') as $value) {
+                                    $Obfss[] = [
+                                        'text'          => $value,
+                                        'callback_data' => 'user.edit.obfs|' . $value
+                                    ];
+                                }
+                                $Obfss = array_chunk($Obfss, 1);
+                                $keyboard = [];
+                                foreach ($Obfss as $Obfs) {
+                                    $keyboard[] = $Obfs;
+                                }
+                                $keyboard[] = Reply::getInlinekeyboard();
+                                $text = '您当前的协议为：' . $user->obfs;
+                            }
+
+                        } else {
+                            $text = '当前不允许私自更改.';
+                        }
                         $sendMessage = [
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
-                            'text'                      => 'ing.',
+                            'text'                      => $text,
                             'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
-                            'reply_markup'              => null
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => $keyboard
+                                ]
+                            ),
                         ];
                         break;
                     case 'sendemail':
