@@ -165,6 +165,82 @@ class Reply
                     'keyboard'  => $keyboard,
                 ];
                 break;
+            case 'user.subscribe':
+                // 订阅中心
+                $text = '订阅中心.';
+                $keyboard = [
+                    [
+                        [
+                            'text'          => 'SSR 订阅',
+                            'callback_data' => 'user.subscribe|?sub=1'
+                        ],
+                        [
+                            'text'          => 'V2Ray 订阅',
+                            'callback_data' => 'user.subscribe|?sub=3'
+                        ]
+                    ],
+                    [
+                        [
+                            'text'          => 'Shadowrocket',
+                            'callback_data' => 'user.subscribe|?shadowrocket=1'
+                        ],
+                        [
+                            'text'          => 'Kitsunebi',
+                            'callback_data' => 'user.subscribe|?kitsunebi=1'
+                        ]
+                    ],
+                    [
+                        [
+                            'text'          => 'Clash',
+                            'callback_data' => 'user.subscribe|?clash=1'
+                        ],
+                        [
+                            'text'          => 'ClashR',
+                            'callback_data' => 'user.subscribe|?clash=2'
+                        ],
+                    ],
+                    [
+                        [
+                            'text'          => 'Surge 2',
+                            'callback_data' => 'user.subscribe|?surge=2'
+                        ],
+                        [
+                            'text'          => 'Surge 3',
+                            'callback_data' => 'user.subscribe|?surge=3'
+                        ],
+                    ],
+                    [
+                        [
+                            'text'          => 'Quantumult V2Ray',
+                            'callback_data' => 'user.subscribe|?quantumult=1'
+                        ],
+                        [
+                            'text'          => 'SSD',
+                            'callback_data' => 'user.subscribe|?ssd=1'
+                        ],
+                    ],
+                    [
+                        [
+                            'text'          => 'Quantumult Conf',
+                            'callback_data' => 'user.subscribe|?quantumult=3'
+                        ],
+                        [
+                            'text'          => 'Surfboard',
+                            'callback_data' => 'user.subscribe|?surfboard=1'
+                        ],
+                    ],
+                    $back
+                ];
+                $return = [
+                    'text'      => $text,
+                    'keyboard'  => $keyboard,
+                ];
+                break;
+            case 'user.invite':
+                // 分享计划
+
+
+                break;
         }
 
         return $return;

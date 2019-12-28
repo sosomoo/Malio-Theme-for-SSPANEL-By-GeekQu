@@ -2,6 +2,7 @@
 
 namespace App\Utils\Telegram;
 
+use App\Controllers\LinkController;
 use App\Models\{LoginIp, Node, Ip, Payback, UserSubscribeLog};
 use App\Services\Config;
 use App\Utils\{Tools, QQWry};
@@ -207,11 +208,11 @@ class Callback
                         if (Config::get('protocol_specify') === true) {
                             if (isset($CallbackDataExplode[1])) {
                                 if (in_array($CallbackDataExplode[1], Config::getSupportParam('method')) && Config::get('protocol_specify') === true) {
-                                    $user->method = $CallbackDataExplode[1];
-                                    if ($user->save()) {
-                                        $text = '更改成功，您当前的加密方式为：' . $user->method;
+                                    $temp = $user->setMethod($CallbackDataExplode[1]);
+                                    if ($temp['ok'] === true) {
+                                        $text = '您当前的加密方式为：' . $user->method . PHP_EOL . PHP_EOL . $temp['msg'];
                                     } else {
-                                        $text = '发生错误，请重新选择.';
+                                        $text = '发生错误，请重新选择.' . PHP_EOL . PHP_EOL . $temp['msg'];
                                     }
                                 } else {
                                     $text = '发生错误，请重新选择.';
@@ -257,11 +258,11 @@ class Callback
                         if (Config::get('protocol_specify') === true) {
                             if (isset($CallbackDataExplode[1])) {
                                 if (in_array($CallbackDataExplode[1], Config::getSupportParam('protocol')) && Config::get('protocol_specify') === true) {
-                                    $user->protocol = $CallbackDataExplode[1];
-                                    if ($user->save()) {
-                                        $text = '更改成功，您当前的协议为：' . $user->protocol;
+                                    $temp = $user->setProtocol($CallbackDataExplode[1]);
+                                    if ($temp['ok'] === true) {
+                                        $text = '您当前的协议为：' . $user->protocol . PHP_EOL . PHP_EOL . $temp['msg'];
                                     } else {
-                                        $text = '发生错误，请重新选择.';
+                                        $text = '发生错误，请重新选择.' . PHP_EOL . PHP_EOL . $temp['msg'];
                                     }
                                 } else {
                                     $text = '发生错误，请重新选择.';
@@ -307,11 +308,11 @@ class Callback
                         if (Config::get('protocol_specify') === true) {
                             if (isset($CallbackDataExplode[1])) {
                                 if (in_array($CallbackDataExplode[1], Config::getSupportParam('obfs')) && Config::get('protocol_specify') === true) {
-                                    $user->obfs = $CallbackDataExplode[1];
-                                    if ($user->save()) {
-                                        $text = '更改成功，您当前的协议为：' . $user->obfs;
+                                    $temp = $user->setObfs($CallbackDataExplode[1]);
+                                    if ($temp['ok'] === true) {
+                                        $text = '您当前的协议为：' . $user->obfs . PHP_EOL . PHP_EOL . $temp['msg'];
                                     } else {
-                                        $text = '发生错误，请重新选择.';
+                                        $text = '发生错误，请重新选择.' . PHP_EOL . PHP_EOL . $temp['msg'];
                                     }
                                 } else {
                                     $text = '发生错误，请重新选择.';
@@ -411,14 +412,32 @@ class Callback
                 break;
             case 'subscribe':
                 // 订阅中心
+                if (isset($CallbackDataExplode[1])) {
+                    $temp = [];
+                    $temp['keyboard'] = [
+                        Reply::getInlinekeyboard()
+                    ];
+                    $UserApiUrl = LinkController::getSubinfo($user, 0)['link'];
+                    switch ($CallbackDataExplode[1]) {
+                        default:
+                            $temp['text'] = '该订阅链接为：' . PHP_EOL . PHP_EOL . $UserApiUrl . $CallbackDataExplode[1];
+                            break;
+                    }
+                } else {
+                    $temp = Reply::getInlinekeyboard($user, 'user.subscribe');
+                }
                 $sendMessage = [
                     'chat_id'                   => $Data['ChatID'],
                     'message_id'                => $Data['MessageID'],
-                    'text'                      => 'ing.',
+                    'text'                      => $temp['text'],
                     'parse_mode'                => 'Markdown',
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
-                    'reply_markup'              => null
+                    'reply_markup'              => json_encode(
+                        [
+                            'inline_keyboard' => $temp['keyboard']
+                        ]
+                    ),
                 ];
                 break;
             case 'invite':
@@ -430,7 +449,13 @@ class Callback
                     'parse_mode'                => 'Markdown',
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
-                    'reply_markup'              => null
+                    'reply_markup'              => json_encode(
+                        [
+                            'inline_keyboard' => [
+                                Reply::getInlinekeyboard()
+                            ]
+                        ]
+                    ),
                 ];
                 break;
             default:
