@@ -139,12 +139,13 @@ class Callback
      */
     public static function UserHandler($user, $bot, $Callback, $Data, $SendUser)
     {
-        $CallbackDataExplode = explode('.', $Data['CallbackData']);
-        $op_1 = $CallbackDataExplode[1];
+        $CallbackDataExplode = explode('|', $Data['CallbackData']);
+        $Operate = explode('.', $CallbackDataExplode[0]);
+        $op_1 = $Operate[1];
         switch ($op_1) {
             case 'edit':
                 // 资料编辑
-                $op_2 = $CallbackDataExplode[2];
+                $op_2 = $Operate[2];
                 switch ($op_2) {
                     case 'update_link':
                         // 重置订阅链接
@@ -200,14 +201,45 @@ class Callback
                         break;
                     case 'encrypt':
                         // 加密方式更改
+                        $Encrypts = [];
+                        foreach (Config::getSupportParam('method') as $value) {
+                            $Encrypts[] = [
+                                'text'          => $value,
+                                'callback_data' => 'user.edit.encrypt|' . $value
+                            ];
+                        }
+                        $Encrypts = array_chunk($Encrypts, 2);
+                        $keyboard = [];
+                        foreach ($Encrypts as $Encrypt) {
+                            $keyboard[] = $Encrypt;
+                        }
+                        $keyboard[] = Reply::getInlinekeyboard();
+                        if (isset($CallbackDataExplode[1])) {
+                            if (in_array($CallbackDataExplode[1], Config::getSupportParam('method'))) {
+                                $user->method = $CallbackDataExplode[1];
+                                if ($user->save()) {
+                                    $text = '更改成功，您当前的加密方式为：' . $user->method;
+                                } else {
+                                    $text = '发生错误，请重新选择.';
+                                }
+                            } else {
+                                $text = '发生错误，请重新选择.';
+                            }
+                        } else {
+                            $text = '您当前的加密方式为：' . $user->method;
+                        }
                         $sendMessage = [
                             'chat_id'                   => $Data['ChatID'],
                             'message_id'                => $Data['MessageID'],
-                            'text'                      => 'ing.',
+                            'text'                      => $text,
                             'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
-                            'reply_markup'              => null
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => $keyboard
+                                ]
+                            ),
                         ];
                         break;
                     case 'protocol':
@@ -245,7 +277,7 @@ class Callback
                             ],
                             Reply::getInlinekeyboard()
                         ];
-                        $op_3 = $CallbackDataExplode[3];
+                        $op_3 = $Operate[3];
                         switch ($op_3) {
                             case 'update':
                                 $user->sendDailyMail = ($user->sendDailyMail == 0 ? 1 : 0);
@@ -319,7 +351,7 @@ class Callback
                 break;
             default:
                 // 用户中心
-                $op_2 = $CallbackDataExplode[2];
+                $op_2 = $Operate[2];
                 switch ($op_2) {
                     case 'login_log':
                         // 登录记录
