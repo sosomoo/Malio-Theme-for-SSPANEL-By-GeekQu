@@ -3,7 +3,7 @@
 namespace App\Utils\Telegram;
 
 use App\Controllers\LinkController;
-use App\Models\{LoginIp, Node, Ip, Payback, UserSubscribeLog};
+use App\Models\{LoginIp, Node, Ip, InviteCode, Payback, UserSubscribeLog};
 use App\Services\Config;
 use App\Utils\{Tools, QQWry};
 
@@ -333,7 +333,6 @@ class Callback
                                 $keyboard[] = Reply::getInlinekeyboard();
                                 $text = '您当前的协议为：' . $user->obfs;
                             }
-
                         } else {
                             $text = '当前不允许私自更改.';
                         }
@@ -442,21 +441,64 @@ class Callback
                 break;
             case 'invite':
                 // 分享计划
-                $sendMessage = [
-                    'chat_id'                   => $Data['ChatID'],
-                    'message_id'                => $Data['MessageID'],
-                    'text'                      => 'ing.',
-                    'parse_mode'                => 'Markdown',
-                    'disable_web_page_preview'  => false,
-                    'reply_to_message_id'       => null,
-                    'reply_markup'              => json_encode(
-                        [
-                            'inline_keyboard' => [
-                                Reply::getInlinekeyboard()
-                            ]
-                        ]
-                    ),
-                ];
+                $op_2 = $Operate[2];
+                switch ($op_2) {
+                    case 'get':
+                        $Data['AllowEditMessage'] = false;
+                        $code = InviteCode::where('user_id', $user->id)->first();
+                        if ($code == null) {
+                            $user->addInviteCode();
+                            $code = InviteCode::where('user_id', $user->id)->first();
+                        }
+                        $inviteUrl = Config::get('baseUrl') . '/auth/register?code=' . $code->code;
+                        $text = '['. $inviteUrl . '](' . $inviteUrl . ')';
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => $text,
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => null
+                        ];
+                        break;
+                    default:
+                        if (!$paybacks_sum = Payback::where('ref_by', $user->id)->sum('ref_get')) {
+                            $paybacks_sum = 0;
+                        }
+                        $text = [
+                            '**分享计划，您每邀请 1 位用户注册：**',
+                            '',
+                            '- 您会获得 **' . Config::get('invite_gift') . 'G** 流量奖励.',
+                            '- 对方将获得 **' . Config::get('invite_get_money') . ' 元** 奖励作为初始资金.',
+                            '- 对方充值时您还会获得对方充值金额的 **' . Config::get('code_payback') . '%** 的返利.',
+                            '',
+                            '已获得返利：' . $paybacks_sum . ' 元.',
+                        ];
+                        $keyboard = [
+                            [
+                                [
+                                    'text'          => '获取我的邀请链接',
+                                    'callback_data' => 'user.invite.get'
+                                ]
+                            ],
+                            Reply::getInlinekeyboard()
+                        ];
+                        $sendMessage = [
+                            'chat_id'                   => $Data['ChatID'],
+                            'message_id'                => $Data['MessageID'],
+                            'text'                      => implode(PHP_EOL, $text),
+                            'parse_mode'                => 'Markdown',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => json_encode(
+                                [
+                                    'inline_keyboard' => $keyboard
+                                ]
+                            ),
+                        ];
+                        break;
+                }
                 break;
             default:
                 // 用户中心
