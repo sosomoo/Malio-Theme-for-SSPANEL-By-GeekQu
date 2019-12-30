@@ -18,7 +18,7 @@ class GeoIP2
         try {
             $record = $this->reader->city($ip);
         } catch (AddressNotFoundException $e) {
-            if ($lang == 'zh-CN') {
+            if ($lang == 'zh-cn') {
                 return "未知";
             } else {
                 return "Unknow";
@@ -32,7 +32,7 @@ class GeoIP2
         if ($lang == 'en') {
             return $record->city->name. ', '.$record->country->name;
         } else if ($lang == 'zh-CN') {
-            return $record->country->name[$lang]. ' '.$record->city->name[$lang];
+            return $record->country->names[$lang]. ' '.$record->city->names[$lang];
         }
     }
 }

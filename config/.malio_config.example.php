@@ -32,9 +32,7 @@ $Malio_Config['enable_webapi_ip_verification'] = false;    // (此项已废弃�
 $Malio_Config['enable_webapi_email_hash'] = true;    // 启用后，当节点通过 webapi 连接时，传出去的邮件地址会经过md5加密。
 $Malio_Config['reset_bandwidth_and_expire_date_when_change_class'] = false;    // 设置为true时，当用户购买与用户当前等级不同的套餐时，重置流量和过期时间。（定制功能）
 $Malio_Config['force_user_to_bind_tg_when_join_group'] = true;   // 设置为true时，限制只有绑定了tg的用户才能加入群组，如未绑定将会被踢出群组。.config.php 需要设置群组id，机器人在群组中不回应设为false才能用。机器人需要在群里组设定为管理员才能踢人。(定制功能)
-$Malio_Config['stripe_minimum_amount'] = 4;   // Stripe 支付接口可充值的最低金额
-$Malio_Config['stripe_currency'] = 'usd';   // Stripe 支付接口的默认货币，可以写 hkd usd等，stripe限制了收款货币只能是账号注册地区的货币
-$Malio_Config['bitpyax_alipay_type'] = 'ALIPAY';   // bitpayx 支付宝充值的类似，ALIPAY是国内支付宝，ALIGLOBAL是国际支付宝
+$Malio_Config['ip_database'] = 'GeoIP2';   //  IP归属地数据库，可选 QQWry | GeoIP2
 
 
 ####### 支付系统 #######
@@ -44,6 +42,11 @@ $Malio_Config['mups_alipay'] = 'bitpayx';   // Malio 聚合支付系统里面的
 // 微信支付目前支持 bitpayx | stripe
 $Malio_Config['mups_wechat'] = 'bitpayx';   // Malio 聚合支付系统里面的 微信支付 要用的支付平台
 $Malio_Config['mups_minimum_amount'] = 0;   //  Malio 聚合支付系统限制最低的充值金额
+
+// 下面的选项在 Malio 聚合支付系统无效
+$Malio_Config['stripe_minimum_amount'] = 4;   // Stripe 支付接口可充值的最低金额
+$Malio_Config['stripe_currency'] = 'usd';   // Stripe 支付接口的默认货币，可以写 hkd usd等，stripe限制了收款货币只能是账号注册地区的货币
+$Malio_Config['bitpyax_alipay_type'] = 'ALIPAY';   // bitpayx 支付宝充值的类似，ALIPAY是国内支付宝，ALIGLOBAL是国际支付宝
 
 
 ####### 注册 #######
@@ -104,6 +107,9 @@ $Malio_Config['enable_index_popup_ann'] = false;   //  是否在用户登录后�
 $Malio_Config['enable_index_popup_ann_time'] = false;   //  重要公告弹窗是否24小时只弹一次
 $Malio_Config['index_popup_ann_content'] = '仅在有重大通知时使用，否则会降低用户体验，可以使用HTML标签';   //  重要公告的内容
 
+// 不在首页显示的一键导入按钮，clash | kitsunebi | quantumult | shadowrocket | v2ray | ss | ssr | ssd | surge | surborad | copy-ss | copy-ssr | copy-vmess
+$Malio_Config['index_hidden_import_buttons'] = ['copy-ss','copy-ssr','ssd','copy-vmess'];
+
 $Malio_Config['enable_share'] = true;   // 是否显示共享账号
 $Malio_Config['share_account'] = [    // 一个array为一个共享账号
     'Netflix' => [  // 这个是账号分类
@@ -148,7 +154,11 @@ $Malio_Config['shop_enable_coupon'] = true;    // 商店是否显示试用优惠
 $Malio_Config['shop_enable_trail_plan'] = true;   // 商店是否显示新用户试用选项
 $Malio_Config['shop_trail_plan_shopid'] = '12';   // 新用户试用的商品ID
 
+$Malio_Config['index_one_row_plans'] = '3';   //  首页里每行显示多少个会员计划，可以写 3 或 4
+$Malio_Config['shop_one_row_plans'] = '3';   //  商店里每行显示多少个会员计划，可以写 3 或 4
+
 // 每个会员计划不同时长所对应的商品ID（商品ID可以在管理面板的商品列表里找到），此项必须设置，不然商店购买功能无法正常工作
+// 可以复制 array 增加会员计划
 $Malio_Config['plan_shop_id'] = array(
     'plan_1' => array(
         '1month' => 1,

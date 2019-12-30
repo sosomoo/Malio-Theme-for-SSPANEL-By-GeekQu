@@ -331,6 +331,7 @@
                         <div id="unionpay" class="color col-12 col-md-2 col-lg-2" onclick="selectItem('payment','unionpay')">
                           <i class="malio-unionpay"></i> {$i18n->get('unionpay')}
                         </div>
+                        {/if}
                       {else}
                         {if $malio_config['mups_alipay'] != 'none'}
                         <div id="alipay" class="color col-12 col-md-2 col-lg-2 active" onclick="selectItem('payment','alipay')">

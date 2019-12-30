@@ -259,6 +259,7 @@
                               <input type="radio" name="payment" value="unionpay" class="selectgroup-input">
                               <span class="selectgroup-button selectgroup-button-icon"><i class="malio-unionpay mr-1"></i>{$i18n->get('unionpay')}</span>
                             </label>
+                            {/if}
                           {else}
                             {if $malio_config['mups_alipay'] != 'none'}
                             <label class="selectgroup-item">
