@@ -12,3 +12,7 @@ CREATE TABLE IF NOT EXISTS `sms_verify` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+
+ALTER TABLE `user` ADD COLUMN `lang` varchar(128) NOT NULL DEFAULT 'zh-cn' COMMENT '用户的语言';

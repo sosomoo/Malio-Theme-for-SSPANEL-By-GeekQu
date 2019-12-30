@@ -4,7 +4,7 @@
 <head>
   {include file='user/head.tpl'}
 
-  <title>工单列表 &mdash; {$config["appName"]}</title>
+  <title>{$i18n->get('my-tickets')} &mdash; {$config["appName"]}</title>
   <style>
     .table-links a {
       font-weight: normal;
@@ -21,28 +21,25 @@
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>工单列表</h1>
+            <h1>{$i18n->get('my-tickets')}</h1>
             <div class="section-header-breadcrumb">
-              <a href="/user/ticket/create" class="btn btn-primary btn-icon icon-left"><i class="fas fa-plus"></i> 新建工单</a>
+              <a href="/user/ticket/create" class="btn btn-primary btn-icon icon-left"><i class="fas fa-plus"></i> {$i18n->get('new-ticket')}</a>
             </div>
           </div>
           <div class="section-body">
             <div class="row">
               <div class="col-12">
                 <div class="card">
-                  <div class="card-header">
-                    <h4>所有工单</h4>
-                  </div>
                   <div class="card-body">
 
                     <div class="table-responsive">
                       <table class="table table-striped">
                         <tbody>
                           <tr>
-                            <th>标题</th>
-                            <th>创建时间</th>
-                            <th>状态</th>
-                            <th>操作</th>
+                            <th>{$i18n->get('title')}</th>
+                            <th>{$i18n->get('create-at')}</th>
+                            <th>{$i18n->get('status')}</th>
+                            <th>{$i18n->get('action')}</th>
                           </tr>
                           {foreach $tickets as $ticket}
                           <tr>
@@ -52,17 +49,17 @@
                             <td>{$ticket->datetime()}</td>
                             <td>
                               {if $ticket->status==1}
-                              <div class="badge badge-success">处理中</div>
+                              <div class="badge badge-success">{$i18n->get('ticket-open')}</div>
                               {else}
-                              <div class="badge badge-secondary">已关闭</div>
+                              <div class="badge badge-secondary">{$i18n->get('ticket-closed')}</div>
                               {/if}
                             </td>
                             <td>
                                 {if $ticket->status==1}
-                                <a href="/user/ticket/{$ticket->id}/view" class="btn btn-primary">回复</a>
-                                <a href="##" onclick="closeTicket({$ticket->id})" class="btn btn-secondary ml-1">关闭工单</a>
+                                <a href="/user/ticket/{$ticket->id}/view" class="btn btn-primary">{$i18n->get('reply-ticket')}</a>
+                                <a href="##" onclick="closeTicket({$ticket->id})" class="btn btn-secondary ml-1">{$i18n->get('close-ticket')}</a>
                                 {else}
-                                <a href="/user/ticket/{$ticket->id}/view" class="btn btn-secondary">查看工单</a>
+                                <a href="/user/ticket/{$ticket->id}/view" class="btn btn-secondary">{$i18n->get('view-ticket')}</a>
                                 {/if}
                             </td>
                           </tr>

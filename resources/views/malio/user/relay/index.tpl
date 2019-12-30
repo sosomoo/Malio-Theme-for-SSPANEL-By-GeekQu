@@ -4,7 +4,7 @@
 <head>
   {include file='user/head.tpl'}
 
-  <title>中转规则 &mdash; {$config["appName"]}</title>
+  <title>{$i18n->get('relay-settings')} &mdash; {$config["appName"]}</title>
 
 </head>
 
@@ -17,34 +17,31 @@
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>中转规则</h1>
+            <h1>{$i18n->get('relay-settings')}</h1>
             <div class="section-header-breadcrumb">
-              <a href="/user/relay/create" class="btn btn-primary btn-icon icon-left"><i class="fas fa-plus"></i> 添加规则</a>
+              <a href="/user/relay/create" class="btn btn-primary btn-icon icon-left"><i class="fas fa-plus"></i> {$i18n->get('add-rule')}</a>
             </div>
           </div>
           <div class="section-body">
-            <h2 class="section-title">说明</h2>
+            <h2 class="section-title">{$i18n->get('notice')}</h2>
             <p class="section-lead">
-              中转规则一般由中国中转至其他国外节点<br>
-              请设置端口号为您自己的端口<br>
-              优先级越大，代表其在多个符合条件的规则并存时会被优先采用，当优先级一致时，先添加的规则会被采用<br>
-              节点不设置中转时，这个节点就可以当作一个普通的节点来做代理使用<br>
+              {$i18n->get('relay-notice')}
             </p>
             <div class="row">
               <div class="col-12">
                 <div class="card">
                   <div class="card-header">
-                    <h4>所有规则</h4>
+                    <h4>{$i18n->get('all-rules')}</h4>
                   </div>
                   <div class="card-body">
                     <div class="row">
                       <div class="col-12 col-sm-12 col-md-2">
                         <ul class="nav nav-pills flex-column" id="myTab4" role="tablist">
                           <li class="nav-item">
-                            <a class="nav-link active show" id="home-tab4" data-toggle="tab" href="#home4" role="tab" aria-controls="home" aria-selected="true">规则表</a>
+                            <a class="nav-link active show" id="home-tab4" data-toggle="tab" href="#home4" role="tab" aria-controls="home" aria-selected="true">{$i18n->get('rules-table')}</a>
                           </li>
                           <li class="nav-item">
-                            <a class="nav-link" id="profile-tab4" data-toggle="tab" href="#profile4" role="tab" aria-controls="profile" aria-selected="false">链路表</a>
+                            <a class="nav-link" id="profile-tab4" data-toggle="tab" href="#profile4" role="tab" aria-controls="profile" aria-selected="false">{$i18n->get('relay-table')}</a>
                           </li>
                         </ul>
                       </div>
@@ -54,15 +51,15 @@
                             <div class="table-responsive">
                               <table class="table table-striped">
                                 <tr>
-                                  <th>起源节点</th>
-                                  <th>目标节点</th>
-                                  <th>端口</th>
-                                  <th>优先级</th>
-                                  <th>操作</th>
+                                  <th>{$i18n->get('relay-server-origin')}</th>
+                                  <th>{$i18n->get('target-server')}</th>
+                                  <th>{$i18n->get('port')}</th>
+                                  <th>{$i18n->get('priority')}</th>
+                                  <th>{$i18n->get('action')}</th>
                                 </tr>
                                 {if count($rules) == 0}
                                 <tr>
-                                  <td colspan="5"><strong>无中转规则</strong></td>
+                                  <td colspan="5"><strong>{$i18n->get('no-relay-rule')}</strong></td>
                                 </tr>
                                 {else}
                                 {foreach $rules as $rule}
@@ -81,9 +78,9 @@
                                   <td>{$rule->priority}</td>
                                   <td>
                                     {if $rule->user_id != 0}
-                                    <a href="/user/relay/{$rule->id}/edit" class="btn btn-primary">编辑</a>
+                                    <a href="/user/relay/{$rule->id}/edit" class="btn btn-primary">{$i18n->get('edit')}</a>
                                     {/if}
-                                    <a href="##" onclick="deleteRelayRule('{$rule->id}')" class="btn btn-secondary {if $rule->user_id != 0}ml-1{/if}">删除</a>
+                                    <a href="##" onclick="deleteRelayRule('{$rule->id}')" class="btn btn-secondary {if $rule->user_id != 0}ml-1{/if}">{$i18n->get('delete')}</a>
                                   </td>
                                 </tr>
                                 {/foreach}
@@ -96,15 +93,15 @@
                             <div class="table-responsive">
                               <table class="table table-striped">
                                 <tr>
-                                  <th>端口</th>
-                                  <th>始发节点</th>
-                                  <th>终点节点</th>
-                                  <th>途径节点</th>
-                                  <th>状态</th>
+                                  <th>{$i18n->get('port')}</th>
+                                  <th>{$i18n->get('relay-server-origin')}</th>
+                                  <th>{$i18n->get('target-server')}</th>
+                                  <th>{$i18n->get('relay-server-in-between')}</th>
+                                  <th>{$i18n->get('status')}</th>
                                 </tr>
                                 {if count($pathset) == 0}
                                 <tr>
-                                  <td colspan="5"><strong>无链路信息</strong></td>
+                                  <td colspan="5"><strong>{$i18n->get('no-relay-info')}</strong></td>
                                 </tr>
                                 {else}
                                 {foreach $pathset as $path}

@@ -4,7 +4,7 @@
 <head>
   {include file='user/head.tpl'}
 
-  <title>订阅记录 &mdash; {$config["appName"]}</title>
+  <title>{$i18n->get('config-history')} &mdash; {$config["appName"]}</title>
 
 </head>
 
@@ -17,11 +17,11 @@
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>订阅记录</h1>
+            <h1>{$i18n->get('config-history')}</h1>
           </div>
           <div class="section-body">
-            <h2 class="section-title">说明</h2>
-            <p class="section-lead">您可在此查询您账户所有的订阅记录，确保您的账户没有被盗用</p>
+            <h2 class="section-title">{$i18n->get('notice')}</h2>
+            <p class="section-lead">{$i18n->get('config-history-notice')}</p>
             <div class="row">
               <div class="col-12">
                 <div class="card">
@@ -31,15 +31,15 @@
                         <tbody>
                           <tr>
                             <th>ID</th>
-                            <th>订阅类型</th>
+                            <th>{$i18n->get('type')}</th>
                             <th>IP</th>
-                            <th>归属地</th>
-                            <th>时间</th>
+                            <th>{$i18n->get('location')}</th>
+                            <th>{$i18n->get('date')}</th>
                             <th>User-Agent</th>
                           </tr>
                           {if count($logs) == 0}
                           <tr>
-                            <td colspan="6"><strong>暂无订阅记录</strong></td>
+                            <td colspan="6"><strong>{$i18n->get('no-config-history-yet')}</strong></td>
                           </tr>
                           {else}
                           {foreach $logs as $log}

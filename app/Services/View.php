@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Smarty;
 use App\Utils;
+use App\Services\Internationalization;
 
 class View
 {
@@ -18,6 +19,11 @@ class View
 
         if ($user->isLogin) {
             $theme = $user->theme;
+            $theme = $user->theme;
+
+            $i18n = new Internationalization();
+            $i18n->lang = $user->lang;
+            $smarty->assign('i18n', $i18n);
         } else {
             $theme = Config::get('theme');
         }
@@ -32,6 +38,7 @@ class View
         // add config
         $smarty->assign('config', Config::getPublicConfig());
         $smarty->assign('malio_config', MalioConfig::getPublicConfig());
+        $smarty->assign('I18N', Internationalization::getPublicConfig());
         $smarty->assign('user', $user);
         $smarty->assign('can_backtoadmin', $can_backtoadmin);
 

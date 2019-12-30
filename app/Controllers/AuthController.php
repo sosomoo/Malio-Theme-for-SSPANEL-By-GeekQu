@@ -23,12 +23,15 @@ use App\Utils\Geetest;
 use App\Utils\TelegramSessionManager;
 use Ramsey\Uuid\Uuid;
 
+
+use App\Services\Internationalization;
+
 /**
  *  AuthController
  */
 class AuthController extends BaseController
 {
-    public function login()
+    public function login($request, $response, $args)
     {
         $GtSdk = null;
         $recaptcha_sitekey = null;
@@ -66,6 +69,9 @@ class AuthController extends BaseController
             $welcome = 'Good Evening';
         }
 
+        $i18n = new Internationalization();
+        $i18n->detectLang($request, $response, $args);
+
         return $this->view()
             ->assign('geetest_html', $GtSdk)
             ->assign('login_token', $login_token)
@@ -74,6 +80,7 @@ class AuthController extends BaseController
             ->assign('telegram_bot', Config::get('telegram_bot'))
             ->assign('base_url', Config::get('baseUrl'))
             ->assign('recaptcha_sitekey', $recaptcha_sitekey)
+            ->assign('i18n', $i18n)
             ->display('auth/login.tpl');
     }
 
@@ -246,7 +253,11 @@ class AuthController extends BaseController
             }
         }
 
+        $i18n = new Internationalization();
+        $i18n->detectLang($request, $response, $args);
+
         return $this->view()
+            ->assign('i18n', $i18n)
             ->assign('geetest_html', $GtSdk)
             ->assign('enable_email_verify', Config::get('enable_email_verify'))
             ->assign('code', $code)

@@ -40,6 +40,7 @@ use App\Models\Payback;
 use App\Models\Relay;
 use App\Models\UserSubscribeLog;
 use App\Utils\QQWry;
+use App\Utils\GeoIP2;
 use App\Utils\GA;
 use App\Utils\Geetest;
 use App\Utils\Telegram;
@@ -774,11 +775,10 @@ class UserController extends BaseController
 
     public function profile($request, $response, $args)
     {
+        $user = Auth::getUser();
         $pageNum = $request->getQueryParams()['page'] ?? 1;
         $paybacks = Payback::where('ref_by', $this->user->id)->orderBy('datetime', 'desc')->paginate(15, ['*'], 'page', $pageNum);
         $paybacks->setPath('/user/profile');
-
-        $iplocation = new QQWry();
 
         $userip = array();
 
@@ -788,31 +788,60 @@ class UserController extends BaseController
 
         $userloginip = array();
 
-        foreach ($totallogin as $single) {
-            //if(isset($useripcount[$single->userid]))
-            {
-                if (!isset($userloginip[$single->ip])) {
-                    //$useripcount[$single->userid]=$useripcount[$single->userid]+1;
-                    $location = $iplocation->getlocation($single->ip);
-                    $userloginip[$single->ip] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+        if (MalioConfig::get('ip_database') == 'QQWry') {
+            $iplocation = new QQWry();
+            foreach ($totallogin as $single) {
+                //if(isset($useripcount[$single->userid]))
+                {
+                    if (!isset($userloginip[$single->ip])) {
+                        //$useripcount[$single->userid]=$useripcount[$single->userid]+1;
+                        $location = $iplocation->getlocation($single->ip);
+                        $userloginip[$single->ip] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                    }
+                }
+            }
+
+            foreach ($total as $single) {
+                //if(isset($useripcount[$single->userid]))
+                {
+                    $single->ip = Tools::getRealIp($single->ip);
+                    $is_node = Node::where('node_ip', $single->ip)->first();
+                    if ($is_node) {
+                        continue;
+                    }
+
+
+                    if (!isset($userip[$single->ip])) {
+                        //$useripcount[$single->userid]=$useripcount[$single->userid]+1;
+                        $location = $iplocation->getlocation($single->ip);
+                        $userip[$single->ip] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                    }
                 }
             }
         }
 
-        foreach ($total as $single) {
-            //if(isset($useripcount[$single->userid]))
-            {
-                $single->ip = Tools::getRealIp($single->ip);
-                $is_node = Node::where('node_ip', $single->ip)->first();
-                if ($is_node) {
-                    continue;
+        if (MalioConfig::get('ip_database') == 'GeoIP2') {
+            $ip_location_geoip2 = new GeoIP2();
+
+            foreach ($totallogin as $single) {
+                {
+                    if (!isset($userloginip[$single->ip])) {
+                        $userloginip[$single->ip] = $ip_location_geoip2->getLocation($single->ip, $user->lang);
+                    }
                 }
+            }
 
+            foreach ($total as $single) {
+                {
+                    $single->ip = Tools::getRealIp($single->ip);
+                    $is_node = Node::where('node_ip', $single->ip)->first();
+                    if ($is_node) {
+                        continue;
+                    }
 
-                if (!isset($userip[$single->ip])) {
-                    //$useripcount[$single->userid]=$useripcount[$single->userid]+1;
-                    $location = $iplocation->getlocation($single->ip);
-                    $userip[$single->ip] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                    if (!isset($userip[$single->ip])) {
+                        $userip[$single->ip] = $ip_location_geoip2->getLocation($single->ip, $user->lang);
+                    }
                 }
             }
         }
@@ -1760,7 +1789,7 @@ class UserController extends BaseController
         $user->updateMethod($method);
 
         if (!URL::SSCanConnect($user)) {
-            $res['ret'] = 0;
+            $res['ret'] = 1;
             $res['msg'] = '设置成功，但您目前的协议，混淆，加密方式设置会导致 Shadowsocks原版客户端无法连接，请您自行更换到 ShadowsocksR 客户端。';
             return $this->echoJson($response, $res);
         }
@@ -1821,14 +1850,7 @@ class UserController extends BaseController
         $this->user->transfer_enable += Tools::toMB($traffic);
         $this->user->last_check_in_time = time();
         $this->user->save();
-        $res['msg'] = sprintf('获得了 %d MB流量.', $traffic);
-        $res['unflowtraffic'] = $this->user->transfer_enable;
-        $res['traffic'] = Tools::flowAutoShow($this->user->transfer_enable);
-        $res['trafficInfo'] = array(
-            'todayUsedTraffic' => $this->user->TodayusedTraffic(),
-            'lastUsedTraffic' => $this->user->LastusedTraffic(),
-            'unUsedTraffic' => $this->user->unusedTraffic(),
-        );
+        $res['msg'] = $this->i18n->get('got-daily-bonus',[$traffic]);
         $res['ret'] = 1;
         return $this->echoJson($response, $res);
     }
@@ -2056,6 +2078,24 @@ class UserController extends BaseController
         return $this->echoJson($response, $res);
     }
 
+    public function getPlanTime($request, $response, $args)
+    {
+        $plan_num = $request->getQueryParams()['num'];
+        if (empty($plan_num)) {
+            $res['ret'] = 0;
+            return $this->echoJson($response, $res); 
+        }
+        $plan_time = [];
+        foreach ((MalioConfig::get('plan_shop_id'))[$plan_num] as $key => $value) {
+            if ($value != 0) {
+                $plan_time[] = $key;
+            }
+        }
+        $res['plan_time'] = $plan_time;
+        $res['ret'] = 1;
+        return $this->echoJson($response, $res);
+    }
+
     public function buyTrafficPackage($request, $response, $args)
     {
         $shopId = $request->getParam('shopid');
@@ -2103,6 +2143,24 @@ class UserController extends BaseController
     {
         return $this->view()->display('user/share_account.tpl'); 
     } 
+
+    public function changeLang($request, $response, $args)
+    {
+        $lang = $request->getParam('lang');
+
+        $supported_lang = ['zh-cn','en'];
+        if (!in_array($lang, $supported_lang)) {
+            $res['ret'] = 0;
+            $res['msg'] = 'unsupport lang';
+        }
+
+        $this->user->lang = $lang;
+        $this->user->save();
+        
+        $res['msg'] = 'yes';
+        $res['ret'] = 1;
+        return $this->echoJson($response, $res);
+    }
 
     public function getPcClient($request, $response, $args)
     {

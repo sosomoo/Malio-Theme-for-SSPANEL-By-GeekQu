@@ -11,13 +11,14 @@ use App\Utils\TelegramProcess;
 use App\Utils\Spay_tool;
 use App\Utils\Geetest;
 use App\Utils\Tools;
+use App\Services\Internationalization;
 
 /**
  *  HomeController
  */
 class HomeController extends BaseController
 {
-    public function index()
+    public function index($request, $response, $args)
     {
         $GtSdk = null;
         $recaptcha_sitekey = null;
@@ -46,22 +47,46 @@ class HomeController extends BaseController
         if (Config::get('newIndex') != 'true' && Config::get('theme') == 'material') {
             return $this->view()->display('indexold.tpl');
         } else {
-            return $this->view()
-                ->assign('geetest_html', $GtSdk)
-                ->assign('login_token', $login_token)
-                ->assign('login_number', $login_number)
-                ->assign('telegram_bot', Config::get('telegram_bot'))
-                ->assign('enable_logincaptcha', Config::get('enable_login_captcha'))
-                ->assign('enable_regcaptcha', Config::get('enable_reg_captcha'))
-                ->assign('base_url', Config::get('baseUrl'))
-                ->assign('recaptcha_sitekey', $recaptcha_sitekey)
-                ->display('index.tpl');
+
+            
+            if (!Auth::getUser()->isLogin) {
+                $i18n = new Internationalization();
+                $i18n->detectLang($request, $response, $args);
+                return $this->view()
+                    ->assign('i18n', $i18n)
+                    ->assign('geetest_html', $GtSdk)
+                    ->assign('login_token', $login_token)
+                    ->assign('login_number', $login_number)
+                    ->assign('telegram_bot', Config::get('telegram_bot'))
+                    ->assign('enable_logincaptcha', Config::get('enable_login_captcha'))
+                    ->assign('enable_regcaptcha', Config::get('enable_reg_captcha'))
+                    ->assign('base_url', Config::get('baseUrl'))
+                    ->assign('recaptcha_sitekey', $recaptcha_sitekey)
+                    ->display('index.tpl');
+            } else {
+                return $this->view()
+                    ->assign('geetest_html', $GtSdk)
+                    ->assign('login_token', $login_token)
+                    ->assign('login_number', $login_number)
+                    ->assign('telegram_bot', Config::get('telegram_bot'))
+                    ->assign('enable_logincaptcha', Config::get('enable_login_captcha'))
+                    ->assign('enable_regcaptcha', Config::get('enable_reg_captcha'))
+                    ->assign('base_url', Config::get('baseUrl'))
+                    ->assign('recaptcha_sitekey', $recaptcha_sitekey)
+                    ->display('index.tpl');
+            }
         }
     }
 
     public function indexold()
     {
-        return $this->view()->display('indexold.tpl');
+        if (!Auth::getUser()->isLogin) {
+            $i18n = new Internationalization();
+            $i18n->detectLang($request, $response, $args);
+            return $this->view()->assign('i18n', $i18n)->display('indexold.tpl');
+        } else {
+            return $this->view()->display('indexold.tpl');
+        }
     }
 
     public function code()

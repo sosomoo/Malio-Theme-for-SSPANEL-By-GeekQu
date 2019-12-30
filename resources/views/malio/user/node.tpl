@@ -4,7 +4,7 @@
 <head>
   {include file='user/head.tpl'}
 
-  <title>节点列表 &mdash; {$config["appName"]}</title>
+  <title>{$i18n->get('servers')} &mdash; {$config["appName"]}</title>
 
   <style>
     dl,
@@ -51,17 +51,17 @@
       {include file='user/navbar.tpl'}
 
       {if $malio_config['flag_mode'] == 'node-name'}
-      {assign var=flags value=['美国'=>'us','香港'=>'hk','新加'=>'sg','日本'=>'jp','回国'=>'cn','中国'=>'cn','台湾'=>$malio_config['taiwan_flag'],'菲律'=>'ph','俄罗'=>'ru','韩国'=>'kr','德国'=>'de','英国'=>'gb','法国'=>'fr','越南'=>'vn','印度'=>'in','印尼'=>'id','澳门'=>'mo','马来'=>'my','荷兰'=>'nl','罗马'=>'ro','澳大'=>'au']}
+      {assign var=flags value=['美国'=>'us','香港'=>'hk','新加'=>'sg','日本'=>'jp','回国'=>'cn','中国'=>'cn','台湾'=>$malio_config['taiwan_flag'],'菲律'=>'ph','俄罗'=>'ru','韩国'=>'kr','德国'=>'de','英国'=>'gb','法国'=>'fr','越南'=>'vn','印度'=>'in','印尼'=>'id','澳门'=>'mo','马来'=>'my','荷兰'=>'nl','罗马'=>'ro','澳大'=>'au','加拿'=>'ca']}
       {/if}
 
       <!-- Main Content -->
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>节点列表</h1>
+            <h1>{$i18n->get('servers')}</h1>
           </div>
 
-          {foreach $malio_config['node_class_name'] as $node_class => $node_group_name}
+          {foreach $I18N['node-class-name-map'][$i18n->lang] as $node_class => $node_group_name}
           <div class="section-body">
             <h2 class="section-title">{$node_group_name}</h2>
             <div class="row">
@@ -86,25 +86,25 @@
                             {if $malio_config['enable_online_user'] == true}
                             <div class="media-item">
                               <div class="media-value">{if $node['online_user'] == -1} N/A{else} {$node['online_user']}{/if}</div>
-                              <div class="media-label">在线</div>
+                              <div class="media-label">{$i18n->get('online')}</div>
                             </div>
                             {/if}
                             {if $malio_config['enable_node_traffic_rate'] == true}
                             <div class="media-item">
                               <div class="media-value">x{$node['traffic_rate']}</div>
-                              <div class="media-label">倍率</div>
+                              <div class="media-label">{$i18n->get('rate')}</div>
                             </div>
                             {/if}
                             {if $malio_config['enable_node_load'] == true}
                             <div class="media-item">
                               <div class="media-value">{if $node['latest_load'] == -1}N/A{else}{$node['latest_load']}%{/if}</div>
-                              <div class="media-label">负载</div>
+                              <div class="media-label">{$i18n->get('load')}</div>
                             </div>
                             {/if}
                             {if $malio_config['enable_node_speedlimit'] == true}
                             <div class="media-item">
                               <div class="media-value">{if {$node['bandwidth']}==0}N/A{else}{$node['bandwidth']}{/if}</div>
-                              <div class="media-label">限速</div>
+                              <div class="media-label">{$i18n->get('speedlimit')}</div>
                             </div>
                             {/if}
                           </div>
@@ -140,21 +140,21 @@
         </div>
         <div class="modal-body">
           {$v2server=URL::getV2Url($user, $node['raw_node'], 1)}
-          <div class="mb-2">地址: <code>{$v2server['add']}</code></div>
-          <div class="mb-2">端口: <code>{$v2server['port']}</code></div>
+          <div class="mb-2">{$i18n->get('address')}: <code>{$v2server['add']}</code></div>
+          <div class="mb-2">{$i18n->get('port')}: <code>{$v2server['port']}</code></div>
           <div class="mb-2">AlterId: <code>{$v2server['aid']}</code></div>
-          <div class="mb-2">用户 UUID: <code>{$user->getUuid()}</code></div>
-          <div class="mb-2">传输协议: <code>{if $v2server['net']=="tls"}tcp{else}{$v2server['net']}{/if}</code></div>
+          <div class="mb-2">UUID: <code>{$user->getUuid()}</code></div>
+          <div class="mb-2">{$i18n->get('transport')}: <code>{if $v2server['net']=="tls"}tcp{else}{$v2server['net']}{/if}</code></div>
           {if $v2server['net']=="ws"}
-          <div class="mb-2">路径: <code>{$v2server['path']}</code></div>
+          <div class="mb-2">{$i18n->get('path')}: <code>{$v2server['path']}</code></div>
           {/if}
           {if $v2server['net']=="kcp"}
-          <div class="mb-2">伪装方式: <code>{$v2server['type']}</code></div>
+          <div class="mb-2">{$i18n->get('camouflage-type')}: <code>{$v2server['type']}</code></div>
           {/if}
           {if ($v2server['net']=="ws" && $v2server['tls']=="tls")||$v2server['net']=="tls"||($v2server['net']=="tcp" && $v2server['tls']=="tls")}
           <div class="mb-2">TLS: <code>TLS</code></div>
           {/if}
-          <div class="mb-2">VMess链接: <code>{URL::getV2Url($user, $node['raw_node'])}</code></div>
+          <div class="mb-2">{$i18n->get('vmess-url')}: <code>{URL::getV2Url($user, $node['raw_node'])}</code></div>
         </div>
       </div>
     </div>
@@ -170,7 +170,7 @@
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">节点信息</h5>
+          <h5 class="modal-title">{$i18n->get('server-info')}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>

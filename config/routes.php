@@ -161,8 +161,10 @@ $app->group('/user', function () {
     // Malio
     $this->get('/money', App\Controllers\UserController::class . ':getmoney');
     $this->get('/shop/getplaninfo', App\Controllers\UserController::class . ':getPlanInfo');
+    $this->get('/shop/getplantime', App\Controllers\UserController::class . ':getPlanTime');
     $this->post('/shop/buytrafficpackage', App\Controllers\UserController::class . ':buyTrafficPackage');
     $this->get('/share-account', App\Controllers\UserController::class . ':share_account');
+    $this->post('/api/change-lang', App\Controllers\UserController::class . ':changeLang');
 })->add(new Auth());
 
 $app->group('/payment', function () {

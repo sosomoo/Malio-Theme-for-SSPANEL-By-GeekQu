@@ -4,7 +4,7 @@
 <head>
   {include file='user/head.tpl'}
 
-  <title>共享账号 &mdash; {$config["appName"]}</title>
+  <title>{$i18n->get('shared-account')} &mdash; {$config["appName"]}</title>
 
   <style>
     .section .section-title:before {
@@ -26,7 +26,7 @@
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>共享账号</h1>
+            <h1>{$i18n->get('shared-account')}</h1>
           </div>
           <div class="section-body">
             <div class="row">
@@ -40,8 +40,8 @@
                       {foreach $class as $account}
                       <div class="netfix-title section-title mt-0">{$account['name']}</div>
                       {if $user->class >= $account['class']}
-                      账号: <a href="##" class="copy-text" data-clipboard-text="{$account['account']}">{$account['account']}</a><br>
-                      密码: <a href="##" class="copy-text" data-clipboard-text="{$account['passwd']}">*********(点击复制)</a>
+                      {$i18n->get('account')}: <a href="##" class="copy-text" data-clipboard-text="{$account['account']}">{$account['account']}</a><br>
+                      {$i18n->get('password')}: <a href="##" class="copy-text" data-clipboard-text="{$account['passwd']}">*********({$i18n->get('click-to-copy')})</a>
                       {else}
                       您目前订阅的会员计划无法查看此共享账号，请升级会员计划。
                       {/if}

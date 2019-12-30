@@ -22,7 +22,6 @@ $Malio_Config['version'] = '1';
 $Malio_Config['theme_color'] = 'purple';    // 主题颜色，可选值为 purple, blue, darkblue, orange, pink TODO:
 $Malio_Config['google_analytics_code'] = 'UA-123456789-1';    // Google 统计代码，留空为不开启，code格式为 'UA-123456789-1'
 $Malio_Config['login_style'] = 'wallpaper';    // 登录页面的样式，可选 simple 和 wallpaper
-$Malio_Config['login_slogan'] = '这是一句好听顺嘴而且不长不短刚刚好的Slogan<br>甚至可以写第二行';    // 仅在登录页面样式为 wallpaper 时生效，可使用 HTML 标签
 $Malio_Config['enable_landing_page'] = true;    // 是否启用着陆页用于介绍本站
 $Malio_Config['malio_js_version'] = 'v1';    // 可以随便写，每次更新 malio.js 文件就要改变这个值，用户浏览器就会请求最新的js授权文件，就不会出现缓存的问题
 $Malio_Config['small_brand'] = 'ML';    // 侧边栏在缩小状态下显示的 logo 名称，建议写两个英文字母或一个中文汉字
@@ -132,124 +131,12 @@ $Malio_Config['share_account'] = [    // 一个array为一个共享账号
 
 // 商店
 $Malio_Config['shop_style'] = 'plans';    // 商店的显示风格， legacy为SSPANEL原版，plans为新版
-$Malio_Config['shop_sub_title'] = '竭尽全力为您提供优质的服务';   // 商店的小标题，可以使用 HTML 标签
 
 $Malio_Config['shop_enable_autorenew'] = true;   // 商店是否显示自动续费的选项
 $Malio_Config['shop_enable_coupon'] = true;    // 商店是否显示试用优惠券选项
 
 $Malio_Config['shop_enable_trail_plan'] = true;   // 商店是否显示新用户试用选项
 $Malio_Config['shop_trail_plan_shopid'] = '12';   // 新用户试用的商品ID
-$Malio_Config['plan_trail_pricing'] = 0;    // 新用户试用的商品价格
-$Malio_Config['plan_trail_traffic'] = 50;    // 新用户试用的流量
-$Malio_Config['plan_trail_online'] = 2;    // 新用户试用的在线客户端数量
-$Malio_Config['plan_trail_feature'] = [    // 新用户试用的特性，一个array为一个特性，support设置为false的话就是不支持
-    array(
-        'name' => '工单技术支持',
-        'support' => true
-    ),
-    array(
-        'name' => '国际标准节点',
-        'support' => true
-    ),
-    array(
-        'name' => '国内中转节点',
-        'support' => true
-    ),
-    array(
-        'name' => 'IPLC专线节点',
-        'support' => true
-    ),
-];
-
-$Malio_Config['shop_enable_traffic_package'] = true;   // 商店是否显示流量叠加包的选项（仅在用户购买会员计划后才会显示）
-$Malio_Config['shop_traffic_packages'] = [ // 商店流量叠加包的详细信息，一个array为一个流量叠加包。在商品列表添加流量包时只需要填写名称、价格、流量，其他参数默认即可
-    array(
-        'shopid' => 13, // 流量叠加包的商品ID
-        'traffic' => 10, // 单位为GB
-        'price' => 5 
-    ),
-    array(
-        'shopid' => 14,
-        'traffic' => 20,
-        'price' => 9 
-    ),
-    array(
-        'shopid' => 15,
-        'traffic' => 30,
-        'price' => 15 
-    ),
-];
-
-$Malio_Config['plan_1_name'] = '标准版';    // 第一个会员计划的名字
-$Malio_Config['plan_1_pricing'] = 9.9;    // 第一个会员计划的价格
-$Malio_Config['plan_1_traffic'] = 50;    // 第一个会员计划的流量，单位为GB
-$Malio_Config['plan_1_online'] = 2;    // 第一个会员计划在线客户端数量
-$Malio_Config['plan_1_feature'] = [    // 一个array为一个特性，support设置为false的话就是不支持
-    array(
-        'name' => '工单技术支持',
-        'support' => true
-    ),
-    array(
-        'name' => '国际标准节点',
-        'support' => true
-    ),
-    array(
-        'name' => '国内中转节点',
-        'support' => false
-    ),
-    array(
-        'name' => 'IPLC专线节点',
-        'support' => false
-    ),
-];
-
-$Malio_Config['enable_plan_2'] = true;    // 是否显示第二个会员计划
-$Malio_Config['plan_2_name'] = '高级版';    // 第二个会员计划的名字
-$Malio_Config['plan_2_pricing'] = 19.9;    // 第二个会员计划的价格
-$Malio_Config['plan_2_traffic'] = 100;    // 第二个会员计划的流量，单位为GB
-$Malio_Config['plan_2_online'] = 4;    // 第一个会员计划在线客户端数量
-$Malio_Config['plan_2_feature'] = [    // 一个array为一个特性，support设置为false的话就是不支持
-    array(
-        'name' => '24/7 在线技术支持',
-        'support' => true
-    ),
-    array(
-        'name' => '国际标准节点',
-        'support' => true
-    ),
-    array(
-        'name' => '国内中转节点',
-        'support' => true
-    ),
-    array(
-        'name' => 'IPLC专线节点',
-        'support' => false
-    ),
-];
-
-$Malio_Config['enable_plan_3'] = true;    // 是否显示第三个会员计划
-$Malio_Config['plan_3_name'] = '加强版';    // 第三个会员计划的名字
-$Malio_Config['plan_3_pricing'] = 29.9;    // 第三个会员计划的价格
-$Malio_Config['plan_3_traffic'] = 200;    // 第三个会员计划的流量，单位为GB
-$Malio_Config['plan_3_online'] = 8;    // 第一个会员计划在线客户端数量
-$Malio_Config['plan_3_feature'] = [    // 一个array为一个特性，support设置为false的话就是不支持
-    array(
-        'name' => '24/7 在线技术支持',
-        'support' => true
-    ),
-    array(
-        'name' => '国际标准节点',
-        'support' => true
-    ),
-    array(
-        'name' => '国内中转节点',
-        'support' => true
-    ),
-    array(
-        'name' => 'IPLC专线节点',
-        'support' => true
-    ),
-];
 
 // 每个会员计划不同时长所对应的商品ID（商品ID可以在管理面板的商品列表里找到），此项必须设置，不然商店购买功能无法正常工作
 $Malio_Config['plan_shop_id'] = array(
@@ -273,17 +160,30 @@ $Malio_Config['plan_shop_id'] = array(
     ),
 );
 
-// 购买会员计划页面的购买须知文本，可使用 HTML 标签
-$Malio_Config['buyer_reading'] = '
-<div class="bullet"></div> 购买会员计划即代表同意《服务条款》和《使用政策》。<br>
-<div class="bullet"></div> 流量每30天重置一次 (从购买日开始计算)，未使用的流量不结转到下个周期。
-';
+$Malio_Config['shop_enable_traffic_package'] = true;   // 商店是否显示流量叠加包的选项（仅在用户购买会员计划后才会显示）
+$Malio_Config['shop_traffic_packages'] = [ // 商店流量叠加包的详细信息，一个array为一个流量叠加包。在商品列表添加流量包时只需要填写名称、价格、流量，其他参数默认即可
+    array(
+        'shopid' => 13, // 流量叠加包的商品ID
+        'traffic' => 10, // 单位为GB
+        'price' => 5 
+    ),
+    array(
+        'shopid' => 14,
+        'traffic' => 20,
+        'price' => 9 
+    ),
+    array(
+        'shopid' => 15,
+        'traffic' => 30,
+        'price' => 15 
+    ),
+];
 
 
 // 我的钱包
 $Malio_Config['enable_topup_code'] = true;   // 是否在我的钱包页面显示充值码充值按钮
 $Malio_Config['topup_amount_input_mode'] = 'input';  //  充值金额的输入方式，input 是用户手动输入， select 是用户选择站长设定的固定值进行充值
-$Malio_Config['topup_select_list'] = [9.9, 19.9, 29.9];  // 用户只能在这个列表里选择充值金额，只有在 topup_mode 设置为 select 的时候有效
+$Malio_Config['topup_select_list'] = [9.9, 19.9, 29.9];  // 用户只能在这个列表里选择充值金额，只有在 topup_amount_input_mode 设置为 select 的时候有效
 
 
 // 我的账号
@@ -299,12 +199,6 @@ $Malio_Config['enable_node_traffic_rate'] = true;   // 是否显示节点的流�
 $Malio_Config['enable_node_speedlimit'] = true;   // 是否显示节点的限速
 $Malio_Config['flag_mode'] = 'node-name';   // 节点列表的国旗取值方式。node-name 为从节点名字前两个字取值（比如美国Vultr取值为美国）。node-info 为从节点状态取值，在节点列表里编辑节点，填写节点状态为 us 则显示美国国旗。us这个是国家ISO 3166码，不懂就谷歌。
 $Malio_Config['taiwan_flag'] = 'cn';   //  台湾的旗显示方式，cn为中国国旗，tw为台湾区旗
-$Malio_Config['node_class_name'] = [   //  节点的等级对应的名字
-    0 => '免费节点',   // 格式为 节点等级 => 节点等级名字
-    1 => '标准版节点',
-    2 => '高级版节点',
-    3 => '加强版节点',
-];
 
 
 // 节点设置 -> 连接设置
@@ -329,58 +223,5 @@ $Malio_Config['enable_windows_gaming_tutorial'] = true;    // 是否启用 Windo
 
 
 // 着陆页设置
+// 着陆页文本可以在 .i18n.php 更改
 $Malio_Config['index_enable_promotion'] = true;   // 着陆页是否显示促销活动提示
-$Malio_Config['index_promotion_text'] = '年付8折优惠活动，限时进行中';    // 着陆页促销活动文本
-$Malio_Config['index_slogan'] = '全球网络中继服务，随时随处尽情使用';   // 着陆页slogan
-$Malio_Config['index_sub_slogan'] = '通过我们的网络访问内容提供商、公司网络和公共云服务。';   // 着陆页slogan下面那行字
-$Malio_Config['index_statistics_1_data'] = '100+';    // 着陆页的三个统计数据
-$Malio_Config['index_statistics_1_name'] = '国际节点';    // 着陆页的三个统计数据
-$Malio_Config['index_statistics_2_data'] = '25+';    // 着陆页的三个统计数据
-$Malio_Config['index_statistics_2_name'] = '国家地区';    // 着陆页的三个统计数据
-$Malio_Config['index_statistics_3_data'] = '6500+';    // 着陆页的三个统计数据
-$Malio_Config['index_statistics_3_name'] = '满意用户';    // 着陆页的三个统计数据
-
-$Malio_Config['index_more_features'] = [    // 着陆页里的更多特性，一个array为一个特性，icon来自fontawesome，https://fontawesome.com/icons?d=gallery&m=free
-    array(
-        'icon' => 'fas fa-ad',
-        'feature' => '过滤常用网站广告、常用视频广告、其他流媒体网站广告',
-    ),
-    array(
-        'icon' => 'fas fa-filter',
-        'feature' => '智能分流系统，所有国内网站直线连接，增强用户体验',
-    ),
-    array(
-        'icon' => 'fab fa-apple',
-        'feature' => 'Apple服务加速 (App Store、Apple Music、iCloud、iTunes等)',
-    ),
-    array(
-        'icon' => 'fas fa-tachometer-alt',
-        'feature' => '国外常用网站加速 (Google/Youtube/Twitter/Instgram/Github等)',
-    ),
-    array(
-        'icon' => 'fas fa-lock',
-        'feature' => '在传输过程中使用最强的加密方式，保护用户数据和隐私',
-    ),
-    array(
-        'icon' => 'fas fa-fire',
-        'feature' => '与诸多平台上的优秀应用程序兼容，这些应用程序由许多创新公司和开发人员开发',
-    ),
-];
-
-$Malio_Config['index_user_reviews'] = [    // 着陆页评价，一个array为一个评价，可以添加多个 
-    array(
-        'user' => '某一沙雕网友',
-        'position' => '<a href="/">家里蹲大学</a> 学生',
-        'review' => '我的妈我跟你说真的好用到飞起，我的妈我跟你说真的好用到飞起，我的妈我跟你说真的好用到飞起。素质三连。'
-    ),
-    array(
-        'user' => 'CXK',
-        'position' => '<a href="/">XX公司</a>唱跳练习生',
-        'review' => '大家好，我是练习时长两年半的个人练习生，喜欢唱、跳、rap、篮球'
-    ),
-    array(
-        'user' => '用户名',
-        'position' => '职位',
-        'review' => '第三个评价要咋写啊我编不下去了，你们记得改文案啊不然就。这个是占位符占位符🐈🐶'
-    ),
-];

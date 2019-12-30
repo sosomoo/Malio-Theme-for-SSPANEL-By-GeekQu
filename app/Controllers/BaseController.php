@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Services\View;
 use App\Services\Auth;
 use Smarty;
+use App\Services\Internationalization;
 
 /**
  * BaseController
@@ -29,6 +30,8 @@ class BaseController
     {
         $this->view = View::getSmarty();
         $this->user = Auth::getUser();
+        $this->i18n = new Internationalization();
+        $this->i18n->lang = $this->user->lang;
     }
 
     /**

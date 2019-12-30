@@ -35,31 +35,31 @@
 
             <div class="card card-primary">
               <div class="card-header">
-                <h4>登录</h4>
+                <h4>{$i18n->get('login')}</h4>
               </div>
               <form action="javascript:void(0);" method="POST" class="needs-validation" novalidate="">
 
                 <div class="card-body">
                   <div class="form-group login-form-item">
-                    <label for="email">邮箱</label>
+                    <label for="email">{$i18n->get('email')}</label>
                     <input id="email" type="email" class="form-control" name="email" tabindex="1" required autofocus>
                     <div class="invalid-feedback">
-                      请填写邮箱
+                      {$i18n->get('please-fill-in-your-email')}
                     </div>
                   </div>
 
                   <div class="form-group login-form-item">
                     <div class="d-block">
-                      <label for="password" class="control-label">密码</label>
+                      <label for="password" class="control-label">{$i18n->get('password')}</label>
                       <div class="float-right">
                         <a href="/password/reset" class="text-small">
-                          忘记密码？
+                          {$i18n->get('forgot-password-question-mark')}
                         </a>
                       </div>
                     </div>
                     <input id="password" type="password" class="form-control" name="password" tabindex="2" required>
                     <div class="invalid-feedback">
-                      请填写密码
+                      {$i18n->get('please-fill-in-your-password')}
                     </div>
                   </div>
 
@@ -86,23 +86,23 @@
                   <div class="form-group login-form-item">
                     <div class="custom-control custom-checkbox">
                       <input type="checkbox" name="remember" class="custom-control-input" tabindex="3" id="remember-me">
-                      <label class="custom-control-label" for="remember-me">七天内免登录</label>
+                      <label class="custom-control-label" for="remember-me">{$i18n->get('remember-me')}</label>
                     </div>
                   </div>
 
                   <div class="form-group">
                     <button type="submit" class="btn btn-primary btn-lg btn-block login" tabindex="4">
-                      登录
+                      {$i18n->get('login')}
                     </button>
                   </div>
               </form>
               {if $malio_config['enable_telegram'] == true}
               <div class="text-center mt-4 mb-3 login-form-item">
-                <div class="text-job text-muted">或者</div>
+                <div class="text-job text-muted">{$i18n->get('or')}</div>
               </div>
               <div class="form-group login-form-item">
                 <button data-toggle="modal" id="telegram-login-button" data-target="#telegram-modal" class="btn btn-info btn-lg btn-block" tabindex="4" style="box-shadow:none;">
-                  <i class="fab fa-telegram-plane"></i> 使用 Telegram 登录
+                  <i class="fab fa-telegram-plane"></i> {$i18n->get('login-with-telegram')}
                 </button>
               </div>
               {/if}
@@ -110,7 +110,7 @@
             </div>
           </div>
           <div class="mt-5 text-muted text-center login-form-item">
-            还没有账号？ <a href="/auth/register">马上注册 👉</a>
+            {$i18n->get('dont-have-an-account-question-mark')}
           </div>
           <div class="simple-footer">
             Copyright &copy; 2019 {$config["appName"]}
@@ -134,33 +134,33 @@
         <div class="col-lg-4 col-md-6 col-12 order-lg-1 min-vh-100 order-2 bg-white">
           <div class="p-4 m-3">
             <img src="/theme/malio/assets/img/stisla-fill.svg" alt="logo" width="80" class="shadow-light rounded-circle mb-5 mt-2">
-            <h4 class="text-dark font-weight-normal">欢迎使用 <span class="font-weight-bold">{$config["appName"]}</span></h4>
-            <p class="text-muted">{$malio_config['login_slogan']}</p>
+            <h4 class="text-dark font-weight-normal">{$i18n->get('login_welcome')}</h4>
+            <p class="text-muted">{$i18n->get('login_slogan')}</p>
 
             <form action="javascript:void(0);" method="POST" class="needs-validation" novalidate="">
               <div class="login-form-item">
                 <div class="form-group">
-                  <label for="email">邮箱</label>
+                  <label for="email">{$i18n->get('email')}</label>
                   <input id="email" type="email" class="form-control" name="email" tabindex="1" required autofocus>
                   <div class="invalid-feedback">
-                    请填写邮箱
+                    {$i18n->get('please-fill-in-your-email')}
                   </div>
                 </div>
 
                 <div class="form-group">
                   <div class="d-block">
-                    <label for="password" class="control-label">密码</label>
+                    <label for="password" class="control-label">{$i18n->get('password')}</label>
                     {if $malio_config['enable_telegram'] == true}
                     <div class="float-right">
                       <a href="/password/reset" class="text-small">
-                        忘记密码？
+                        {$i18n->get('forgot-password-question-mark')}
                       </a>
                     </div>
                     {/if}
                   </div>
                   <input id="password" type="password" class="form-control" name="password" tabindex="2" required>
                   <div class="invalid-feedback">
-                    请填写密码
+                    {$i18n->get('please-fill-in-your-password')}
                   </div>
                 </div>
               </div>
@@ -188,29 +188,29 @@
               <div class="form-group login-form-item">
                 <div class="custom-control custom-checkbox">
                   <input type="checkbox" name="remember" class="custom-control-input" tabindex="3" id="remember-me">
-                  <label class="custom-control-label" for="remember-me">七天内免登录</label>
+                  <label class="custom-control-label" for="remember-me">{$i18n->get('remember-me')}</label>
                 </div>
               </div>
 
               <div class="form-group text-right">
                 {if $malio_config['enable_telegram'] == false}
                 <a href="/password/reset" class="float-left mt-3 login-form-item">
-                  忘记密码？
+                  {$i18n->get('forgot-password-question-mark')}
                 </a>
                 {/if}
                 {if $malio_config['enable_telegram'] == true}
                 <a href="##" id="telegram-login-button" data-toggle="modal" data-target="#telegram-modal" class="float-left mt-3 login-form-item">
-                  Telegram 登录
+                  {$i18n->get('login-with-telegram')}
                 </a>
                 {/if}
                 <button type="submit" class="btn btn-primary btn-lg btn-icon icon-right login" tabindex="4">
-                  登录
+                  {$i18n->get('login')}
                 </button>
               </div>
             </form>
 
             <div class="mt-5 text-center login-form-item">
-              还没有账号？ <a href="/auth/register">马上注册 👉</a>
+              {$i18n->get('dont-have-an-account-question-mark')}
             </div>
 
             <div class="text-center mt-5 text-small">

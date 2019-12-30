@@ -4,7 +4,7 @@
 <head>
   {include file='user/head.tpl'}
 
-  <title>审计记录 &mdash; {$config["appName"]}</title>
+  <title>{$i18n->get('audit-logs')} &mdash; {$config["appName"]}</title>
 
 </head>
 
@@ -17,29 +17,26 @@
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>审计记录</h1>
+            <h1>{$i18n->get('audit-logs')}</h1>
           </div>
           <div class="section-body">
-            <h2 class="section-title">说明</h2>
-            <p class="section-lead">
-              系统中所有审计记录。<br>
-              关于隐私：注意，我们仅用以下规则进行实时匹配和记录匹配到的规则，您的通信方向和通信内容我们不会做任何记录，请您放心。也请您理解我们对于这些不当行为的管理，谢谢
-            </p>
+            <h2 class="section-title">{$i18n->get('notice')}</h2>
+            <p class="section-lead">{$i18n->get('audit-logs-notice')}</p>
             <div class="row">
               <div class="col-12">
                 <div class="card">
                   <div class="card-header">
-                    <h4>规则</h4>
+                    <h4>{$i18n->get('logs')}</h4>
                   </div>
                   <div class="card-body">
                     <div class="table-responsive">
                       <table class="table table-striped">
                         <tr>
                           <th>ID</th>
-                          <th>名称</th>
-                          <th>描述</th>
-                          <th>正则表达式</th>
-                          <th>类型</th>
+                          <th>{$i18n->get('name')}</th>
+                          <th>{$i18n->get('description')}</th>
+                          <th>{$i18n->get('regex')}</th>
+                          <th>{$i18n->get('type')}</th>
                         </tr>
                         {foreach $logs as $log}
                         {if $log->DetectRule() != null}

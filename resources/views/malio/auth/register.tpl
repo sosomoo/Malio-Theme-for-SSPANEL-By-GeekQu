@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>注册 &mdash; {$config["appName"]}</title>
+  <title>{$i18n->get('sign-up')} &mdash; {$config["appName"]}</title>
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
@@ -38,26 +38,26 @@
 
             <div class="card card-primary">
               <div class="card-header">
-                <h4>注册</h4>
+                <h4>{$i18n->get('sign-up')}</h4>
               </div>
 
               <div class="card-body">
                 {if $config['register_mode'] == 'close'}
-                <p>{$config["appName"]} 已停止新用户注册</p>
+                <p>{$i18n->get('closed-on-registeration', [$config["appName"]])}</p>
                 {else}
                 <form action="javascript:void(0);" method="POST" class="needs-validation" novalidate="">
                   <div class="row">
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="name">昵称</label>
+                      <label for="name">{$i18n->get('nickname')}</label>
                       <input id="name" type="text" class="form-control" name="name" required autofocus>
                       <div class="invalid-feedback">
-                        请填写昵称
+                        {$i18n->get('please-fill-in-your-nickname')}
                       </div>
                     </div>
                     {if $enable_email_verify == 'false'}
                       {if $malio_config['enable_register_email_restrict'] == true}
                       <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                        <label for="email">邮箱</label>
+                        <label for="email">{$i18n->get('email')}</label>
                         <div class="input-group">
                           <input type="text" id="email" class="form-control col-7" required>
                           <select class="custom-select input-group-append col-5" id="email_postfix" required style="border-top-right-radius: .25rem;
@@ -73,16 +73,16 @@
                             {/foreach}
                           </select>
                           <div class="invalid-feedback">
-                              请填写邮箱
+                            {$i18n->get('please-fill-in-your-email')}
                           </div>
                         </div>
                       </div>
                       {else}
                       <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                        <label for="email">邮箱</label>
+                        <label for="email">{$i18n->get('email')}</label>
                         <input id="email" type="email" class="form-control" name="email" required>
                         <div class="invalid-feedback">
-                          请填写邮箱
+                          {$i18n->get('please-fill-in-your-email')}
                         </div>
                       </div>
                       {/if}
@@ -90,11 +90,11 @@
 
                     {if $enable_email_verify == 'true' && $config['register_mode'] == 'invite'}
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="code" class="d-block">邀请码 {if $malio_config['code_required'] == false}(选填){/if}</label>
+                      <label for="code" class="d-block">{$i18n->get('invitation-code')} {if $malio_config['code_required'] == false}({$i18n->get('optional')}){/if}</label>
                       <input id="code" type="text" class="form-control" name="code" {if $malio_config['code_required'] == true}required{/if}>
                       {if $malio_config['code_required'] == true}
                       <div class="invalid-feedback">
-                        请填写邀请码
+                        {$i18n->get('please-fill-in-invitation-code')}
                       </div>
                       {/if}
                     </div>
@@ -105,7 +105,7 @@
                   <div class="row">
                     {if $malio_config['enable_register_email_restrict'] == true}
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="email">邮箱</label>
+                      <label for="email">{$i18n->get('email')}</label>
                       <div class="input-group">
                         <input type="text" id="email" class="form-control col-7" required>
                         <select class="custom-select input-group-append col-5" id="email_postfix" required style="border-top-right-radius: .25rem;
@@ -121,29 +121,29 @@
                           {/foreach}
                         </select>
                         <div class="invalid-feedback">
-                          请填写邮箱
+                          {$i18n->get('please-fill-in-your-email')}
                         </div>
                       </div>
                     </div>
                     {else}
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="email">邮箱</label>
+                      <label for="email">{$i18n->get('email')}</label>
                       <input id="email" type="email" class="form-control" name="email" required>
                       <div class="invalid-feedback">
-                        请填写邮箱
+                        {$i18n->get('please-fill-in-your-email')}
                       </div>
                     </div>
                     {/if}
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="email">邮箱验证码</label>
+                      <label for="email">{$i18n->get('email-verification-code')}</label>
                       <div class="input-group mb-3">
                         <input id="email_code" type="text" class="form-control" name="email" required>
                         <div class="input-group-append">
-                          <button id="email_verify" class="btn btn-primary" type="button">获取验证码</button>
+                          <button id="email_verify" class="btn btn-primary" type="button">{$i18n->get('send')}</button>
                         </div>
                       </div>
                       <div class="invalid-feedback">
-                        请填写邮箱验证码
+                        {$i18n->get('please-fill-in-email-verification-code')}
                       </div>
                     </div>
                   </div>
@@ -151,21 +151,21 @@
 
                   <div class="row">
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="passwd" class="d-block">密码</label>
+                      <label for="passwd" class="d-block">{$i18n->get('password')}</label>
                       <input id="passwd" type="password" class="form-control pwstrength" data-indicator="pwindicator" name="passwd" required>
                       <div id="pwindicator" class="pwindicator">
                         <div class="bar"></div>
                         <div class="label"></div>
                       </div>
                       <div class="invalid-feedback">
-                        请填写密码
+                        {$i18n->get('please-fill-in-your-passsword')}
                       </div>
                     </div>
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="repasswd" class="d-block">重复密码</label>
+                      <label for="repasswd" class="d-block">{$i18n->get('confirm-password')}</label>
                       <input id="repasswd" type="password" class="form-control" name="repasswd" required>
                       <div class="invalid-feedback">
-                        请再次填写密码
+                        {$i18n->get('please-your-confirm-password')}
                       </div>
                     </div>
                   </div>
@@ -173,7 +173,7 @@
                   {if $malio_config['enable_sms_verify'] == true}
                   <div class="row">
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="email">手机号</label>
+                      <label for="email">{$i18n->get('phone-number')}</label>
                       <div class="form-group">
                         <div class="input-group">
                           <select id="area_code" class="form-control custom-select col-4 select2" style="border-top-right-radius: 0 !important;
@@ -184,22 +184,22 @@
                           </select>
                           <input id="phone" type="text" class="form-control col-8" required>
                           <div class="invalid-feedback">
-                            请填写手机号
+                            {$i18n->get('please-fill-in-your-phone-number')}
                           </div>
                         </div>
                       </div>
                     </div>
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="email">短信验证码</label>
+                      <label for="email">{$i18n->get('sms-verification-code')}</label>
                       <div class="form-group">
                         <div class="input-group mb-3">
                           <input id="sms_code" type="text" class="form-control" placeholder="" aria-label="" required>
                           <div class="input-group-append">
-                            <button id="send_sms_code" class="btn btn-primary" type="button" style="border-top-right-radius: .3rem;border-bottom-right-radius: .3rem;">发送</button>
+                            <button id="send_sms_code" class="btn btn-primary" type="button" style="border-top-right-radius: .3rem;border-bottom-right-radius: .3rem;">{$i18n->get('send')}</button>
                           </div>
                           <div class="invalid-feedback">
-                              请填写短信验证码
-                            </div>
+                            {$i18n->get('please-fill-in-sms-verification-code')}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -209,11 +209,11 @@
                   {if $config['register_mode'] == 'invite' && $enable_email_verify == 'false'}
                   <div class="row">
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
-                      <label for="code" class="d-block">邀请码 {if $malio_config['code_required'] == false}(选填){/if}</label>
+                      <label for="code" class="d-block">{$i18n->get('invitation-code')} {if $malio_config['code_required'] == false}({$i18n->get('optional')}){/if}</label>
                       <input id="code" type="text" class="form-control" name="code" {if $malio_config['code_required'] == true}required{/if}>
                       {if $malio_config['code_required'] == true}
                       <div class="invalid-feedback">
-                        请填写邀请码
+                        {$i18n->get('please-fill-in-invitation-code')}
                       </div>
                       {/if}
                     </div>
@@ -237,16 +237,16 @@
                   <div class="form-group">
                     <div class="custom-control custom-checkbox">
                       <input type="checkbox" name="agree" class="custom-control-input" id="agree" checked="checked" required>
-                      <label class="custom-control-label" for="agree">注册即代表同意 <a href="/tos" target="blank">服务条款</a></label>
+                      <label class="custom-control-label" for="agree">{$i18n->get('sign-up-tos-check')}</label>
                       <div class="invalid-feedback">
-                          请阅读服务条款并勾选
+                        {$i18n->get('check-tos-feedback')}
                       </div>
                     </div>
                   </div>
 
                   <div class="form-group">
                     <button id="register-confirm" onclick="doSignUp()" class="btn btn-primary btn-lg btn-block">
-                      注册
+                      {$i18n->get('sign-up')}
                     </button>
                   </div>
                 </form>
@@ -254,7 +254,7 @@
               </div>
             </div>
             <div class="mt-5 text-muted text-center">
-                已经有账号了？ <a href="/auth/login">马上登录 👉</a>
+              {$i18n->get('already-got-an-account-question-mark')}
               </div>
             <div class="simple-footer">
               Copyright &copy; 2019 {$config["appName"]}
@@ -291,7 +291,7 @@
   <script>
 
   $(".pwstrength").pwstrength({
-    texts: ['超级弱鸡', '弱鸡', '一般般', '有点强', '很强👌'] 
+    texts: ['{$i18n->get("too-weak")}', '{$i18n->get("weak")}', '{$i18n->get("average")}', '{$i18n->get("strong")}', '{$i18n->get("perfect")}'] 
   });
 
     function login(email,passwd) {
@@ -377,7 +377,7 @@
               if (data.ret == 1) {
                 swal({
                   type: 'success',
-                  title: '注册成功',
+                  title: '{$i18n->get("sign-up-successful")}',
                   showCloseButton: true,
                   onClose: () => {
                     login(email, $("#passwd").val());
@@ -392,7 +392,7 @@
                 $("#code").val(code);
                 swal({
                   type: 'error',
-                  title: '提示',
+                  title: '{$i18n->get("hey")}',
                   showCloseButton: true,
                   text: data.msg
                 })
@@ -421,11 +421,11 @@
     function time(o) {
       if (wait == 0) {
         o.removeAttr("disabled");
-        o.text("获取验证码");
+        o.text("{$i18n->get('sned-agagin')}");
         wait = 60;
       } else {
         o.attr("disabled", "disabled");
-        o.text("重新发送(" + wait + ")");
+        o.text("{$i18n->get('sned-agagin')}(" + wait + ")");
         wait--;
         setTimeout(function () {
             time(o)
@@ -454,14 +454,14 @@
           if (data.ret) {
             swal({
               type: 'success',
-              title: '已发送验证码',
+              title: "{$i18n->get('code-sent')}",
               showCloseButton: true,
-              text: '如长时间未收到，请查看邮件垃圾箱'
+              text: "{$i18n->get('email-code-desc')}"
             })
           } else {
             swal({
               type: 'error',
-              title: '发送验证码失败',
+              title: "{$i18n->get('failed')}",
               showCloseButton: true,
               text: data.msg
             })
@@ -479,11 +479,11 @@
   function time(o) {
     if (wait == 0) {
       o.removeAttr("disabled");
-      o.text("获取验证码");
+      o.text("{$i18n->get('sned-agagin')}");
       wait = 60;
     } else {
       o.attr("disabled", "disabled");
-      o.text("重新发送(" + wait + ")");
+      o.text("{$i18n->get('sned-agagin')}(" + wait + ")");
       wait--;
       setTimeout(function () {
           time(o)
@@ -516,14 +516,14 @@
             time($("#send_sms_code"));
             swal({
               type: 'success',
-              title: '已发送验证码',
+              title: "{$i18n->get('code-sent')}",
               showCloseButton: true,
               text: data.msg
             })
           } else {
             swal({
               type: 'error',
-              title: '发送验证码失败',
+              title: "{$i18n->get('failed')}",
               showCloseButton: true,
               text: data.msg
             })

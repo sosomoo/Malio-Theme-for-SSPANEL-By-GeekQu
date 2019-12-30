@@ -20,6 +20,8 @@ require BASE_PATH."/config/.config.php";
 
 require BASE_PATH."/config/.malio_config.php";
 
+require BASE_PATH."/config/.i18n.php";
+
 
 Boot::setDebug();
 //Boot::setVersion(VERSION);

@@ -4,7 +4,7 @@
 <head>
   {include file='user/head.tpl'}
 
-  <title>下载和使用 &mdash; {$config["appName"]}</title>
+  <title>{$i18n->get('apps-and-tutorial')} &mdash; {$config["appName"]}</title>
 
   <style>
     .os-card {
@@ -60,7 +60,7 @@
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>下载和使用</h1>
+            <h1>{$i18n->get('apps-and-tutorial')}</h1>
           </div>
           <div class="section-body">
             <div class="row mt-sm-4">
@@ -75,7 +75,7 @@
                       <i class="fab fa-windows"></i>
                     </div>
                     <h4>Windows</h4>
-                    <div class="card-description">适用于 Windows 7 或更高版本</div>
+                    <div class="card-description">{$i18n->get('windows-minimal-version')}</div>
                   </div>
                 </div>
               </div>
@@ -94,7 +94,7 @@
                       <i class="fab fa-android"></i>
                     </div>
                     <h4>Android</h4>
-                    <div class="card-description">适用于 Android 5.0 或更高版本</div>
+                    <div class="card-description">{$i18n->get('android-minimal-version')}</div>
                   </div>
                 </div>
               </div>
@@ -111,7 +111,7 @@
                       <i class="fab fa-apple"></i>
                     </div>
                     <h4>Apple</h4>
-                    <div class="card-description">适用于 iOS 9 或更高版本</div>
+                    <div class="card-description">{$i18n->get('ios-minimal-version')}</div>
                   </div>
                 </div>
               </div>
@@ -126,7 +126,7 @@
                       <i class="fas malio-finder"></i>
                     </div>
                     <h4>Mac</h4>
-                    <div class="card-description">适用于 macOS Sierra (10.12) 或更高版本</div>
+                    <div class="card-description">{$i18n->get('mac-minimal-version')}</div>
                   </div>
                 </div>
               </div>
@@ -141,7 +141,7 @@
                       <i class="fab fa-linux"></i>
                     </div>
                     <h4>Linux</h4>
-                    <div class="card-description">适用于……所有版本？</div>
+                    <div class="card-description">{$i18n->get('linux-minimal-version')}</div>
                   </div>
                 </div>
               </div>
@@ -153,7 +153,7 @@
                       <i class="fas fa-surprise"></i>
                     </div>
                     <h4>FAQ</h4>
-                    <div class="card-description">常见问题解答</div>
+                    <div class="card-description">{$i18n->get('faq-desc')}</div>
                   </div>
                 </div>
               </div>

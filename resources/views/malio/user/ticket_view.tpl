@@ -4,7 +4,7 @@
 <head>
   {include file='user/head.tpl'}
 
-  <title>工单详情 &mdash; {$config["appName"]}</title>
+  <title>{$i18n->get('view-ticket')} &mdash; {$config["appName"]}</title>
 
   <!-- CSS Libraries -->
   <link rel="stylesheet" href="/theme/malio/assets/modules/summernote/summernote-bs4.css">
@@ -29,7 +29,7 @@
             <div class="section-header-back">
               <a href="/user/ticket" class="btn btn-icon"><i class="fas fa-arrow-left"></i></a>
             </div>
-            <h1>工单详情</h1>
+            <h1>{$i18n->get('view-ticket')}</h1>
           </div>
           <div class="section-body">
             <div class="row">
@@ -42,14 +42,14 @@
                         {if $ticket_status==1}
                         <div class="ticket-form">
                           <div class="form-group">
-                            <textarea class="form-control" placeholder="填写回复内容" style="height: 200px;" id="ticket-content"></textarea>
+                            <textarea class="form-control" placeholder="" style="height: 200px;" id="ticket-content"></textarea>
                           </div>
                           <div class="form-group text-right">
                             <button id="ticket-reply" onclick="replyTicket({$id})" class="btn btn-primary btn-lg mr-2">
-                              回复
+                              {$i18n->get('reply-ticket')}
                             </button>
                             <button id="close_directly" onclick="closeTicket({$id})" class="btn btn-warning btn-lg">
-                              关闭工单
+                              {$i18n->get('close-ticket')}
                             </button>
                           </div>
                         </div>
