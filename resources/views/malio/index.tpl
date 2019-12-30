@@ -471,7 +471,7 @@
           <h3 class="text-capitalize">{$config['appName']}</h3>
           <div class="pr-lg-5">
             <p>{$i18n->get('index-footer-slogan')}</p>
-            <p>&copy; {$config['appName']}&nbsp;&bull;&nbsp;Powered by <a href="/staff">SSPANEL</a>&nbsp;&bull;&nbsp;Theme by <a href="https://t.me/editXY" target="blank">editXY</a></p>
+            <p>&copy; {$config['appName']}&nbsp;&bull;&nbsp;<span id="copyright"></span></p>
             <div class="mt-4 social-links">
               <a href="/"><i class="fab fa-github"></i></a>
               <a href="/"><i class="fab fa-twitter"></i></a>
@@ -529,6 +529,11 @@
         disableOnInteraction: true,
       },
     })
+  </script>
+
+<script>
+  var code = "UG93ZXJlZCBieSA8YSBocmVmPSIvc3RhZmYiPlNTUEFORUw8L2E+Jm5ic3A7JmJ1bGw7Jm5ic3A7VGhlbWUgYnkgPGEgaHJlZj0iaHR0cHM6Ly90Lm1lL2VkaXRYWSIgdGFyZ2V0PSJibGFuayI+ZWRpdFhZPC9hPg==";
+  $('#copyright').html(atob(code));
   </script>
 
 </body>

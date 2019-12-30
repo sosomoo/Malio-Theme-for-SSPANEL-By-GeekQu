@@ -2,6 +2,13 @@
 ALTER TABLE `user` ADD `uuid` text;
 ALTER TABLE `user` ADD `phone` bigint(20) AFTER `email`;
 
+/* 给 user 表 email 字段增加唯一属性，防止重复注册 */
+ALTER TABLE `user` ADD UNIQUE (`email`);
+
+/* 给 code 表增加 tradeno 字段，防止重复到账 */
+ALTER TABLE `code` ADD COLUMN `tradeno` varchar(255) NULL;
+ALTER TABLE `code` ADD UNIQUE (`tradeno`);
+
 /* 增加 短信验证码 表 */
 CREATE TABLE IF NOT EXISTS `sms_verify` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,

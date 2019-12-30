@@ -20,7 +20,8 @@ class TomatoPay extends AbstractPayment
         $pl->userid = $user->id;
         $pl->total = $price;
         $pl->tradeno = self::generateGuid();
-        $pl->save();
+		$pl->save();
+		
         $fqaccount=$settings['account'];
         $fqkey=$settings['token'];
         $fqmchid = $settings['mchid'];
@@ -39,7 +40,39 @@ class TomatoPay extends AbstractPayment
 		$result = "<script language='javascript' type='text/javascript'>window.location.href='".$url."';</script>";
         $result = json_encode(array('code'=>$url,'errcode'=>0,'pid' =>$pl->id));
         return $result;
-    }
+	}
+	
+	public function purchase_maliopay($type, $price)
+    {
+		if($price <= 0){
+            return json_encode(['errcode'=>-1,'errmsg'=>"非法的金额."]);
+        }
+        $user = Auth::getUser();
+        $settings = Config::get("tomatopay")[$type];
+        $pl = new Paylist();
+        $pl->userid = $user->id;
+        $pl->total = $price;
+		$pl->tradeno = self::generateGuid();
+		$pl->save();
+		
+        $fqaccount=$settings['account'];
+        $fqkey=$settings['token'];
+        $fqmchid = $settings['mchid'];
+		$fqtype = 1;
+		$fqtrade = $pl->tradeno;
+	    $fqcny = $price;
+        $data = [
+            'account' => $settings['account'],
+			'mchid' => $settings['mchid'],
+			'type' => 1,
+			'trade' => $pl->tradeno,
+			'cny' => $price,
+        ];
+		$signs = md5("mchid=".$fqmchid."&account=".$fqaccount."&cny=".$fqcny."&type=1&trade=".$fqtrade.$fqkey);
+        $url="https://b.fanqieui.com/gateways/".$type.".php?account=".$fqaccount."&mchid=".$fqmchid."&type=".$fqtype."&trade=".$fqtrade."&cny=".$fqcny."&signs=".$signs;
+        $result = array('code'=>$url,'errcode'=>0,'tradeno' => $pl->tradeno );
+        return $result;
+	}
     
     public function notify($request, $response, $args)
     {

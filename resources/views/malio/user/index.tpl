@@ -158,8 +158,10 @@
                         <h4>{$i18n->get('your-plan')}</h4>
                       </div>
                       <div class="card-body">
-                        {if $user->class_expire!="1989-06-04 00:05:00"}
+                        {if $user->class_expire!="1989-06-04 00:05:00" && $user->class >= 1}
                         <span class="counter">{$class_left_days}</span> {$i18n->get('days')}
+                        {elseif $user->class <= 0}
+                        <span class="counter">0</span> {$i18n->get('days')}
                         {else}
                           {$i18n->get('lifetime')}
                         {/if}
@@ -602,7 +604,25 @@
 
   {if $malio_config['enable_index_popup_ann'] == true}
   <script>
-    $('#popup-ann-modal').modal('show');
+  {if $malio_config['enable_index_popup_ann_time'] == true}
+      function setCookie(name, value) {
+          var exp = new Date();
+          exp.setTime(exp.getTime() + 1 * 60 * 1000*60*24);
+          document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString() + ";path=/";
+          }
+  
+      function ReadCookie(name) {
+          var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+          if (arr = document.cookie.match(reg)) return unescape(arr[2]);
+          else return null;
+          }
+          if (ReadCookie("cnxad_lunbo") == "" || ReadCookie("cnxad_lunbo") == null) {
+              $('#popup-ann-modal').modal('show');
+              setCookie("cnxad_lunbo", "yes");
+              }
+  {else}
+      $('#popup-ann-modal').modal('show');
+  {/if}
   </script>
   {/if}
 </body>

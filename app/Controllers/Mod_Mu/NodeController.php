@@ -58,6 +58,16 @@ class NodeController extends BaseController
         } else {
             $node_server = $node->server;
         }
+
+        // 0: new node; -1: offline; 1: online
+        $node_heartbeat = $node->node_heartbeat + 300;
+        $node_online = -1;
+        if ($node_heartbeat == 300) {
+            $node_online = 0;
+        } elseif ($node_heartbeat > time()) {
+            $node_online = 1;
+        }
+
         $res = [
             'ret' => 1,
             'data' => [
@@ -68,7 +78,8 @@ class NodeController extends BaseController
                 'mu_only' => $node->mu_only,
                 'sort' => $node->sort,
                 'server' => $node_server,
-                'type' => 'ss-panel-v3-mod_Uim'
+                'type' => 'ss-panel-v3-mod_Uim',
+                'online' => $node_online
             ],
         ];
         return $this->echoJson($response, $res);

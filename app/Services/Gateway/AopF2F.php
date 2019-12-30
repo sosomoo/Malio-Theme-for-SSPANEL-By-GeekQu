@@ -69,6 +69,46 @@ class AopF2F extends AbstractPayment
         return json_encode($return);
     }
 
+    public function purchase_maliopay($type, $price)
+    {
+        $amount = $price;
+        $user = Auth::getUser();
+
+        $pl = new Paylist();
+        $pl->userid = $user->id;
+        $pl->tradeno = self::generateGuid();
+        $pl->total = $amount;
+        $pl->save();
+
+        $gateway = Omnipay::create('Alipay_AopF2F');
+        $gateway->setSignType('RSA2'); //RSA/RSA2
+        $gateway->setAppId(Config::get('f2fpay_app_id'));
+        $gateway->setPrivateKey(Config::get('merchant_private_key')); // 可以是路径，也可以是密钥内容
+        $gateway->setAlipayPublicKey(Config::get('alipay_public_key')); // 可以是路径，也可以是密钥内容
+        $notifyUrl = Config::get('f2fNotifyUrl') ?? (Config::get('baseUrl') . '/payment/notify/f2fpay');
+        $gateway->setNotifyUrl($notifyUrl);
+
+        $request = $gateway->purchase();
+        $request->setBizContent([
+            'subject' => $pl->tradeno,
+            'out_trade_no' => $pl->tradeno,
+            'total_amount' => $pl->total
+        ]);
+
+        /** @var \Omnipay\Alipay\Responses\AopTradePreCreateResponse $response */
+        $aliResponse = $request->send();
+
+        // 获取收款二维码内容
+        $qrCodeContent = $aliResponse->getQrCode();
+
+        $return['errcode'] = 0;
+        $return['url'] = $qrCodeContent;
+        $return['amount'] = $pl->total;
+        $return['tradeno'] = $pl->tradeno;
+
+        return $return;
+    }
+
     public function notify($request, $response, $args)
     {
         $gateway = $this->createGateway();

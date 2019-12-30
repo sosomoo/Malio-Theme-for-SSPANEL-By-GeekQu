@@ -165,6 +165,7 @@ $app->group('/user', function () {
     $this->post('/shop/buytrafficpackage', App\Controllers\UserController::class . ':buyTrafficPackage');
     $this->get('/share-account', App\Controllers\UserController::class . ':share_account');
     $this->post('/api/change-lang', App\Controllers\UserController::class . ':changeLang');
+    $this->get('/qrcode', App\Controllers\UserController::class . ':qrcode');
 })->add(new Auth());
 
 $app->group('/payment', function () {
@@ -322,6 +323,10 @@ $app->group('/admin', function () {
     $this->get('/sys', App\Controllers\AdminController::class . ':sys');
     $this->get('/logout', App\Controllers\AdminController::class . ':logout');
     $this->post('/payback/ajax', App\Controllers\AdminController::class . ':ajax_payback');
+
+    // stats
+    $this->get('/api/analytics/income', App\Controllers\AdminController::class . ':getIncome');
+    $this->get('/api/analytics/new-users', App\Controllers\AdminController::class . ':newUsers');
 })->add(new Admin());
 
 // API

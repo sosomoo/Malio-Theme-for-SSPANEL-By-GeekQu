@@ -1,5 +1,6 @@
 # 请勿泄露源码给他人，当你让他人为你debug或进行其他操作时，切勿让他访问你网站的全部代码，尤其是不认识的人。泄露源码对你我都没好处。
 # 不能删改页面底部的 Powered by SSPANEL. Theme by editXY，不能删改staff页面的任何信息。
+## 删除Powered by SSPANEL可能会导致你的网站被D，删除 Theme by editXY 可能导致你的网站被取消授权。
 
 本主题包含了SSPANEL的完整代码，需要删除原来的面板，然后全新安装（数据库通用），操作前请备份面板
 
@@ -22,9 +23,12 @@
 需要去.config.php打开订阅记录的开关才会记录订阅
 
 ## Telegram
-[TG群组](https://t.me/joinchat/DM2_FxStXAbYZ2DzVfZjcw)
+想进主题交流群请联系 [@editXY](https://t.me/editXY) 获取交流群链接
 
 [TG频道](https://t.me/malio_for_sspanel) ，有新功能或优化都会在频道里发广播，所以请一定要关注频道
+
+## AFF
+推荐的支付平台👉 [BitPayX](https://merchants.mugglepay.com/user/register?ref=MP8DF1B016220D) ，支持数字货币、支付宝、微信，提款数字货币
 
 ## CREDIT
 基于 [rico](https://github.com/rico93) 和 [GeekQu](https://github.com/GeekQu) 维护的 [ss-panel-v3-mod_Uim](https://github.com/rico93/ss-panel-v3-mod_Uim) 修改

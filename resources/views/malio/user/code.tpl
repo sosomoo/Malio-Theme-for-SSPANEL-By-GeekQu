@@ -225,39 +225,53 @@
                       <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">{$i18n->get('payment')}</label>
                       <div class="col-sm-12 {if $config['payment_system'] != 'f2fpay'}col-md-7{else}col-md-3{/if}">
                         <div class="selectgroup w-100">
-                          {if $config['payment_system'] != 'payjs'}
-                          <label class="selectgroup-item">
-                            <input type="radio" name="payment" value="alipay" class="selectgroup-input alipay" checked="">
-                            <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-alipay mr-1"></i>{$i18n->get('alipay')}</span>
-                          </label>
-                          {/if}
-                          {if $config['payment_system'] != 'f2fpay' && $config['payment_system'] != 'spay' && $config['payment_system'] != 'payssion'}
-                          <label class="selectgroup-item">
-                            {if $config['payment_system'] == 'payjs'}
-                            <input type="radio" name="payment" value="wechat" class="selectgroup-input wechat-pay" checked="">
-                            {else}
-                            <input type="radio" name="payment" value="wechat" class="selectgroup-input wechat-pay">
+                          {if $config['payment_system'] != malio}
+                            {if $config['payment_system'] != 'payjs'}
+                            <label class="selectgroup-item">
+                              <input type="radio" name="payment" value="alipay" class="selectgroup-input alipay" checked="">
+                              <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-alipay mr-1"></i>{$i18n->get('alipay')}</span>
+                            </label>
                             {/if}
-                            <span class="selectgroup-button selectgroup-button-icon"><i class="malio-wechat-pay mr-1" style="vertical-align: -1px"></i>{$i18n->get('wechat-pay')}</span>
-                          </label>
-                          {/if}
-                          {if $config['payment_system'] == 'bitpayx'}
-                          <label class="selectgroup-item">
-                            <input type="radio" name="payment" value="crypto" class="selectgroup-input">
-                            <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-btc mr-1"></i>{$i18n->get('cryptocurrency')}</span>
-                          </label>
-                          {/if}
-                          {if $config['payment_system'] == 'codepay' || $config['payment_system'] == 'flyfoxpay'}
-                          <label class="selectgroup-item">
-                            <input type="radio" name="payment" value="qqpay" class="selectgroup-input qqpay">
-                            <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-qq mr-1"></i>{$i18n->get('qq-wallet')}</span>
-                          </label>
-                          {/if}
-                          {if $config['payment_system'] == 'payssion'}
-                          <label class="selectgroup-item">
-                            <input type="radio" name="payment" value="unionpay" class="selectgroup-input">
-                            <span class="selectgroup-button selectgroup-button-icon"><i class="malio-unionpay mr-1"></i>{$i18n->get('unionpay')}</span>
-                          </label>
+                            {if $config['payment_system'] != 'f2fpay' && $config['payment_system'] != 'spay' && $config['payment_system'] != 'payssion'}
+                            <label class="selectgroup-item">
+                              {if $config['payment_system'] == 'payjs'}
+                              <input type="radio" name="payment" value="wechat" class="selectgroup-input wechat-pay" checked="">
+                              {else}
+                              <input type="radio" name="payment" value="wechat" class="selectgroup-input wechat-pay">
+                              {/if}
+                              <span class="selectgroup-button selectgroup-button-icon"><i class="malio-wechat-pay mr-1" style="vertical-align: -1px"></i>{$i18n->get('wechat-pay')}</span>
+                            </label>
+                            {/if}
+                            {if $config['payment_system'] == 'bitpayx'}
+                            <label class="selectgroup-item">
+                              <input type="radio" name="payment" value="crypto" class="selectgroup-input">
+                              <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-btc mr-1"></i>{$i18n->get('cryptocurrency')}</span>
+                            </label>
+                            {/if}
+                            {if $config['payment_system'] == 'codepay' || $config['payment_system'] == 'flyfoxpay'}
+                            <label class="selectgroup-item">
+                              <input type="radio" name="payment" value="qqpay" class="selectgroup-input qqpay">
+                              <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-qq mr-1"></i>{$i18n->get('qq-wallet')}</span>
+                            </label>
+                            {/if}
+                            {if $config['payment_system'] == 'payssion'}
+                            <label class="selectgroup-item">
+                              <input type="radio" name="payment" value="unionpay" class="selectgroup-input">
+                              <span class="selectgroup-button selectgroup-button-icon"><i class="malio-unionpay mr-1"></i>{$i18n->get('unionpay')}</span>
+                            </label>
+                          {else}
+                            {if $malio_config['mups_alipay'] != 'none'}
+                            <label class="selectgroup-item">
+                              <input type="radio" name="payment" value="alipay" class="selectgroup-input alipay" checked="">
+                              <span class="selectgroup-button selectgroup-button-icon"><i class="fab fa-alipay mr-1"></i>{$i18n->get('alipay')}</span>
+                            </label>
+                            {/if}
+                            {if $malio_config['mups_wechat'] != 'none'}
+                            <label class="selectgroup-item">
+                              <input type="radio" name="payment" value="wechat" class="selectgroup-input wechat-pay">
+                              <span class="selectgroup-button selectgroup-button-icon"><i class="malio-wechat-pay mr-1" style="vertical-align: -1px"></i>{$i18n->get('wechat-pay')}</span>
+                            </label>
+                            {/if}
                           {/if}
                         </div>
                       </div>

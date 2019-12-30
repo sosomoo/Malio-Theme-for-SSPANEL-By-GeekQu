@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\Node;
 use App\Utils\Tools;
+use App\Models\Code;
 
 class Analytics
 {
@@ -116,5 +117,27 @@ class Analytics
                     ->orWhere('sort', '=', 13);
             }
         )->where('node_heartbeat', '>', time() - 90)->count();
+    }
+
+    public function getIncome($start, $end)
+    {
+        $sum = Code::where('usedatetime', '>=', date("Y-m-d H:i:s", $start))
+        ->where('usedatetime', '<', date("Y-m-d H:i:s", $end))
+        ->sum('number');
+        if ($sum == null) {
+            $sum = 0;
+        }
+        return $sum;
+    }
+
+    public function getNewUsers($start, $end)
+    {
+        $users = User::where('reg_date', '>=', date("Y-m-d H:i:s", $start))
+        ->where('reg_date', '<', date("Y-m-d H:i:s", $end))
+        ->count();
+        if ($users == null) {
+            $users = 0;
+        }
+        return $users;
     }
 }

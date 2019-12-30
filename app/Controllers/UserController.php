@@ -1129,7 +1129,11 @@ class UserController extends BaseController
             $res['msg'] = '此优惠码无效';
             return $response->getBody()->write(json_encode($res));
         }
-
+        if ($coupon->expire < time()) {
+            $res['ret'] = 0;
+            $res['msg'] = '优惠码已过期';
+            return $response->getBody()->write(json_encode($res));
+        }
         if ($coupon->order($shop->id) == false) {
             $res['ret'] = 0;
             $res['msg'] = '此优惠码不可用于此商品';
@@ -1164,6 +1168,10 @@ class UserController extends BaseController
         $shop = $request->getParam('shop');
         $disableothers = $request->getParam('disableothers');
         $autorenew = $request->getParam('autorenew');
+
+        if (MalioConfig::get('shop_enable_trail_plan') == true && MalioConfig::get('shop_trail_plan_shopid') == $shop && $this->user->class >= 0) {
+            return 0;
+        };
 
         $shop = Shop::where('id', $shop)->where('status', 1)->first();
 
@@ -2142,6 +2150,11 @@ class UserController extends BaseController
     public function share_account($request, $response, $args)
     {
         return $this->view()->display('user/share_account.tpl'); 
+    }
+
+    public function qrcode($request, $response, $args)
+    {
+        return $this->view()->display('user/qrcode.tpl'); 
     } 
 
     public function changeLang($request, $response, $args)
