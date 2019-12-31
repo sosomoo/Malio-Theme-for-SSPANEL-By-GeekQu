@@ -61,31 +61,12 @@ class Callback
      */
     public static function CallbackDataHandler($user, $bot, $Callback, $Data, $SendUser)
     {
-        switch ($Data['CallbackData']) {
-            case 'index':
-                // 主菜单
-                $temp = Reply::getInlinekeyboard($user, 'index');
-                $sendMessage = [
-                    'chat_id'                   => $Data['ChatID'],
-                    'message_id'                => $Data['MessageID'],
-                    'text'                      => $temp['text'],
-                    'parse_mode'                => 'Markdown',
-                    'disable_web_page_preview'  => false,
-                    'reply_to_message_id'       => null,
-                    'reply_markup'              => json_encode(
-                        [
-                            'inline_keyboard' => $temp['keyboard']
-                        ]
-                    ),
-                ];
-                break;
+        $CallbackDataExplode = explode('|', $Data['CallbackData']);
+        switch ($CallbackDataExplode[0]) {
             case 'general.pricing':
                 // 产品介绍
                 $sendMessage = [
-                    'chat_id'                   => $Data['ChatID'],
-                    'message_id'                => $Data['MessageID'],
                     'text'                      => '产品介绍',
-                    'parse_mode'                => 'Markdown',
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
                     'reply_markup'              => json_encode(
@@ -100,10 +81,7 @@ class Callback
             case 'general.terms':
                 // 服务条款
                 $sendMessage = [
-                    'chat_id'                   => $Data['ChatID'],
-                    'message_id'                => $Data['MessageID'],
                     'text'                      => '服务条款',
-                    'parse_mode'                => 'Markdown',
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
                     'reply_markup'              => json_encode(
@@ -116,15 +94,28 @@ class Callback
                 ];
                 break;
             default:
+                // 主菜单
+                $temp = Reply::getInlinekeyboard($user, 'index');
                 $sendMessage = [
-                    'chat_id'                   => $Data['ChatID'],
-                    'text'                      => '发生错误.',
-                    'parse_mode'                => 'Markdown',
+                    'text'                      => $temp['text'],
+                    'disable_web_page_preview'  => false,
+                    'reply_to_message_id'       => null,
+                    'reply_markup'              => json_encode(
+                        [
+                            'inline_keyboard' => $temp['keyboard']
+                        ]
+                    ),
                 ];
-                $Data['AllowEditMessage'] = false;
                 break;
         }
-
+        $sendMessage = array_merge(
+            $sendMessage,
+            [
+                'chat_id'       => $Data['ChatID'],
+                'message_id'    => $Data['MessageID'],
+                'parse_mode'    => 'HTML',
+            ]
+        );
         if ($Data['AllowEditMessage']) {
             // 消息可编辑
             Process::SendPost('editMessageText', $sendMessage);
@@ -150,13 +141,10 @@ class Callback
                 switch ($op_2) {
                     case 'update_link':
                         // 重置订阅链接
-                        $temp = Reply::getInlinekeyboard($user, 'index');
+                        $temp = Reply::getInlinekeyboard($user, 'user.subscribe');
                         $user->clean_link();
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => '订阅链接重置成功.',
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -168,14 +156,11 @@ class Callback
                         break;
                     case 'update_passwd':
                         // 重置链接密码
-                        $temp = Reply::getInlinekeyboard($user, 'index');
                         $user->passwd = Tools::genRandomChar(8);
                         if ($user->save()) {
+                            $temp = Reply::getInlinekeyboard($user, 'user.subscribe');
                             $sendMessage = [
-                                'chat_id'                   => $Data['ChatID'],
-                                'message_id'                => $Data['MessageID'],
-                                'text'                      => '连接密码更新成功.' . PHP_EOL . '新密码为：' . $user->passwd,
-                                'parse_mode'                => 'Markdown',
+                                'text'                      => '连接密码更新成功，请在下方重新更新订阅.' . PHP_EOL . PHP_EOL . '新的连接密码为：' . $user->passwd,
                                 'disable_web_page_preview'  => false,
                                 'reply_to_message_id'       => null,
                                 'reply_markup'              => json_encode(
@@ -185,11 +170,9 @@ class Callback
                                 ),
                             ];
                         } else {
+                            $temp = Reply::getInlinekeyboard();
                             $sendMessage = [
-                                'chat_id'                   => $Data['ChatID'],
-                                'message_id'                => $Data['MessageID'],
                                 'text'                      => '出现错误，连接密码更新失败，请联系管理员.',
-                                'parse_mode'                => 'Markdown',
                                 'disable_web_page_preview'  => false,
                                 'reply_to_message_id'       => null,
                                 'reply_markup'              => json_encode(
@@ -237,10 +220,7 @@ class Callback
                             $text = '当前不允许私自更改.';
                         }
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -287,10 +267,7 @@ class Callback
                             $text = '当前不允许私自更改.';
                         }
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -337,10 +314,7 @@ class Callback
                             $text = '当前不允许私自更改.';
                         }
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -367,21 +341,22 @@ class Callback
                                 $user->sendDailyMail = ($user->sendDailyMail == 0 ? 1 : 0);
                                 if ($user->save()) {
                                     $text = '设置更改成功，每日邮件接收当前设置为：';
+                                    $text .= '<strong>';
                                     $text .= ($user->sendDailyMail == 0 ? '不发送' : '发送');
+                                    $text .= '</strong>';
                                 } else {
                                     $text = '发生错误.';
                                 }
                                 break;
                             default:
                                 $text = '每日邮件接收当前设置为：';
+                                $text .= '<strong>';
                                 $text .= ($user->sendDailyMail == 0 ? '不发送' : '发送');
+                                $text .= '</strong>';
                                 break;
                         }
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -393,11 +368,14 @@ class Callback
                         break;
                     default:
                         $temp = Reply::getInlinekeyboard($user, 'user.edit');
+                        $text = '您可在此编辑您的资料或连接信息：' . PHP_EOL . PHP_EOL;
+                        $text .= '端口：' . $user->port . PHP_EOL;
+                        $text .= '密码：' . $user->passwd . PHP_EOL;
+                        $text .= '加密：' . $user->method . PHP_EOL;
+                        $text .= '协议：' . $user->protocol . PHP_EOL;
+                        $text .= '混淆：' . $user->obfs;
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
-                            'text'                      => '您可在此编辑您的资料或连接信息：',
-                            'parse_mode'                => 'Markdown',
+                            'text'                      => $text,
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -418,6 +396,24 @@ class Callback
                     ];
                     $UserApiUrl = LinkController::getSubinfo($user, 0)['link'];
                     switch ($CallbackDataExplode[1]) {
+                        case '?quantumult=3':
+                            $token = LinkController::GenerateSSRSubCode($user->id, 0);
+                            $filename = 'Quantumult_' . $token . '_' . time() . '.conf';
+                            $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
+                            $fh = fopen($filepath, 'w+');
+                            $string = LinkController::GetQuantumult($user, 3, [], [], false, 0);
+                            fwrite($fh, $string);
+                            fclose($fh);
+                            $bot->sendDocument(
+                                [
+                                    'chat_id'       => $Data['ChatID'],
+                                    'document'      => $filepath,
+                                    'caption'       => $filename,
+                                ]
+                            );
+                            unlink($filepath);
+                            $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Quantumult</strong>，选择更新配置.';
+                            break;
                         default:
                             $temp['text'] = '该订阅链接为：' . PHP_EOL . PHP_EOL . $UserApiUrl . $CallbackDataExplode[1];
                             break;
@@ -426,10 +422,7 @@ class Callback
                     $temp = Reply::getInlinekeyboard($user, 'user.subscribe');
                 }
                 $sendMessage = [
-                    'chat_id'                   => $Data['ChatID'],
-                    'message_id'                => $Data['MessageID'],
                     'text'                      => $temp['text'],
-                    'parse_mode'                => 'Markdown',
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
                     'reply_markup'              => json_encode(
@@ -451,12 +444,9 @@ class Callback
                             $code = InviteCode::where('user_id', $user->id)->first();
                         }
                         $inviteUrl = Config::get('baseUrl') . '/auth/register?code=' . $code->code;
-                        $text = '['. $inviteUrl . '](' . $inviteUrl . ')';
+                        $text = '<a href="' . $inviteUrl . '">'. $inviteUrl . '</a>';
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => null
@@ -467,11 +457,11 @@ class Callback
                             $paybacks_sum = 0;
                         }
                         $text = [
-                            '**分享计划，您每邀请 1 位用户注册：**',
+                            '<strong>分享计划，您每邀请 1 位用户注册：</strong>',
                             '',
-                            '- 您会获得 **' . Config::get('invite_gift') . 'G** 流量奖励.',
-                            '- 对方将获得 **' . Config::get('invite_get_money') . ' 元** 奖励作为初始资金.',
-                            '- 对方充值时您还会获得对方充值金额的 **' . Config::get('code_payback') . '%** 的返利.',
+                            '- 您会获得 <strong>' . Config::get('invite_gift') . 'G</strong> 流量奖励.',
+                            '- 对方将获得 <strong>' . Config::get('invite_get_money') . ' 元</strong> 奖励作为初始资金.',
+                            '- 对方充值时您还会获得对方充值金额的 <strong>' . Config::get('code_payback') . '%</strong> 的返利.',
                             '',
                             '已获得返利：' . $paybacks_sum . ' 元.',
                         ];
@@ -485,10 +475,7 @@ class Callback
                             Reply::getInlinekeyboard()
                         ];
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => implode(PHP_EOL, $text),
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -516,15 +503,12 @@ class Callback
                                 $userloginip[] = $loginiplocation;
                             }
                         }
-                        $text = ('以下是您最近 10 次的登录位置：' .
+                        $text = ('<strong>以下是您最近 10 次的登录位置：</strong>' .
                             PHP_EOL .
                             PHP_EOL .
                             implode('、', $userloginip));
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -548,17 +532,14 @@ class Callback
                                 continue;
                             }
                             $location = $iplocation->getlocation($single->ip);
-                            $userip[$single->ip] = '「' . $single->ip . '」 ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
+                            $userip[$single->ip] = '[' . $single->ip . '] ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
                         }
-                        $text = ('以下是您最近 5 分钟的使用 IP：' .
+                        $text = ('<strong>以下是您最近 5 分钟的使用 IP：</strong>' .
                             PHP_EOL .
                             PHP_EOL .
                             implode(PHP_EOL, $userip));
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -575,17 +556,14 @@ class Callback
                         $paybacks = Payback::where('ref_by', $user->id)->orderBy('datetime', 'desc')->take(10)->get();
                         $temp = [];
                         foreach ($paybacks as $payback) {
-                            $temp[] = '`#' . $payback->id . '：' . ($payback->user() != null ? $payback->user()->user_name : '已注销') . '：' . $payback->ref_get . ' 元`';
+                            $temp[] = '<code>#' . $payback->id . '：' . ($payback->user() != null ? $payback->user()->user_name : '已注销') . '：' . $payback->ref_get . ' 元</code>';
                         }
-                        $text = ('以下是您最近 10 条返利记录：' .
+                        $text = ('<strong>以下是您最近 10 条返利记录：</strong>' .
                             PHP_EOL .
                             PHP_EOL .
                             implode(PHP_EOL, $temp));
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -604,17 +582,14 @@ class Callback
                         $temp = [];
                         foreach ($logs as $log) {
                             $location = $iplocation->getlocation($log->request_ip);
-                            $temp[] = '`' . $log->request_time . ' 在 <' . $log->request_ip . '> ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']) . '访问了 ' . $log->subscribe_type . ' 订阅`';
+                            $temp[] = '<code>' . $log->request_time . ' 在 [' . $log->request_ip . '] ' . iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']) . ' 访问了 ' . $log->subscribe_type . ' 订阅</code>';
                         }
-                        $text = ('以下是您最近 10 条订阅记录：' .
+                        $text = ('<strong>以下是您最近 10 条订阅记录：</strong>' .
                             PHP_EOL .
                             PHP_EOL .
                             implode(PHP_EOL . PHP_EOL, $temp));
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => $text,
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -629,10 +604,7 @@ class Callback
                     default:
                         $temp = Reply::getInlinekeyboard($user, 'user.index');
                         $sendMessage = [
-                            'chat_id'                   => $Data['ChatID'],
-                            'message_id'                => $Data['MessageID'],
                             'text'                      => $temp['text'],
-                            'parse_mode'                => 'Markdown',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -645,6 +617,14 @@ class Callback
                 }
                 break;
         }
+        $sendMessage = array_merge(
+            $sendMessage,
+            [
+                'chat_id'       => $Data['ChatID'],
+                'message_id'    => $Data['MessageID'],
+                'parse_mode'    => 'HTML',
+            ]
+        );
         if ($Data['AllowEditMessage']) {
             // 消息可编辑
             Process::SendPost('editMessageText', $sendMessage);
