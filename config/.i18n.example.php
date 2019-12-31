@@ -380,7 +380,7 @@ $I18N['pricing'] = array(
 );
 $I18N['support'] = array(
     'en' => 'Support',
-    'zh-cn' => ''
+    'zh-cn' => '支持'
 );
 $I18N['index-slogan'] = array(
     'en' => 'We Dedicate to Providing the Finest Network Proxy Service',
@@ -388,195 +388,172 @@ $I18N['index-slogan'] = array(
 );
 $I18N['index-text-under-slogan'] = array(
     'en' => 'The ultimate proxy for all of your devices',
-    'zh-cn' => ' 通过我们的网络访问内容提供商、公司网络和公共云服务'
+    'zh-cn' => '通过我们的网络访问内容提供商、公司网络和公共云服务'
 );
 $I18N['get-started'] = array(
     'en' => 'Get Started',
-    'zh-cn' => ' 通过我们的网络访问内容提供商、公司网络和公共云服务'
+    'zh-cn' => '开始使用'
 );
 $I18N['index-offer-bar'] = array(
     'en' => '17% Off For Annual Subscription',
-    'zh-cn' => ''
+    'zh-cn' => '年付8折优惠活动，限时进行中'
 );
 $I18N['not-a-reason-to-use'] = array(
     'en' => 'Not a reason to use',
-    'zh-cn' => ''
+    'zh-cn' => '为什么选择 '. $I18N['appName']['zh-cn']
 );
 $I18N['just-a-statistic'] = array(
     'en' => '<span class="font-weight-500">just a</span> statistic',
-    'zh-cn' => ''
+    'zh-cn' => '迄今为止
+    '
 );
-$I18N['servers'] = array(
+$I18N['index-servers'] = array(
     'en' => 'Servers',
-    'zh-cn' => ''
+    'zh-cn' => '国际节点'
 );
 $I18N['regions'] = array(
     'en' => 'Regions',
-    'zh-cn' => ''
+    'zh-cn' => '国家地区'
 );
 $I18N['users'] = array(
     'en' => 'Users',
-    'zh-cn' => ''
+    'zh-cn' => '满意用户'
 );
 $I18N['index-section-1-title'] = array(
     'en' => 'The service <span class="text-primary">you have been looking for</span> is here',
-    'zh-cn' => ''
+    'zh-cn' => '为你 <span class="text-primary">量身定制<span> 的服务'
 );
 $I18N['index-section-1-subtitle'] = array(
     'en' => 'The finest proxy service built for you with the most reliable technology',
-    'zh-cn' => ''
+    'zh-cn' => '可靠的基础设施，并能提供您喜爱的诸多功能'
 );
 $I18N['index-section-1-feature-1-lead'] = array(
     'en' => 'Fast & Reliable Connection',
-    'zh-cn' => ''
+    'zh-cn' => '高速稳定'
 );
 $I18N['index-section-1-feature-1-desc'] = array(
     'en' => 'Make you never feel a thing of the existance of the GFW again',
-    'zh-cn' => ''
+    'zh-cn' => '体验宛若身在海外的访问速度'
 );
 $I18N['index-section-1-feature-2-lead'] = array(
     'en' => 'Easy Configuration',
-    'zh-cn' => ''
+    'zh-cn' => '便携设置'
 );
 $I18N['index-section-1-feature-2-desc'] = array(
     'en' => 'Our products are compatible with macOS, iOS, Android, Windows, and Linux',
-    'zh-cn' => ''
+    'zh-cn' => '我们的服务适用于 macOS、iOS、Android、Windows 和 Linux'
 );
 $I18N['index-section-1-feature-3-lead'] = array(
     'en' => 'Cheap but Trustworthy',
-    'zh-cn' => ''
+    'zh-cn' => '节省成本'
 );
 $I18N['index-section-1-feature-3-desc'] = array(
     'en' => 'Save you money from building your own service',
-    'zh-cn' => ''
+    'zh-cn' => '相比自托管服务可节省大量费用'
 );
 $I18N['index-section-1-feature-4-lead'] = array(
     'en' => 'Global Proxy',
-    'zh-cn' => ''
+    'zh-cn' => '全球互联'
 );
 $I18N['index-section-1-feature-4-desc'] = array(
     'en' => 'Use IXP to connect to any service provider around the world',
-    'zh-cn' => ''
+    'zh-cn' => '通过 IXP 连接至全球内容提供商，更加快速'
 );
 $I18N['index-section-1-feature-5-lead'] = array(
     'en' => 'Carrier Friendly',
-    'zh-cn' => ''
+    'zh-cn' => '运营商友好'
 );
 $I18N['index-section-1-feature-5-desc'] = array(
     'en' => 'We made easy for any internet service subscriber to use our service',
-    'zh-cn' => ''
+    'zh-cn' => '我们的产品和您的当地运营商兼容，适用于您的固网与移动网络'
 );
 $I18N['index-section-1-feature-6-lead'] = array(
     'en' => 'Third-Party Compatibility',
-    'zh-cn' => ''
+    'zh-cn' => '多应用兼容'
 );
 $I18N['index-section-1-feature-6-desc'] = array(
     'en' => 'We provide compatible third-party apps to extend our potential',
-    'zh-cn' => ''
+    'zh-cn' => '提供全面且可靠的第三方应用程序兼容'
 );
 $I18N['index-section-2-above-title'] = array(
     'en' => 'CROSS DEVICES & PLATFORMS',
-    'zh-cn' => ''
+    'zh-cn' => 'CROSS DEVICES & PLATFORMS'
 );
 $I18N['index-section-2-title'] = array(
     'en' => 'Use Our Service on Your Favorite Devices, Either Your Laptop or Your Phone. Enjoy Our Service at Any Place',
-    'zh-cn' => ''
+    'zh-cn' => '在你心爱的电子设备中使用，无论是移动的手机还是固定的电脑，随时随处可用'
 );
 $I18N['index-section-2-desc'] = array(
     'en' => $I18N['appName']['en'] . ' provides services compatible on macOS, iOS, Android, Windows, and Linux. Using third-party apps, you may use our service on your phone, computer, router, game console, and even TV boxes.',
-    'zh-cn' => ''
+    'zh-cn' => $I18N['appName']['zh-cn'] . '的服务适用于 macOS、iOS、Android、Windows 和 Linux，借助第三方客户端，可在手机、电脑、路由器、游戏机、电视盒子中使用。'
 );
 $I18N['index-section-3-above-title'] = array(
     'en' => 'UNBLOCK STREAMING MEDIA',
-    'zh-cn' => ''
+    'zh-cn' => 'UNBLOCK STREAMING MEDIA'
 );
 $I18N['index-section-3-title'] = array(
     'en' => 'Stream Your Favorite TV Shows and Music',
-    'zh-cn' => ''
+    'zh-cn' => '解锁流媒体，观赏和聆听优质的内容'
 );
 $I18N['index-section-3-desc'] = array(
     'en' => 'Using service provided by ' . $I18N['appName']['en'] . ', you may unblock media streaming services like Netflix, Hulu, HBO, TVB, Happyon, and AbemaTV, and listen to streaming music provided by services like Spotify and Pandora',
-    'zh-cn' => ''
+    'zh-cn' => '通过 '.$I18N['appName']['zh-cn'].' 的服务，可以观看包括 Netflix、Hulu、HBO、TVB、Happyon、AbemaTV 等在内的多种流媒体视频，聆听包括 Spotify、Pandora 等在内的流媒体音乐。'
 );
 $I18N['index-section-4-title'] = array(
     'en' => 'Even More Built-in Features',
-    'zh-cn' => ''
+    'zh-cn' => '不仅仅如此，亦包含以下诸多特性'
 );
 $I18N['index-section-4-desc'] = array(
     'en' => '* Some features will require the use of a third-party app',
-    'zh-cn' => ''
-);
-$I18N['index-section-4-feature-1-desc'] = array(
-    'en' => 'Block Ads when viewing webpages and streaming videos',
-    'zh-cn' => ''
-);
-$I18N['index-section-4-feature-2-desc'] = array(
-    'en' => 'Smart Router, automatically choose the proxy for various requests',
-    'zh-cn' => ''
-);
-$I18N['index-section-4-feature-3-desc'] = array(
-    'en' => 'Apple Service Proxied (App Store, Apple Music, iCloud, and iTunes etc.)',
-    'zh-cn' => ''
-);
-$I18N['index-section-4-feature-4-desc'] = array(
-    'en' => 'Unblock Websites (Google/Youtube/Twitter/Instagram/Github etc.)',
-    'zh-cn' => ''
-);
-$I18N['index-section-4-feature-5-desc'] = array(
-    'en' => 'Encrypt all your connections to protect your privacy',
-    'zh-cn' => ''
-);
-$I18N['index-section-4-feature-6-desc'] = array(
-    'en' => 'Compatible with awesome third-party apps developed on many system platforms',
-    'zh-cn' => ''
+    'zh-cn' => '* 部分特性需要配合第三方客户端与托管规则使用'
 );
 $I18N['index-section-5-title'] = array(
     'en' => 'Execllent Service with Affordable Prices',
-    'zh-cn' => ''
+    'zh-cn' => '出色的体验，意想不到的价格'
 );
 $I18N['index-section-5-desc'] = array(
     'en' => 'Never waste your time on waiting again, start enjoy our proxy service.',
-    'zh-cn' => ''
+    'zh-cn' => '不要把宝贵的时间，浪费在等待上。即刻开启全球网络中继服务，在任何时间任何地点访问全球互联网。'
 );
 $I18N['index-section-6-title'] = array(
     'en' => 'Start Using Our Global Proxy Service',
-    'zh-cn' => ''
+    'zh-cn' => '开始使用优秀的全球网络中继服务'
 );
 $I18N['index-section-6-subtitle'] = array(
     'en' => 'Start using outstanding global network relay service',
-    'zh-cn' => ''
+    'zh-cn' => 'Start using outstanding global network relay service'
 );
 $I18N['index-section-6-card-1-title'] = array(
     'en' => 'Pre-sales',
-    'zh-cn' => ''
+    'zh-cn' => '售前咨询'
 );
 $I18N['index-section-6-card-1-desc'] = array(
     'en' => 'Any questions on our service? Contact our Sales Team now.',
-    'zh-cn' => ''
+    'zh-cn' => '有任何关于会员计划的疑问？联系我们的售前咨询小组，马上为您解答。'
 );
 $I18N['index-section-6-card-2-title'] = array(
     'en' => 'Tech Support',
-    'zh-cn' => ''
+    'zh-cn' => '技术支持'
 );
 $I18N['index-section-6-card-2-desc'] = array(
     'en' => $I18N['appName']['en'] . ' provides certain tech support during your subscription.',
-    'zh-cn' => ''
+    'zh-cn' => $I18N['appName']['zh-cn'].' 在您的订阅周期内为您提供一定程度上的技术支持。'
 );
 $I18N['start-now'] = array(
     'en' => 'Start Now',
-    'zh-cn' => ''
+    'zh-cn' => '立即注册'
 );
 $I18N['contact-us'] = array(
     'en' => 'Contact Us',
-    'zh-cn' => ''
+    'zh-cn' => '联系我们'
 );
 $I18N['subscribe'] = array(
     'en' => 'Subscribe',
-    'zh-cn' => ''
+    'zh-cn' => '订阅'
 );
 $I18N['index-footer-slogan'] = array(
     'en' => 'We dedicate to providing the finest network proxy service',
-    'zh-cn' => ''
+    'zh-cn' => '致力于为用户提供高速稳定的高性价比网络中继服务'
 );
 $I18N['index-more-features'] = array(
     'en' => array(
