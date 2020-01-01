@@ -6,6 +6,7 @@
     </ul>
   </form>
   <ul class="navbar-nav navbar-right">
+    {if $malio_config['enable_i18n'] == true}
     <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown" class="nav-link nav-link-lg nav-link-user"><i class="fas fa-language" style="vertical-align: -2px; padding-right: 2px;"></i> {if $i18n->lang == 'en'}English{else}简体中文{/if}</a>
       <div class="dropdown-menu dropdown-menu-right">
         <a href="##" class="dropdown-item has-icon" onclick="changeLang('en')">
@@ -16,6 +17,9 @@
         </a>
       </div>
     </li>
+    {else}
+    <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown" class="nav-link nav-link-lg nav-link-user"></li>
+    {/if}
     <li class="dropdown"><a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
         <img alt="image" src="{$user->gravatar}?d=retro" class="rounded-circle mr-1">
         <div class="d-sm-none d-lg-inline-block">Hi, {$user->user_name}</div>

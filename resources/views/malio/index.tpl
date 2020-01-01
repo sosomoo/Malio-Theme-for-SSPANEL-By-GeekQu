@@ -22,6 +22,112 @@
   {if $malio_config['enable_chatra'] == true && $malio_config['enable_crisp_outside'] == true}
   {include file='chatra.tpl'}
   {/if}
+
+  <style>
+    .pricing {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+      background-color: #fff;
+      border-radius: 3px;
+      border: none;
+      position: relative;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .pricing.pricing-highlight .pricing-title {
+      background-color: #6777ef;
+      color: #fff;
+    }
+
+    .pricing.pricing-highlight .pricing-cta a {
+      background-color: #6777ef;
+      color: #fff;
+    }
+
+    .pricing.pricing-highlight .pricing-cta a:hover {
+      background-color: #394eea !important;
+    }
+
+    .pricing .pricing-padding {
+      padding: 40px;
+    }
+
+    .pricing .pricing-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      background-color: #f3f6f8;
+      color: #6777ef;
+      border-radius: 0 0 3px 3px;
+      display: inline-block;
+      padding: 5px 15px;
+    }
+
+    .pricing .pricing-price {
+      margin-bottom: 45px;
+      color: #6c757d
+    }
+
+    .pricing .pricing-price div:first-child {
+      font-weight: 600;
+      font-size: 50px;
+    }
+
+    .pricing .pricing-details {
+      text-align: left;
+      display: inline-block;
+      color: #6c757d;
+    }
+
+    .pricing .pricing-details .pricing-item {
+      display: flex;
+      margin-bottom: 15px;
+    }
+
+    .pricing .pricing-details .pricing-item .pricing-item-icon {
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      border-radius: 50%;
+      text-align: center;
+      background-color: #63ed7a;
+      color: #fff;
+      margin-right: 10px;
+    }
+
+    .pricing .pricing-details .pricing-item .pricing-item-icon i {
+      font-size: 11px;
+    }
+
+    .pricing .pricing-cta {
+      margin-top: 20px;
+    }
+
+    .pricing .pricing-cta a {
+      display: block;
+      padding: 20px 40px;
+      background-color: #f3f6f8;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 0 0 3px 3px;
+    }
+
+    .pricing .pricing-cta a .fas,
+    .pricing .pricing-cta a .far,
+    .pricing .pricing-cta a .fab,
+    .pricing .pricing-cta a .fal,
+    .pricing .pricing-cta a .ion {
+      margin-left: 5px;
+    }
+
+    .pricing .pricing-cta a:hover {
+      background-color: #e3eaef;
+    }
+  </style>
 </head>
 
 {if $malio_config['enable_landing_page'] == true}
@@ -40,22 +146,24 @@
           <li class="nav-item"><a href="#purchase" class="nav-link">{$i18n->get('pricing')}</a></li>
           <li class="nav-item"><a href="#contact-support" class="nav-link">{$i18n->get('support')}</a></li>
           {if $user->isLogin}
-          <li class="nav-item d-lg-none d-md-block"><a href="/user" class="nav-link smooth">{$i18n->get('dashboard')}</a></li>
+          <li class="nav-item d-lg-none d-md-block"><a href="/user" class="nav-link smooth">{$i18n->get('index-dashboard-button')}</a></li>
           {else}
           <li class="nav-item d-lg-none d-md-block"><a href="/auth/login" class="nav-link smooth">{$i18n->get('login')}</a></li>
           {/if}
+          {if $malio_config['enable_i18n'] == true}
           <li class="nav-item dropdown"><a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle" aria-expanded="false">🇬🇧Language</a>
             <ul class="dropdown-menu">
               <li><a href="##" class="dropdown-item">🇨🇳简体中文</a></li>
               <li><a href="##" class="dropdown-item">🇬🇧English</a></li>
             </ul>
           </li>
+          {/if}
         </ul>
         <ul class="navbar-nav ml-auto align-items-lg-center d-none d-lg-block">
           <li class="ml-lg-3 nav-item">
             {if $user->isLogin}
             <a href="/user" class="btn btn-round smooth btn-icon icon-left">
-              <i class="fab fa-fort-awesome"></i> {$i18n->get('dashboard')}
+              <i class="fab fa-fort-awesome"></i> {$i18n->get('index-dashboard-button')}
             </a>
             {else}
             <a href="/auth/login" class="btn btn-round smooth btn-icon icon-left">
@@ -244,111 +352,6 @@
   </section>
 
   <section id="purchase" class="bg-gr">
-    <style>
-      .pricing {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
-        background-color: #fff;
-        border-radius: 3px;
-        border: none;
-        position: relative;
-        margin-bottom: 30px;
-        text-align: center;
-      }
-
-      .pricing.pricing-highlight .pricing-title {
-        background-color: #6777ef;
-        color: #fff;
-      }
-
-      .pricing.pricing-highlight .pricing-cta a {
-        background-color: #6777ef;
-        color: #fff;
-      }
-
-      .pricing.pricing-highlight .pricing-cta a:hover {
-        background-color: #394eea !important;
-      }
-
-      .pricing .pricing-padding {
-        padding: 40px;
-      }
-
-      .pricing .pricing-title {
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 2.5px;
-        background-color: #f3f6f8;
-        color: #6777ef;
-        border-radius: 0 0 3px 3px;
-        display: inline-block;
-        padding: 5px 15px;
-      }
-
-      .pricing .pricing-price {
-        margin-bottom: 45px;
-        color: #6c757d
-      }
-
-      .pricing .pricing-price div:first-child {
-        font-weight: 600;
-        font-size: 50px;
-      }
-
-      .pricing .pricing-details {
-        text-align: left;
-        display: inline-block;
-        color: #6c757d;
-      }
-
-      .pricing .pricing-details .pricing-item {
-        display: flex;
-        margin-bottom: 15px;
-      }
-
-      .pricing .pricing-details .pricing-item .pricing-item-icon {
-        width: 20px;
-        height: 20px;
-        line-height: 20px;
-        border-radius: 50%;
-        text-align: center;
-        background-color: #63ed7a;
-        color: #fff;
-        margin-right: 10px;
-      }
-
-      .pricing .pricing-details .pricing-item .pricing-item-icon i {
-        font-size: 11px;
-      }
-
-      .pricing .pricing-cta {
-        margin-top: 20px;
-      }
-
-      .pricing .pricing-cta a {
-        display: block;
-        padding: 20px 40px;
-        background-color: #f3f6f8;
-        text-transform: uppercase;
-        letter-spacing: 2.5px;
-        font-size: 14px;
-        font-weight: 700;
-        text-decoration: none;
-        border-radius: 0 0 3px 3px;
-      }
-
-      .pricing .pricing-cta a .fas,
-      .pricing .pricing-cta a .far,
-      .pricing .pricing-cta a .fab,
-      .pricing .pricing-cta a .fal,
-      .pricing .pricing-cta a .ion {
-        margin-left: 5px;
-      }
-
-      .pricing .pricing-cta a:hover {
-        background-color: #e3eaef;
-      }
-    </style>
     <div class="container">
       <div class="row">
         <div class="col-md-10 offset-md-1 col-lg-10 offset-lg-1 col-12 text-center">
@@ -531,9 +534,9 @@
     })
   </script>
 
-<script>
-  var code = "UG93ZXJlZCBieSA8YSBocmVmPSIvc3RhZmYiPlNTUEFORUw8L2E+Jm5ic3A7JmJ1bGw7Jm5ic3A7VGhlbWUgYnkgPGEgaHJlZj0iaHR0cHM6Ly90Lm1lL2VkaXRYWSIgdGFyZ2V0PSJibGFuayI+ZWRpdFhZPC9hPg==";
-  $('#copyright').html(atob(code));
+  <script>
+    var code = "UG93ZXJlZCBieSA8YSBocmVmPSIvc3RhZmYiPlNTUEFORUw8L2E+Jm5ic3A7JmJ1bGw7Jm5ic3A7VGhlbWUgYnkgPGEgaHJlZj0iaHR0cHM6Ly90Lm1lL2VkaXRYWSIgdGFyZ2V0PSJibGFuayI+ZWRpdFhZPC9hPg==";
+    $('#copyright').html(atob(code));
   </script>
 
 </body>

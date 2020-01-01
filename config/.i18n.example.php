@@ -382,6 +382,10 @@ $I18N['support'] = array(
     'en' => 'Support',
     'zh-cn' => '支持'
 );
+$I18N['index-dashboard-button'] = array(
+    'en' => 'Dashboard',
+    'zh-cn' => '用户中心'
+);
 $I18N['index-slogan'] = array(
     'en' => 'We Dedicate to Providing the Finest Network Proxy Service',
     'zh-cn' => '全球网络中继服务，随时随处尽情使用'
