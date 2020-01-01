@@ -19,7 +19,7 @@ $Malio_Config['version'] = '1';
 
 
 ####### 通用设置 #######
-$Malio_Config['theme_color'] = 'purple';    // 主题颜色，可选值为 purple, blue, darkblue, orange, pink TODO:
+$Malio_Config['theme_color'] = 'purple';    // 主题颜色，可选值为 purple, blue, darkblue, orange, pink TODO:（此功能尚在开发中）
 $Malio_Config['google_analytics_code'] = 'UA-123456789-1';    // Google 统计代码，留空为不开启，code格式为 'UA-123456789-1'
 $Malio_Config['login_style'] = 'wallpaper';    // 登录页面的样式，可选 simple 和 wallpaper
 $Malio_Config['enable_landing_page'] = true;    // 是否启用着陆页用于介绍本站
@@ -159,7 +159,7 @@ $Malio_Config['index_one_row_plans'] = '3';   //  首页里每行显示多少个
 $Malio_Config['shop_one_row_plans'] = '3';   //  商店里每行显示多少个会员计划，可以写 3 或 4
 
 // 每个会员计划不同时长所对应的商品ID（商品ID可以在管理面板的商品列表里找到），此项必须设置，不然商店购买功能无法正常工作
-// 可以复制 array 增加会员计划
+// 可以复制 array 增加会员计划，比如增加第四个会员计划，使用 'plan_4' => array(...) 这样的格式
 $Malio_Config['plan_shop_id'] = array(
     'plan_1' => array(
         '1month' => 1,

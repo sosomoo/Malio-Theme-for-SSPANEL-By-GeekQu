@@ -5,7 +5,7 @@ $I18N['appName'] = array(
     'en' => 'Malio',
     'zh-cn' => 'Malio'
 );
-$I18N['class-plan-name-map'] = array(
+$I18N['class-plan-name-map'] = array(  // 用户等级 => 等级名字
     'en' => array(
         1 => 'Basic',
         2 => 'Plus',
@@ -17,7 +17,7 @@ $I18N['class-plan-name-map'] = array(
         3 => '专业版'
     ),
 );
-$I18N['node-class-name-map'] = array(
+$I18N['node-class-name-map'] = array(  // 节点等级 => 节点列表等级标题
     'en' => array(
         1 => 'Basic Servers',
         2 => 'Plus Servers',
@@ -96,7 +96,7 @@ $I18N['trial_plan'] = array(
         ]
     ),
 );
-$I18N['plans-info'] = array(
+$I18N['plans-info'] = array(   // 会员计划的信息， 可以复制array增加会员计划，比如增加第四个会员计划，使用 'plan_4' => array(...) 这样的格式
     'en' => [
         'plan_1' => array(
             'name' => 'Basic',

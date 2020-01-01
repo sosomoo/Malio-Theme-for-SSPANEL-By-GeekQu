@@ -113,7 +113,7 @@
             {$i18n->get('dont-have-an-account-question-mark')}
           </div>
           <div class="simple-footer">
-            Copyright &copy; 2019 {$config["appName"]}
+            Copyright &copy; 2020 {$config["appName"]}
             <div class="mt-2" id="copyright"></div>
           </div>
         </div>
@@ -210,7 +210,7 @@
             </div>
 
             <div class="text-center mt-5 text-small">
-              Copyright &copy; 2019 {$config["appName"]}
+              Copyright &copy; 2020 {$config["appName"]}
               <div class="mt-2" id="copyright"></div>
             </div>
           </div>

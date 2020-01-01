@@ -195,7 +195,7 @@
                         <td align="center" valign="top">
                           <div style="height:12px; line-height: 34px; font-size: 32px;">&nbsp;</div>
                           <font face="'Nunito', sans-serif" color="#868686" style="font-size: 17px; line-height: 20px;">
-                            <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #868686; font-size: 17px; line-height: 20px;">2019 © {$config['appName']}. All&nbsp;Rights&nbsp;Reserved.</span>
+                            <span style="font-family: 'Nunito', Arial, Tahoma, Geneva, sans-serif; color: #868686; font-size: 17px; line-height: 20px;">2020 © {$config['appName']}. All&nbsp;Rights&nbsp;Reserved.</span>
                           </font>
                           <div style="height: 3px; line-height: 3px; font-size: 1px;">&nbsp;</div>
                           <font face="'Nunito', sans-serif" color="#1a1a1a" style="font-size: 17px; line-height: 20px;">
