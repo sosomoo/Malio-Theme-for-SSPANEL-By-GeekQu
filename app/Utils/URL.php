@@ -427,6 +427,7 @@ class URL
         $return_array['path'] = ($return_array['path'] . '?redirect=' . $user->getMuMd5());
         $return_array['class'] = $node->node_class;
         $return_array['group'] = Config::get('appName');
+        $return_array['type'] = 'ss';
 
         return $return_array;
     }
@@ -435,9 +436,11 @@ class URL
     {
         $item = Tools::v2Array($node->server);
         $item['v'] = '2';
+        $item['type'] = 'vmess';
         $item['ps'] = ($emoji == 1
             ? Tools::addEmoji($node->name)
             : $node->name);
+        $item['remark'] = $item['ps'];
         $item['id'] = $user->getUuid();
         $item['class'] = $node->node_class;
         if ($arrout == 0) {
@@ -719,11 +722,13 @@ class URL
                 return;
             }
             $user = self::getSSConnectInfo($user);
+            $return_array['type'] = 'ss';
         } else {
             if (!self::SSRCanConnect($user)) {
                 return;
             }
             $user = self::getSSRConnectInfo($user);
+            $return_array['type'] = 'ssr';
         }
         $return_array['address'] = $node->server;
         $return_array['port'] = $user->port;
