@@ -145,6 +145,22 @@ $Malio_Config['share_account'] = [    // 一个array为一个共享账号
     ],
 ];
 
+$Malio_Config['daily_bonus_mode'] = 'sspanel';  // 签到的模式，填写 sspanel 为原版模式，填写 malio 为不同等级给不同的签到流量
+$Malio_Config['daily_bonus_settings'] = array(  // 为不同等级给不同的签到流量，仅在 daily_bonus_mode 为 malio 时生效
+    1 => array(  // 用户等级
+        'min' => 100,  // 最低流量，单位为MB
+        'max' => 200   // 最高流量，单位为MB
+    ),
+    2 => array(
+        'min' => 1000,
+        'max' => 2000
+    ),
+    3 => array(
+        'min' => 10000,
+        'max' => 20000
+    ),
+);
+
 
 ####### 商店 #######
 $Malio_Config['shop_style'] = 'plans';    // 商店的显示风格， legacy为SSPANEL原版，plans为新版

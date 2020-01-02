@@ -1854,7 +1854,11 @@ class UserController extends BaseController
             $res['msg'] = '您似乎已经签到过了...';
             return $response->getBody()->write(json_encode($res));
         }
-        $traffic = random_int(Config::get('checkinMin'), Config::get('checkinMax'));
+        if (MalioConfig::get('daily_bonus_mode') == 'malio') {
+            $traffic = random_int(MalioConfig::get('daily_bonus_settings')[$this->user->class]['min'], MalioConfig::get('daily_bonus_settings')[$this->user->class]['max']);
+        } else {
+            $traffic = random_int(Config::get('checkinMin'), Config::get('checkinMax'));
+        }
         $this->user->transfer_enable += Tools::toMB($traffic);
         $this->user->last_check_in_time = time();
         $this->user->save();
