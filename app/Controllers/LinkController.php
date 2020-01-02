@@ -376,7 +376,7 @@ class LinkController extends BaseController
             $items = array_merge(
                 URL::getAllItems($user, 0, 1, $emoji),
                 URL::getAllItems($user, 1, 1, $emoji),
-                URL::getAllVMessUrl($user, 1, $emoji),
+                URL::getAllVMessUrl($user, 1, $emoji)
             );
         } else {
             $items = array_merge(
@@ -725,13 +725,13 @@ class LinkController extends BaseController
                 URL::getAllItems($user, 0, 1),
                 URL::getAllItems($user, 1, 1),
                 URL::getAllV2RayPluginItems($user),
-                URL::getAllVMessUrl($user, 1),
+                URL::getAllVMessUrl($user, 1)
             );
         } else {
             $items = array_merge(
                 URL::getAllItems($user, 1, 1),
                 URL::getAllV2RayPluginItems($user),
-                URL::getAllVMessUrl($user, 1),
+                URL::getAllVMessUrl($user, 1)
             );
         }
         foreach ($items as $item) {
@@ -773,7 +773,7 @@ class LinkController extends BaseController
             $user->obfs = 'plain';
             $items = array_merge(
                 URL::getAllItems($user, 0, 1, $emoji),
-                URL::getAllVMessUrl($user, 1, $emoji),
+                URL::getAllVMessUrl($user, 1, $emoji)
             );
         } else {
             $items = URL::getAllVMessUrl($user, 1, $emoji);
