@@ -684,4 +684,41 @@ class User extends Model
         }
         return $return;
     }
+
+    /**
+     * 解绑 Telegram
+     */
+    public function TelegramReset()
+    {
+        $return = [
+            'ok'  => true,
+            'msg' => '解绑成功.'
+        ];
+        $telegram_id = $this->telegram_id;
+        $this->telegram_id = 0;
+        if ($this->save()) {
+            if (
+                Config::get('enable_telegram') === true
+                &&
+                Config::get('group_bound_user') === true
+                &&
+                Config::get('unbind_kick_member') === true
+            ) {
+                \App\Utils\Telegram\Process::SendPost(
+                    'kickChatMember',
+                    [
+                        'chat_id'   => Config::get('telegram_chatid'),
+                        'user_id'   => $telegram_id,
+                    ]
+                );
+            }
+        } else {
+            $return = [
+                'ok'  => false,
+                'msg' => '解绑失败.'
+            ];
+        }
+
+        return $return;
+    }
 }

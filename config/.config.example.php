@@ -146,10 +146,11 @@ $_ENV['telegram_bot']               = '';           //Telegram Bot 用户名
 $_ENV['telegram_group_quiet']       = true;         //Telegram Bot 在群组中不回应
 $_ENV['telegram_chatid']            = '';           //Telegram 群组会话 ID，把 Bot 拉进群里之后跟他 /ping 一下即可得到。
 $_ENV['telegram_request_token']     = '';           //Telegram 机器人请求验证 Key，随意设置，由大小写英文和数字组成，更新这个参数之后请 php xcat setTelegram
-$_ENV['group_bound_user']           = true;         //仅允许已绑定 Telegram 账户的用户加入 telegram_chatid 设定的群组
+$_ENV['group_bound_user']           = false;        //仅允许已绑定 Telegram 账户的用户加入 telegram_chatid 设定的群组
 $_ENV['allow_to_join_new_groups']   = true;         //允许 Bot 加入下方配置之外的群组
 $_ENV['group_id_allowed_to_join']   = [];           //允许加入的群组 ID
 $_ENV['telegram_admins']            = [];           //Telegram 管理员 ID
+$_ENV['unbind_kick_member']         = false;        //用户解绑 Telegram 账户后自动踢出群组
 
 $_ENV['enable_tuling']          = true;			//是否开启图灵机器人
 $_ENV['tuling_apikey']          = '';			//图灵机器人 API Key
