@@ -114,6 +114,7 @@ class LinkController extends BaseController
             'surfboard' => ['filename' => 'Surfboard.conf', 'class' => 'Surfboard'],
             'shadowrocket' => ['filename' => 'Shadowrocket.txt', 'class' => 'Shadowrocket'],
             'quantumult' => ['filename' => 'Quantumult.conf', 'class' => 'Quantumult'],
+            'quantumultx' => ['filename' => 'QuantumultX.conf', 'class' => 'QuantumultX'],
             'sub' => ['filename' => 'node.txt', 'class' => 'Sub']
         ];
 
@@ -388,12 +389,9 @@ class LinkController extends BaseController
         foreach ($items as $item) {
             if ($find) {
                 $item = ConfController::getMatchProxy($item, $Rule);
-                if ($item !== null) {
-                    $All_Proxy .= AppURI::getSurgeURI($item, $surge) . PHP_EOL;
-                }
-            } else {
-                $All_Proxy .= AppURI::getSurgeURI($item, $surge) . PHP_EOL;
+                if ($item === null) continue;
             }
+            $All_Proxy .= AppURI::getSurgeURI($item, $surge) . PHP_EOL;
         }
         if (!$source && $surge == 1) {
             return $All_Proxy;
@@ -452,100 +450,111 @@ class LinkController extends BaseController
      */
     public static function getQuantumult($user, $quantumult, $opts, $Rule, $find, $emoji)
     {
-        $subInfo = self::getSubinfo($user, 0);
-        $proxys = [];
-        $groups = [];
-        $subUrl = '';
-        if ($quantumult == 2) {
-            $subUrl = $subInfo['link'];
-        } else {
-            $back_china_name = '';
-            $v2ray_group = '';
-            $v2ray_name = '';
-            $v2rays = URL::getAllVMessUrl($user, 1, $emoji);
-            foreach ($v2rays as $v2ray) {
-                if ($v2ray['net'] == 'kcp' || $v2ray['net'] == 'quic') {
-                    continue;
-                }
-                if (strpos($v2ray['ps'], '回国') or strpos($v2ray['ps'], 'China')) {
-                    $back_china_name .= "\n" . $v2ray['ps'];
-                } else {
-                    $v2ray_name .= "\n" . $v2ray['ps'];
-                }
-                $v2ray_tls = ', over-tls=false, certificate=1';
-                if (($v2ray['net'] == 'tcp' && $v2ray['tls'] == 'tls') || $v2ray['tls'] == 'tls') {
-                    $v2ray_tls = ', over-tls=true, tls-host=' . $v2ray['add'] . ', certificate=1';
-                }
-                $v2ray_obfs = '';
-                if ($v2ray['net'] == 'ws' || $v2ray['net'] == 'http') {
-                    $v2ray_obfs = ', obfs=' . $v2ray['net'] . ', obfs-path="' . $v2ray['path'] . '", obfs-header="Host: ' . $v2ray['host'] . '[Rr][Nn]User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_0 like Mac OS X) AppleWebKit/888.8.88 (KHTML, like Gecko) Mobile/6666666"';
-                }
-                if ($quantumult == 1) {
-                    $v2ray_group .= 'vmess://' . base64_encode($v2ray['ps'] . ' = vmess, ' . $v2ray['add'] . ', ' . $v2ray['port'] . ', chacha20-ietf-poly1305, "' . $v2ray['id'] . '", group=' . Config::get('appName') . '_v2' . $v2ray_tls . $v2ray_obfs) . PHP_EOL;
-                } else {
-                    $v2ray_group .= $v2ray['ps'] . ' = vmess, ' . $v2ray['add'] . ', ' . $v2ray['port'] . ', chacha20-ietf-poly1305, "' . $v2ray['id'] . '", group=' . Config::get('appName') . '_v2' . $v2ray_tls . $v2ray_obfs . PHP_EOL;
-                }
-            }
-            if ($quantumult == 1) {
+        switch ($quantumult) {
+            case 2:
+                $subUrl = self::getSubinfo($user, 0);
+                $str = [
+                    '[SERVER]',
+                    '',
+                    '[SOURCE]',
+                    Config::get('appName') . ', server ,' . $subUrl['ssr'] . ', false, true, false',
+                    Config::get('appName') . '_ss, server ,' . $subUrl['ss'] . ', false, true, false',
+                    Config::get('appName') . '_VMess, server ,' . $subUrl['quantumult_v2'] . ', false, true, false',
+                    'Hackl0us Rules, filter, https://raw.githubusercontent.com/Hackl0us/Surge-Rule-Snippets/master/LAZY_RULES/Quantumult.conf, true',
+                    '',
+                    '[DNS]',
+                    'system, 119.29.29.29, 223.6.6.6, 114.114.114.114',
+                    '',
+                    '[STATE]',
+                    'STATE,AUTO'
+                ];
+                return implode(PHP_EOL, $str);
+                break;
+            case 3:
+                $items = array_merge(
+                    URL::getAllItems($user, 0, 1, $emoji),
+                    URL::getAllItems($user, 1, 1, $emoji),
+                    URL::getAllItems($user, 0, 0, $emoji),
+                    URL::getAllItems($user, 1, 0, $emoji),
+                    URL::getAllVMessUrl($user, 1, $emoji)
+                );
+                break;
+            default:
+                $items = URL::getAllVMessUrl($user, 1, $emoji);
                 $extend = isset($opts['extend']) ? $opts['extend'] : 0;
-                $v2ray_group .= ($extend == 0
-                    ? ''
-                    : URL::getUserInfo($user, 'quantumult_v2', 0) . PHP_EOL);
-                return base64_encode($v2ray_group);
-            } elseif ($quantumult == 3) {
-                $ss_group = '';
-                $ss_name = '';
-                $items = array_merge(URL::getAllItems($user, 0, 1, $emoji), URL::getAllItems($user, 1, 1, $emoji));
+                $All_Proxy = ($extend == 0 ? '' : URL::getUserInfo($user, 'quantumult_v2', 0) . PHP_EOL);
                 foreach ($items as $item) {
-                    $ss_group .= $item['remark'] . ' = shadowsocks, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', "' . $item['passwd'] . '", upstream-proxy=false, upstream-proxy-auth=false' . URL::getSurgeObfs($item) . ', group=' . Config::get('appName') . PHP_EOL;
-                    if (strpos($item['remark'], '回国') or strpos($item['remark'], 'China')) {
-                        $back_china_name .= "\n" . $item['remark'];
-                    } else {
-                        $ss_name .= "\n" . $item['remark'];
+                    if ($find) {
+                        $item = ConfController::getMatchProxy($item, $Rule);
+                        if ($item === null) continue;
                     }
+                    $All_Proxy .= 'vmess://' . base64_encode(AppURI::getQuantumultURI($item)) . PHP_EOL;
                 }
-                $ssr_group = '';
-                $ssr_name = '';
-                $ssrs = array_merge(URL::getAllItems($user, 0, 0, $emoji), URL::getAllItems($user, 1, 0, $emoji));
-                foreach ($ssrs as $item) {
-                    $ssr_group .= $item['remark'] . ' = shadowsocksr, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', "' . $item['passwd'] . '", protocol=' . $item['protocol'] . ', protocol_param=' . $item['protocol_param'] . ', obfs=' . $item['obfs'] . ', obfs_param="' . $item['obfs_param'] . '", group=' . Config::get('appName') . PHP_EOL;
-                    if (strpos($item['remark'], '回国') or strpos($item['remark'], 'China')) {
-                        $back_china_name .= "\n" . $item['remark'];
-                    } else {
-                        $ssr_name .= "\n" . $item['remark'];
-                    }
-                }
-                $quan_proxy_group = base64_encode("🍃 Proxy  :  static, 🏃 Auto\n🏃 Auto\n🚀 Direct\n" . $ss_name . $ssr_name . $v2ray_name);
-                $quan_auto_group = base64_encode("🏃 Auto  :  auto\n" . $ss_name . $ssr_name . $v2ray_name);
-                $quan_domestic_group = base64_encode("🍂 Domestic  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy\n" . $back_china_name);
-                $quan_others_group = base64_encode("☁️ Others  :   static, 🍃 Proxy\n🚀 Direct\n🍃 Proxy");
-                $quan_apple_group = base64_encode("🍎 Only  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy");
-                $quan_direct_group = base64_encode("🚀 Direct : static, DIRECT\nDIRECT");
-                $proxys = [
-                    'ss' => $ss_group,
-                    'ssr' => $ssr_group,
-                    'v2ray' => $v2ray_group,
-                ];
-                $groups = [
-                    'proxy_group' => $quan_proxy_group,
-                    'auto_group' => $quan_auto_group,
-                    'domestic_group' => $quan_domestic_group,
-                    'others_group' => $quan_others_group,
-                    'direct_group' => $quan_direct_group,
-                    'apple_group' => $quan_apple_group,
-                ];
+                return base64_encode($All_Proxy);
+                break;
+        }
+
+        $All_Proxy          = '';
+        $All_Proxy_name     = '';
+        $BackChina_name     = '';
+        foreach ($items as $item) {
+            if ($find) {
+                $item = ConfController::getMatchProxy($item, $Rule);
+                if ($item === null) continue;
+            }
+            $All_Proxy .= AppURI::getQuantumultURI($item) . PHP_EOL;
+            if (strpos($item['remark'], '回国') || strpos($item['remark'], 'China')) {
+                $BackChina_name .= "\n" . $item['remark'];
             } else {
-                return '悟空别闹...';
+                $All_Proxy_name .= "\n" . $item['remark'];
             }
         }
+        $ProxyGroups = [
+            'proxy_group'       => base64_encode("🍃 Proxy  :  static, 🏃 Auto\n🏃 Auto\n🚀 Direct\n" . $All_Proxy_name),
+            'domestic_group'    => base64_encode("🍂 Domestic  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy\n" . $BackChina_name),
+            'others_group'      => base64_encode("☁️ Others  :   static, 🍃 Proxy\n🚀 Direct\n🍃 Proxy"),
+            'direct_group'      => base64_encode("🚀 Direct : static, DIRECT\nDIRECT"),
+            'apple_group'       => base64_encode("🍎 Only  :  static, 🚀 Direct\n🚀 Direct\n🍃 Proxy"),
+            'auto_group'        => base64_encode("🏃 Auto  :  auto\n" . $All_Proxy_name),
+        ];
         $render = ConfRender::getTemplateRender();
-        $render->assign('user', $user)
-            ->assign('subUrl', $subUrl)
-            ->assign('proxys', $proxys)
-            ->assign('groups', $groups)
-            ->assign('quantumult', $quantumult)
-            ->assign('appName', Config::get('appName'));
+        $render->assign('All_Proxy', $All_Proxy)->assign('ProxyGroups', $ProxyGroups);
+
         return $render->fetch('quantumult.tpl');
+    }
+
+    /**
+     * QuantumultX 配置
+     *
+     * @param object $user        用户
+     * @param int    $quantumultx 订阅类型
+     * @param array  $Rule        节点筛选规则
+     * @param bool   $find        是否筛选节点
+     *
+     * @return string
+     */
+    public static function getQuantumultX($user, $quantumultx, $opts, $Rule, $find, $emoji)
+    {
+        switch ($quantumultx) {
+            default:
+                $items = array_merge(
+                    URL::getAllItems($user, 0, 1, $emoji),
+                    URL::getAllItems($user, 1, 1, $emoji),
+                    URL::getAllItems($user, 0, 0, $emoji),
+                    URL::getAllItems($user, 1, 0, $emoji),
+                    URL::getAllVMessUrl($user, 1, $emoji)
+                );
+                $All_Proxy = '';
+                foreach ($items as $item) {
+                    if ($find) {
+                        $item = ConfController::getMatchProxy($item, $Rule);
+                        if ($item === null) continue;
+                    }
+                    $All_Proxy .= AppURI::getQuantumultXURI($item) . PHP_EOL;
+                }
+                return $All_Proxy;
+                break;
+        }
     }
 
     /**
@@ -737,12 +746,9 @@ class LinkController extends BaseController
         foreach ($items as $item) {
             if ($find) {
                 $item = ConfController::getMatchProxy($item, $Rule);
-                if ($item !== null) {
-                    $return .= AppURI::getShadowrocketURI($item) . PHP_EOL;
-                }
-            } else {
-                $return .= AppURI::getShadowrocketURI($item) . PHP_EOL;
+                if ($item === null) continue;
             }
+            $return .= AppURI::getShadowrocketURI($item) . PHP_EOL;
         }
         // ssr
         $return .= URL::get_NewAllUrl($user, 0, 0, $Rule, $find) . PHP_EOL;
@@ -781,12 +787,9 @@ class LinkController extends BaseController
         foreach ($items as $item) {
             if ($find) {
                 $item = ConfController::getMatchProxy($item, $Rule);
-                if ($item !== null) {
-                    $return .= AppURI::getKitsunebiURI($item) . PHP_EOL;
-                }
-            } else {
-                $return .= AppURI::getKitsunebiURI($item) . PHP_EOL;
+                if ($item === null) continue;
             }
+            $return .= AppURI::getKitsunebiURI($item) . PHP_EOL;
         }
 
         return base64_encode($return);

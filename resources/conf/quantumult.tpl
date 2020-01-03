@@ -1,14 +1,13 @@
-{if $quantumult == 3}
 [SERVER]
-{$proxys['ss']}{$proxys['ssr']}{$proxys['v2ray']}
+{$All_Proxy}
 
 [POLICY]
-{$groups['proxy_group']}
-{$groups['domestic_group']}
-{$groups['others_group']}
-{$groups['apple_group']}
-{$groups['auto_group']}
-{$groups['direct_group']}
+{$ProxyGroups['proxy_group']}
+{$ProxyGroups['domestic_group']}
+{$ProxyGroups['others_group']}
+{$ProxyGroups['apple_group']}
+{$ProxyGroups['auto_group']}
+{$ProxyGroups['direct_group']}
 
 [Rule]
 {include file='rule/Apple.conf'}
@@ -18,19 +17,8 @@
 GEOIP,CN,🍂 Domestic
 FINAL,☁️ Others
 
-{elseif $quantumult == 2}
-[SERVER]
-
-[SOURCE]
-{$appName}_v2, server ,{$subUrl}?quantumult=1, false, true, false
-{$appName}_ss, server ,{$subUrl}?sub=2, false, true, false
-{$appName}_ssr, server ,{$subUrl}?sub=1, false, true, false
-Hackl0us Rules, filter, https://raw.githubusercontent.com/Hackl0us/Surge-Rule-Snippets/master/LAZY_RULES/Quantumult.conf, true
-
-{/if}
-
 [DNS]
-system, 119.29.29.29, 223.6.6.6, 80.80.81.81, 1.1.1.1
+system, 119.29.29.29, 223.6.6.6, 114.114.114.114
 
 [STATE]
 STATE,AUTO

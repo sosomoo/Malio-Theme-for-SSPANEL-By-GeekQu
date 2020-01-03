@@ -11,6 +11,9 @@ class AppURI
         $return = null;
         switch ($version) {
             case 2:
+                if ($item['obfs'] == 'v2ray') {
+                    break;
+                }
                 if ($item['type'] == 'ss') {
                     $return = ($item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item));
                 }
@@ -18,6 +21,9 @@ class AppURI
             default:
                 switch ($item['type']) {
                     case 'ss':
+                        if ($item['obfs'] == 'v2ray') {
+                            break;
+                        }
                         $return = ($item['remark'] . ' = ss, ' . $item['address'] . ', ' . $item['port'] . ', encrypt-method=' . $item['method'] . ', password=' . $item['passwd'] . URL::getSurgeObfs($item) . ', udp-relay=true');
                         break;
                     case 'vmess':
@@ -43,6 +49,9 @@ class AppURI
         $return = null;
         switch ($item['type']) {
             case 'ss':
+                if ($item['obfs'] == 'v2ray') {
+                    break;
+                }
                 $return = ($item['remark'] . ' = shadowsocks, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', "' . $item['passwd'] . '", upstream-proxy=false, upstream-proxy-auth=false' . URL::getSurgeObfs($item) . ', group=' . Config::get('appName') . '_ss');
                 break;
             case 'ssr':
@@ -114,7 +123,7 @@ class AppURI
                 if (!in_array($item['net'], ['ws', 'tcp'])) {
                     break;
                 }
-                $return = ('vmess=' . $item['address'] . ':' . $item['port'] . ', method=chacha20-poly1305' . ', password=' . $item['id']);
+                $return = ('vmess=' . $item['add'] . ':' . $item['port'] . ', method=chacha20-poly1305' . ', password=' . $item['id']);
                 switch ($item['net']) {
                     case 'ws':
                         $return .= ($item['tls'] == 'tls' ? ', obfs=wss' : ', obfs=ws');
@@ -135,6 +144,9 @@ class AppURI
         $return = null;
         switch ($item['type']) {
             case 'ss':
+                if ($item['obfs'] == 'v2ray') {
+                    break;
+                }
                 $return = ($item['remark'] . ' = custom, ' . $item['address'] . ', ' . $item['port'] . ', ' . $item['method'] . ', ' . $item['passwd'] . ', https://raw.githubusercontent.com/lhie1/Rules/master/SSEncrypt.module' . URL::getSurgeObfs($item));
                 break;
         }
@@ -146,6 +158,11 @@ class AppURI
         $return = null;
         switch ($item['type']) {
             case 'ss':
+                $method = ['rc4-md5-6', 'camellia-128-cfb', 'camellia-192-cfb', 'camellia-256-cfb', 'bf-cfb', 'cast5-cfb', 'des-cfb', 'des-ede3-cfb', 'idea-cfb', 'rc2-cfb', 'seed-cfb', 'salsa20', 'chacha20', 'xsalsa20', 'none'];
+                if (in_array($item['method'], $method)) {
+                    // 不支持的
+                    break;
+                }
                 $return = [
                     'name' => $item['remark'],
                     'type' => 'ss',
@@ -290,6 +307,9 @@ class AppURI
         $return = null;
         switch ($item['type']) {
             case 'ss':
+                if (in_array($item['obfs'], ['v2ray', 'simple_obfs_http', 'simple_obfs_tls'])) {
+                    break;
+                }
                 $return = (URL::getItemUrl($item, 2));
                 break;
             case 'vmess':
