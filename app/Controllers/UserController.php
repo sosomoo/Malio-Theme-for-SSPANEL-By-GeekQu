@@ -1780,8 +1780,7 @@ class UserController extends BaseController
     public function telegram_reset($request, $response, $args)
     {
         $user = $this->user;
-        $user->telegram_id = 0;
-        $user->save();
+        $user->TelegramReset();
         return $response->withStatus(302)->withHeader('Location', '/user/edit');
     }
 
