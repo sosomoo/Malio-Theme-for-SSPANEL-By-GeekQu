@@ -158,8 +158,12 @@ class Reply
                     ],
                     [
                         [
-                            'text'          => 'Telegram 账户解绑',
+                            'text'          => '账户解绑',
                             'callback_data' => 'user.edit.unbind'
+                        ],
+                        [
+                            'text'          => '群组解封',
+                            'callback_data' => 'user.edit.unban'
                         ],
                     ],
                     $back

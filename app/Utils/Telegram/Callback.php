@@ -376,6 +376,23 @@ class Callback
                             'reply_markup'              => null
                         ];
                         break;
+                    case 'unban':
+                        // 群组解封
+                        $Data['AllowEditMessage'] = false;
+                        Process::SendPost(
+                            'unbanChatMember',
+                            [
+                                'chat_id'   => Config::get('telegram_chatid'),
+                                'user_id'   => $SendUser['id'],
+                            ]
+                        );
+                        $sendMessage = [
+                            'text'                      => '解封成功，如您仍无法加入群组，请在网站提交工单.',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => null
+                        ];
+                        break;
                     default:
                         $temp = Reply::getInlinekeyboard($user, 'user.edit');
                         $text = '您可在此编辑您的资料或连接信息：' . PHP_EOL . PHP_EOL;

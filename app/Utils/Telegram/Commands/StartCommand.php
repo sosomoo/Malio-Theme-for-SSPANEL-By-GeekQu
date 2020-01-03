@@ -5,6 +5,7 @@ namespace App\Utils\Telegram\Commands;
 use App\Models\User;
 use App\Services\Config;
 use App\Utils\TelegramSessionManager;
+use App\Utils\Telegram\Process;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -71,6 +72,13 @@ class StartCommand extends Command
                         }
                     }
                 }
+                Process::SendPost(
+                    'unbanChatMember',
+                    [
+                        'chat_id'   => Config::get('telegram_chatid'),
+                        'user_id'   => $SendUser['id'],
+                    ]
+                );
                 // 回送信息
                 $this->replyWithMessage(
                     [
