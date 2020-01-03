@@ -366,6 +366,16 @@ class Callback
                             ),
                         ];
                         break;
+                    case 'unbind':
+                        // Telegram 账户解绑
+                        $Data['AllowEditMessage'] = false;
+                        $sendMessage = [
+                            'text'                      => '发送 <strong>/unbind 账户邮箱</strong> 进行解绑.',
+                            'disable_web_page_preview'  => false,
+                            'reply_to_message_id'       => null,
+                            'reply_markup'              => null
+                        ];
+                        break;
                     default:
                         $temp = Reply::getInlinekeyboard($user, 'user.edit');
                         $text = '您可在此编辑您的资料或连接信息：' . PHP_EOL . PHP_EOL;
@@ -415,40 +425,40 @@ class Callback
                             $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Quantumult</strong>，选择更新配置.';
                             break;
                         case '?surge=2':
-                                $token = LinkController::GenerateSSRSubCode($user->id, 0);
-                                $filename = 'Surge_' . $token . '_' . time() . '.conf';
-                                $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
-                                $fh = fopen($filepath, 'w+');
-                                $string = LinkController::getSurge($user, 2, [], [], false, 0);
-                                fwrite($fh, $string);
-                                fclose($fh);
-                                $bot->sendDocument(
-                                    [
-                                        'chat_id'       => $Data['ChatID'],
-                                        'document'      => $filepath,
-                                        'caption'       => $filename,
-                                    ]
-                                );
-                                unlink($filepath);
-                                $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Surge</strong>，点击启动.';
+                            $token = LinkController::GenerateSSRSubCode($user->id, 0);
+                            $filename = 'Surge_' . $token . '_' . time() . '.conf';
+                            $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
+                            $fh = fopen($filepath, 'w+');
+                            $string = LinkController::getSurge($user, 2, [], [], false, 0);
+                            fwrite($fh, $string);
+                            fclose($fh);
+                            $bot->sendDocument(
+                                [
+                                    'chat_id'       => $Data['ChatID'],
+                                    'document'      => $filepath,
+                                    'caption'       => $filename,
+                                ]
+                            );
+                            unlink($filepath);
+                            $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Surge</strong>，点击启动.';
                             break;
                         case '?surge=3':
-                                $token = LinkController::GenerateSSRSubCode($user->id, 0);
-                                $filename = 'Surge_' . $token . '_' . time() . '.conf';
-                                $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
-                                $fh = fopen($filepath, 'w+');
-                                $string = LinkController::getSurge($user, 3, [], [], false, 0);
-                                fwrite($fh, $string);
-                                fclose($fh);
-                                $bot->sendDocument(
-                                    [
-                                        'chat_id'       => $Data['ChatID'],
-                                        'document'      => $filepath,
-                                        'caption'       => $filename,
-                                    ]
-                                );
-                                unlink($filepath);
-                                $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Surge</strong>，点击启动.';
+                            $token = LinkController::GenerateSSRSubCode($user->id, 0);
+                            $filename = 'Surge_' . $token . '_' . time() . '.conf';
+                            $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
+                            $fh = fopen($filepath, 'w+');
+                            $string = LinkController::getSurge($user, 3, [], [], false, 0);
+                            fwrite($fh, $string);
+                            fclose($fh);
+                            $bot->sendDocument(
+                                [
+                                    'chat_id'       => $Data['ChatID'],
+                                    'document'      => $filepath,
+                                    'caption'       => $filename,
+                                ]
+                            );
+                            unlink($filepath);
+                            $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Surge</strong>，点击启动.';
                             break;
                         default:
                             $temp['text'] = '该订阅链接为：' . PHP_EOL . PHP_EOL . $UserApiUrl . $CallbackDataExplode[1];
@@ -480,7 +490,7 @@ class Callback
                             $code = InviteCode::where('user_id', $user->id)->first();
                         }
                         $inviteUrl = Config::get('baseUrl') . '/auth/register?code=' . $code->code;
-                        $text = '<a href="' . $inviteUrl . '">'. $inviteUrl . '</a>';
+                        $text = '<a href="' . $inviteUrl . '">' . $inviteUrl . '</a>';
                         $sendMessage = [
                             'text'                      => $text,
                             'disable_web_page_preview'  => false,

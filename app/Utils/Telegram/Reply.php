@@ -151,11 +151,15 @@ class Reply
                             'text'          => '更改混淆类型',
                             'callback_data' => 'user.edit.obfs'
                         ],
-                    ],
-                    [
                         [
                             'text'          => '每日邮件接收',
                             'callback_data' => 'user.edit.sendemail'
+                        ],
+                    ],
+                    [
+                        [
+                            'text'          => 'Telegram 账户解绑',
+                            'callback_data' => 'user.edit.unbind'
                         ],
                     ],
                     $back
