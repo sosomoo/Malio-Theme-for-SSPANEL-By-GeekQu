@@ -35,11 +35,11 @@ class CheckinCommand extends Command
 
         if ($ChatID < 0) {
             // 群组
-            if (Config::get('new_telegram_group_quiet') === true) {
+            if (Config::get('telegram_group_quiet') === true) {
                 // 群组中不回应
                 return;
             }
-            if ($ChatID != Config::get('new_telegram_group_chatid')) {
+            if ($ChatID != Config::get('telegram_chatid')) {
                 // 非我方群组
                 return;
             }

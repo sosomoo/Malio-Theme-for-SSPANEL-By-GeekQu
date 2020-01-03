@@ -39,7 +39,7 @@ class VueController extends BaseController
             }
         }
 
-        if (Config::get('new_telegram_enable') == true) {
+        if (Config::get('enable_telegram') == true) {
             $login_text = TelegramSessionManager::add_login_session();
             $login = explode('|', $login_text);
             $login_token = $login[0];
@@ -53,7 +53,7 @@ class VueController extends BaseController
             'geetest_html' => $GtSdk,
             'login_token' => $login_token,
             'login_number' => $login_number,
-            'telegram_bot' => Config::get('new_telegram_username'),
+            'telegram_bot' => Config::get('telegram_bot'),
             'enable_logincaptcha' => Config::get('enable_login_captcha'),
             'enable_regcaptcha' => Config::get('enable_reg_captcha'),
             'enable_checkin_captcha' => Config::get('enable_checkin_captcha'),
@@ -66,7 +66,7 @@ class VueController extends BaseController
             'appName' => Config::get('appName'),
             'dateY' => date('Y'),
             'isLogin' => $user->isLogin,
-            'enable_telegram' => Config::get('new_telegram_enable'),
+            'enable_telegram' => Config::get('enable_telegram'),
             'enable_mylivechat' => Config::get('enable_mylivechat'),
             'enable_flag' => Config::get('enable_flag'),
             'payment_type' => Config::get('payment_system'),

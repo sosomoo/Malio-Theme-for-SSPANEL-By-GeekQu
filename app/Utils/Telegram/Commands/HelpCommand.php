@@ -68,7 +68,7 @@ class HelpCommand extends Command
         } else {
             // 群组
 
-            if (Config::get('new_telegram_group_quiet') === true || strpos($Message->getText(), '/' . $this->name) !== 0) {
+            if (Config::get('telegram_group_quiet') === true || strpos($Message->getText(), '/' . $this->name) !== 0) {
                 // 群组中不回应
                 return;
             }

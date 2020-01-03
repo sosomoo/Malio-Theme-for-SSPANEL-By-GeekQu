@@ -36,7 +36,7 @@ class Callback
 
         if ($Data['ChatID'] < 0) {
             // 群组
-            if (Config::get('new_telegram_group_quiet') === true) {
+            if (Config::get('telegram_group_quiet') === true) {
                 // 群组中不回应
                 return;
             }

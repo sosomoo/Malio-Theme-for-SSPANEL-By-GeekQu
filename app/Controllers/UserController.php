@@ -825,7 +825,7 @@ class UserController extends BaseController
             ->assign('isBlock', $isBlock)
             ->assign('Block', $Block)
             ->assign('bind_token', $bind_token)
-            ->assign('telegram_bot', Config::get('new_telegram_username'))
+            ->assign('telegram_bot', Config::get('telegram_bot'))
             ->assign('config_service', $config_service)
             ->registerClass('URL', URL::class)
             ->display('user/edit.tpl');

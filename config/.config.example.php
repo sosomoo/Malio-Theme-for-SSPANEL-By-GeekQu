@@ -139,25 +139,16 @@ $_ENV['subscribeLog_keep_days'] = 7;		    //订阅记录保留天数
 $_ENV['finance_public'] = true;			//财务报告是否向群公开
 $_ENV['enable_welcome_message'] = true;	//机器人发送欢迎消息
 
-#Telegram
-$_ENV['enable_telegram'] = true;			//是否开启Telegram bot
-$_ENV['telegram_token'] = '';				//Telegram bot,bot 的 token ，跟 father bot 申请
-$_ENV['telegram_chatid'] = '';				//Telegram bot,群组会话 ID,把机器人拉进群里之后跟他 /ping 一下即可得到。
-$_ENV['enable_tuling'] = true;			//是否开启图灵机器人
-$_ENV['tuling_apikey'] = '';					//图灵机器人API Key
-$_ENV['tuling_apisecert'] = '';				//图灵机器人密钥
-$_ENV['telegram_bot'] = '_bot';				//Telegram 机器人账号
-$_ENV['telegram_group_quiet'] = true;		//Telegram 机器人在群组中不回应
-$_ENV['telegram_request_token'] = '';		//Telegram 机器人请求Key，随意设置，由大小写英文和数字组成，更新这个参数之后请 php xcat setTelegram
-
-# 新的 Telegram BOT
-$_ENV['new_telegram_enable']        = false;		//是否开启Telegram Bot
-$_ENV['new_telegram_token']         = '';			//Telegram Bot 的 Token，跟 Father Bot 申请
-$_ENV['new_telegram_username']      = '';		    //Telegram Bot 用户名
-$_ENV['new_telegram_group_quiet']   = true;		    //Telegram Bot 在群组中不回应
-$_ENV['new_telegram_group_chatid']  = '';		    //Telegram 群组会话 ID，把 Bot 拉进群里之后跟他 /ping 一下即可得到。
-$_ENV['new_telegram_request_token'] = '';		    //Telegram 机器人请求验证 Key，随意设置，由大小写英文和数字组成，更新这个参数之后请 php xcat setNewTelegram
-
+# Telegram BOT
+$_ENV['enable_telegram']        = false;		//是否开启Telegram Bot
+$_ENV['telegram_token']         = '';			//Telegram Bot 的 Token，跟 Father Bot 申请
+$_ENV['telegram_bot']           = '';		    //Telegram Bot 用户名
+$_ENV['telegram_group_quiet']   = true;		    //Telegram Bot 在群组中不回应
+$_ENV['telegram_chatid']        = '';		    //Telegram 群组会话 ID，把 Bot 拉进群里之后跟他 /ping 一下即可得到。
+$_ENV['telegram_request_token'] = '';		    //Telegram 机器人请求验证 Key，随意设置，由大小写英文和数字组成，更新这个参数之后请 php xcat setTelegram
+$_ENV['enable_tuling']          = true;			//是否开启图灵机器人
+$_ENV['tuling_apikey']          = '';			//图灵机器人 API Key
+$_ENV['tuling_apisecert']       = '';			//图灵机器人密钥
 
 //沟通设置--------------------------------------------------------------------------------------------
 #客服系统设置，注册地址 https://www.mylivechat.com

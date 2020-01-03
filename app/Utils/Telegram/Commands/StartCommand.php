@@ -30,7 +30,7 @@ class StartCommand extends Command
     {
         $Update = $this->getUpdate();
         $Message = $Update->getMessage();
-        
+
         // 消息会话 ID
         $ChatID = $Message->getChat()->getId();
 
@@ -84,7 +84,7 @@ class StartCommand extends Command
         } else {
             // 群组
 
-            if (Config::get('new_telegram_group_quiet') === true) {
+            if (Config::get('telegram_group_quiet') === true) {
                 // 群组中不回应
                 return;
             }

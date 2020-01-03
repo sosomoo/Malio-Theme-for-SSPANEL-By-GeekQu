@@ -12,7 +12,7 @@ class Process
     public static function index()
     {
         try {
-            $bot = new Api(Config::get('new_telegram_token'));
+            $bot = new Api(Config::get('telegram_token'));
             $bot->addCommands(
                 [
                     Commands\HelpCommand::class,
@@ -54,7 +54,7 @@ class Process
      */
     public static function SendPost($Method, $Params)
     {
-        $URL = 'https://api.telegram.org/bot' . Config::get('new_telegram_token') . '/' . $Method;
+        $URL = 'https://api.telegram.org/bot' . Config::get('telegram_token') . '/' . $Method;
         $POSTData = json_encode($Params);
         $C = curl_init();
         curl_setopt($C, CURLOPT_URL, $URL);
