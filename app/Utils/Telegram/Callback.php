@@ -414,6 +414,42 @@ class Callback
                             unlink($filepath);
                             $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Quantumult</strong>，选择更新配置.';
                             break;
+                        case '?surge=2':
+                                $token = LinkController::GenerateSSRSubCode($user->id, 0);
+                                $filename = 'Surge_' . $token . '_' . time() . '.conf';
+                                $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
+                                $fh = fopen($filepath, 'w+');
+                                $string = LinkController::getSurge($user, 2, [], [], false, 0);
+                                fwrite($fh, $string);
+                                fclose($fh);
+                                $bot->sendDocument(
+                                    [
+                                        'chat_id'       => $Data['ChatID'],
+                                        'document'      => $filepath,
+                                        'caption'       => $filename,
+                                    ]
+                                );
+                                unlink($filepath);
+                                $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Surge</strong>，点击启动.';
+                            break;
+                        case '?surge=3':
+                                $token = LinkController::GenerateSSRSubCode($user->id, 0);
+                                $filename = 'Surge_' . $token . '_' . time() . '.conf';
+                                $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
+                                $fh = fopen($filepath, 'w+');
+                                $string = LinkController::getSurge($user, 3, [], [], false, 0);
+                                fwrite($fh, $string);
+                                fclose($fh);
+                                $bot->sendDocument(
+                                    [
+                                        'chat_id'       => $Data['ChatID'],
+                                        'document'      => $filepath,
+                                        'caption'       => $filename,
+                                    ]
+                                );
+                                unlink($filepath);
+                                $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Surge</strong>，点击启动.';
+                            break;
                         default:
                             $temp['text'] = '该订阅链接为：' . PHP_EOL . PHP_EOL . $UserApiUrl . $CallbackDataExplode[1];
                             break;
