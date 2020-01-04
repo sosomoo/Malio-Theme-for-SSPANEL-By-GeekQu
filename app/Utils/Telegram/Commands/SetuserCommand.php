@@ -49,15 +49,8 @@ class SetuserCommand extends Command
             if ($AdminUser == null) {
                 // 非管理员回复消息
                 if (Config::get('enable_not_admin_reply') === true && Config::get('not_admin_reply_msg') != '') {
-                    $this->replyWithMessage(
-                        [
-                            'text'                  => Config::get('not_admin_reply_msg'),
-                            'parse_mode'            => 'Markdown',
-                            'reply_to_message_id'   => $MessageID,
-                        ]
-                    );
-                }
-                return;
+                    return self::reply(Config::get('not_admin_reply_msg') ,$MessageID);
+                }                
             }
         }
 
@@ -75,14 +68,7 @@ class SetuserCommand extends Command
             ];
             $User = Process::getUser($FindUser['id']);
             if ($User == null) {
-                $this->replyWithMessage(
-                    [
-                        'text'                  => Config::get('no_user_found'),
-                        'parse_mode'            => 'Markdown',
-                        'reply_to_message_id'   => $MessageID,
-                    ]
-                );
-                return;
+                return self::reply(Config::get('no_user_found') ,$MessageID);
             }
         }
 
@@ -90,78 +76,53 @@ class SetuserCommand extends Command
         // - /setuser 选项 操作值 用户识别码
 
         // ############## 命令解析 ##############
-        $MessageText    = trim($arguments);
+        $Options = self::StrExplode($arguments, ' ');
+        if (count($Options) < 2) {
+            return self::reply('没有提供选项或操作值.' ,$MessageID);
+        }
+        if (count($Options) == 2 && $User == null) {
+            return self::reply(Config::get('no_search_value_provided') ,$MessageID);
+        }
         // 选项
-        $Option         = substr($MessageText, 0, strpos($MessageText, ' '));
-        $MessageText    = trim(substr($MessageText, strlen($Option)));
+        $Option = $Options[0];
+        // 操作值
+        $value = $Options[1];
         // 用户识别码
-        $UserCode       = '';
-        if (strpos($MessageText, ' ') !== false) {
-            // 操作值
-            $value = substr($MessageText, 0, strpos($MessageText, ' '));
-            $UserCode = trim(substr($MessageText, strlen($value)));
-        } else {
-            // 操作值
-            $value = substr($MessageText, 0);
+        $UserCode = '';
+        if (count($Options) >= 3) {
+            $UserCode = $Options[2];
         }
         // ############## 命令解析 ##############
 
         // ############## 用户识别码处理 ##############
         if ($User == null) {
             if ($UserCode == '') {
-                $this->replyWithMessage(
-                    [
-                        'text'                  => Config::get('no_search_value_provided'),
-                        'parse_mode'            => 'Markdown',
-                        'reply_to_message_id'   => $MessageID,
-                    ]
-                );
-                return;
+                return self::reply(Config::get('no_search_value_provided') ,$MessageID);
             }
-            $UserCodeExplode = explode(':', $UserCode);
-            $Search = $UserCodeExplode[0];
-            $SearchValue = $UserCodeExplode[1];
-            $SearchMethods = [
-                'id' => [
-                    'ID'
-                ],
-                'email' => [
-                    '邮箱'
-                ],
-                'port' => [
-                    '端口'
-                ],
-            ];
-            $useMethods = '';
-            foreach ($SearchMethods as $SearchMethod => $Methods) {
-                if (strlen($SearchMethod) === strlen($Search)) {
-                    if (stripos($SearchMethod, $Search) === 0) {
-                        $useMethods = $SearchMethod;
-                        break;
-                    }
-                }
-                if (count($Methods) >= 1) {
-                    foreach ($Methods as $Remark) {
-                        if (strlen($Remark) === strlen($Search) && stripos($Remark, $Search) === 0) {
-                            $useMethods = $SearchMethod;
-                            break 2;
-                        }
-                    }
+            $useMethod = 'email';
+            if (strpos($UserCode, ':') !== false) {
+                $UserCodeExplode = explode(':', $UserCode);
+                $Search = $UserCodeExplode[0];
+                $UserCode = $UserCodeExplode[1];
+                $SearchMethods = [
+                    'id' => [
+                        'ID'
+                    ],
+                    'email' => [
+                        '邮箱'
+                    ],
+                    'port' => [
+                        '端口'
+                    ],
+                ];
+                $useTempMethod = self::getOptionMethod($SearchMethods, $Search);
+                if ($useTempMethod != '') {
+                    $useMethod = $useTempMethod;
                 }
             }
-            if ($useMethods == '') {
-                $useMethods == 'email';
-            }
-            $User = Process::getUser($SearchValue, $useMethods);
+            $User = Process::getUser($UserCode, $useMethod);
             if ($User == null) {
-                $this->replyWithMessage(
-                    [
-                        'text'                  => Config::get('no_user_found'),
-                        'parse_mode'            => 'Markdown',
-                        'reply_to_message_id'   => $MessageID,
-                    ]
-                );
-                return;
+                return self::reply(Config::get('no_user_found') ,$MessageID);
             }
         }
         // ############## 用户识别码处理 ##############
@@ -237,60 +198,201 @@ class SetuserCommand extends Command
                 '连接数',
             ],
         ];
-        $useOptionMethods = '';
-        foreach ($OptionMethods as $OptionMethod => $Methods) {
-            if (strlen($OptionMethod) === strlen($Option)) {
-                if (stripos($OptionMethod, $Option) === 0) {
-                    $useOptionMethods = $OptionMethod;
-                    break;
-                }
-            }
-            if (count($Methods) >= 1) {
-                foreach ($Methods as $Remark) {
-                    if (strlen($Remark) === strlen($Option) && stripos($Remark, $Option) === 0) {
-                        $useOptionMethods = $OptionMethod;
-                        break 2;
-                    }
-                }
-            }
+        $useOptionMethod = self::getOptionMethod($OptionMethods, $Option);
+        if ($useOptionMethod == '') {
+            return self::reply(Config::get('data_method_not_found') ,$MessageID);
         }
-        if ($useOptionMethods == '') {
+        // ############## 字段选项处理 ##############
+
+        // ############## 字段数据增改值处理 ##############
+        switch ($useOptionMethod) {
+            case 'money':
+                $old = $User->money;
+                $new = self::ComputingMethod($User->money, $value, true);
+                if ($new === null) {
+                    return self::reply('处理出错.' ,$MessageID);
+                }
+                $User->money = $new;
+                break;
+            case 'class':
+                $old = $User->class;
+                $new = self::ComputingMethod($User->class, $value, false);
+                if ($new === null) {
+                    return self::reply('处理出错.' ,$MessageID);
+                }
+                $User->class = $new;
+                break;
+            case 'invite_num':
+                $old = $User->invite_num;
+                $new = self::ComputingMethod($User->invite_num, $value, false);
+                if ($new === null) {
+                    return self::reply('处理出错.' ,$MessageID);
+                }
+                $User->invite_num = $new;
+                break;
+            case 'node_group':
+                $old = $User->node_group;
+                $new = self::ComputingMethod($User->node_group, $value, false);
+                if ($new === null) {
+                    return self::reply('处理出错.' ,$MessageID);
+                }
+                $User->node_group = $new;
+                break;
+            case 'node_speedlimit':
+                $old = $User->node_speedlimit;
+                $new = self::ComputingMethod($User->node_speedlimit, $value, false);
+                if ($new === null) {
+                    return self::reply('处理出错.' ,$MessageID);
+                }
+                $User->node_speedlimit = $new;
+                break;
+            case 'node_connector':
+                $old = $User->node_connector;
+                $new = self::ComputingMethod($User->node_connector, $value, false);
+                if ($new === null) {
+                    return self::reply('处理出错.' ,$MessageID);
+                }
+                $User->node_connector = $new;
+                break;
+            default:
+                return self::reply('尚不支持.' ,$MessageID);
+                break;
+        }
+
+        if ($User->save()) {
+            $text = [
+                '修改用户：' . $User->email,
+                '被修改项：' . $useOptionMethod,
+                '修改前值：' . $old,
+                '修改后值：' . $new,
+            ];
             $this->replyWithMessage(
                 [
-                    'text'                  => Config::get('data_method_not_found'),
+                    'text'                  => implode(PHP_EOL, $text),
+                    'parse_mode'            => 'Markdown',
+                    'reply_to_message_id'   => $MessageID,
+                ]
+            );
+            return;
+        } else {
+            $this->replyWithMessage(
+                [
+                    'text'                  => '保存出错',
                     'parse_mode'            => 'Markdown',
                     'reply_to_message_id'   => $MessageID,
                 ]
             );
             return;
         }
-        // ############## 字段选项处理 ##############
-
-        // ############## 字段数据增改值处理 ##############
-        switch ($useOptionMethods) {
-            case '':
-                break;
-            default:
-                break;
-        }
         // ############## 字段数据增改值处理 ##############
 
-        if ($ChatID > 0) {
-            // 私人
-            self::Privacy($User, $SendUser, $ChatID, $Message, $MessageID);
-        } else {
-            // 群组
-            self::Group($User, $SendUser, $ChatID, $Message, $MessageID);
-        }
+        // if ($ChatID > 0) {
+        //     // 私人
+        //     self::Privacy($User, $SendUser, $ChatID, $Message, $MessageID);
+        // } else {
+        //     // 群组
+        //     self::Group($User, $SendUser, $ChatID, $Message, $MessageID);
+        // }
     }
 
     public function Group($User, $SendUser, $ChatID, $Message, $MessageID)
     {
-        return;
+        return $this->replyWithMessage(
+            [
+                'text'                  => 'Group',
+                'parse_mode'            => 'Markdown',
+                'reply_to_message_id'   => $MessageID,
+            ]
+        );
     }
 
     public function Privacy($User, $SendUser, $ChatID, $Message, $MessageID)
     {
-        return;
+        return $this->replyWithMessage(
+            [
+                'text'                  => 'Privacy',
+                'parse_mode'            => 'Markdown',
+                'reply_to_message_id'   => $MessageID,
+            ]
+        );
+    }
+
+    public function reply($Message, $MessageID)
+    {
+        return $this->replyWithMessage(
+            [
+                'text'                  => $Message,
+                'parse_mode'            => 'Markdown',
+                'reply_to_message_id'   => $MessageID,
+            ]
+        );
+    }
+
+    public function StrExplode($Str, $Delimiter)
+    {
+        $return = [];
+        $Str = trim($Str);
+        for ($x = 0; $x <= 10; $x++) {
+            if (strpos($Str, $Delimiter) !== false) {
+                $temp = substr($Str, 0, strpos($Str, $Delimiter));
+                $return[] = $temp;
+                $Str = trim(substr($Str, strlen($temp)));
+            } else {
+                $return[] = $Str;
+                break;
+            }
+        }
+        return $return;
+    }
+
+    public function getOptionMethod($MethodGroup, $Search)
+    {
+        $useMethod = '';
+        foreach ($MethodGroup as $MethodName => $Remarks) {
+            if (strlen($MethodName) === strlen($Search)) {
+                if (stripos($MethodName, $Search) === 0) {
+                    $useMethod = $MethodName;
+                    break;
+                }
+            }
+            if (count($Remarks) >= 1) {
+                foreach ($Remarks as $Remark) {
+                    if (strlen($Remark) === strlen($Search) && stripos($Remark, $Search) === 0) {
+                        $useMethod = $MethodName;
+                        break 2;
+                    }
+                }
+            }
+        }
+        return $useMethod;
+    }
+
+    public function ComputingMethod($Source, $Value, $FloatingNumber = false)
+    {
+        if (
+            (strpos($Value, '+') === 0
+                ||
+                strpos($Value, '-') === 0
+                ||
+                strpos($Value, '*') === 0
+                ||
+                strpos($Value, '/') === 0)
+            &&
+            is_numeric(substr($Value, 1))
+        ) {
+            $Source = eval('return $Source ' . substr($Value, 0, 1) . '= ' . substr($Value, 1) . ';');
+        } else {
+            if (is_numeric($Value)) {
+                $Source = $Value;
+            } else {
+                $Source = null;
+            }
+        }
+        if ($Source !== null) {
+            $Source = ($FloatingNumber === false
+                ? number_format($Source, 0, '.', '')
+                : number_format($Source, 2, '.', ''));
+        }
+        return $Source;
     }
 }
