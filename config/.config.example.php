@@ -148,9 +148,14 @@ $_ENV['telegram_chatid']            = '';           //Telegram 群组会话 ID�
 $_ENV['telegram_request_token']     = '';           //Telegram 机器人请求验证 Key，随意设置，由大小写英文和数字组成，更新这个参数之后请 php xcat setTelegram
 $_ENV['group_bound_user']           = false;        //仅允许已绑定 Telegram 账户的用户加入 telegram_chatid 设定的群组
 $_ENV['allow_to_join_new_groups']   = true;         //允许 Bot 加入下方配置之外的群组
-$_ENV['group_id_allowed_to_join']   = [];           //允许加入的群组 ID
-$_ENV['telegram_admins']            = [];           //Telegram 管理员 ID
+$_ENV['group_id_allowed_to_join']   = [];           //允许加入的群组 ID，格式为 PHP 数组
+$_ENV['telegram_admins']            = [];           //Telegram 管理员 ID，格式为 PHP 数组
 $_ENV['unbind_kick_member']         = false;        //用户解绑 Telegram 账户后自动踢出群组
+$_ENV['enable_not_admin_reply']     = true;         //非管理员操作管理员功能是否回复
+$_ENV['not_admin_reply_msg']        = '!';          //非管理员操作管理员功能的回复内容，支持 Markdown
+$_ENV['no_user_found']              = '!';          //管理员操作时，找不到用户的回复，支持 Markdown
+$_ENV['no_search_value_provided']   = '!';          //管理员操作时，没有提供用户搜索值的回复，支持 Markdown
+$_ENV['data_method_not_found']      = '!';          //管理员操作时，修改数据的字段没有找到的回复，支持 Markdown
 
 $_ENV['enable_tuling']          = true;			//是否开启图灵机器人
 $_ENV['tuling_apikey']          = '';			//图灵机器人 API Key

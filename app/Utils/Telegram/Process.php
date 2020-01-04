@@ -39,9 +39,9 @@ class Process
         }
     }
 
-    public static function getUser($telegram_id)
+    public static function getUser($value, $method = 'telegram_id')
     {
-        return User::where('telegram_id', $telegram_id)->first();
+        return User::where($method, $value)->first();
     }
 
     /**
