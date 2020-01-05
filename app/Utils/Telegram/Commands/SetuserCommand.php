@@ -227,11 +227,27 @@ class SetuserCommand extends Command
         // ############## 字段数据增改值处理 ##############
         $old = $User->$useOptionMethod;
         switch ($useOptionMethod) {
-            // ##############
+                // ##############
             case 'enable':
             case 'is_admin':
+                $strArray = [
+                    '// 支持的写法',
+                    '// [启用|是] —— 字面意思',
+                    '// [禁用|否] —— 字面意思',
+                ];
+                if (strpos($value, ' ') !== false) return self::reply('处理出错，不支持的写法.' . PHP_EOL . PHP_EOL . implode(PHP_EOL, $strArray), $MessageID);
+                if (in_array($value, ['启用', '是'])) {
+                    $User->$useOptionMethod = 1;
+                    $new = '启用';
+                } elseif (in_array($value, ['禁用', '否'])) {
+                    $User->$useOptionMethod = 0;
+                    $new = '禁用';
+                } else {
+                    return self::reply('处理出错，不支持的写法.' . PHP_EOL . PHP_EOL . implode(PHP_EOL, $strArray), $MessageID);
+                }
+                $old = ($old ? '启用' : '禁用');
                 break;
-            // ##############
+                // ##############
             case 'port':
                 // 支持正整数或 0 随机选择
                 if (!is_numeric($value) || strpos($value, '-') === 0) {
@@ -259,7 +275,7 @@ class SetuserCommand extends Command
                 $new = $User->$useOptionMethod;
                 $User->$useOptionMethod = $new;
                 break;
-            // ##############
+                // ##############
             case 'transfer_enable':
                 $strArray = [
                     '// 支持的写法，不支持单位 b，不区分大小写',
@@ -277,11 +293,51 @@ class SetuserCommand extends Command
                 $old = Tools::flowAutoShow($old);
                 $new = Tools::flowAutoShow($new);
                 break;
-            // ##############
+                // ##############
             case 'expire_in':
             case 'class_expire':
+                $strArray = [
+                    '// 支持的写法，单位：天',
+                    '// 使用天数设置不能包含空格',
+                    '//  2 —— 以当前时间为基准的天数设置',
+                    '// +2 —— 增加天数',
+                    '// -2 —— 减少天数',
+                    '// 指定日期，在日期与时间中含有一个空格',
+                    '// 2020-02-30 —— 指定日期',
+                    '// 2020-02-30 08:00:00 —— 指定日期精确到秒',
+                ];
+                if (
+                    strpos($value, '+') === 0
+                    ||
+                    strpos($value, '-') === 0
+                ) {
+                    $operator = substr($value, 0, 1);
+                    $number = substr($value, 1);
+                    if (is_numeric($number)) {
+                        $number *= 86400;
+                        $old_time = strtotime($old);
+                        $new = ($operator == '+' ? $old_time + $number : $old_time - $number);
+                        $new = date('Y-m-d H:i:s', $new);
+                    } else {
+                        if (strtotime($value) === false) return self::reply('处理出错，不支持的写法.' . PHP_EOL . PHP_EOL . implode(PHP_EOL, $strArray), $MessageID);
+                        $new = strtotime($value);
+                        $new = date('Y-m-d H:i:s', $new);
+                    }
+                } else {
+                    $number = $value;
+                    if (is_numeric($value)) {
+                        $number *= 86400;
+                        $new = time() + $number;
+                        $new = date('Y-m-d H:i:s', $new);
+                    } else {
+                        if (strtotime($value) === false) return self::reply('处理出错，不支持的写法.' . PHP_EOL . PHP_EOL . implode(PHP_EOL, $strArray), $MessageID);
+                        $new = strtotime($value);
+                        $new = date('Y-m-d H:i:s', $new);
+                    }
+                }
+                $User->$useOptionMethod = $new;
                 break;
-            // ##############
+                // ##############
             case 'obfs':
             case 'method':
             case 'protocol':
@@ -318,7 +374,7 @@ class SetuserCommand extends Command
                     );
                 }
                 break;
-            // ##############
+                // ##############
             case 'passwd':
             case 'obfs_param':
             case 'protocol_param':
@@ -327,7 +383,7 @@ class SetuserCommand extends Command
                 $new = $value;
                 $User->$useOptionMethod = $new;
                 break;
-            // ##############
+                // ##############
             case 'money':
                 $strArray = [
                     '// 参数值中不允许有空格，结果会含小数 2 位',
@@ -341,7 +397,7 @@ class SetuserCommand extends Command
                 if ($new === null) return self::reply('处理出错，不支持的写法.' . PHP_EOL . PHP_EOL . implode(PHP_EOL, $strArray), $MessageID);
                 $User->$useOptionMethod = $new;
                 break;
-            // ##############
+                // ##############
             case 'class':
             case 'invite_num':
             case 'node_group':
@@ -359,7 +415,7 @@ class SetuserCommand extends Command
                 if ($new === null) return self::reply('处理出错，不支持的写法.' . PHP_EOL . PHP_EOL . implode(PHP_EOL, $strArray), $MessageID);
                 $User->$useOptionMethod = $new;
                 break;
-            // ##############
+                // ##############
             default:
                 return self::reply('尚不支持.', $MessageID);
                 break;

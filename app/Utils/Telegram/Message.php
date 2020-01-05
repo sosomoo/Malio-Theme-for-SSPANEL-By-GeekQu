@@ -93,6 +93,14 @@ class Message
                         );
                     }
                 }
+            } else {
+                $bot->sendMessage(
+                    [
+                        'text'                  => '同志们好，同志们辛苦了.',
+                        'chat_id'               => $ChatID,
+                        'reply_to_message_id'   => $Message->getMessageId(),
+                    ]
+                );
             }
         } else {
             // 新成员加入群组
