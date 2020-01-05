@@ -21,6 +21,7 @@ class Process
                     Commands\CheckinCommand::class,
                     Commands\MyCommand::class,
                     Commands\UnbindCommand::class,
+                    Commands\SetuserCommand::class,
                 ]
             );
             $update = $bot->commandsHandler(true);

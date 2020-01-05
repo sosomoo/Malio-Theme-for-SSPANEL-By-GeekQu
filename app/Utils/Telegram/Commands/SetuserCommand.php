@@ -58,6 +58,17 @@ class SetuserCommand extends Command
         // 发送 '输入中' 会话状态
         $this->replyWithChatAction(['action' => Actions::TYPING]);
 
+        if ($ChatID > 0) {
+            // 私人
+            self::Privacy($arguments, $SendUser, $Message, $MessageID);
+        } else {
+            // 群组
+            self::Group($arguments, $SendUser, $Message, $MessageID);
+        }
+    }
+
+    public function Group($arguments, $SendUser, $Message, $MessageID)
+    {
         $User = null;
         $FindUser = null;
         if ($Message->getReplyToMessage() != null) {
@@ -70,6 +81,10 @@ class SetuserCommand extends Command
             $User = Process::getUser($FindUser['id']);
             if ($User == null) {
                 return self::reply(Config::get('no_user_found'), $MessageID);
+            }
+            if (trim($arguments) == '') {
+                // 无参数时回复用户信息
+                return self::reply('用户信息.', $MessageID);
             }
         }
 
@@ -246,15 +261,18 @@ class SetuserCommand extends Command
                 break;
             // ##############
             case 'transfer_enable':
-                // 支持的写法，不支持单位 B
-                //  2kb | mb | gb | tb | pb     // 指定为该值得流量
-                // +2kb | mb | gb | tb | pb     // 增加流量
-                // -2kb | mb | gb | tb | pb     // 减少流量
-                // *2                           // 以当前流量做乘法
-                // /2                           // 以当前流量做除法
-                if (strpos($value, ' ') !== false) return self::reply('处理出错.', $MessageID);
+                $strArray = [
+                    '// 支持的写法，不支持单位 b，不区分大小写',
+                    '// 支持的单位：kb | mb | gb | tb | pb',
+                    '//  2kb —— 指定为该值得流量',
+                    '// +2kb —— 增加流量',
+                    '// -2kb —— 减少流量',
+                    '// *2   —— 以当前流量做乘法，不支持填写单位',
+                    '// /2   —— 以当前流量做除法，不支持填写单位',
+                ];
+                if (strpos($value, ' ') !== false) return self::reply('处理出错，不支持的写法.' . PHP_EOL . PHP_EOL . implode(PHP_EOL, $strArray), $MessageID);
                 $new = self::TrafficMethod($User->$useOptionMethod, $value);
-                if ($new === null) return self::reply('处理出错.', $MessageID);
+                if ($new === null) return self::reply('处理出错，不支持的写法.' . PHP_EOL . PHP_EOL . implode(PHP_EOL, $strArray), $MessageID);
                 $User->$useOptionMethod = $new;
                 $old = Tools::flowAutoShow($old);
                 $new = Tools::flowAutoShow($new);
@@ -305,20 +323,22 @@ class SetuserCommand extends Command
             case 'obfs_param':
             case 'protocol_param':
                 // 参数值中不允许有空格
-                if (strpos($value, ' ') !== false) return self::reply('处理出错.', $MessageID);
+                if (strpos($value, ' ') !== false) return self::reply('处理出错，协议中含有空格等字符.', $MessageID);
                 $new = $value;
                 $User->$useOptionMethod = $new;
                 break;
             // ##############
             case 'money':
-                // 参数值中不允许有空格，结果会含小数 2 位
-                // +2       // 增加余额
-                // -2       // 减少余额
-                // *2       // 以当前余额做乘法
-                // /2       // 以当前余额做除法
+                $strArray = [
+                    '// 参数值中不允许有空格，结果会含小数 2 位',
+                    '// +2  —— 增加余额',
+                    '// -2  —— 减少余额',
+                    '// *2  —— 以当前余额做乘法',
+                    '// /2  —— 以当前余额做除法',
+                ];
                 $value = explode(' ', $value)[0];
                 $new = self::ComputingMethod($User->$useOptionMethod, $value, true);
-                if ($new === null) return self::reply('处理出错.', $MessageID);
+                if ($new === null) return self::reply('处理出错，不支持的写法.' . PHP_EOL . PHP_EOL . implode(PHP_EOL, $strArray), $MessageID);
                 $User->$useOptionMethod = $new;
                 break;
             // ##############
@@ -327,14 +347,16 @@ class SetuserCommand extends Command
             case 'node_group':
             case 'node_connector':
             case 'node_speedlimit':
-                // 参数值中不允许有空格
-                // +2       // 增加值
-                // -2       // 减少值
-                // *2       // 以当前值做乘法
-                // /2       // 以当前值做除法
+                $strArray = [
+                    '// 参数值中不允许有空格',
+                    '// +2  —— 增加值',
+                    '// -2  —— 减少值',
+                    '// *2  —— 以当前值做乘法',
+                    '// /2  —— 以当前值做除法',
+                ];
                 $value = explode(' ', $value)[0];
                 $new = self::ComputingMethod($User->$useOptionMethod, $value, false);
-                if ($new === null) return self::reply('处理出错.', $MessageID);
+                if ($new === null) return self::reply('处理出错，不支持的写法.' . PHP_EOL . PHP_EOL . implode(PHP_EOL, $strArray), $MessageID);
                 $User->$useOptionMethod = $new;
                 break;
             // ##############
@@ -364,28 +386,9 @@ class SetuserCommand extends Command
             );
         }
         // ############## 字段数据增改值处理 ##############
-
-        // if ($ChatID > 0) {
-        //     // 私人
-        //     self::Privacy($User, $SendUser, $ChatID, $Message, $MessageID);
-        // } else {
-        //     // 群组
-        //     self::Group($User, $SendUser, $ChatID, $Message, $MessageID);
-        // }
     }
 
-    public function Group($User, $SendUser, $ChatID, $Message, $MessageID)
-    {
-        return $this->replyWithMessage(
-            [
-                'text'                  => 'Group',
-                'parse_mode'            => 'Markdown',
-                'reply_to_message_id'   => $MessageID,
-            ]
-        );
-    }
-
-    public function Privacy($User, $SendUser, $ChatID, $Message, $MessageID)
+    public function Privacy($arguments, $SendUser, $Message, $MessageID)
     {
         return $this->replyWithMessage(
             [
