@@ -393,7 +393,6 @@ class SetuserCommand extends Command
         return $this->replyWithMessage(
             [
                 'text'                  => 'Privacy',
-                'parse_mode'            => 'Markdown',
                 'reply_to_message_id'   => $MessageID,
             ]
         );
@@ -404,7 +403,6 @@ class SetuserCommand extends Command
         return $this->replyWithMessage(
             [
                 'text'                  => $Message,
-                'parse_mode'            => 'Markdown',
                 'reply_to_message_id'   => $MessageID,
             ]
         );
