@@ -355,81 +355,20 @@ class UserController extends BaseController
 
     public function ResetPort($request, $response, $args)
     {
-        $price = Config::get('port_price');
         $user = $this->user;
-
-        if ($user->money < $price) {
-            $res['ret'] = 0;
-            $res['msg'] = '余额不足';
-            return $response->getBody()->write(json_encode($res));
-        }
-
-        $origin_port = $user->port;
-
-        $user->port = Tools::getAvPort();
-
-
-        $relay_rules = Relay::where('user_id', $user->id)->where('port', $origin_port)->get();
-        foreach ($relay_rules as $rule) {
-            $rule->port = $user->port;
-            $rule->save();
-        }
-
-        $user->money -= $price;
-        $user->save();
-
-        $user->cleanSubCache();
-
-        $res['ret'] = 1;
-        $res['msg'] = $user->port;
+        $temp = $user->ResetPort();
+        $res['msg'] = $temp['msg'];
+        $res['ret'] = ($temp['ok'] === true ? 1 : 0);
         return $response->getBody()->write(json_encode($res));
     }
 
     public function SpecifyPort($request, $response, $args)
     {
-        $price = Config::get('port_price_specify');
         $user = $this->user;
-
-        if ($user->money < $price) {
-            $res['ret'] = 0;
-            $res['msg'] = '余额不足';
-            return $response->getBody()->write(json_encode($res));
-        }
-
         $port = $request->getParam('port');
-
-        if ($port < Config::get('min_port') || $port > Config::get('max_port') || Tools::isInt($port) == false) {
-            $res['ret'] = 0;
-            $res['msg'] = '端口不在要求范围内';
-            return $response->getBody()->write(json_encode($res));
-        }
-
-        $port_occupied = User::pluck('port')->toArray();
-
-        if (in_array($port, $port_occupied) == true) {
-            $res['ret'] = 0;
-            $res['msg'] = '端口已被占用';
-            return $response->getBody()->write(json_encode($res));
-        }
-
-        $origin_port = $user->port;
-
-        $user->port = $port;
-
-
-        $relay_rules = Relay::where('user_id', $user->id)->where('port', $origin_port)->get();
-        foreach ($relay_rules as $rule) {
-            $rule->port = $user->port;
-            $rule->save();
-        }
-
-        $user->money -= $price;
-        $user->save();
-
-        $user->cleanSubCache();
-
-        $res['ret'] = 1;
-        $res['msg'] = '钦定成功';
+        $temp = $user->SpecifyPort($port);
+        $res['msg'] = $temp['msg'];
+        $res['ret'] = ($temp['ok'] === true ? 1 : 0);
         return $response->getBody()->write(json_encode($res));
     }
 

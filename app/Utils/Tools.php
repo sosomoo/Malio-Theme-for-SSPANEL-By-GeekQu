@@ -44,6 +44,45 @@ class Tools
         return round($value, 2) . 'B';
     }
 
+    /**
+     * 根据流量值转换 B 输出
+     */
+    public static function flowAutoShowZ($Value)
+    {
+        $number = substr($Value, 0, strlen($Value) - 2);
+        if (!is_numeric($number)) return null;
+        $unit = strtoupper(substr($Value, -2));
+        $kb = 1024;
+        $mb = 1048576;
+        $gb = 1073741824;
+        $tb = $gb * 1024;
+        $pb = $tb * 1024;
+        switch ($unit) {
+            case 'B':
+                $number = round($number, 2);
+                break;
+            case 'KB':
+                $number = round($number * $kb, 2);
+                break;
+            case 'MB':
+                $number = round($number * $mb, 2);
+                break;
+            case 'GB':
+                $number = round($number * $gb, 2);
+                break;
+            case 'TB':
+                $number = round($number * $tb, 2);
+                break;
+            case 'PB':
+                $number = round($number * $pb, 2);
+                break;
+            default:
+                return null;
+                break;
+        }
+        return $number;
+    }
+
     //虽然名字是toMB，但是实际上功能是from MB to B
     public static function toMB($traffic)
     {

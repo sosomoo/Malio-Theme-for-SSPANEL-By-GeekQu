@@ -721,4 +721,87 @@ class User extends Model
 
         return $return;
     }
+
+    /**
+     * 更新端口
+     */
+    public function setPort($Port)
+    {
+        $PortOccupied = User::pluck('port')->toArray();
+        if (in_array($Port, $PortOccupied) == true) {
+            return [
+                'ok'  => false,
+                'msg' => '端口已被占用'
+            ];
+        }
+        $origin_port    = $this->port;
+        $this->port     = $Port;
+        $relay_rules    = Relay::where('user_id', $this->id)->where('port', $origin_port)->get();
+        foreach ($relay_rules as $rule) {
+            $rule->port = $this->port;
+            $rule->save();
+        }
+        $this->save();
+        $this->cleanSubCache();
+        return [
+            'ok'  => true,
+            'msg' => $this->port
+        ];
+    }
+
+    /**
+     * 重置端口
+     */
+    public function ResetPort()
+    {
+        $price = Config::get('port_price');
+        if ($this->money < $price) {
+            return [
+                'ok'  => false,
+                'msg' => '余额不足'
+            ];
+        }
+        $this->money -= $price;
+        $Port = Tools::getAvPort();
+        $this->setPort($Port);
+        $this->save();
+        return [
+            'ok'  => true,
+            'msg' => $this->port
+        ];
+    }
+
+    /**
+     * 指定端口
+     */
+    public function SpecifyPort($Port)
+    {
+        $price = Config::get('port_price_specify');
+        if ($this->money < $price) {
+            return [
+                'ok'  => false,
+                'msg' => '余额不足'
+            ];
+        }
+        if ($Port < Config::get('min_port') || $Port > Config::get('max_port') || Tools::isInt($Port) == false) {
+            return [
+                'ok'  => false,
+                'msg' => '端口不在要求范围内'
+            ];
+        }
+        $PortOccupied = User::pluck('port')->toArray();
+        if (in_array($Port, $PortOccupied) == true) {
+            return [
+                'ok'  => false,
+                'msg' => '端口已被占用'
+            ];
+        }
+        $this->money -= $price;
+        $this->setPort($Port);
+        $this->save();
+        return [
+            'ok'  => true,
+            'msg' => '钦定成功'
+        ];
+    }
 }
