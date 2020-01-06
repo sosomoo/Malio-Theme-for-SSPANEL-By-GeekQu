@@ -146,6 +146,12 @@ $_ENV['telegram_bot']               = '';           //Telegram Bot 用户名
 $_ENV['telegram_group_quiet']       = true;         //Telegram Bot 在群组中不回应
 $_ENV['telegram_chatid']            = '';           //Telegram 群组会话 ID，把 Bot 拉进群里之后跟他 /ping 一下即可得到。
 $_ENV['telegram_request_token']     = '';           //Telegram 机器人请求验证 Key，随意设置，由大小写英文和数字组成，更新这个参数之后请 php xcat setTelegram
+
+$_ENV['enable_tuling']              = true;			//是否开启图灵机器人
+$_ENV['tuling_apikey']              = '';			//图灵机器人 API Key
+$_ENV['tuling_apisecert']           = '';			//图灵机器人密钥
+
+# 其他选项
 $_ENV['group_bound_user']           = false;        //仅允许已绑定 Telegram 账户的用户加入 telegram_chatid 设定的群组
 $_ENV['allow_to_join_new_groups']   = true;         //允许 Bot 加入下方配置之外的群组
 $_ENV['group_id_allowed_to_join']   = [];           //允许加入的群组 ID，格式为 PHP 数组
@@ -157,9 +163,27 @@ $_ENV['no_user_found']              = '!';          //管理员操作时，找�
 $_ENV['no_search_value_provided']   = '!';          //管理员操作时，没有提供用户搜索值的回复
 $_ENV['data_method_not_found']      = '!';          //管理员操作时，修改数据的字段没有找到的回复
 
-$_ENV['enable_tuling']          = true;			//是否开启图灵机器人
-$_ENV['tuling_apikey']          = '';			//图灵机器人 API Key
-$_ENV['tuling_apisecert']       = '';			//图灵机器人密钥
+$_ENV['remark_user_search_email']               = ['邮箱'];                     //用户搜索字段 email 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_search_port']                = ['端口'];                     //用户搜索字段 port 的别名，可多个，格式为 PHP 数组
+
+$_ENV['remark_user_option_is_admin']            = ['管理员'];                   //用户搜索字段 is_admin 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_enable']              = ['用户启用'];                  //用户搜索字段 enable 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_money']               = ['金钱', '余额'];             //用户搜索字段 money 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_port']                = ['端口'];                     //用户搜索字段 port 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_transfer_enable']     = ['流量'];                     //用户搜索字段 transfer_enable 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_passwd']              = ['连接密码'];                 //用户搜索字段 passwd 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_method']              = ['加密'];                     //用户搜索字段 method 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_protocol']            = ['协议'];                     //用户搜索字段 protocol 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_protocol_param']      = ['协参', '协议参数'];         //用户搜索字段 protocol_param 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_obfs']                = ['混淆'];                     //用户搜索字段 obfs 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_obfs_param']          = ['混参', '混淆参数'];         //用户搜索字段 obfs_param 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_invite_num']          = ['邀请数量'];                 //用户搜索字段 invite_num 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_node_group']          = ['用户组', '用户分组'];       //用户搜索字段 node_group 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_class']               = ['等级'];                     //用户搜索字段 class 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_class_expire']        = ['等级过期时间'];             //用户搜索字段 class_expire 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_expire_in']           = ['账号过期时间'];             //用户搜索字段 expire_in 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_node_speedlimit']     = ['限速'];                    //用户搜索字段 node_speedlimit 的别名，可多个，格式为 PHP 数组
+$_ENV['remark_user_option_node_connector']      = ['连接数', '客户端'];         //用户搜索字段 node_connector 的别名，可多个，格式为 PHP 数组
 
 //沟通设置--------------------------------------------------------------------------------------------
 #客服系统设置，注册地址 https://www.mylivechat.com
