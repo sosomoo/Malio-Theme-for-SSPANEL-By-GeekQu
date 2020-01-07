@@ -59,6 +59,26 @@ class TelegramTools
     {
     }
 
+    /**
+     * 获取用户邮箱
+     *
+     * @param string $email  邮箱
+     * @param int    $ChatID 会话 ID
+     *
+     * @return string
+     */
+    public static function getUserEmail($email, $ChatID)
+    {
+        if (Config::get('enable_user_email_group_show') === true || $ChatID > 0) {
+            return $email;
+        }
+        $a = strpos($email, '@');
+        if ($a === false) {
+            return $email;
+        }
+        $string = substr($email, $a);
+        return ($a === 1 ? '*' . $string : substr($email, 0, 1) . str_pad('', $a - 1, '*') . $string);
+    }
 
     /**
      * 分割字符串

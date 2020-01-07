@@ -60,14 +60,14 @@ class SetuserCommand extends Command
 
         if ($ChatID > 0) {
             // 私人
-            self::Privacy($arguments, $SendUser, $Message, $MessageID);
+            self::Privacy($arguments, $SendUser, $Message, $MessageID, $ChatID);
         } else {
             // 群组
-            self::Group($arguments, $SendUser, $Message, $MessageID);
+            self::Group($arguments, $SendUser, $Message, $MessageID, $ChatID);
         }
     }
 
-    public function Group($arguments, $SendUser, $Message, $MessageID)
+    public function Group($arguments, $SendUser, $Message, $MessageID, $ChatID)
     {
         $User = null;
         $FindUser = null;
@@ -85,7 +85,7 @@ class SetuserCommand extends Command
             }
             if ($arguments == '') {
                 // 无参数时回复用户信息
-                return self::reply('用户信息.', $MessageID);
+                return self::reply('用户信息.' . TelegramTools::getUserEmail($User->email, $ChatID), $MessageID);
             }
         }
 
@@ -156,6 +156,7 @@ class SetuserCommand extends Command
                 return self::reply(Config::get('no_user_found'), $MessageID);
             }
         }
+        $Email = TelegramTools::getUserEmail($User->email, $ChatID);
         // ############## 用户识别码处理 ##############
 
         // ############## 字段选项处理 ##############
@@ -203,7 +204,7 @@ class SetuserCommand extends Command
                 $temp = $User->setPort($value);
                 if ($temp['ok'] === false) {
                     $strArray = [
-                        '目标用户：' . $User->email,
+                        '目标用户：' . $Email,
                         '欲修改项：' . $useOptionMethodName . '[' . $useOptionMethod . ']',
                         '当前值为：' . $old,
                         '欲修改为：' . $value,
@@ -285,7 +286,7 @@ class SetuserCommand extends Command
                 $temp = $User->$MethodClass($value);
                 if ($temp['ok'] === true) {
                     $strArray = [
-                        '目标用户：' . $User->email,
+                        '目标用户：' . $Email,
                         '被修改项：' . $useOptionMethodName . '[' . $useOptionMethod . ']',
                         '修改前值：' . $old,
                         '修改后值：' . $User->$useOptionMethod,
@@ -293,7 +294,7 @@ class SetuserCommand extends Command
                     ];
                 } else {
                     $strArray = [
-                        '目标用户：' . $User->email,
+                        '目标用户：' . $Email,
                         '欲修改项：' . $useOptionMethodName . '[' . $useOptionMethod . ']',
                         '当前值为：' . $old,
                         '欲修改为：' . $value,
@@ -350,7 +351,7 @@ class SetuserCommand extends Command
         }
         if ($User->save()) {
             $strArray = [
-                '目标用户：' . $User->email,
+                '目标用户：' . $Email,
                 '被修改项：' . $useOptionMethodName . '[' . $useOptionMethod . ']',
                 '修改前为：' . $old,
                 '修改后为：' . $new,
@@ -367,7 +368,7 @@ class SetuserCommand extends Command
         // ############## 字段数据增改值处理 ##############
     }
 
-    public function Privacy($arguments, $SendUser, $Message, $MessageID)
+    public function Privacy($arguments, $SendUser, $Message, $MessageID, $ChatID)
     {
         return $this->replyWithMessage(
             [

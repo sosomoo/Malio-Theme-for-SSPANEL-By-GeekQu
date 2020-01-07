@@ -185,6 +185,8 @@ $_ENV['remark_user_option_expire_in']           = ['账号过期时间'];       
 $_ENV['remark_user_option_node_speedlimit']     = ['限速'];                    //用户搜索字段 node_speedlimit 的别名，可多个，格式为 PHP 数组
 $_ENV['remark_user_option_node_connector']      = ['连接数', '客户端'];         //用户搜索字段 node_connector 的别名，可多个，格式为 PHP 数组
 
+$_ENV['enable_user_email_group_show']           = false;                      //开启在群组搜寻用户信息时显示用户完整邮箱，关闭则会对邮箱中间内容打码，如 g****@gmail.com
+
 //沟通设置--------------------------------------------------------------------------------------------
 #客服系统设置，注册地址 https://www.mylivechat.com
 $_ENV['enable_mylivechat'] = true;		//是否开启客服系统
