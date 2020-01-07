@@ -8,6 +8,7 @@ use App\Models\Ip;
 use App\Models\Relay;
 use App\Models\User;
 use App\Models\DetectBanLog;
+use App\Models\Shop;
 use App\Services\Auth;
 use App\Services\Config;
 use App\Services\Mail;
@@ -516,6 +517,7 @@ class UserController extends AdminController
             //model里是casts所以没法直接 $tempdata=(array)$user
             $tempdata['op'] = '<a class="btn btn-brand" href="/admin/user/' . $user->id . '/edit">编辑</a>
                     <a class="btn btn-brand-accent" id="delete" href="javascript:void(0);" onClick="delete_modal_show(\'' . $user->id . '\')">删除</a>
+                    <a class="btn btn-brand" href="/admin/user/' . $user->id . '/bought">查套餐</a>
                     <a class="btn btn-brand" id="changetouser" href="javascript:void(0);" onClick="changetouser_modal_show(\'' . $user->id . '\')">切换为该用户</a>';
             $tempdata['id'] = $user->id;
             $tempdata['user_name'] = $user->user_name;
@@ -593,5 +595,63 @@ class UserController extends AdminController
         $res['msg'] = '清理成功';
 
         return $this->echoJson($response, $res);
+    }
+
+    public function bought($request, $response, $args)
+    {
+        $table_config['total_column'] = array(
+            'op'         => '操作',
+            'id'         => 'ID',
+            'name'       => '商品名称',
+            'valid'      => '是否有效期内',
+            'auto_renew' => '自动续费时间',
+            'reset_time' => '流量重置时间',
+            'buy_time'   => '套餐购买时间',
+            'exp_time'   => '套餐过期时间',
+            'content'    => '商品详细内容',
+        );
+        $table_config['default_show_column'] = array('op', 'name', 'valid', 'reset_time');
+        $table_config['ajax_url'] = 'bought/ajax';
+        return $this->view()->assign('table_config', $table_config)->display('admin/user/bought.tpl');
+    }
+
+    public function bought_ajax($request, $response, $args)
+    {
+        $start = $request->getParam("start");
+        $limit_length = $request->getParam('length');
+        $id = $args['id'];
+        $user = User::find($id);
+        $boughts = Bought::where('userid', $user->id)->skip($start)->limit($limit_length)->get();
+        $total_conut = Bought::where('userid', $user->id)->count();
+        $data = [];
+        foreach ($boughts as $bought) {
+            $shop = $bought->shop();
+            if ($shop == null) {
+                $bought->delete();
+                continue;
+            }
+            $tempdata = [];
+            $tempdata['op']          = '<a class="btn btn-brand" href="">删除</a>';
+            $tempdata['id']          = $bought->id;
+            $tempdata['name']        = $shop->name;
+            $tempdata['content']     = $shop->content();
+            $tempdata['auto_renew']  = ($bought->renew == 0 ? '不自动续费' : $bought->renew_date());
+            $tempdata['buy_time']    = $bought->datetime();
+            if ($bought->use_loop()) {
+                $tempdata['valid'] = ($bought->valid() ? '有效' : '已过期');
+            } else {
+                $tempdata['valid'] = '-';
+            }
+            $tempdata['reset_time']  = $bought->reset_time();
+            $tempdata['exp_time']    = $bought->exp_time();
+            $data[] = $tempdata;
+        }
+        $info = [
+            'draw' => $request->getParam('draw'),
+            'recordsTotal' => $total_conut,
+            'recordsFiltered' => $total_conut,
+            'data' => $data
+        ];
+        return json_encode($info, true);
     }
 }

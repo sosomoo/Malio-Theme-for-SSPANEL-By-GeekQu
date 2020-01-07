@@ -308,6 +308,9 @@ $app->group('/admin', function () {
     $this->post('/user/create', App\Controllers\Admin\UserController::class . ':createNewUser');
     $this->post('/user/buy', App\Controllers\Admin\UserController::class . ':buy');
 
+    $this->get('/user/{id}/bought', App\Controllers\Admin\UserController::class . ':bought');
+    $this->post('/user/{id}/bought/ajax', App\Controllers\Admin\UserController::class . ':bought_ajax');
+
 
     $this->get('/coupon', App\Controllers\AdminController::class . ':coupon');
     $this->post('/coupon', App\Controllers\AdminController::class . ':addCoupon');
