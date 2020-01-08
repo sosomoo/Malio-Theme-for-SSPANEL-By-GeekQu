@@ -2,6 +2,7 @@
 
 namespace App\Utils\Telegram;
 
+use App\Models\TelegramTasks;
 use App\Services\Config;
 use App\Utils\Tools;
 
@@ -236,5 +237,21 @@ class TelegramTools
                 $strArray
             )
         );
+    }
+
+    /**
+     * 删除消息
+     *
+     * @return void
+     */
+    public static function DeleteMessage($ChatID, $MessageID)
+    {
+        $task = new TelegramTasks();
+        $task->type          = 1;
+        $task->chatid        = $ChatID;
+        $task->messageid     = $MessageID;
+        $task->executetime   = (time() + (60 *1));
+        $task->datetime      = time();
+        $task->save();
     }
 }

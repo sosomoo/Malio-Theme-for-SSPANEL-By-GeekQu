@@ -19,6 +19,7 @@ use App\Models\TelegramSession;
 use App\Models\EmailVerify;
 use App\Models\UserSubscribeLog;
 use App\Models\DetectBanLog;
+use App\Models\TelegramTasks;
 use App\Services\Config;
 use App\Services\Password;
 use App\Utils\DNSoverHTTPS;
@@ -810,6 +811,13 @@ class Job
                 $sinuser->delete();
                 Radius::Add($user, $user->passwd);
             }
+        }
+
+        # 删除 tg 消息
+        $TelegramTasks = TelegramTasks::where('type', 1)->where('status', 0)->where('executetime', '<', time())->get();
+        foreach ($TelegramTasks as $Task) {
+            \App\Utils\Telegram\Process::SendPost('deleteMessage', ['chat_id' => $Task->chatid, 'message_id' => $Task->messageid]);
+            $Task->delete();
         }
     }
 

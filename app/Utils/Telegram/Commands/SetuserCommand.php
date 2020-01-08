@@ -63,7 +63,11 @@ class SetuserCommand extends Command
             self::Privacy($arguments, $SendUser, $Message, $MessageID, $ChatID);
         } else {
             // 群组
-            self::Group($arguments, $SendUser, $Message, $MessageID, $ChatID);
+            $response = self::Group($arguments, $SendUser, $Message, $MessageID, $ChatID);
+
+            // 删除消息
+            // TelegramTools::DeleteMessage($ChatID, $MessageID); // 删除用户的指令
+            // TelegramTools::DeleteMessage($response->getChat()->getId(), $response->getMessageId()); // 删除 Bot 回复
         }
     }
 
