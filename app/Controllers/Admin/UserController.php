@@ -621,7 +621,7 @@ class UserController extends AdminController
         $limit_length = $request->getParam('length');
         $id = $args['id'];
         $user = User::find($id);
-        $boughts = Bought::where('userid', $user->id)->skip($start)->limit($limit_length)->get();
+        $boughts = Bought::where('userid', $user->id)->skip($start)->limit($limit_length)->orderBy('id', 'desc')->get();
         $total_conut = Bought::where('userid', $user->id)->count();
         $data = [];
         foreach ($boughts as $bought) {
@@ -631,7 +631,7 @@ class UserController extends AdminController
                 continue;
             }
             $tempdata = [];
-            $tempdata['op']          = '<a class="btn btn-brand" href="">删除</a>';
+            $tempdata['op']          = '<a class="btn btn-brand-accent" id="delete" href="javascript:void(0);" onClick="delete_modal_show(\'' . $bought->id . '\')">删除</a>';
             $tempdata['id']          = $bought->id;
             $tempdata['name']        = $shop->name;
             $tempdata['content']     = $shop->content();
@@ -653,5 +653,19 @@ class UserController extends AdminController
             'data' => $data
         ];
         return json_encode($info, true);
+    }
+
+    public function bought_delete($request, $response, $args)
+    {
+        $id = $request->getParam('id');
+        $Bought = Bought::find($id);
+        if (!$Bought->delete()) {
+            $rs['ret'] = 0;
+            $rs['msg'] = '删除失败';
+            return $response->getBody()->write(json_encode($rs));
+        }
+        $rs['ret'] = 1;
+        $rs['msg'] = '删除成功';
+        return $response->getBody()->write(json_encode($rs));
     }
 }

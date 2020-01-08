@@ -310,6 +310,7 @@ $app->group('/admin', function () {
 
     $this->get('/user/{id}/bought', App\Controllers\Admin\UserController::class . ':bought');
     $this->post('/user/{id}/bought/ajax', App\Controllers\Admin\UserController::class . ':bought_ajax');
+    $this->delete('/user/bought', App\Controllers\Admin\UserController::class . ':bought_delete');
 
 
     $this->get('/coupon', App\Controllers\AdminController::class . ':coupon');
