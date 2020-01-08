@@ -599,6 +599,8 @@ class UserController extends AdminController
 
     public function bought($request, $response, $args)
     {
+        $id = $args['id'];
+        $user = User::find($id);
         $table_config['total_column'] = array(
             'op'         => '操作',
             'id'         => 'ID',
@@ -612,7 +614,8 @@ class UserController extends AdminController
         );
         $table_config['default_show_column'] = array('op', 'name', 'valid', 'reset_time');
         $table_config['ajax_url'] = 'bought/ajax';
-        return $this->view()->assign('table_config', $table_config)->display('admin/user/bought.tpl');
+        $shops = Shop::where('status', 1)->orderBy('name')->get();
+        return $this->view()->assign('table_config', $table_config)->assign('shops', $shops)->assign('user', $user)->display('admin/user/bought.tpl');
     }
 
     public function bought_ajax($request, $response, $args)
@@ -666,6 +669,51 @@ class UserController extends AdminController
         }
         $rs['ret'] = 1;
         $rs['msg'] = '删除成功';
+        return $response->getBody()->write(json_encode($rs));
+    }
+
+    public function bought_add($request, $response, $args)
+    {
+        $id = $args['id'];
+        $user = User::find($id);
+        $shop_id  = (int) $request->getParam('buy_shop');
+        $buy_type = (int) $request->getParam('buy_type');
+        if ($shop_id == '') {
+            $rs['ret'] = 0;
+            $rs['msg'] = '请选择套餐';
+            return $response->getBody()->write(json_encode($rs));
+        }
+        $shop = Shop::find($shop_id);
+        if ($shop == null) {
+            $rs['ret'] = 0;
+            $rs['msg'] = '套餐不存在';
+            return $response->getBody()->write(json_encode($rs));
+        }
+        if ($buy_type != 0) {
+            if (bccomp($user->money, $shop->price, 2) == -1) {
+                $res['ret'] = 0;
+                $res['msg'] = '喵喵喵~ 该用户余额不足。';
+                return $response->getBody()->write(json_encode($res));
+            }
+            $user->money = bcsub($user->money, $shop->price, 2);
+            $user->save();
+        }
+        $boughts = Bought::where('userid', $user->id)->get();
+        foreach ($boughts as $disable_bought) {
+            $disable_bought->renew = 0;
+            $disable_bought->save();
+        }
+        $bought = new Bought();
+        $bought->userid = $user->id;
+        $bought->shopid = $shop->id;
+        $bought->datetime = time();
+        $bought->renew = 0;
+        $bought->coupon = '';
+        $bought->price = $shop->price;
+        $bought->save();
+        $shop->buy($user);
+        $rs['msg'] = ($buy_type != 0 ? '套餐购买成功' : '套餐添加成功');
+        $rs['ret'] = 1;
         return $response->getBody()->write(json_encode($rs));
     }
 }
