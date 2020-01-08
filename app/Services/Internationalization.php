@@ -30,22 +30,28 @@ class Internationalization
                 $accept_language = explode(";",$accept_language)[0];
                 $accept_language = explode(",",$accept_language)[0];
                 if (strpos($accept_language, 'zh') !== false) {
-                    if (strpos($accept_language, 'cn') !== false) {
+                    if (strpos($accept_language, 'cn') !== false || strpos($accept_language, 'sg') !== false) {
                         $lang = 'zh-cn';
                     } elseif (strpos($accept_language, 'tw') !== false || strpos($accept_language, 'hk') !== false) {
-                        $lang = 'zh-tw';
+                        $lang = 'zh-cn';
+                    } else {
+                        $lang = 'zh-cn';
                     }
-                }
-                if (strpos($accept_language, 'en') !== false) {
+                } else if (strpos($accept_language, 'en') !== false) {
                     $lang = 'en';
                 }
+
+                if ($lang == null) {
+                    $lang = 'en';
+                }
+
                 if ($user->isLogin) {
                     $user->lang = $lang;
                     $user->save();
                 }
-                Cookie::set([
-                    'lang' => $lang
-                ],'1775445251');
+                //Cookie::set([
+                //    'lang' => $lang
+                //],'1775445251');
             }
         }
 

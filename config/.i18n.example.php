@@ -885,11 +885,7 @@ $I18N['never-used'] = array(
 );
 $I18N['balance'] = array(
     'en' => 'Balance',
-    'zh-cn' => '余额'
-);
-$I18N['balance'] = array(
-    'en' => 'Balance',
-    'zh-cn' => '余额'
+    'zh-cn' => '钱包余额'
 );
 $I18N['announcement'] = array(
     'en' => 'Announcement',
