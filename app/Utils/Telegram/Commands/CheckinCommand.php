@@ -4,6 +4,7 @@ namespace App\Utils\Telegram\Commands;
 
 use App\Models\User;
 use App\Services\Config;
+use App\Utils\Telegram\TelegramTools;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -58,27 +59,31 @@ class CheckinCommand extends Command
         $User = User::where('telegram_id', $SendUser['id'])->first();
         if ($User == null) {
             // 回送信息
-            $this->replyWithMessage(
+            $response = $this->replyWithMessage(
                 [
                     'text'       => '您未绑定本站账号，您可以进入网站的 **资料编辑**，在右下方绑定您的账号.',
                     'parse_mode' => 'Markdown',
                 ]
             );
-            return;
+        } else {
+            $checkin = $User->checkin();
+            $text = [
+                $checkin['msg']
+            ];
+            // 回送信息
+            $response = $this->replyWithMessage(
+                [
+                    'text'       => implode(PHP_EOL, $text),
+                    'parse_mode' => 'Markdown',
+                ]
+            );
         }
-
-        $checkin = $User->checkin();
-
-        $text = [
-            $checkin['msg']
-        ];
-
-        // 回送信息
-        $this->replyWithMessage(
-            [
-                'text'       => implode(PHP_EOL, $text),
-                'parse_mode' => 'Markdown',
-            ]
-        );
+        // 消息删除任务
+        TelegramTools::DeleteMessage([
+            'chatid'      => $ChatID,
+            'messageid'   => $response->getMessageId(),
+            'executetime' => (time() + Config::get('delete_message_time'))
+        ]);
+        return;
     }
 }

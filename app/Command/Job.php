@@ -814,9 +814,10 @@ class Job
         }
 
         # 删除 tg 消息
-        $TelegramTasks = TelegramTasks::where('type', 1)->where('status', 0)->where('executetime', '<', time())->get();
+        $TelegramTasks = TelegramTasks::where('type', 1)->where('executetime', '<', time())->get();
         foreach ($TelegramTasks as $Task) {
             \App\Utils\Telegram\Process::SendPost('deleteMessage', ['chat_id' => $Task->chatid, 'message_id' => $Task->messageid]);
+            TelegramTasks::where('chatid', $Task->chatid)->where('type', '<>', 1)->where('messageid', $Task->messageid)->delete();
             $Task->delete();
         }
     }

@@ -151,7 +151,7 @@ $_ENV['enable_tuling']              = true;			//是否开启图灵机器人
 $_ENV['tuling_apikey']              = '';			//图灵机器人 API Key
 $_ENV['tuling_apisecert']           = '';			//图灵机器人密钥
 
-# 其他选项
+# Telegram BOT 其他选项
 $_ENV['group_bound_user']           = false;        //仅允许已绑定 Telegram 账户的用户加入 telegram_chatid 设定的群组
 $_ENV['allow_to_join_new_groups']   = true;         //允许 Bot 加入下方配置之外的群组
 $_ENV['group_id_allowed_to_join']   = [];           //允许加入的群组 ID，格式为 PHP 数组
@@ -162,6 +162,8 @@ $_ENV['not_admin_reply_msg']        = '!';          //非管理员操作管理�
 $_ENV['no_user_found']              = '!';          //管理员操作时，找不到用户的回复
 $_ENV['no_search_value_provided']   = '!';          //管理员操作时，没有提供用户搜索值的回复
 $_ENV['data_method_not_found']      = '!';          //管理员操作时，修改数据的字段没有找到的回复
+$_ENV['delete_message_time']        = 180;          //在以下时间后删除用户命令触发的 bot 回复，单位：秒，时间删除时间可能会因为定时任务而有差异
+$_ENV['delete_admin_message_time']  = 86400;        //在以下时间后删除管理命令触发的 bot 回复，单位：秒，时间删除时间可能会因为定时任务而有差异
 
 $_ENV['remark_user_search_email']               = ['邮箱'];                     //用户搜索字段 email 的别名，可多个，格式为 PHP 数组
 $_ENV['remark_user_search_port']                = ['端口'];                     //用户搜索字段 port 的别名，可多个，格式为 PHP 数组
