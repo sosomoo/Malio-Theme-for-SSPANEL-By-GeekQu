@@ -35,7 +35,7 @@ class Bought extends Model
 
     /*
      * 套餐已使用的天数
-     * 
+     *
      */
     public function used_days()
     {
@@ -44,12 +44,12 @@ class Bought extends Model
 
     /*
      * 是否有效期内
-     * 
+     *
      */
     public function valid()
     {
         $shop = $this->shop();
-        if ($shop->reset() != 0 && $shop->reset_value() != 0 && $shop->reset_exp() != 0) {
+        if ($this->use_loop()) {
             return (time() - $shop->reset_exp() * 86400 < $this->datetime);
         }
         return false;
@@ -57,7 +57,7 @@ class Bought extends Model
 
     /*
      * 是否周期性商品
-     * 
+     *
      */
     public function use_loop()
     {
@@ -67,12 +67,12 @@ class Bought extends Model
 
     /*
      * 下一次流量重置时间
-     * 
+     *
      */
     public function reset_time($unix = false)
     {
         $shop = $this->shop();
-        if ($shop->reset() != 0 && $shop->reset_value() != 0 && $shop->reset_exp() != 0) {
+        if ($this->use_loop()) {
             $day = $shop->reset() - ($this->used_days() % $shop->reset());
             $time = time() + ($day * 86400);
             return ($unix == false ? date('Y-m-d', $time) : $time);
@@ -82,12 +82,12 @@ class Bought extends Model
 
     /*
      * 过期时间
-     * 
+     *
      */
     public function exp_time($unix = false)
     {
         $shop = $this->shop();
-        if ($shop->reset() != 0 && $shop->reset_value() != 0 && $shop->reset_exp() != 0) {
+        if ($this->use_loop()) {
             $time = $this->datetime + ($shop->reset_exp() * 86400);
             return ($unix == false ? date('Y-m-d H:i:s', $time) : $time);
         }

@@ -89,10 +89,10 @@
                         <div class="modal-content">
                             <div class="modal-heading">
                                 <a class="modal-close" data-dismiss="modal">×</a>
-                                <h2 class="modal-title">确认要删除？</h2>
+                                <h2 class="modal-title">确认要删除该条购买记录？</h2>
                             </div>
                             <div class="modal-inner">
-                                <p>请您确认。</p>
+                                <p>操作不可逆，请您确认。</p>
                             </div>
                             <div class="modal-footer">
                                 <p class="text-right">
@@ -177,6 +177,7 @@
                         $("#result").modal();
                         $$.getElementById('msg').innerHTML = data.msg;
                         {/literal}
+                        window.setTimeout("window.location.reload()", {$config['jump_delay']});
                         {literal}
                     } else {
                         $("#result").modal();
