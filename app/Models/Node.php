@@ -177,7 +177,7 @@ class Node extends Model
     public function getServer()
     {
         $explode = explode(';', $this->attributes['server']);
-        if (stripos($explode, '|server=') !== false) {
+        if (stripos($explode[1], '|server=') !== false) {
             return URL::parse_args($explode[1])['server'];
         } else {
             return $explode[0];
