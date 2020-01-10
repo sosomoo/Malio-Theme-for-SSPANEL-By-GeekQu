@@ -429,7 +429,7 @@ class UserController extends BaseController
                 $server = Tools::ssv2Array($node->server);
                 $array_node['server'] = $server['add'];
             } else {
-                $array_node['server'] = $node->server;
+                $array_node['server'] = $node->getServer();
             }
             $array_node['sort'] = $node->sort;
             $array_node['info'] = $node->info;

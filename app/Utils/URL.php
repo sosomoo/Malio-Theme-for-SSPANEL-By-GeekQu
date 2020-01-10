@@ -563,21 +563,34 @@ class URL
                 $server['remarks'] = $node->name . ' - 单多' . $server['port'] . '端口';
                 $server['encryption'] = $user->method;
                 $server['password'] = $user->passwd;
-                $server['plugin'] = 'v2ray';
-                $server['path'] = ($server['path'] . '?redirect=' . $user->getMuMd5());
-                if ($server['tls'] == 'tls' && $server['net'] == 'ws') {
-                    $server['obfs_param'] = ('mode=ws;security=tls;path=' . $server['path'] .
-                        ';host=' . $server['host']);
+                $server['path'] = '';
+                $plugin_options = '';
+                if ($server['net'] == 'obfs') {
+                    $array_all['plugin'] = 'simple-obfs'; //目前只支持这个
+                    if (strpos($server['obfs'], 'http') != false) {
+                        $plugin_options .= 'obfs=http';
+                    }
+                    if (strpos($server['obfs'], 'tls') != false) {
+                        $plugin_options .= 'obfs=tls';
+                    }
+                    $plugin_options .= ';obfs-host=' . $user->getMuMd5();
                 } else {
-                    $server['obfs_param'] = ('mode=ws;security=none;path=' . $server['path'] .
-                        ';host=' . $server['host']);
+                    $server['plugin'] = 'v2ray';
+                    $server['path'] = ($server['path'] . '?redirect=' . $user->getMuMd5());
+                    if ($server['tls'] == 'tls' && $server['net'] == 'ws') {
+                        $plugin_options .= ('mode=ws;security=tls;path=' . $server['path'] .
+                            ';host=' . $server['host']);
+                    } else {
+                        $plugin_options .= ('mode=ws;security=none;path=' . $server['path'] .
+                            ';host=' . $server['host']);
+                    }
                 }
+                $server['plugin_options'] = $plugin_options;
                 $array_server[] = $server;
                 $server_index++;
                 continue;
             } else {
-                $node_server = explode(';', $node->server);
-                $server['server'] = $node_server[0];
+                $server['server'] = $node->getServer();
             }
             $server['id'] = $server_index;
             //判断是否是中转起源节点
@@ -734,19 +747,16 @@ class URL
             $user = self::getSSRConnectInfo($user);
             $return_array['type'] = 'ssr';
         }
-        $return_array['address'] = $node->server;
+        $return_array['address'] = $node->getServer();
         $return_array['port'] = $user->port;
         $return_array['protocol'] = $user->protocol;
         $return_array['protocol_param'] = $user->protocol_param;
         $return_array['obfs'] = $user->obfs;
         $return_array['obfs_param'] = $user->obfs_param;
-        if (strpos($node->server, ';') !== false) {
+        if ($mu_port != 0 && strpos($node->server, ';') !== false) {
             $node_tmp = Tools::OutPort($node->server, $node->name, $mu_port);
-            if ($mu_port != 0) {
-                $return_array['port'] = $node_tmp['port'];
-                $node_name = $node_tmp['name'];
-            }
-            $return_array['address'] = $node_tmp['address'];
+            $return_array['port'] = $node_tmp['port'];
+            $node_name = $node_tmp['name'];
         }
         $return_array['passwd'] = $user->passwd;
         $return_array['method'] = $user->method;
