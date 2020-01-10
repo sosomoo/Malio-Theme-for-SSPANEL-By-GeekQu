@@ -45,6 +45,14 @@ class SetuserCommand extends Command
             'username' => $Message->getFrom()->getUsername(),
         ];
 
+        if (Config::get('enable_delete_user_cmd') === true) {
+            TelegramTools::DeleteMessage([
+                'chatid'      => $ChatID,
+                'messageid'   => $Message->getMessageId(),
+                'executetime' => (time() + Config::get('delete_message_time'))
+            ]);
+        }
+
         if (!in_array($SendUser['id'], Config::get('telegram_admins'))) {
             $AdminUser = User::where('is_admin', 1)->where('telegram_id', $SendUser['id'])->first();
             if ($AdminUser == null) {
@@ -70,6 +78,7 @@ class SetuserCommand extends Command
 
         // 发送 '输入中' 会话状态
         $this->replyWithChatAction(['action' => Actions::TYPING]);
+
         return self::Reply($arguments, $SendUser, $Message, $MessageID, $ChatID);
     }
 

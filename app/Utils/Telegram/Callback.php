@@ -66,7 +66,7 @@ class Callback
             case 'general.pricing':
                 // 产品介绍
                 $sendMessage = [
-                    'text'                      => '产品介绍',
+                    'text'                      => Config::get('telegram_general_pricing'),
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
                     'reply_markup'              => json_encode(
@@ -81,7 +81,7 @@ class Callback
             case 'general.terms':
                 // 服务条款
                 $sendMessage = [
-                    'text'                      => '服务条款',
+                    'text'                      => Config::get('telegram_general_terms'),
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
                     'reply_markup'              => json_encode(
@@ -387,7 +387,7 @@ class Callback
                             ]
                         );
                         $sendMessage = [
-                            'text'                      => '解封成功，如您仍无法加入群组，请在网站提交工单.',
+                            'text'                      => '已提交解封，如您仍无法加入群组，请联系管理员.',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => null

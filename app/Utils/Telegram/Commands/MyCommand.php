@@ -64,7 +64,7 @@ class MyCommand extends Command
             // 回送信息
             $response = $this->replyWithMessage(
                 [
-                    'text'       => '您未绑定本站账号，您可以进入网站的 **资料编辑**，在右下方绑定您的账号.',
+                    'text'       => Config::get('user_not_bind_reply'),
                     'parse_mode' => 'Markdown',
                 ]
             );
@@ -110,6 +110,13 @@ class MyCommand extends Command
             'messageid'   => $response->getMessageId(),
             'executetime' => (time() + Config::get('delete_message_time'))
         ]);
+        if (Config::get('enable_delete_user_cmd') === true) {
+            TelegramTools::DeleteMessage([
+                'chatid'      => $ChatID,
+                'messageid'   => $MessageID,
+                'executetime' => (time() + Config::get('delete_message_time'))
+            ]);
+        }
         return;
     }
 

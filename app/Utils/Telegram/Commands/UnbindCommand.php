@@ -55,7 +55,7 @@ class UnbindCommand extends Command
                 // 回送信息
                 $this->replyWithMessage(
                     [
-                        'text'       => '您未绑定本站账号，您可以进入网站的 **资料编辑**，在右下方绑定您的账号.',
+                        'text'       => Config::get('user_not_bind_reply'),
                         'parse_mode' => 'Markdown',
                     ]
                 );
