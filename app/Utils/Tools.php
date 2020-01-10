@@ -573,6 +573,14 @@ class Tools
                 unset($item['outside_port']);
             }
         }
+        if ($item['net'] == 'obfs') {
+            if (stripos($server[4], 'http') !== false) {
+                $item['obfs'] = 'simple_obfs_http';
+            }
+            if (stripos($server[4], 'tls') !== false) {
+                $item['obfs'] = 'simple_obfs_tls';
+            }
+        }
         return $item;
     }
 

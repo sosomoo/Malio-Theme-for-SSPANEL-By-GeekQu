@@ -377,12 +377,14 @@ class LinkController extends BaseController
             $items = array_merge(
                 URL::getAllItems($user, 0, 1, $emoji),
                 URL::getAllItems($user, 1, 1, $emoji),
-                URL::getAllVMessUrl($user, 1, $emoji)
+                URL::getAllVMessUrl($user, 1, $emoji),
+                URL::getAllV2RayPluginItems($user, $emoji)
             );
         } else {
             $items = array_merge(
                 URL::getAllItems($user, 0, 1, $emoji),
-                URL::getAllItems($user, 1, 1, $emoji)
+                URL::getAllItems($user, 1, 1, $emoji),
+                URL::getAllV2RayPluginItems($user, $emoji)
             );
         }
         $All_Proxy = '';
@@ -476,7 +478,8 @@ class LinkController extends BaseController
                     URL::getAllItems($user, 1, 1, $emoji),
                     URL::getAllItems($user, 0, 0, $emoji),
                     URL::getAllItems($user, 1, 0, $emoji),
-                    URL::getAllVMessUrl($user, 1, $emoji)
+                    URL::getAllVMessUrl($user, 1, $emoji),
+                    URL::getAllV2RayPluginItems($user, $emoji)
                 );
                 break;
             default:
@@ -542,7 +545,8 @@ class LinkController extends BaseController
                     URL::getAllItems($user, 1, 1, $emoji),
                     URL::getAllItems($user, 0, 0, $emoji),
                     URL::getAllItems($user, 1, 0, $emoji),
-                    URL::getAllVMessUrl($user, 1, $emoji)
+                    URL::getAllVMessUrl($user, 1, $emoji),
+                    URL::getAllV2RayPluginItems($user, $emoji)
                 );
                 $All_Proxy = '';
                 foreach ($items as $item) {
@@ -572,7 +576,8 @@ class LinkController extends BaseController
         $All_Proxy = '';
         $items = array_merge(
             URL::getAllItems($user, 0, 1, $emoji),
-            URL::getAllItems($user, 1, 1, $emoji)
+            URL::getAllItems($user, 1, 1, $emoji),
+            URL::getAllV2RayPluginItems($user, $emoji)
         );
         foreach ($items as $item) {
             $All_Proxy .= AppURI::getSurfboardURI($item) . PHP_EOL;
@@ -800,7 +805,8 @@ class LinkController extends BaseController
         $proxy = [];
         $items = array_merge(
             URL::getAllItems($user, 0, 1, 0),
-            URL::getAllItems($user, 1, 1, 0)
+            URL::getAllItems($user, 1, 1, 0),
+            URL::getAllV2RayPluginItems($user)
         );
         foreach ($items as $item) {
             $proxy_plugin = '';
@@ -955,7 +961,8 @@ class LinkController extends BaseController
         $proxy = [];
         $items = array_merge(
             URL::getAllItems($user, 0, 1, 0),
-            URL::getAllItems($user, 1, 1, 0)
+            URL::getAllItems($user, 1, 1, 0),
+            URL::getAllV2RayPluginItems($user)
         );
         foreach ($items as $item) {
             $proxy_plugin = '';

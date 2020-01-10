@@ -275,27 +275,26 @@ class URL
         if (strtotime($user->expire_in) < time()) {
             return $return_url;
         }
-        if ($getV2rayPlugin === 0) {
-            $items = array_merge(
-                self::getAllItems($user, 0, $is_ss, $emoji),
-                self::getAllItems($user, 1, $is_ss, $emoji)
-            );
-        } else {
-            $items = array_merge(
-                self::getAllItems($user, 0, $is_ss, $emoji),
-                self::getAllItems($user, 1, $is_ss, $emoji),
-                self::getAllV2RayPluginItems($user, $emoji)
-            );
-        }
+        $items = array_merge(
+            self::getAllItems($user, 0, $is_ss, $emoji),
+            self::getAllItems($user, 1, $is_ss, $emoji),
+            self::getAllV2RayPluginItems($user, $emoji)
+        );
         if ($find) {
             foreach ($items as $item) {
                 $item = ConfController::getMatchProxy($item, $Rule);
                 if ($item !== null) {
+                    if ($getV2rayPlugin === 0 && $item['obfs'] == 'v2ray') {
+                        continue;
+                    }
                     $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
                 }
             }
         } else {
             foreach ($items as $item) {
+                if ($getV2rayPlugin === 0 && $item['obfs'] == 'v2ray') {
+                    continue;
+                }
                 $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
             }
         }
@@ -403,11 +402,11 @@ class URL
      */
     public static function getV2RayPluginItem($user, $node, $emoji = 0)
     {
+        $return_array = Tools::ssv2Array($node->server);
         // 非 AEAD 加密无法使用
-        if (!in_array($user->method, Config::getSupportParam('ss_aead_method'))) {
+        if ($return_array['net'] != 'obfs' && !in_array($user->method, Config::getSupportParam('ss_aead_method'))) {
             return null;
         }
-        $return_array = Tools::ssv2Array($node->server);
         $return_array['remark'] = ($emoji == 1
             ? Tools::addEmoji($node->name)
             : $node->name);
@@ -416,15 +415,20 @@ class URL
         $return_array['passwd'] = $user->passwd;
         $return_array['protocol'] = 'origin';
         $return_array['protocol_param'] = '';
-        $return_array['obfs'] = 'v2ray';
-        if ($return_array['tls'] == 'tls' && $return_array['net'] == 'ws') {
-            $return_array['obfs_param'] = ('mode=ws;security=tls;path=' . $return_array['path'] .
-                ';host=' . $return_array['host']);
+        $return_array['path'] = '';
+        if ($return_array['net'] == 'obfs') {
+            $return_array['obfs_param'] = $user->getMuMd5();
         } else {
-            $return_array['obfs_param'] = ('mode=ws;security=none;path=' . $return_array['path'] .
-                ';host=' . $return_array['host']);
+            $return_array['obfs'] = 'v2ray';
+            if ($return_array['tls'] == 'tls' && $return_array['net'] == 'ws') {
+                $return_array['obfs_param'] = ('mode=ws;security=tls;path=' . $return_array['path'] .
+                    ';host=' . $return_array['host']);
+            } else {
+                $return_array['obfs_param'] = ('mode=ws;security=none;path=' . $return_array['path'] .
+                    ';host=' . $return_array['host']);
+            }
+            $return_array['path'] = ($return_array['path'] . '?redirect=' . $user->getMuMd5());
         }
-        $return_array['path'] = ($return_array['path'] . '?redirect=' . $user->getMuMd5());
         $return_array['class'] = $node->node_class;
         $return_array['group'] = Config::get('appName');
         $return_array['type'] = 'ss';
