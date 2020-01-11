@@ -918,7 +918,8 @@ class LinkController extends BaseController
 
                     if ($item['verify_cert']==false){
                         $obfs.="&allowInsecure=1";
-                        $obfs.="&peer=".$items['add'];
+                        $obfs.="&peer=".$item['localserver'];
+                        unset($item['localserver']);
                     }
 
             }

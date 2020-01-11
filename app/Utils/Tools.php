@@ -489,6 +489,7 @@ class Tools
             if (array_key_exists('relayserver', $item)) {
                 $item['add'] = $item['relayserver'];
                 unset($item['relayserver']);
+                $item['localserver']= $server[0];
                 if ($item['tls']=='tls'){
                     $item['verify_cert']=false;
                 }
