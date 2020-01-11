@@ -237,7 +237,6 @@ class IDtPay extends AbstractPayment
                 }
             }
         });
-        setTimeout(f, 1000);
     });
 </script>
 ';
