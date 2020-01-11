@@ -144,7 +144,7 @@ class Callback
                         $temp = Reply::getInlinekeyboard($user, 'user.subscribe');
                         $user->clean_link();
                         $sendMessage = [
-                            'text'                      => '订阅链接重置成功.',
+                            'text'                      => '订阅链接重置成功，请在下方重新更新订阅.',
                             'disable_web_page_preview'  => false,
                             'reply_to_message_id'       => null,
                             'reply_markup'              => json_encode(
@@ -378,7 +378,6 @@ class Callback
                         break;
                     case 'unban':
                         // 群组解封
-                        $Data['AllowEditMessage'] = false;
                         Process::SendPost(
                             'unbanChatMember',
                             [
@@ -386,12 +385,14 @@ class Callback
                                 'user_id'   => $SendUser['id'],
                             ]
                         );
-                        $sendMessage = [
-                            'text'                      => '已提交解封，如您仍无法加入群组，请联系管理员.',
-                            'disable_web_page_preview'  => false,
-                            'reply_to_message_id'       => null,
-                            'reply_markup'              => null
-                        ];
+                        return Process::SendPost(
+                            'answerCallbackQuery',
+                            [
+                                'callback_query_id' => $Callback->getId(),
+                                'text'              => '已提交解封，如您仍无法加入群组，请联系管理员.',
+                                'show_alert'        => true,
+                            ]
+                        );
                         break;
                     default:
                         $temp = Reply::getInlinekeyboard($user, 'user.edit');
@@ -423,7 +424,44 @@ class Callback
                     ];
                     $UserApiUrl = LinkController::getSubinfo($user, 0)['link'];
                     switch ($CallbackDataExplode[1]) {
+                        case '?clash=1':
+                            $temp['text'] = '您的 Clash 配置文件.' . PHP_EOL . '同时，您也可使用该订阅链接：' . $UserApiUrl . $CallbackDataExplode[1];
+                            $token = LinkController::GenerateSSRSubCode($user->id, 0);
+                            $filename = 'Clash_' . $token . '_' . time() . '.yaml';
+                            $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
+                            $fh = fopen($filepath, 'w+');
+                            $string = LinkController::getClash($user, 1, [], [], false, 0);
+                            fwrite($fh, $string);
+                            fclose($fh);
+                            $bot->sendDocument(
+                                [
+                                    'chat_id'       => $Data['ChatID'],
+                                    'document'      => $filepath,
+                                    'caption'       => $temp['text'],
+                                ]
+                            );
+                            unlink($filepath);
+                            break;
+                        case '?clash=2':
+                            $temp['text'] = '您的 ClashR 配置文件.' . PHP_EOL . '同时，您也可使用该订阅链接：' . $UserApiUrl . $CallbackDataExplode[1];
+                            $token = LinkController::GenerateSSRSubCode($user->id, 0);
+                            $filename = 'ClashR_' . $token . '_' . time() . '.yaml';
+                            $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
+                            $fh = fopen($filepath, 'w+');
+                            $string = LinkController::getClash($user, 2, [], [], false, 0);
+                            fwrite($fh, $string);
+                            fclose($fh);
+                            $bot->sendDocument(
+                                [
+                                    'chat_id'       => $Data['ChatID'],
+                                    'document'      => $filepath,
+                                    'caption'       => $temp['text'],
+                                ]
+                            );
+                            unlink($filepath);
+                            break;
                         case '?quantumult=3':
+                            $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Quantumult</strong>，选择更新配置.';
                             $token = LinkController::GenerateSSRSubCode($user->id, 0);
                             $filename = 'Quantumult_' . $token . '_' . time() . '.conf';
                             $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
@@ -435,13 +473,13 @@ class Callback
                                 [
                                     'chat_id'       => $Data['ChatID'],
                                     'document'      => $filepath,
-                                    'caption'       => $filename,
+                                    'caption'       => $temp['text'],
                                 ]
                             );
                             unlink($filepath);
-                            $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Quantumult</strong>，选择更新配置.';
                             break;
                         case '?surge=2':
+                            $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Surge</strong>，点击启动.';
                             $token = LinkController::GenerateSSRSubCode($user->id, 0);
                             $filename = 'Surge_' . $token . '_' . time() . '.conf';
                             $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
@@ -453,13 +491,13 @@ class Callback
                                 [
                                     'chat_id'       => $Data['ChatID'],
                                     'document'      => $filepath,
-                                    'caption'       => $filename,
+                                    'caption'       => $temp['text'],
                                 ]
                             );
                             unlink($filepath);
-                            $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Surge</strong>，点击启动.';
                             break;
                         case '?surge=3':
+                            $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Surge</strong>，点击启动.';
                             $token = LinkController::GenerateSSRSubCode($user->id, 0);
                             $filename = 'Surge_' . $token . '_' . time() . '.conf';
                             $filepath = BASE_PATH . '/storage/SendTelegram/' . $filename;
@@ -471,11 +509,10 @@ class Callback
                                 [
                                     'chat_id'       => $Data['ChatID'],
                                     'document'      => $filepath,
-                                    'caption'       => $filename,
+                                    'caption'       => $temp['text'],
                                 ]
                             );
                             unlink($filepath);
-                            $temp['text'] = '点击打开配置文件，选择分享 <strong>拷贝到 Surge</strong>，点击启动.';
                             break;
                         default:
                             $temp['text'] = '该订阅链接为：' . PHP_EOL . PHP_EOL . $UserApiUrl . $CallbackDataExplode[1];

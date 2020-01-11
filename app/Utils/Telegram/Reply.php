@@ -2,6 +2,8 @@
 
 namespace App\Utils\Telegram;
 
+use App\Services\Config;
+
 class Reply
 {
 
@@ -58,6 +60,14 @@ class Reply
                         } else {
                             $text = '尊敬的用户您好：';
                         }
+                    }
+                    if (Config::get('show_group_link') === true) {
+                        $isLogin[] = [
+                            [
+                                'text'  => '加入用户群',
+                                'url'   => Config::get('telegram_group_link')
+                            ],
+                        ];
                     }
                     $return = [
                         'text'      => $text,
@@ -243,11 +253,6 @@ class Reply
                     'text'      => $text,
                     'keyboard'  => $keyboard,
                 ];
-                break;
-            case 'user.invite':
-                // 分享计划
-
-
                 break;
         }
 

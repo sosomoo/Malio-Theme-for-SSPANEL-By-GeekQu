@@ -9,6 +9,7 @@ namespace App\Models;
  *
  * type：
  * = 1 删除消息
+ * = 2 储存 /setuser 操作产生的 messageid
  *
  */
 class TelegramTasks extends Model

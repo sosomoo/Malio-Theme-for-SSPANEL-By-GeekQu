@@ -152,6 +152,8 @@ $_ENV['tuling_apikey']              = '';			//图灵机器人 API Key
 $_ENV['tuling_apisecert']           = '';			//图灵机器人密钥
 
 # Telegram BOT 其他选项
+$_ENV['show_group_link']            = false;        //在 Bot 菜单中显示加入用户群
+$_ENV['telegram_group_link']        = '';           //用户群的链接
 $_ENV['group_bound_user']           = false;        //仅允许已绑定 Telegram 账户的用户加入 telegram_chatid 设定的群组
 $_ENV['allow_to_join_new_groups']   = true;         //允许 Bot 加入下方配置之外的群组
 $_ENV['group_id_allowed_to_join']   = [];           //允许加入的群组 ID，格式为 PHP 数组
