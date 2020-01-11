@@ -425,6 +425,13 @@ class Tools
         }
         return $object;
     }
+    public static function relayRulePortCheck($rules){
+        $res = array();
+        foreach($rules as $value) {
+            $res[$value->port][] = $value->port;
+        }
+        return count($res)==count($rules);
+    }
 
     public static function getRelayNodeIp($source_node, $dist_node)
     {
@@ -483,7 +490,8 @@ class Tools
         $item = [
             'host' => '',
             'path' => '',
-            'tls' => ''
+            'tls' => '',
+            "verify_cert" => true
         ];
         $item['add'] = $server[0];
         if ($server[1] == '0' || $server[1] == '') {
@@ -503,7 +511,7 @@ class Tools
             }
         }
         if (count($server) >= 5) {
-            if (in_array($item['net'], array('kcp', 'http'))) {
+            if (in_array($item['net'], array('kcp', 'http','mkcp'))) {
                 $item['type'] = $server[4];
             } elseif ($server[4] == 'ws') {
                 $item['net'] = 'ws';
@@ -516,6 +524,14 @@ class Tools
             if (array_key_exists('server', $item)) {
                 $item['add'] = $item['server'];
                 unset($item['server']);
+            }
+            if (array_key_exists('relayserver', $item)) {
+                $item['localserver']= $item['add'];
+                $item['add'] = $item['relayserver'];
+                unset($item['relayserver']);
+                if ($item['tls']=='tls'){
+                    $item['verify_cert']=false;
+                }
             }
             if (array_key_exists('outside_port', $item)) {
                 $item['port'] = (int) $item['outside_port'];
@@ -567,6 +583,10 @@ class Tools
             if (array_key_exists('server', $item)) {
                 $item['add'] = $item['server'];
                 unset($item['server']);
+            }
+            if (array_key_exists('relayserver', $item)) {
+                $item['add'] = $item['relayserver'];
+                unset($item['relayserver']);
             }
             if (array_key_exists('outside_port', $item)) {
                 $item['port'] = (int) $item['outside_port'];

@@ -9,7 +9,7 @@
 namespace App\Services;
 
 use App\Services\Gateway\{
-    AopF2F, Codepay, PaymentWall, ChenPay, SPay, PAYJS, YftPay, BitPayX
+    AopF2F, Codepay, PaymentWall, ChenPay, SPay, PAYJS, YftPay, BitPayX, TomatoPay, IDtPay
 };
 
 class Payment
@@ -32,6 +32,10 @@ class Payment
                 return new BitPayX(Config::get('bitpay_secret'));
             case ('payjs'):
                 return new PAYJS(Config::get('payjs_key'));
+            case ("tomatopay"):
+                return new TomatoPay();
+            case ("idtpay"):
+                return new IDtPay();
             case ('yftpay'):
                 return new YftPay();
             default:

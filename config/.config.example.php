@@ -30,6 +30,7 @@ $_ENV['db_password'] = 'sspanel';						//用户名对应的密码
 // 新旧首页设置--------------------------------------------------------------------------------------------
 $_ENV['newIndex'] = true;	//使用新的 Node.js 开发的首页请填写 true，其他值为使用先前的首页，如您使用其他主题请保持 true
 
+$_ENV['checkNodeIp'] = true; //是否webapi验证节点ip
 // 订阅中的公告信息
 // 使用数组形式，将会添加在订阅列表的顶端
 // 可用于为用户推送最新地址等信息，尽可能简短且数量不宜太多
@@ -277,6 +278,18 @@ $_ENV['bitpay_secret'] = '';
 #PayJs
 $_ENV['payjs_mchid'] = '';
 $_ENV['payjs_key'] = '';
+
+$_ENV['idtpay']=[
+    'partner'=>"", //商户号
+    'key' =>"", //商户key
+    'sign_type'=>strtoupper('MD5'),
+    'input_charset'=>strtolower('utf-8'),
+    'subjects'=>["内存",'手抓饼'], //商品名称
+    'transport'=>'https' ,//访问模式,根据自己的服务器是否支持ssl访问，若支持请选择https；若不支持请选择http
+    'apiurl'=>'https://pay.idt.xyz/', //http开头
+    'appname'=>$_ENV['appName'],
+
+];
 
 #tomatopay番茄云支付
 #使用教程:https://swapidc.fanqieui.com/?t/329.html  tg群 https://t.me/fanqiepay

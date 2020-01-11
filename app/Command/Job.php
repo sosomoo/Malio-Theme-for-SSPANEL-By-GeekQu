@@ -303,7 +303,7 @@ class Job
                     $ips[$alive_ip->ip] = 1;
                     if ($user->node_connector < count($ips)) {
                         //暂时封禁
-                        $isDisconnect = Disconnect::where('id', '=', $alive_ip->ip)->where(
+                        $isDisconnect = Disconnect::where('ip', '=', $alive_ip->ip)->where(
                             'userid',
                             '=',
                             $user->id
