@@ -63,7 +63,12 @@ class AppURI
                 }
                 $tls = ', over-tls=false, certificate=1';
                 if ($item['tls'] == 'tls') {
-                    $tls = ', over-tls=true, tls-host=' . $item['add'] . ', certificate=1';
+                    $tls = ', over-tls=true, tls-host=' . $item['add'];
+                    if ($item['verify_cert']) {
+                        $tls .= ', certificate=1';
+                    } else {
+                        $tls .= ', certificate=0';
+                    }
                 }
                 $obfs = '';
                 if (in_array($item['net'], ['ws', 'http'])) {
@@ -187,6 +192,9 @@ class AppURI
                             $return['plugin-opts']['mode'] = 'websocket';
                             if ($item['tls'] == 'tls') {
                                 $return['plugin-opts']['tls'] = true;
+                                if ($item['verify_cert'] == false) {
+                                    $return['plugin-opts']['skip-cert-verify'] = true;
+                                }
                             }
                             $return['plugin-opts']['host'] = $item['host'];
                             $return['plugin-opts']['path'] = $item['path'];
@@ -242,12 +250,13 @@ class AppURI
                 if ($item['net'] == 'ws') {
                     $return['network'] = 'ws';
                     $return['ws-path'] = $item['path'];
-                    if ($item['host'] != '') {
-                        $return['ws-headers']['Host'] = $item['host'];
-                    }
+                    $return['ws-headers']['Host'] = ($item['host'] != '' ?? $item['add']);
                 }
                 if ($item['tls'] == 'tls') {
                     $return['tls'] = true;
+                    if ($item['verify_cert'] == false) {
+                        $return['skip-cert-verify'] = true;
+                    }
                 }
                 break;
         }
@@ -286,16 +295,37 @@ class AppURI
                     break;
                 }
                 $obfs = '';
-                if ($item['net'] == 'ws') {
-                    $obfs .= ($item['host'] != ''
-                        ? ('&obfsParam=' . $item['host'] . '&path=' . $item['path'] . '&obfs=websocket')
-                        : ('&obfsParam=' . $item['add'] . '&path=' . $item['path'] . '&obfs=websocket'));
-                } else {
-                    $obfs .= '&obfs=none';
+                switch ($item['net']) {
+                    case 'ws':
+                        $obfs .= ($item['host'] != ''
+                            ? ('&obfsParam=' . $item['host'] . '&path=' . $item['path'] . '&obfs=websocket')
+                            : ('&obfsParam=' . $item['add'] . '&path=' . $item['path'] . '&obfs=websocket'));
+                        break;
+                    case 'kcp':
+                        $obfs .= 'obfsParam={"header":' . '"' . ($item['type'] == '' || $item['type'] == 'noop' ? 'none' : $item['type']) . '"' . '}&obfs=mkcp';
+                        break;
+                    case 'mkcp':
+                        $obfs .= 'obfsParam={"header":' . '"' . ($item['type'] == '' || $item['type'] == 'noop' ? 'none' : $item['type']) . '"' . '}&obfs=mkcp';
+                        break;
+                    case 'h2':
+                        $obfs .= ($item['host'] != ''
+                            ? ('&obfsParam=' . $item['host'] . '&path=' . $item['path'] . '&obfs=h2')
+                            : ('&obfsParam=' . $item['add'] . '&path=' . $item['path'] . '&obfs=h2'));
+                        break;
+                    default:
+                        $obfs .= '&obfs=none';
+                        break;
                 }
-                $tls = ($item['tls'] == 'tls'
-                    ? '&tls=1'
-                    : '&tls=0');
+                $tls = '';
+                if ($item['tls'] == 'tls') {
+                    $tls = '&tls=1';
+                    if ($item['verify_cert'] == false){
+                        $tls .= '&allowInsecure=1';
+                    }
+                    if (isset($item['localserver'])) {
+                        $tls .= '&peer=' . $item['localserver'];
+                    }
+                }
                 $return = ('vmess://' . Tools::base64_url_encode('chacha20-poly1305:' . $item['id'] . '@' . $item['add'] . ':' . $item['port']) . '?remarks=' . rawurlencode($item['remark']) . $obfs . $tls);
                 break;
         }
@@ -322,13 +352,19 @@ class AppURI
                         $protocol .= ('&kcpheader=' . $item['type']);
                         break;
                     case 'ws':
-                        $protocol .= ('&wspath=' . $item['path'] .
-                            '&wsHost=' . $item['host']);
+                        $protocol .= ('&wspath=' . $item['path'] . '&wsHost=' . $item['host']);
+                        break;
+                    case 'h2':
+                        $protocol .= ('&h2Path=' . $item['path'] . '&h2Host=' . $item['host']);
                         break;
                 }
-                $tls = ($item['tls'] == 'tls'
-                    ? '&tls=1'
-                    : '&tls=0');
+                $tls = '';
+                if ($item['tls'] == 'tls') {
+                    $tls = '&tls=1';
+                    if ($item['verify_cert'] == false) {
+                        $tls .= '&allowInsecure=1';
+                    }
+                }
                 $return .= ('vmess://' . base64_encode('auto:' . $item['id'] . '@' . $item['add'] . ':' . $item['port']) . '?remark=' . rawurlencode($item['remark']) . $network . $protocol . '&aid=' . $item['aid'] . $tls);
                 break;
         }
