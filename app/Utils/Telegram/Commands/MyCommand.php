@@ -4,6 +4,7 @@ namespace App\Utils\Telegram\Commands;
 
 use App\Models\User;
 use App\Services\Config;
+use App\Utils\Telegram\Reply;
 use App\Utils\Telegram\TelegramTools;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
@@ -21,7 +22,7 @@ class MyCommand extends Command
     /**
      * @var string Command Description
      */
-    protected $description = '';
+    protected $description = '[群组/私聊] 我的个人信息.';
 
     /**
      * {@inheritdoc}
@@ -39,6 +40,12 @@ class MyCommand extends Command
 
         if ($ChatID < 0) {
             // 群组
+            if (Config::get('enable_delete_user_cmd') === true) {
+                TelegramTools::DeleteMessage([
+                    'chatid'      => $ChatID,
+                    'messageid'   => $MessageID,
+                ]);
+            }
             if (Config::get('telegram_group_quiet') === true) {
                 // 群组中不回应
                 return;
@@ -68,73 +75,46 @@ class MyCommand extends Command
                     'parse_mode' => 'Markdown',
                 ]
             );
-            // 消息删除任务
-            TelegramTools::DeleteMessage([
-                'chatid'      => $ChatID,
-                'messageid'   => $response->getMessageId(),
-                'executetime' => (time() + Config::get('delete_message_time'))
-            ]);
-            return;
-        }
-
-        if ($ChatID > 0) {
-            // 私人
-            self::Privacy($User, $SendUser, $ChatID, $Message, $MessageID);
         } else {
-            // 群组
-            self::Group($User, $SendUser, $ChatID, $Message, $MessageID);
+            if ($ChatID > 0) {
+                // 私人
+                $response = $this->triggerCommand('menu');
+            } else {
+                // 群组
+                $response = self::Group($User, $SendUser, $ChatID, $Message, $MessageID);
+            }
         }
-    }
-
-    public function Group($User, $SendUser, $ChatID, $Message, $MessageID)
-    {
-        $text = [
-            '您当前的流量状况：',
-            '',
-            '今日已使用[' . $User->TodayusedTrafficPercent() . '%]：' . $User->TodayusedTraffic(),
-            '之前已使用[' . $User->LastusedTrafficPercent() . '%]：' . $User->LastusedTraffic(),
-            '流量约剩余[' . $User->unusedTrafficPercent() . '%]：' . $User->unusedTraffic(),
-        ];
-
-        // 回送信息
-        $response = $this->replyWithMessage(
-            [
-                'text'                  => implode(PHP_EOL, $text),
-                'parse_mode'            => 'Markdown',
-                'reply_to_message_id'   => $MessageID,
-            ]
-        );
         // 消息删除任务
         TelegramTools::DeleteMessage([
             'chatid'      => $ChatID,
             'messageid'   => $response->getMessageId(),
-            'executetime' => (time() + Config::get('delete_message_time'))
         ]);
-        if (Config::get('enable_delete_user_cmd') === true) {
-            TelegramTools::DeleteMessage([
-                'chatid'      => $ChatID,
-                'messageid'   => $MessageID,
-                'executetime' => (time() + Config::get('delete_message_time'))
-            ]);
-        }
-        return;
+        return $response;
     }
 
-    public function Privacy($User, $SendUser, $ChatID, $Message, $MessageID)
+    public function Group($User, $SendUser, $ChatID, $Message, $MessageID)
     {
-        $text = [
-            '您当前的流量状况：',
-            '',
-            '今日已使用[' . $User->TodayusedTrafficPercent() . '%]：' . $User->TodayusedTraffic(),
-            '之前已使用[' . $User->LastusedTrafficPercent() . '%]：' . $User->LastusedTraffic(),
-            '流量约剩余[' . $User->unusedTrafficPercent() . '%]：' . $User->unusedTraffic(),
-        ];
-
+        $text = Reply::getUserTitle($User);
+        $text .= PHP_EOL . PHP_EOL;
+        $text .= Reply::getUserTrafficInfo($User);
         // 回送信息
-        $this->replyWithMessage(
+        return $this->replyWithMessage(
             [
-                'text'                  => implode(PHP_EOL, $text),
+                'text'                  => $text,
                 'parse_mode'            => 'Markdown',
+                'reply_to_message_id'   => $MessageID,
+                'reply_markup'          => json_encode(
+                    [
+                        'inline_keyboard' => [
+                            [
+                                [
+                                    'text'          => '签到',
+                                    'callback_data' => 'user.checkin.' . $SendUser['id']
+                                ]
+                            ],
+                        ]
+                    ]
+                ),
             ]
         );
     }

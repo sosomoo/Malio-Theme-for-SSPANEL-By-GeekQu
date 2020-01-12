@@ -43,8 +43,8 @@ use-keyword-filter = false
 [Rule]
 {if $surge >= 3}
 RULE-SET,SYSTEM,🍎 Only
-RULE-SET,https://raw.githubusercontent.com/lhie1/Rules/master/Surge3/Proxy.list,🍃 Proxy
-RULE-SET,https://raw.githubusercontent.com/lhie1/Rules/master/Surge3/Domestic.list,🍂 Domestic
+RULE-SET,https://github.com/lhie1/Rules/raw/master/Surge/Surge%203/Provider/Proxy.list,🍃 Proxy
+RULE-SET,https://github.com/lhie1/Rules/raw/master/Surge/Surge%203/Provider/Domestic.list,🍂 Domestic
 RULE-SET,LAN,DIRECT
 {else}
 {include file='rule/Apple.conf'}

@@ -4,8 +4,7 @@ namespace App\Utils\Telegram\Commands;
 
 use App\Models\{User, TelegramTasks};
 use App\Services\Config;
-use App\Utils\Tools;
-use App\Utils\Telegram\{Process, TelegramTools};
+use App\Utils\Telegram\{Process, Reply, TelegramTools};
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -22,7 +21,7 @@ class SetuserCommand extends Command
     /**
      * @var string Command Description
      */
-    protected $description = '';
+    protected $description = '[群组/私聊] 修改用户数据，管理员命令.';
 
     /**
      * {@inheritdoc}
@@ -49,7 +48,6 @@ class SetuserCommand extends Command
             TelegramTools::DeleteMessage([
                 'chatid'      => $ChatID,
                 'messageid'   => $Message->getMessageId(),
-                'executetime' => (time() + Config::get('delete_message_time'))
             ]);
         }
 
@@ -69,7 +67,6 @@ class SetuserCommand extends Command
                     TelegramTools::DeleteMessage([
                         'chatid'      => $ChatID,
                         'messageid'   => $response->getMessageId(),
-                        'executetime' => (time() + Config::get('delete_admin_message_time'))
                     ]);
                     return;
                 }
@@ -115,23 +112,9 @@ class SetuserCommand extends Command
 
             if ($arguments == '') {
                 // 无参数时回复用户信息
-                $strArray = [
-                    '#' . $User->id . ' ' . $User->user_name . ' 的用户信息',
-                    '',
-                    '用户邮箱：' . TelegramTools::getUserEmail($User->email, $ChatID),
-                    '账户余额：' . $User->money,
-                    '是否启用：' . $User->enable,
-                    '用户等级：' . $User->class,
-                    '剩余流量：' . $User->unusedTraffic(),
-                    '等级到期：' . $User->class_expire,
-                    '账户到期：' . $User->expire_in,
-                    '',
-                    '回复此消息无需打命令可修改用户数据.'
-                ];
                 $response = $this->replyWithMessage(
                     [
-                        'text'                  => TelegramTools::StrArrayToCode($strArray),
-                        'parse_mode'            => 'HTML',
+                        'text'                  => Reply::getUserInfoFromAdmin($User, $ChatID),
                         'reply_to_message_id'   => $MessageID,
                     ]
                 );
@@ -270,7 +253,6 @@ class SetuserCommand extends Command
                 return;
             }
         }
-        $Email = TelegramTools::getUserEmail($User->email, $ChatID);
         // ############## 用户识别码处理 ##############
 
         // ############## 字段选项处理 ##############

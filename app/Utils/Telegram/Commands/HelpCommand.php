@@ -2,9 +2,8 @@
 
 namespace App\Utils\Telegram\Commands;
 
-use App\Models\User;
 use App\Services\Config;
-use App\Utils\Telegram\{Process, Reply};
+use App\Utils\Telegram\TelegramTools;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -21,7 +20,7 @@ class HelpCommand extends Command
     /**
      * @var string Command Description
      */
-    protected $description = '菜单';
+    protected $description = '[群组/私聊] 系统中可用的所有命令.';
 
     /**
      * {@inheritdoc}
@@ -30,58 +29,37 @@ class HelpCommand extends Command
     {
         $Update  = $this->getUpdate();
         $Message = $Update->getMessage();
-
-        // 消息会话 ID
-        $ChatID = $Message->getChat()->getId();
-
-        if ($ChatID > 0) {
-            // 私人会话
-
-            // 发送 '输入中' 会话状态
-            $this->replyWithChatAction(['action' => Actions::TYPING]);
-
-            // 触发用户
-            $SendUser = [
-                'id'       => $Message->getFrom()->getId(),
-                'name'     => $Message->getFrom()->getFirstName() . ' ' . $Message->getFrom()->getLastName(),
-                'username' => $Message->getFrom()->getUsername(),
-            ];
-
-            $user = Process::getUser($SendUser['id']);
-
-            $reply = Reply::getInlinekeyboard($user, 'index');
-
-            // 回送信息
-            $this->replyWithMessage(
-                [
-                    'text'                      => $reply['text'],
-                    'parse_mode'                => 'Markdown',
-                    'disable_web_page_preview'  => false,
-                    'reply_to_message_id'       => null,
-                    'reply_markup'              => json_encode(
-                        [
-                            'inline_keyboard' => $reply['keyboard']
-                        ]
-                    ),
-                ]
-            );
-        } else {
-            // 群组
-
-            if (Config::get('telegram_group_quiet') === true || strpos($Message->getText(), '/' . $this->name) !== 0) {
-                // 群组中不回应
+        if ($Message->getChat()->getId() < 0) {
+            if (Config::get('enable_delete_user_cmd') === true) {
+                TelegramTools::DeleteMessage([
+                    'chatid'      => $Message->getChat()->getId(),
+                    'messageid'   => $Message->getMessageId(),
+                ]);
+            }
+            if (Config::get('telegram_group_quiet') === true) {
                 return;
             }
-
-            // 发送 '输入中' 会话状态
-            $this->replyWithChatAction(['action' => Actions::TYPING]);
-
-            // 回送信息
-            $this->replyWithMessage(
-                [
-                    'text' => '喵？',
-                ]
-            );
+        }
+        $this->replyWithChatAction(['action' => Actions::TYPING]);
+        $commands = $this->telegram->getCommands();
+        $text = '系统中可用的所有命令.';
+        foreach ($commands as $name => $handler) {
+            $text .= '/' . $name . PHP_EOL . '`    - ' . $handler->getDescription() . '`' . PHP_EOL;
+        }
+        $response = $this->replyWithMessage(
+            [
+                'text'                      => $text,
+                'parse_mode'                => 'Markdown',
+                'disable_web_page_preview'  => false,
+                'reply_to_message_id'       => $Message->getMessageId(),
+                'reply_markup'              => null,
+            ]
+        );
+        if ($Message->getChat()->getId() < 0) {
+            TelegramTools::DeleteMessage([
+                'chatid'      => $Message->getChat()->getId(),
+                'messageid'   => $response->getMessageId(),
+            ]);
         }
     }
 }

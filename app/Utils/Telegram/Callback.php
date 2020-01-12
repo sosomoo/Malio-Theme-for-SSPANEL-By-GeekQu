@@ -43,7 +43,7 @@ class Callback
         }
 
         switch (true) {
-            case (strpos($Data['CallbackData'], 'user.') === 0 && $user != null):
+            case (strpos($Data['CallbackData'], 'user.') === 0):
                 // 用户相关
                 self::UserHandler($user, $bot, $Callback, $Data, $SendUser);
                 break;
@@ -131,6 +131,24 @@ class Callback
      */
     public static function UserHandler($user, $bot, $Callback, $Data, $SendUser)
     {
+        if ($user == null) {
+            if ($Data['ChatID'] < 0) {
+                $sendMessage = [
+                    'text'                      => '[@' . $SendUser['username'] . '](tg://user?id=' . $SendUser['id'] . ') 您未绑定账户.',
+                    'parse_mode'                => 'MarkdownV2',
+                    'reply_to_message_id'       => null,
+                ];
+            } else {
+                return self::CallbackDataHandler($user, $bot, $Callback, $Data, $SendUser);
+            }
+            $response = $bot->sendMessage($sendMessage);
+            // 消息删除任务
+            return TelegramTools::DeleteMessage([
+                'chatid'      => $Data['ChatID'],
+                'messageid'   => $response->getMessageId(),
+            ]);
+        }
+
         $CallbackDataExplode = explode('|', $Data['CallbackData']);
         $Operate = explode('.', $CallbackDataExplode[0]);
         $op_1 = $Operate[1];
@@ -586,6 +604,41 @@ class Callback
                         ];
                         break;
                 }
+                break;
+            case 'checkin':
+                // 签到
+                $op_2 = $Operate[2];
+                $triggerUser = Process::getUser($op_2);
+                if ($triggerUser->id != $user->id) {
+                    return Process::SendPost(
+                        'answerCallbackQuery',
+                        [
+                            'callback_query_id' => $Callback->getId(),
+                            'text'              => '您无法从他人的消息中签到.',
+                            'show_alert'        => true,
+                        ]
+                    );
+                }
+                $checkin = $user->checkin();
+                $text = $checkin['msg'];
+                // 回送信息
+                $sendMessage = [
+                    'text'                  => implode(PHP_EOL, $text),
+                    'reply_to_message_id'   => $Data['MessageID'],
+                    'parse_mode'            => 'Markdown',
+                    'reply_markup'          => json_encode(
+                        [
+                            'inline_keyboard' => [
+                                [
+                                    [
+                                        'text'          => '已签到',
+                                        'callback_data' => 'user.checkin.' . $SendUser['id']
+                                    ]
+                                ],
+                            ]
+                        ]
+                    ),
+                ];
                 break;
             default:
                 // 用户中心

@@ -510,15 +510,18 @@ class TelegramTools
         if (isset($Params['executetime']) && is_numeric($Params['executetime'])) {
             $executetime = $Params['executetime'];
         } else {
-            $executetime = time() + Config::get('delete_message_time');
+            $executetime = Config::get('delete_message_time');
         }
-        $task = new TelegramTasks();
-        $task->type          = 1;
-        $task->chatid        = $Params['chatid'];
-        $task->messageid     = $Params['messageid'];
-        $task->executetime   = $executetime;
-        $task->datetime      = time();
-        $task->save();
+        if ($executetime >= 1) {
+            $executetime += time();
+            $task = new TelegramTasks();
+            $task->type          = 1;
+            $task->chatid        = $Params['chatid'];
+            $task->messageid     = $Params['messageid'];
+            $task->executetime   = $executetime;
+            $task->datetime      = time();
+            $task->save();
+        }
     }
 
     /**

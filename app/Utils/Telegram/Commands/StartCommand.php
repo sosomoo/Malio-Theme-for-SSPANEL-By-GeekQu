@@ -22,7 +22,7 @@ class StartCommand extends Command
     /**
      * @var string Command Description
      */
-    protected $description = 'Start Command to get you started';
+    protected $description = '[群组/私聊] Bot 初始命令.';
 
     /**
      * {@inheritdoc}

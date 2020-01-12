@@ -19,7 +19,7 @@ class PingCommand extends Command
     /**
      * @var string Command Description
      */
-    protected $description = '';
+    protected $description = '[群组/私聊] 获取我或者群组的唯一 ID.';
 
     /**
      * {@inheritdoc}
@@ -37,13 +37,6 @@ class PingCommand extends Command
 
             // 发送 '输入中' 会话状态
             $this->replyWithChatAction(['action' => Actions::TYPING]);
-
-            // 触发用户
-            $SendUser = [
-                'id'       => $Message->getFrom()->getId(),
-                'name'     => $Message->getFrom()->getFirstName() . ' ' . $Message->getFrom()->getLastName(),
-                'username' => $Message->getFrom()->getUsername(),
-            ];
 
             $text = [
                 'Pong！',
@@ -70,6 +63,7 @@ class PingCommand extends Command
 
             $text = [
                 'Pong！',
+                '您的 ID 是 ' . $Message->getFrom()->getId() . '.',
                 '这个群组的 ID 是 ' . $ChatID . '.',
             ];
 

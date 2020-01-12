@@ -21,7 +21,7 @@ class CheckinCommand extends Command
     /**
      * @var string Command Description
      */
-    protected $description = '';
+    protected $description = '[群组/私聊] 每日签到.';
 
     /**
      * {@inheritdoc}
@@ -36,6 +36,12 @@ class CheckinCommand extends Command
 
         if ($ChatID < 0) {
             // 群组
+            if (Config::get('enable_delete_user_cmd') === true) {
+                TelegramTools::DeleteMessage([
+                    'chatid'      => $ChatID,
+                    'messageid'   => $Message->getMessageId(),
+                ]);
+            }
             if (Config::get('telegram_group_quiet') === true) {
                 // 群组中不回应
                 return;
@@ -62,19 +68,17 @@ class CheckinCommand extends Command
             $response = $this->replyWithMessage(
                 [
                     'text'       => Config::get('user_not_bind_reply'),
-                    'parse_mode' => 'Markdown',
+                    'parse_mode' => 'MarkdownV2',
                 ]
             );
         } else {
-            $checkin = $User->checkin();
-            $text = [
-                $checkin['msg']
-            ];
+            $checkin = $User->checkin();                
             // 回送信息
             $response = $this->replyWithMessage(
                 [
-                    'text'       => implode(PHP_EOL, $text),
-                    'parse_mode' => 'Markdown',
+                    'text'                  => $checkin['msg'],
+                    'reply_to_message_id'   => $Message->getMessageId(),
+                    'parse_mode'            => 'MarkdownV2',
                 ]
             );
         }
@@ -83,16 +87,8 @@ class CheckinCommand extends Command
             TelegramTools::DeleteMessage([
                 'chatid'      => $ChatID,
                 'messageid'   => $response->getMessageId(),
-                'executetime' => (time() + Config::get('delete_message_time'))
             ]);
-            if (Config::get('enable_delete_user_cmd') === true) {
-                TelegramTools::DeleteMessage([
-                    'chatid'      => $ChatID,
-                    'messageid'   => $Message->getMessageId(),
-                    'executetime' => (time() + Config::get('delete_message_time'))
-                ]);
-            }
         }
-        return;
+        return $response;
     }
 }

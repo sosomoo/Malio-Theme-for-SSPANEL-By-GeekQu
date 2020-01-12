@@ -343,6 +343,7 @@ class LinkController extends BaseController
             'quantumult_v2'   => '?quantumult=1',
             'quantumult_sub'  => '?quantumult=2',
             'quantumult_conf' => '?quantumult=3',
+            'quantumultx'     => '?quantumultx=1',
             'shadowrocket'    => '?shadowrocket=1',
             'kitsunebi'       => '?kitsunebi=1'
         ];

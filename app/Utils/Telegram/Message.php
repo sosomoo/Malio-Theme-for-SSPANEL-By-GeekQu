@@ -51,11 +51,6 @@ class Message
         if ($NewChatMember != null) {
             self::NewChatParticipant($user, $bot, $Message, $ChatID, $NewChatMember);
         }
-
-        // // 图片内容
-        // $PhotoData = $Message->getPhoto();
-        // if ($PhotoData != null) {
-        // }
     }
 
     public static function NewChatParticipant($user, $bot, $Message, $ChatID, $NewChatMember)
