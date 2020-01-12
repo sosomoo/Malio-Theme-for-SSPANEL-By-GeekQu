@@ -313,7 +313,7 @@ class LinkController extends BaseController
      * @param object $user 用户
      * @param int    $int  当前用户访问的订阅类型
      *
-     * @return string
+     * @return array
      */
     public static function getSubinfo($user, $int = 0)
     {
