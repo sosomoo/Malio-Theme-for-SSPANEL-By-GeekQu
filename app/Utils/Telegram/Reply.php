@@ -50,6 +50,12 @@ class Reply
                             'callback_data' => 'user.invite'
                         ],
                     ],
+                    [
+                        [
+                            'text'          => '签到',
+                            'callback_data' => 'user.checkin.' . $user->telegram_id
+                        ],
+                    ],
                 ];
                 if ($user != null) {
                     $text = self::getUserTitle($user);

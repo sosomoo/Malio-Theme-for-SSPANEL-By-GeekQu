@@ -133,20 +133,17 @@ class Callback
     {
         if ($user == null) {
             if ($Data['ChatID'] < 0) {
-                $sendMessage = [
-                    'text'                      => '[@' . $SendUser['username'] . '](tg://user?id=' . $SendUser['id'] . ') 您未绑定账户.',
-                    'parse_mode'                => 'MarkdownV2',
-                    'reply_to_message_id'       => null,
-                ];
+                return Process::SendPost(
+                    'answerCallbackQuery',
+                    [
+                        'callback_query_id' => $Callback->getId(),
+                        'text'              => '您好，您尚未绑定账户，无法签到.',
+                        'show_alert'        => true,
+                    ]
+                );
             } else {
                 return self::CallbackDataHandler($user, $bot, $Callback, $Data, $SendUser);
             }
-            $response = $bot->sendMessage($sendMessage);
-            // 消息删除任务
-            return TelegramTools::DeleteMessage([
-                'chatid'      => $Data['ChatID'],
-                'messageid'   => $response->getMessageId(),
-            ]);
         }
 
         $CallbackDataExplode = explode('|', $Data['CallbackData']);
@@ -623,7 +620,7 @@ class Callback
                 $text = $checkin['msg'];
                 // 回送信息
                 $sendMessage = [
-                    'text'                  => implode(PHP_EOL, $text),
+                    'text'                  => $text,
                     'reply_to_message_id'   => $Data['MessageID'],
                     'parse_mode'            => 'Markdown',
                     'reply_markup'          => json_encode(

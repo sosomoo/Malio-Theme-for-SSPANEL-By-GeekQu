@@ -72,13 +72,6 @@ class StartCommand extends Command
                         }
                     }
                 }
-                Process::SendPost(
-                    'unbanChatMember',
-                    [
-                        'chat_id'   => Config::get('telegram_chatid'),
-                        'user_id'   => $SendUser['id'],
-                    ]
-                );
                 // 回送信息
                 $this->replyWithMessage(
                     [

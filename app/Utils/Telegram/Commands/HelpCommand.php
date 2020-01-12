@@ -43,6 +43,7 @@ class HelpCommand extends Command
         $this->replyWithChatAction(['action' => Actions::TYPING]);
         $commands = $this->telegram->getCommands();
         $text = '系统中可用的所有命令.';
+        $text .= PHP_EOL . PHP_EOL;
         foreach ($commands as $name => $handler) {
             $text .= '/' . $name . PHP_EOL . '`    - ' . $handler->getDescription() . '`' . PHP_EOL;
         }

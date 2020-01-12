@@ -71,8 +71,9 @@ class MyCommand extends Command
             // 回送信息
             $response = $this->replyWithMessage(
                 [
-                    'text'       => Config::get('user_not_bind_reply'),
-                    'parse_mode' => 'Markdown',
+                    'text'                  => Config::get('user_not_bind_reply'),
+                    'reply_to_message_id'   => $MessageID,
+                    'parse_mode'            => 'Markdown',
                 ]
             );
         } else {
