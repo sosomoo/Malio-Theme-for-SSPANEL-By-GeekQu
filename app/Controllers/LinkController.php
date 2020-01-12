@@ -237,6 +237,16 @@ class LinkController extends BaseController
     {
         $user_path = (BASE_PATH . '/storage/SubscribeCache/' . $user->id . '/');
         if (!is_dir($user_path)) mkdir($user_path);
+        $number = 0;
+        $files = glob($user_path . '*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                $number++;
+            }
+        }
+        if ($number >= Config::get('sub_cache_max_quantity') + 1) {
+            Tools::delDirAndFile($user_path);
+        }
         $user_path_hash = ($user_path . Uuid::uuid3(Uuid::NAMESPACE_DNS, $path)->toString());
         $file = fopen($user_path_hash, 'wb');
         fwrite($file, $content);

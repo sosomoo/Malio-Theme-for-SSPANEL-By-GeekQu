@@ -381,6 +381,7 @@ $_ENV['add_emoji_to_node_name'] = false;  //为部分订阅中默认添加 emoji
 $_ENV['add_appName_to_ss_uri'] = true;    //为 SS 节点名称中添加站点名
 $_ENV['enable_sub_cache'] = false;        //订阅信息缓存
 $_ENV['sub_cache_time'] = 360;            //订阅信息缓存有效时间 (分钟)
+$_ENV['sub_cache_max_quantity'] = 15;     //每个用户订阅缓存最大数量，请基于磁盘空间考虑
 
 // 审计自动封禁开关
 $_ENV['enable_auto_detect_ban'] = false;
