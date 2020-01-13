@@ -44,7 +44,7 @@ class AppURI
         return $return;
     }
 
-    public static function getQuantumultURI($item)
+    public static function getQuantumultURI($item, $base64_encode = false)
     {
         $return = null;
         switch ($item['type']) {
@@ -75,6 +75,9 @@ class AppURI
                     $obfs = ', obfs=' . $item['net'] . ', obfs-path="' . $item['path'] . '", obfs-header="Host: ' . $item['host'] . '[Rr][Nn]User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_0 like Mac OS X) AppleWebKit/888.8.88 (KHTML, like Gecko) Mobile/6666666"';
                 }
                 $return = ($item['remark'] . ' = vmess, ' . $item['add'] . ', ' . $item['port'] . ', chacha20-ietf-poly1305, "' . $item['id'] . '", group=' . Config::get('appName') . '_VMess' . $tls . $obfs);
+                if ($base64_encode === true) {
+                    $return = 'vmess://' . base64_encode($return);
+                }
                 break;
         }
         return $return;
@@ -158,9 +161,12 @@ class AppURI
         return $return;
     }
 
-    public static function getClashURI($item)
+    public static function getClashURI($item, $ssr_support = false)
     {
         $return = null;
+        if ($item['type'] == 'ssr' && $ssr_support === false) {
+            return $return;
+        }
         switch ($item['type']) {
             case 'ss':
                 $method = ['rc4-md5-6', 'camellia-128-cfb', 'camellia-192-cfb', 'camellia-256-cfb', 'bf-cfb', 'cast5-cfb', 'des-cfb', 'des-ede3-cfb', 'idea-cfb', 'rc2-cfb', 'seed-cfb', 'salsa20', 'chacha20', 'xsalsa20', 'none'];
@@ -250,7 +256,7 @@ class AppURI
                 if ($item['net'] == 'ws') {
                     $return['network'] = 'ws';
                     $return['ws-path'] = $item['path'];
-                    $return['ws-headers']['Host'] = ($item['host'] != '' ?? $item['add']);
+                    $return['ws-headers']['Host'] = ($item['host'] != '' ? $item['host'] : $item['add']);
                 }
                 if ($item['tls'] == 'tls') {
                     $return['tls'] = true;

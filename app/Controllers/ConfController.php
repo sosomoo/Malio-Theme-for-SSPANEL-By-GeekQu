@@ -180,7 +180,7 @@ class ConfController extends BaseController
         $return = null;
         switch (true) {
             case (isset($Rule['content']['class'])):
-                if ($Proxy['class'] == $Rule['content']['class']) {
+                if (in_array($Proxy['class'], $Rule['content']['class'])) {
                     if (isset($Rule['content']['regex'])) {
                         if (preg_match('/' . $Rule['content']['regex'] . '/i', $Proxy['remark'])) {
                             $return = $Proxy;
@@ -191,7 +191,7 @@ class ConfController extends BaseController
                 }
                 break;
             case (isset($Rule['content']['noclass'])):
-                if ($Proxy['class'] != $Rule['content']['noclass']) {
+                if (!in_array($Proxy['class'], $Rule['content']['noclass'])) {
                     if (isset($Rule['content']['regex'])) {
                         if (preg_match('/' . $Rule['content']['regex'] . '/i', $Proxy['remark'])) {
                             $return = $Proxy;

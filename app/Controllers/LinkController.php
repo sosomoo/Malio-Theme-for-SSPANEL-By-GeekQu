@@ -66,23 +66,39 @@ class LinkController extends BaseController
 
         // 筛选节点部分
         $find = false;
-        $Rule = [];
+        $Rule = [
+            'type'  => (isset($opts['type']) ? trim($opts['type']) : 'all'),
+            'is_mu' => (isset($opts['mu']) && $opts['mu'] != '' ? (int) $opts['mu'] : 0),
+        ];
         if (isset($opts['class'])) {
-            $Rule['content']['class'] = (int) urldecode(trim($opts['class']));
+            $class = trim(urldecode($opts['class']));
+            $Rule['content']['class'] = array_map(
+                function($item) {
+                    return (int) $item;
+                },
+                explode('+', $class)
+            );
             $find = true;
         }
         if (isset($opts['noclass'])) {
-            $Rule['content']['noclass'] = (int) urldecode(trim($opts['noclass']));
+            $noclass = trim(urldecode($opts['noclass']));
+            $Rule['content']['noclass'] = array_map(
+                function($item) {
+                    return (int) $item;
+                },
+                explode('+', $noclass)
+            );
             $find = true;
         }
         if (isset($opts['regex'])) {
-            $Rule['content']['regex'] = urldecode(trim($opts['regex']));
+            $Rule['content']['regex'] = trim(urldecode($opts['regex']));
             $find = true;
         }
 
         $emoji = ((isset($opts['emoji']) && $opts['emoji'] == '1') || Config::get('add_emoji_to_node_name') === true
-            ? 1
-            : 0);
+            ? true
+            : false);
+        $Rule['emoji'] = $emoji;
 
         // 兼容原版
         if (isset($opts['mu'])) {
@@ -107,6 +123,7 @@ class LinkController extends BaseController
         }
 
         $sub_type_array = [
+            'list' => ['filename' => '', 'class' => ''],
             'clash' => ['filename' => 'config.yaml', 'class' => 'Clash'],
             'kitsunebi' => ['filename' => 'Kitsunebi.txt', 'class' => 'Kitsunebi'],
             'ssd' => ['filename' => 'SSD.txt', 'class' => 'SSD'],
@@ -133,7 +150,7 @@ class LinkController extends BaseController
 
         $getBody = '';
         foreach ($sub_type_array as $key => $value) {
-            if ($key != 'sub' && isset($opts[$key])) {
+            if ($key != 'sub' && $key != 'list' && isset($opts[$key])) {
                 $int = (int) $opts[$key];
                 $class = ('get' . $value['class']);
                 if ($int >= 1) {
@@ -160,6 +177,29 @@ class LinkController extends BaseController
                     break;
                 }
                 continue;
+            }
+            if ($key == 'list' && isset($opts[$key])) {
+                if (Config::get('enable_sub_cache') === true) {
+                    $Cache = true;
+                    $content = self::getSubscribeCache($user, $path);
+                    if ($content === false) {
+                        $Cache = false;
+                        $content = self::getLists($user, $opts['list'], $opts, $Rule);
+                    }
+                    self::SubscribeCache($user, $path, $content);
+                } else {
+                    $content = self::getLists($user, $opts['list'], $opts, $Rule);
+                }
+                $subscribe_type = ucfirst($opts[$key]);
+                $filename = (stripos($opts[$key], 'clash') === 0 ? 'node.yaml' : 'node.txt');
+                $getBody = self::getBody(
+                    $user,
+                    $response,
+                    $content,
+                    $filename,
+                    $Cache
+                );
+                break;
             }
             if ($key != 'sub') {
                 continue;
@@ -366,6 +406,58 @@ class LinkController extends BaseController
         );
     }
 
+    public static function getLists($user, $list, $opts, $Rule)
+    {
+        $list = strtolower($list);
+        if ($list == 'quantumult') {
+            $Rule['type'] = 'vmess';
+        }
+        $items = URL::getNew_AllItems($user, $Rule);
+        $return = [];
+        foreach ($items as $item) {
+            switch ($list) {
+                case 'surge':
+                    # code...
+                    $out = AppURI::getSurgeURI($item, 3);
+                    break;
+                case 'clash':
+                    # code...
+                    $out = AppURI::getClashURI($item);
+                    break;
+                case 'clashr':
+                    # code...
+                    $out = AppURI::getClashURI($item, true);
+                    break;
+                case 'kitsunebi':
+                    # code...
+                    $out = AppURI::getKitsunebiURI($item);
+                    break;
+                case 'quantumult':
+                    # code...
+                    $out = AppURI::getQuantumultURI($item, true);
+                    break;
+                case 'quantumultx':
+                    # code...
+                    $out = AppURI::getQuantumultXURI($item);
+                    break;
+                case 'shadowrocket':
+                    # code...
+                    $out = AppURI::getShadowrocketURI($item);
+                    break;
+            }
+            if ($out != null) {
+                $return[] = $out;
+            }
+        }
+        if (in_array($list, ['clash', 'clashr'])) {
+            return \Symfony\Component\Yaml\Yaml::dump(['proxies' => $return], 4, 2);
+        }
+        if (in_array($list, ['kitsunebi', 'quantumult', 'shadowrocket'])) {
+            return base64_encode(implode(PHP_EOL, $return));
+        }
+        return implode(PHP_EOL, $return);
+    }
+
     /**
      * Surge 配置
      *
@@ -379,12 +471,15 @@ class LinkController extends BaseController
      */
     public static function getSurge($user, $surge, $opts, $Rule, $find, $emoji)
     {
+        if ($surge == 1) {
+            return self::getLists($user, 'surge', $opts, $Rule);
+        }
         $subInfo = self::getSubinfo($user, $surge);
         $userapiUrl = $subInfo['surge'];
         $source = (isset($opts['source']) && $opts['source'] != ''
             ? true
             : false);
-        if (in_array($surge, [1, 4])) {
+        if (in_array($surge, [4])) {
             $items = array_merge(
                 URL::getAllItems($user, 0, 1, $emoji),
                 URL::getAllItems($user, 1, 1, $emoji),
@@ -405,9 +500,6 @@ class LinkController extends BaseController
                 if ($item === null) continue;
             }
             $All_Proxy .= AppURI::getSurgeURI($item, $surge) . PHP_EOL;
-        }
-        if (!$source && $surge == 1) {
-            return $All_Proxy;
         }
         if ($source) {
             $SourceURL = trim(urldecode($opts['source']));
@@ -551,23 +643,7 @@ class LinkController extends BaseController
     {
         switch ($quantumultx) {
             default:
-                $items = array_merge(
-                    URL::getAllItems($user, 0, 1, $emoji),
-                    URL::getAllItems($user, 1, 1, $emoji),
-                    URL::getAllItems($user, 0, 0, $emoji),
-                    URL::getAllItems($user, 1, 0, $emoji),
-                    URL::getAllVMessUrl($user, 1, $emoji),
-                    URL::getAllV2RayPluginItems($user, $emoji)
-                );
-                $All_Proxy = '';
-                foreach ($items as $item) {
-                    if ($find) {
-                        $item = ConfController::getMatchProxy($item, $Rule);
-                        if ($item === null) continue;
-                    }
-                    $All_Proxy .= AppURI::getQuantumultXURI($item) . PHP_EOL;
-                }
-                return $All_Proxy;
+                return self::getLists($user, 'quantumultx', $opts, $Rule);
                 break;
         }
     }
@@ -626,6 +702,7 @@ class LinkController extends BaseController
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
         if ($clash == 2) {
+            $ssr_support = true;
             $items = array_merge(
                 URL::getAllItems($user, 0, 1, $emoji),
                 URL::getAllItems($user, 1, 1, $emoji),
@@ -635,6 +712,7 @@ class LinkController extends BaseController
                 URL::getAllVMessUrl($user, 1, $emoji)
             );
         } else {
+            $ssr_support = false;
             $items = array_merge(
                 URL::getAllItems($user, 0, 1, $emoji),
                 URL::getAllItems($user, 1, 1, $emoji),
@@ -644,7 +722,7 @@ class LinkController extends BaseController
         }
         $Proxys = [];
         foreach ($items as $item) {
-            $Proxy = AppURI::getClashURI($item);
+            $Proxy = AppURI::getClashURI($item, $ssr_support);
             if (isset($opts['source']) && $opts['source'] != '') {
                 $Proxy['class'] = $item['class'];
             }
@@ -717,7 +795,7 @@ class LinkController extends BaseController
      */
     public static function getShadowrocket($user, $shadowrocket, $opts, $Rule, $find, $emoji)
     {
-        $emoji = 0; // Shadowrocket 自带 emoji
+        $emoji = false; // Shadowrocket 自带 emoji
 
         $return = '';
         if (strtotime($user->expire_in) > time()) {
