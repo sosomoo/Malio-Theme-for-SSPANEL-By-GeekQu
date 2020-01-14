@@ -504,9 +504,9 @@ class LinkController extends BaseController
             $Extend_ss['remark']    = $remark;
             $Extend_VMess['remark'] = $remark;
             if (in_array($list, ['kitsunebi', 'quantumult'])) {
-                $out = self::getListItem($Extend_ss, $list);
-            } else {
                 $out = self::getListItem($Extend_VMess, $list);
+            } else {
+                $out = self::getListItem($Extend_ss, $list);
             }
             if ($out !== null) $return[] = $out;
         }
