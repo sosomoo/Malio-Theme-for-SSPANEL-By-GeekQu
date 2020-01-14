@@ -527,7 +527,7 @@ class LinkController extends BaseController
     public static function getSurge($user, int $surge, $opts, $Rule, $find)
     {
         if ($surge == 1) {
-            return self::getLists($user, 'surge', $opts, $Rule);
+            return self::getLists($user, 'surge', $opts, $Rule, $find);
         }
         $subInfo = self::getSubinfo($user, $surge);
         $userapiUrl = $subInfo['surge'];
@@ -682,7 +682,7 @@ class LinkController extends BaseController
     {
         switch ($quantumultx) {
             default:
-                return self::getLists($user, 'quantumultx', $opts, $Rule);
+                return self::getLists($user, 'quantumultx', $opts, $Rule, $find);
                 break;
         }
     }
