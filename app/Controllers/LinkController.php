@@ -95,7 +95,10 @@ class LinkController extends BaseController
             $find = true;
         }
 
-        $emoji = ((isset($opts['emoji']) && $opts['emoji'] == '1') || Config::get('add_emoji_to_node_name') === true
+        $emoji = ((isset($opts['emoji']) && $opts['emoji'] >= '1') || Config::get('add_emoji_to_node_name') === true
+            ? true
+            : false);
+        $Rule['extend'] = ((isset($opts['extend']) && $opts['extend'] >= '1') || Config::get('enable_sub_extend') === true
             ? true
             : false);
         $Rule['emoji'] = $emoji;
@@ -123,16 +126,16 @@ class LinkController extends BaseController
         }
 
         $sub_type_array = [
-            'list' => ['filename' => '', 'class' => ''],
-            'clash' => ['filename' => 'config.yaml', 'class' => 'Clash'],
-            'kitsunebi' => ['filename' => 'Kitsunebi.txt', 'class' => 'Kitsunebi'],
-            'ssd' => ['filename' => 'SSD.txt', 'class' => 'SSD'],
-            'surge' => ['filename' => 'Surge.conf', 'class' => 'Surge'],
-            'surfboard' => ['filename' => 'Surfboard.conf', 'class' => 'Surfboard'],
-            'shadowrocket' => ['filename' => 'Shadowrocket.txt', 'class' => 'Shadowrocket'],
-            'quantumult' => ['filename' => 'Quantumult.conf', 'class' => 'Quantumult'],
-            'quantumultx' => ['filename' => 'QuantumultX.conf', 'class' => 'QuantumultX'],
-            'sub' => ['filename' => 'node.txt', 'class' => 'Sub']
+            'list'          => ['filename' => 'node.txt', 'class' => 'Lists'],
+            'clash'         => ['filename' => 'config.yaml', 'class' => 'Clash'],
+            'kitsunebi'     => ['filename' => 'Kitsunebi.txt', 'class' => 'Kitsunebi'],
+            'ssd'           => ['filename' => 'SSD.txt', 'class' => 'SSD'],
+            'surge'         => ['filename' => 'Surge.conf', 'class' => 'Surge'],
+            'surfboard'     => ['filename' => 'Surfboard.conf', 'class' => 'Surfboard'],
+            'shadowrocket'  => ['filename' => 'Shadowrocket.txt', 'class' => 'Shadowrocket'],
+            'quantumult'    => ['filename' => 'Quantumult.conf', 'class' => 'Quantumult'],
+            'quantumultx'   => ['filename' => 'QuantumultX.conf', 'class' => 'QuantumultX'],
+            'sub'           => ['filename' => 'node.txt', 'class' => 'Sub']
         ];
 
         // 订阅类型
@@ -149,91 +152,77 @@ class LinkController extends BaseController
         $path = ($request->getUri()->getPath() . $request->getUri()->getQuery());
 
         $getBody = '';
+        
         foreach ($sub_type_array as $key => $value) {
-            if ($key != 'sub' && $key != 'list' && isset($opts[$key])) {
-                $int = (int) $opts[$key];
-                $class = ('get' . $value['class']);
-                if ($int >= 1) {
+            if (isset($opts[$key])) {
+                $query_value = $opts[$key];
+                if ($query_value != '0' && $query_value != '') {
+                    // 兼容代码开始
+                    if ($key == 'sub' && $query_value > 6) {
+                        $query_value = 1;
+                    }
+                    if ($key == 'surge' && $query_value == '1') {
+                        $value['class'] = 'Lists';
+                        $query_value = 'surge';
+                    }
+                    if ($key == 'kitsunebi' ) {
+                        $value['class'] = 'Lists';
+                        $query_value = 'kitsunebi';
+                    }
+                    if ($key == 'quantumult' && $query_value == '1') {
+                        $value['class'] = 'Lists';
+                        $query_value = 'quantumult';
+                    }
+                    if ($key == 'quantumultx') {
+                        $value['class'] = 'Lists';
+                        $query_value = 'quantumultx';
+                    }
+                    if ($key == 'shadowrocket') {
+                        $value['class'] = 'Lists';
+                        $query_value = 'shadowrocket';
+                    }
+                    // 兼容代码结束
                     $Cache = false;
+                    $class = ('get' . $value['class']);
                     if (Config::get('enable_sub_cache') === true) {
                         $Cache = true;
                         $content = self::getSubscribeCache($user, $path);
                         if ($content === false) {
                             $Cache = false;
-                            $content = self::$class($user, $int, $opts, $Rule, $find, $emoji);
+                            $content = self::$class($user, $query_value, $opts, $Rule, $find);
                         }
                         self::SubscribeCache($user, $path, $content);
                     } else {
-                        $content = self::$class($user, $int, $opts, $Rule, $find, $emoji);
+                        $content = self::$class($user, $query_value, $opts, $Rule, $find);
+                    }
+                    if ($sub_type_array[$key]['class'] != $value['class']) {
+                        $filename = $sub_type_array[$query_value]['filename'];
+                    } else {
+                        $filename = $value['filename'];
+                    }
+                    if (in_array($query_value, ['clash', 'clashr'])) {
+                        $filename = $sub_type_array['clash']['filename'];
                     }
                     $getBody = self::getBody(
                         $user,
                         $response,
                         $content,
-                        $value['filename'],
+                        $filename,
                         $Cache
                     );
-                    $subscribe_type = $value['class'];
+                    if ($key == 'sub') {
+                        $subscribe_type = $sub_int_type[$query_value];
+                    } else {
+                        $subscribe_type = ($value['class'] == 'Lists' ? ucfirst($query_value) : $value['class']);
+                    }
                     break;
                 }
                 continue;
             }
-            if ($key == 'list' && isset($opts[$key])) {
-                if (Config::get('enable_sub_cache') === true) {
-                    $Cache = true;
-                    $content = self::getSubscribeCache($user, $path);
-                    if ($content === false) {
-                        $Cache = false;
-                        $content = self::getLists($user, $opts['list'], $opts, $Rule);
-                    }
-                    self::SubscribeCache($user, $path, $content);
-                } else {
-                    $content = self::getLists($user, $opts['list'], $opts, $Rule);
-                }
-                $subscribe_type = ucfirst($opts[$key]);
-                $filename = (stripos($opts[$key], 'clash') === 0 ? 'node.yaml' : 'node.txt');
-                $getBody = self::getBody(
-                    $user,
-                    $response,
-                    $content,
-                    $filename,
-                    $Cache
-                );
-                break;
-            }
-            if ($key != 'sub') {
-                continue;
-            }
-            $int = (!isset($opts[$key])
-                ? 1
-                : (int) $opts[$key]);
-            if ($int == 0 || $int >= 6) {
-                $int = 1;
-            }
-            $subscribe_type = $sub_int_type[$int];
-            $Cache = false;
-            if (Config::get('enable_sub_cache') === true) {
-                $Cache = true;
-                $content = self::getSubscribeCache($user, $path);
-                if ($content === false) {
-                    $Cache = false;
-                    $content = self::getSub($user, $int, $opts, $Rule, $find, $emoji);
-                }
-                self::SubscribeCache($user, $path, $content);
-            } else {
-                $content = self::getSub($user, $int, $opts, $Rule, $find, $emoji);
-            }
-            $getBody = self::getBody(
-                $user,
-                $response,
-                $content,
-                $value['filename'],
-                $Cache
-            );
         }
 
         // 记录订阅日志
-        if (Config::get('subscribeLog') === true) {
+        if (Config::get('subscribeLog') === true && $getBody != '') {
             self::Subscribe_log($user, $subscribe_type, $request->getHeaderLine('User-Agent'));
         }
 
@@ -406,7 +395,36 @@ class LinkController extends BaseController
         );
     }
 
-    public static function getLists($user, $list, $opts, $Rule)
+    public static function getListItem($item, $list)
+    {
+        $return = null;
+        switch ($list) {
+            case 'surge':
+                $return = AppURI::getSurgeURI($item, 3);
+                break;
+            case 'clash':
+                $return = AppURI::getClashURI($item);
+                break;
+            case 'clashr':
+                $return = AppURI::getClashURI($item, true);
+                break;
+            case 'kitsunebi':
+                $return = AppURI::getKitsunebiURI($item);
+                break;
+            case 'quantumult':
+                $return = AppURI::getQuantumultURI($item, true);
+                break;
+            case 'quantumultx':
+                $return = AppURI::getQuantumultXURI($item);
+                break;
+            case 'shadowrocket':
+                $return = AppURI::getShadowrocketURI($item);
+                break;
+        }
+        return $return;
+    }
+
+    public static function getLists($user, $list, $opts, $Rule, $find)
     {
         $list = strtolower($list);
         if ($list == 'quantumult') {
@@ -414,37 +432,15 @@ class LinkController extends BaseController
         }
         $items = URL::getNew_AllItems($user, $Rule);
         $return = [];
-        foreach ($items as $item) {
-            switch ($list) {
-                case 'surge':
-                    # code...
-                    $out = AppURI::getSurgeURI($item, 3);
-                    break;
-                case 'clash':
-                    # code...
-                    $out = AppURI::getClashURI($item);
-                    break;
-                case 'clashr':
-                    # code...
-                    $out = AppURI::getClashURI($item, true);
-                    break;
-                case 'kitsunebi':
-                    # code...
-                    $out = AppURI::getKitsunebiURI($item);
-                    break;
-                case 'quantumult':
-                    # code...
-                    $out = AppURI::getQuantumultURI($item, true);
-                    break;
-                case 'quantumultx':
-                    # code...
-                    $out = AppURI::getQuantumultXURI($item);
-                    break;
-                case 'shadowrocket':
-                    # code...
-                    $out = AppURI::getShadowrocketURI($item);
-                    break;
+        if ($Rule['extend'] === true) {
+            if (in_array($list, ['clash', 'clashr'])) {
+                $items = array_merge($items, self::getListExtend($user, $list));
+            } else {
+                $return[] = implode(PHP_EOL, self::getListExtend($user, $list));
             }
+        }
+        foreach ($items as $item) {
+            $out = self::getListItem($item, $list);
             if ($out != null) {
                 $return[] = $out;
             }
@@ -458,6 +454,65 @@ class LinkController extends BaseController
         return implode(PHP_EOL, $return);
     }
 
+    public static function getListExtend($user, $list)
+    {
+        $return = [];
+        $info_array = (count(Config::get('sub_message')) != 0 ? (array) Config::get('sub_message') : []);
+        if (strtotime($user->expire_in) > time()) {
+            if ($user->transfer_enable == 0) {
+                $unusedTraffic = '剩余流量：0';
+            } else {
+                $unusedTraffic = '剩余流量：' . $user->unusedTraffic();
+            }
+            $expire_in = '过期时间：';
+            if ($user->class_expire != '1989-06-04 00:05:00') {
+                $userClassExpire = explode(' ', $user->class_expire);
+                $expire_in .= $userClassExpire[0];
+            } else {
+                $expire_in .= '无限期';
+            }
+        } else {
+            $unusedTraffic  = '账户已过期，请续费后使用';
+            $expire_in      = '账户已过期，请续费后使用';
+        }
+        if (!in_array($list, ['quantumult', 'quantumultx', 'shadowrocket'])) {
+            $info_array[] = $unusedTraffic;
+            $info_array[] = $expire_in;
+        }
+        $Extend_ss = [
+            'remark'    => '',
+            'type'      => 'ss',
+            'address'   => Config::get('baseUrl'),
+            'port'      => 10086,
+            'method'    => 'chacha20-ietf-poly1305',
+            'passwd'    => 'WWW.GOV.CN',
+            'obfs'      => 'plain'
+        ];
+        $Extend_VMess = [
+            'remark'    => '',
+            'type'      => 'vmess',
+            'add'       => Config::get('baseUrl'),
+            'port'      => 10086,
+            'id'        => '2661b5f8-8062-34a5-9371-a44313a75b6b',
+            'alterId'   => 0,
+            'net'       => 'tcp'
+        ];
+        if ($list == 'shadowrocket') {
+            $return[] = ('STATUS=' . $unusedTraffic . '.♥.' . $expire_in . PHP_EOL . 'REMARKS=' . Config::get('appName'));
+        }
+        foreach ($info_array as $remark) {
+            $Extend_ss['remark']    = $remark;
+            $Extend_VMess['remark'] = $remark;
+            if (in_array($list, ['kitsunebi', 'quantumult'])) {
+                $out = self::getListItem($Extend_ss, $list);
+            } else {
+                $out = self::getListItem($Extend_VMess, $list);
+            }
+            if ($out !== null) $return[] = $out;
+        }
+        return $return;
+    }
+
     /**
      * Surge 配置
      *
@@ -469,37 +524,20 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSurge($user, $surge, $opts, $Rule, $find, $emoji)
+    public static function getSurge($user, int $surge, $opts, $Rule, $find)
     {
         if ($surge == 1) {
             return self::getLists($user, 'surge', $opts, $Rule);
         }
         $subInfo = self::getSubinfo($user, $surge);
         $userapiUrl = $subInfo['surge'];
-        $source = (isset($opts['source']) && $opts['source'] != ''
-            ? true
-            : false);
-        if (in_array($surge, [4])) {
-            $items = array_merge(
-                URL::getAllItems($user, 0, 1, $emoji),
-                URL::getAllItems($user, 1, 1, $emoji),
-                URL::getAllVMessUrl($user, 1, $emoji),
-                URL::getAllV2RayPluginItems($user, $emoji)
-            );
-        } else {
-            $items = array_merge(
-                URL::getAllItems($user, 0, 1, $emoji),
-                URL::getAllItems($user, 1, 1, $emoji),
-                URL::getAllV2RayPluginItems($user, $emoji)
-            );
-        }
+        $source = (isset($opts['source']) && $opts['source'] != '' ? true : false);
+        if ($surge == 2) $Rule['type'] = 'ss';
+        $items = URL::getNew_AllItems($user, $Rule);
         $All_Proxy = '';
         foreach ($items as $item) {
-            if ($find) {
-                $item = ConfController::getMatchProxy($item, $Rule);
-                if ($item === null) continue;
-            }
-            $All_Proxy .= AppURI::getSurgeURI($item, $surge) . PHP_EOL;
+            $URI = AppURI::getSurgeURI($item, $surge) . PHP_EOL;
+            if ($item !== null) $All_Proxy .= $URI;
         }
         if ($source) {
             $SourceURL = trim(urldecode($opts['source']));
@@ -553,8 +591,9 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getQuantumult($user, $quantumult, $opts, $Rule, $find, $emoji)
+    public static function getQuantumult($user, $quantumult, $opts, $Rule, $find)
     {
+        $emoji = $Rule['emoji'];
         switch ($quantumult) {
             case 2:
                 $subUrl = self::getSubinfo($user, 0);
@@ -639,7 +678,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getQuantumultX($user, $quantumultx, $opts, $Rule, $find, $emoji)
+    public static function getQuantumultX($user, $quantumultx, $opts, $Rule, $find)
     {
         switch ($quantumultx) {
             default:
@@ -656,8 +695,9 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSurfboard($user, $surfboard, $opts, $Rule, $find, $emoji)
+    public static function getSurfboard($user, $surfboard, $opts, $Rule, $find)
     {
+        $emoji = $Rule['emoji'];
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['surfboard'];
         $All_Proxy = '';
@@ -697,8 +737,9 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getClash($user, $clash, $opts, $Rule, $find, $emoji)
+    public static function getClash($user, $clash, $opts, $Rule, $find)
     {
+        $emoji = $Rule['emoji'];
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
         if ($clash == 2) {
@@ -778,8 +819,9 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSSD($user, $ssd, $opts, $Rule, $find, $emoji)
+    public static function getSSD($user, $ssd, $opts, $Rule, $find)
     {
+        $emoji = $Rule['emoji'];
         return URL::getAllSSDUrl($user);
     }
 
@@ -793,7 +835,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getShadowrocket($user, $shadowrocket, $opts, $Rule, $find, $emoji)
+    public static function getShadowrocket($user, $shadowrocket, $opts, $Rule, $find)
     {
         $emoji = false; // Shadowrocket 自带 emoji
 
@@ -860,8 +902,9 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getKitsunebi($user, $kitsunebi, $opts, $Rule, $find, $emoji)
+    public static function getKitsunebi($user, $kitsunebi, $opts, $Rule, $find)
     {
+        $emoji = $Rule['emoji'];
         $return = '';
 
         // 账户到期时间以及流量信息
@@ -1181,8 +1224,9 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSub($user, $sub, $opts, $Rule, $find, $emoji)
+    public static function getSub($user, $sub, $opts, $Rule, $find)
     {
+        $emoji = $Rule['emoji'];
         $extend = isset($opts['extend']) ? $opts['extend'] : 0;
         $traffic_class_expire = 1;
         $getV2rayPlugin = 1;

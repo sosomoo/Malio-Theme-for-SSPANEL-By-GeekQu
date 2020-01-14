@@ -31,10 +31,12 @@ $_ENV['db_password'] = 'sspanel';						//用户名对应的密码
 $_ENV['newIndex'] = true;	//使用新的 Node.js 开发的首页请填写 true，其他值为使用先前的首页，如您使用其他主题请保持 true
 
 $_ENV['checkNodeIp'] = true; //是否webapi验证节点ip
+
 // 订阅中的公告信息
 // 使用数组形式，将会添加在订阅列表的顶端
 // 可用于为用户推送最新地址等信息，尽可能简短且数量不宜太多
-$_ENV['sub_message'] = [];
+$_ENV['sub_message']       = [];
+$_ENV['enable_sub_extend'] = true;      // 是否开启订阅中默认显示流量剩余以及账户到期时间以及 sub_message 中的信息
 
 //邮件设置--------------------------------------------------------------------------------------------
 $_ENV['mailDriver'] = 'none';	//发送邮件方式：none / mailgun / smtp / sendgrid
