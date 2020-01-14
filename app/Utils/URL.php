@@ -251,7 +251,7 @@ class URL
         //         'regex'   => '.*香港.*HKBN.*',
         //     ]
         // ];
-        $is_mu = ($Rule['is_mu'] != 0 ? $Rule['is_mu'] : 1);
+        $is_mu = $Rule['is_mu'];
         $is_ss = 0;
         $emoji = $Rule['emoji'];
         switch ($Rule['type']) {

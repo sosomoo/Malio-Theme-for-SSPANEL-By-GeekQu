@@ -66,10 +66,10 @@ class LinkController extends BaseController
 
         // 筛选节点部分
         $find = false;
-        $Rule = [
-            'type'  => (isset($opts['type']) ? trim($opts['type']) : 'all'),
-            'is_mu' => (isset($opts['mu']) && $opts['mu'] != '' ? (int) $opts['mu'] : 0),
-        ];
+        $Rule['type'] = (isset($opts['type']) ? trim($opts['type']) : 'all');
+        $Rule['is_mu'] = (Config::get('mergeSub') === true ? 1 : 0);
+        if (isset($opts['mu'])) $Rule['is_mu'] = (int) $opts['mu'];
+
         if (isset($opts['class'])) {
             $class = trim(urldecode($opts['class']));
             $Rule['content']['class'] = array_map(
@@ -95,13 +95,12 @@ class LinkController extends BaseController
             $find = true;
         }
 
-        $emoji = ((isset($opts['emoji']) && $opts['emoji'] >= '1') || Config::get('add_emoji_to_node_name') === true
-            ? true
-            : false);
-        $Rule['extend'] = ((isset($opts['extend']) && $opts['extend'] >= '1') || Config::get('enable_sub_extend') === true
-            ? true
-            : false);
-        $Rule['emoji'] = $emoji;
+        // Emoji
+        $Rule['emoji'] = Config::get('add_emoji_to_node_name');
+        if (isset($opts['emoji'])) $Rule['emoji'] = (bool) $opts['emoji'];
+        // 显示流量以及到期时间等
+        $Rule['extend'] = Config::get('enable_sub_extend');
+        if (isset($opts['extend'])) $Rule['extend'] = (bool) $opts['extend'];
 
         // 兼容原版
         if (isset($opts['mu'])) {
@@ -434,7 +433,7 @@ class LinkController extends BaseController
         $return = [];
         if ($Rule['extend'] === true) {
             if (in_array($list, ['clash', 'clashr'])) {
-                $items = array_merge($items, self::getListExtend($user, $list));
+                $return = array_merge($return, self::getListExtend($user, $list));
             } else {
                 $return[] = implode(PHP_EOL, self::getListExtend($user, $list));
             }
@@ -479,10 +478,11 @@ class LinkController extends BaseController
             $info_array[] = $unusedTraffic;
             $info_array[] = $expire_in;
         }
+        $baseUrl = explode('//', Config::get('baseUrl'))[1];
         $Extend_ss = [
             'remark'    => '',
             'type'      => 'ss',
-            'address'   => Config::get('baseUrl'),
+            'address'   => $baseUrl,
             'port'      => 10086,
             'method'    => 'chacha20-ietf-poly1305',
             'passwd'    => 'WWW.GOV.CN',
@@ -491,7 +491,7 @@ class LinkController extends BaseController
         $Extend_VMess = [
             'remark'    => '',
             'type'      => 'vmess',
-            'add'       => Config::get('baseUrl'),
+            'add'       => $baseUrl,
             'port'      => 10086,
             'id'        => '2661b5f8-8062-34a5-9371-a44313a75b6b',
             'alterId'   => 0,

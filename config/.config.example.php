@@ -122,7 +122,7 @@ $_ENV['account_expire_delete_days'] = -1;		//账户到期几天之后会删除�
 $_ENV['enable_kill'] = true;					//是否允许用户注销账户
 $_ENV['notify_limit_mode'] = false;			//false为关闭，per为按照百分比提醒，mb为按照固定剩余流量提醒
 $_ENV['notify_limit_value'] = 20;			//当上一项为per时，此处填写百分比；当上一项为mb时，此处填写流量
-$_ENV['mergeSub'] = false;						//合并订阅设置 可选项 false / true，此项在 Rico && GeekQu 仓库已废弃
+$_ENV['mergeSub'] = true;						//合并订阅设置 可选项 false / true
 
 $_ENV['protocol_specify'] = true;			//允许用户自行切换加密、协议、混淆，允许请填写 true，禁止用户自行修改将使用下方配置的方案
 $_ENV['keep_connect'] = false;				//是否开启用户流量耗尽后降低速率至 1Mbps 而不断网
