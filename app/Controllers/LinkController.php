@@ -821,8 +821,84 @@ class LinkController extends BaseController
      */
     public static function getSSD($user, $ssd, $opts, $Rule, $find)
     {
-        $emoji = $Rule['emoji'];
-        return URL::getAllSSDUrl($user);
+        if (!URL::SSCanConnect($user)) {
+            return null;
+        }
+        $array_all                  = [];
+        $array_all['airport']       = Config::get('appName');
+        $array_all['port']          = $user->port;
+        $array_all['encryption']    = $user->method;
+        $array_all['password']      = $user->passwd;
+        $array_all['traffic_used']  = Tools::flowToGB($user->u + $user->d);
+        $array_all['traffic_total'] = Tools::flowToGB($user->transfer_enable);
+        $array_all['expiry']        = $user->class_expire;
+        $array_all['url']           = self::getSubinfo($user, 0)['ssd'];
+        $plugin_options             = '';
+        if (strpos($user->obfs, 'http') != false) {
+            $plugin_options = 'obfs=http';
+        }
+        if (strpos($user->obfs, 'tls') != false) {
+            $plugin_options = 'obfs=tls';
+        }
+        if ($plugin_options != '') {
+            $array_all['plugin'] = 'simple-obfs';
+            $array_all['plugin_options'] = $plugin_options;
+            if ($user->obfs_param != '') {
+                $array_all['plugin_options'] .= ';obfs-host=' . $user->obfs_param;
+            }
+        }
+        $array_server = [];
+        $server_index = 1;
+        $Rule['type'] = 'ss';
+        $nodes = URL::getNew_AllItems($user, $Rule);
+        foreach ($nodes as $item) {
+            if ($item['type'] != 'ss') continue;
+            $server                 = [];
+            $server['id']           = $server_index;
+            $server['remarks']      = $item['remark'];
+            $server['server']       = $item['address'];
+            $server['port']         = $item['port'];
+            $server['encryption']   = $item['method'];
+            $server['password']     = $item['passwd'];
+            $plugin_options         = '';
+            if ($item['obfs'] != 'plain') {
+                switch ($item['obfs']) {
+                    case 'simple_obfs_http':
+                        $server['plugin'] = 'simple-obfs';
+                        $plugin_options .= 'obfs=http;obfs-host=' . $user->getMuMd5();
+                        break;
+                    case 'simple_obfs_tls':
+                        $server['plugin'] = 'simple-obfs';
+                        $plugin_options .= 'obfs=tls;obfs-host=' . $user->getMuMd5();
+                        break;
+                    case 'v2ray':
+                        $server['plugin'] = 'v2ray';
+                        if ($item['net'] == 'ws') {
+                            $plugin_options .= 'mode=ws';
+                        }
+                        if ($item['tls'] == 'tls') {
+                            $plugin_options .= ';security=tls';
+                        } else {
+                            $plugin_options .= ';security=none';
+                        }
+                        $plugin_options .= ';path=' . $item['path'];
+                        if ($item['host'] != '') {
+                            $plugin_options .= ';host=' . $item['host'];
+                        } else {
+                            $plugin_options .= ';host=' . $item['address'];
+                        }
+                        break;
+                }
+            }
+            $server['plugin_options'] = $plugin_options;
+            $server['ratio']          = $item['ratio'];
+            $array_server[]           = $server;
+            $server_index++;
+        }
+        $array_all['servers'] = $array_server;
+        $json_all = json_encode($array_all, 320);
+
+        return 'ssd://' . base64_encode($json_all);
     }
 
     /**

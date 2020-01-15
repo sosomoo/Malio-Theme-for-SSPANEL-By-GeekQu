@@ -359,7 +359,7 @@ class URL
                     }
                     continue;
                 }
-                if (in_array($node->sort, [0, 10]) && $node->mu_only != 1 && $is_mu == 0) {
+                if (in_array($node->sort, [0, 10]) && $node->mu_only != 1 && ($is_mu == 0 || ($is_mu != 0 && Config::get('mergeSub') === true))) {
                     // 节点非只启用单端口 && 只获取普通端口
                     if ($node->sort == 10) {
                         // SS 中转
@@ -635,6 +635,7 @@ class URL
         $return_array['class'] = $node->node_class;
         $return_array['group'] = Config::get('appName');
         $return_array['type'] = 'ss';
+        $return_array['ratio'] = $node->traffic_rate;
 
         return $return_array;
     }
