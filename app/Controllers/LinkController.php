@@ -615,27 +615,10 @@ class LinkController extends BaseController
                 return implode(PHP_EOL, $str);
                 break;
             case 3:
-                $items = array_merge(
-                    URL::getAllItems($user, 0, 1, $emoji),
-                    URL::getAllItems($user, 1, 1, $emoji),
-                    URL::getAllItems($user, 0, 0, $emoji),
-                    URL::getAllItems($user, 1, 0, $emoji),
-                    URL::getAllVMessUrl($user, 1, $emoji),
-                    URL::getAllV2RayPluginItems($user, $emoji)
-                );
+                $items = URL::getNew_AllItems($user, $Rule);
                 break;
             default:
-                $items = URL::getAllVMessUrl($user, 1, $emoji);
-                $extend = isset($opts['extend']) ? $opts['extend'] : 0;
-                $All_Proxy = ($extend == 0 ? '' : URL::getUserInfo($user, 'quantumult_v2', 0) . PHP_EOL);
-                foreach ($items as $item) {
-                    if ($find) {
-                        $item = ConfController::getMatchProxy($item, $Rule);
-                        if ($item === null) continue;
-                    }
-                    $All_Proxy .= 'vmess://' . base64_encode(AppURI::getQuantumultURI($item)) . PHP_EOL;
-                }
-                return base64_encode($All_Proxy);
+                return self::getLists($user, 'quantumult', $opts, $Rule, $find);
                 break;
         }
 
@@ -643,15 +626,14 @@ class LinkController extends BaseController
         $All_Proxy_name     = '';
         $BackChina_name     = '';
         foreach ($items as $item) {
-            if ($find) {
-                $item = ConfController::getMatchProxy($item, $Rule);
-                if ($item === null) continue;
-            }
-            $All_Proxy .= AppURI::getQuantumultURI($item) . PHP_EOL;
-            if (strpos($item['remark'], '回国') || strpos($item['remark'], 'China')) {
-                $BackChina_name .= "\n" . $item['remark'];
-            } else {
-                $All_Proxy_name .= "\n" . $item['remark'];
+            $out = AppURI::getQuantumultURI($item);
+            if ($out !== null) {
+                $All_Proxy .= $out . PHP_EOL;
+                if (strpos($item['remark'], '回国') || strpos($item['remark'], 'China')) {
+                    $BackChina_name .= "\n" . $item['remark'];
+                } else {
+                    $All_Proxy_name .= "\n" . $item['remark'];
+                }
             }
         }
         $ProxyGroups = [
@@ -697,17 +679,16 @@ class LinkController extends BaseController
      */
     public static function getSurfboard($user, $surfboard, $opts, $Rule, $find)
     {
-        $emoji = $Rule['emoji'];
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['surfboard'];
         $All_Proxy = '';
-        $items = array_merge(
-            URL::getAllItems($user, 0, 1, $emoji),
-            URL::getAllItems($user, 1, 1, $emoji),
-            URL::getAllV2RayPluginItems($user, $emoji)
-        );
+        $Rule['type'] = 'ss';
+        $items = URL::getNew_AllItems($user, $Rule);
         foreach ($items as $item) {
-            $All_Proxy .= AppURI::getSurfboardURI($item) . PHP_EOL;
+            $out = AppURI::getSurfboardURI($item);
+            if ($out !== null) {
+                $All_Proxy .= $out . PHP_EOL;
+            }
         }
         if (isset($opts['profiles']) && in_array((string) $opts['profiles'], array_keys(AppsProfiles::Surfboard()))) {
             $Profiles = (string) trim($opts['profiles']);
@@ -739,35 +720,19 @@ class LinkController extends BaseController
      */
     public static function getClash($user, $clash, $opts, $Rule, $find)
     {
-        $emoji = $Rule['emoji'];
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
-        if ($clash == 2) {
-            $ssr_support = true;
-            $items = array_merge(
-                URL::getAllItems($user, 0, 1, $emoji),
-                URL::getAllItems($user, 1, 1, $emoji),
-                URL::getAllItems($user, 0, 0, $emoji),
-                URL::getAllItems($user, 1, 0, $emoji),
-                URL::getAllV2RayPluginItems($user, $emoji),
-                URL::getAllVMessUrl($user, 1, $emoji)
-            );
-        } else {
-            $ssr_support = false;
-            $items = array_merge(
-                URL::getAllItems($user, 0, 1, $emoji),
-                URL::getAllItems($user, 1, 1, $emoji),
-                URL::getAllV2RayPluginItems($user, $emoji),
-                URL::getAllVMessUrl($user, 1, $emoji)
-            );
-        }
+        $ssr_support = ($clash == 2 ? true : false);
+        $items = URL::getNew_AllItems($user, $Rule);
         $Proxys = [];
         foreach ($items as $item) {
             $Proxy = AppURI::getClashURI($item, $ssr_support);
-            if (isset($opts['source']) && $opts['source'] != '') {
-                $Proxy['class'] = $item['class'];
+            if ($item !== null) {
+                if (isset($opts['source']) && $opts['source'] != '') {
+                    $Proxy['class'] = $item['class'];
+                }
+                $Proxys[] = $Proxy;
             }
-            $Proxys[] = $Proxy;
         }
         if (isset($opts['source']) && $opts['source'] != '') {
             $SourceURL = trim(urldecode($opts['source']));
