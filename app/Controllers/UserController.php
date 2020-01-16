@@ -1827,7 +1827,7 @@ class UserController extends BaseController
                 $return .= URL::getAllUrl($user, 0, 0) . PHP_EOL;
                 break;
             case 'ssd':
-                $return .= URL::getAllSSDUrl($user) . PHP_EOL;
+                $return .= LinkController::getSSD($user, 1, [], ['type' => 'ss', 'is_mu' => 1], false) . PHP_EOL;
                 break;
             case 'v2ray':
                 $return .= URL::getAllVMessUrl($user) . PHP_EOL;

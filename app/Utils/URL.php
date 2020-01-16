@@ -253,7 +253,7 @@ class URL
         // ];
         $is_mu = $Rule['is_mu'];
         $is_ss = 0;
-        $emoji = $Rule['emoji'];
+        $emoji = (isset($Rule['emoji']) ? $Rule['emoji'] : false);
         switch ($Rule['type']) {
             case 'ss':
                 $sort = [0, 10, 13];
