@@ -164,21 +164,9 @@ class LinkController extends BaseController
                         $value['class'] = 'Lists';
                         $query_value = 'surge';
                     }
-                    if ($key == 'kitsunebi' ) {
-                        $value['class'] = 'Lists';
-                        $query_value = 'kitsunebi';
-                    }
                     if ($key == 'quantumult' && $query_value == '1') {
                         $value['class'] = 'Lists';
                         $query_value = 'quantumult';
-                    }
-                    if ($key == 'quantumultx') {
-                        $value['class'] = 'Lists';
-                        $query_value = 'quantumultx';
-                    }
-                    if ($key == 'shadowrocket') {
-                        $value['class'] = 'Lists';
-                        $query_value = 'shadowrocket';
                     }
                     // 兼容代码结束
                     $Cache = false;
@@ -198,6 +186,9 @@ class LinkController extends BaseController
                         $filename = $sub_type_array[$query_value]['filename'];
                     } else {
                         $filename = $value['filename'];
+                    }
+                    if (in_array($query_value, ['ssa'])) {
+                        $filename = 'node_' . time() . '.json';
                     }
                     if (in_array($query_value, ['clash', 'clashr'])) {
                         $filename = $sub_type_array['clash']['filename'];
@@ -370,20 +361,22 @@ class LinkController extends BaseController
             // apps
             'ssd'             => '?ssd=1',
             'clash'           => '?clash=1',
+            'clash_provider'  => '?list=clash',
             'clashr'          => '?clash=2',
+            'clashr_provider' => '?list=clashr',
             'surge'           => '?surge=' . $int,
-            'surge_node'      => '?surge=1',
+            'surge_node'      => '?list=surge',
             'surge2'          => '?surge=2',
             'surge3'          => '?surge=3',
             'surge4'          => '?surge=4',
             'surfboard'       => '?surfboard=1',
             'quantumult'      => '?quantumult=' . $int,
-            'quantumult_v2'   => '?quantumult=1',
+            'quantumult_v2'   => '?list=quantumult',
             'quantumult_sub'  => '?quantumult=2',
             'quantumult_conf' => '?quantumult=3',
-            'quantumultx'     => '?quantumultx=1',
-            'shadowrocket'    => '?shadowrocket=1',
-            'kitsunebi'       => '?kitsunebi=1'
+            'quantumultx'     => '?list=quantumultx',
+            'shadowrocket'    => '?list=shadowrocket',
+            'kitsunebi'       => '?list=kitsunebi'
         ];
 
         return array_map(
@@ -398,6 +391,9 @@ class LinkController extends BaseController
     {
         $return = null;
         switch ($list) {
+            case 'ssa':
+                $return = AppURI::getSSJSON($item);
+                break;
             case 'surge':
                 $return = AppURI::getSurgeURI($item, 3);
                 break;
@@ -426,16 +422,27 @@ class LinkController extends BaseController
     public static function getLists($user, $list, $opts, $Rule, $find)
     {
         $list = strtolower($list);
+        if ($list == 'ssd') {
+            return self::getSSD($user, 1, $opts, $Rule, false);
+        }
+        if ($list == 'ssa') {
+            $Rule['type'] = 'ss';
+        }
         if ($list == 'quantumult') {
             $Rule['type'] = 'vmess';
         }
         $items = URL::getNew_AllItems($user, $Rule);
         $return = [];
         if ($Rule['extend'] === true) {
-            if (in_array($list, ['clash', 'clashr'])) {
-                $return = array_merge($return, self::getListExtend($user, $list));
-            } else {
-                $return[] = implode(PHP_EOL, self::getListExtend($user, $list));
+            switch ($list) {
+                case 'ssa':
+                case 'clash':
+                case 'clashr':
+                    $return = array_merge($return, self::getListExtend($user, $list));
+                    break;
+                default:
+                    $return[] = implode(PHP_EOL, self::getListExtend($user, $list));
+                    break;
             }
         }
         foreach ($items as $item) {
@@ -444,13 +451,20 @@ class LinkController extends BaseController
                 $return[] = $out;
             }
         }
-        if (in_array($list, ['clash', 'clashr'])) {
-            return \Symfony\Component\Yaml\Yaml::dump(['proxies' => $return], 4, 2);
-        }
-        if (in_array($list, ['kitsunebi', 'quantumult', 'shadowrocket'])) {
-            return base64_encode(implode(PHP_EOL, $return));
-        }
-        return implode(PHP_EOL, $return);
+        switch ($list) {
+            case 'ssa':
+                return json_encode($return, 320);
+                break;
+            case 'clash':
+            case 'clashr':
+                return \Symfony\Component\Yaml\Yaml::dump(['proxies' => $return], 4, 2);
+            case 'kitsunebi':
+            case 'quantumult':
+            case 'shadowrocket':
+                return base64_encode(implode(PHP_EOL, $return));
+            default:
+                return implode(PHP_EOL, $return);
+        }        
     }
 
     public static function getListExtend($user, $list)
@@ -818,47 +832,12 @@ class LinkController extends BaseController
         $nodes = URL::getNew_AllItems($user, $Rule);
         foreach ($nodes as $item) {
             if ($item['type'] != 'ss') continue;
-            $server                 = [];
-            $server['id']           = $server_index;
-            $server['remarks']      = $item['remark'];
-            $server['server']       = $item['address'];
-            $server['port']         = $item['port'];
-            $server['encryption']   = $item['method'];
-            $server['password']     = $item['passwd'];
-            $plugin_options         = '';
-            if ($item['obfs'] != 'plain') {
-                switch ($item['obfs']) {
-                    case 'simple_obfs_http':
-                        $server['plugin'] = 'simple-obfs';
-                        $plugin_options .= 'obfs=http;obfs-host=' . $user->getMuMd5();
-                        break;
-                    case 'simple_obfs_tls':
-                        $server['plugin'] = 'simple-obfs';
-                        $plugin_options .= 'obfs=tls;obfs-host=' . $user->getMuMd5();
-                        break;
-                    case 'v2ray':
-                        $server['plugin'] = 'v2ray';
-                        if ($item['net'] == 'ws') {
-                            $plugin_options .= 'mode=ws';
-                        }
-                        if ($item['tls'] == 'tls') {
-                            $plugin_options .= ';security=tls';
-                        } else {
-                            $plugin_options .= ';security=none';
-                        }
-                        $plugin_options .= ';path=' . $item['path'];
-                        if ($item['host'] != '') {
-                            $plugin_options .= ';host=' . $item['host'];
-                        } else {
-                            $plugin_options .= ';host=' . $item['address'];
-                        }
-                        break;
-                }
+            $server = AppURI::getSSDURI($item);
+            if ($server !== null) {
+                $server['id'] = $server_index;
+                $array_server[] = $server;
+                $server_index++;
             }
-            $server['plugin_options'] = $plugin_options;
-            $server['ratio']          = $item['ratio'];
-            $array_server[]           = $server;
-            $server_index++;
         }
         $array_all['servers'] = $array_server;
         $json_all = json_encode($array_all, 320);
@@ -878,6 +857,9 @@ class LinkController extends BaseController
      */
     public static function getShadowrocket($user, $shadowrocket, $opts, $Rule, $find)
     {
+        $Rule['emoji'] = false; // Shadowrocket 自带 emoji
+        return self::getLists($user, 'shadowrocket', $opts, $Rule, $find);
+
         $emoji = false; // Shadowrocket 自带 emoji
 
         $return = '';
@@ -945,32 +927,7 @@ class LinkController extends BaseController
      */
     public static function getKitsunebi($user, $kitsunebi, $opts, $Rule, $find)
     {
-        $emoji = $Rule['emoji'];
-        $return = '';
-
-        // 账户到期时间以及流量信息
-        $extend = isset($opts['extend']) ? (int) $opts['extend'] : 0;
-        $return .= $extend == 0 ? '' : URL::getUserInfo($user, 'ss', 1) . PHP_EOL;
-
-        if (URL::SSCanConnect($user) && !in_array($user->obfs, ['simple_obfs_http', 'simple_obfs_tls'])) {
-            $user = URL::getSSConnectInfo($user);
-            $user->obfs = 'plain';
-            $items = array_merge(
-                URL::getAllItems($user, 0, 1, $emoji),
-                URL::getAllVMessUrl($user, 1, $emoji)
-            );
-        } else {
-            $items = URL::getAllVMessUrl($user, 1, $emoji);
-        }
-        foreach ($items as $item) {
-            if ($find) {
-                $item = ConfController::getMatchProxy($item, $Rule);
-                if ($item === null) continue;
-            }
-            $return .= AppURI::getKitsunebiURI($item) . PHP_EOL;
-        }
-
-        return base64_encode($return);
+        return self::getLists($user, 'kitsunebi', $opts, $Rule, $find);
     }
 
     public static function getSSPcConf($user)
