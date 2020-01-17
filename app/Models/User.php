@@ -704,7 +704,7 @@ class User extends Model
                 &&
                 Config::get('unbind_kick_member') === true
             ) {
-                \App\Utils\Telegram\Process::SendPost(
+                \App\Utils\Telegram\TelegramTools::SendPost(
                     'kickChatMember',
                     [
                         'chat_id'   => Config::get('telegram_chatid'),
