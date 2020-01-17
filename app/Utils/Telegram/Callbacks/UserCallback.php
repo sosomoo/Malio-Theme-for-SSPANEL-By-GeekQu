@@ -650,9 +650,10 @@ class UserCallback
                 // Telegram 账户解绑
                 $Data['AllowEditMessage'] = false;
                 $sendMessage = [
-                    'text'                      => '发送 <strong>/unbind 账户邮箱</strong> 进行解绑.',
+                    'text'                      => \App\Utils\Telegram\Commands\UnbindCommand::sendtext(),
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
+                    'parse_mode'                => 'Markdown',
                     'reply_markup'              => null
                 ];
                 break;

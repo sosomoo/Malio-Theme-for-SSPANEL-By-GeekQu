@@ -78,7 +78,7 @@ class UnbindCommand extends Command
                 return;
             }
 
-            $text = '发送 **/unbind 账户邮箱** 进行解绑.';
+            $text = self::sendtext();
             if ($MessageText != '') {
                 $text = '键入的 Email 地址与您的账户不匹配.';
             }
@@ -91,5 +91,14 @@ class UnbindCommand extends Command
                 ]
             );
         }
+    }
+
+    public function sendtext()
+    {
+        $text = '发送 **/unbind 账户邮箱** 进行解绑.';
+        if (Config::get('unbind_kick_member') === true) {
+            $text .= PHP_EOL . PHP_EOL . '根据管理员的设定，您解绑账户将会被自动移出用户群.'; 
+        }
+        return $text;
     }
 }
