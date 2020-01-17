@@ -20,7 +20,7 @@ class UnbindCommand extends Command
     /**
      * @var string Command Description
      */
-    protected $description = '[私聊] 解除账户绑定.';
+    protected $description = '[私聊]     解除账户绑定.';
 
     /**
      * {@inheritdoc}

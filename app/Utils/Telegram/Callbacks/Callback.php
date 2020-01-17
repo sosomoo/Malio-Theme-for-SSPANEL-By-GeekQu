@@ -41,11 +41,35 @@ class Callback
                 // 用户相关
                 UserCallback::handler($bot, $Callback, $Data, $SendUser);
                 break;
+            // case (strpos($Data['CallbackData'], 'admin.') === 0):
+            //     // 管理员
+            //     break;
             default:
                 // 回调数据处理
                 self::CallbackDataHandler($bot, $Callback, $Data, $SendUser);
                 break;
         }
+    }
+
+    public static function getGuestIndexKeyboard()
+    {
+        $Keyboard = [
+            [
+                [
+                    'text'          => '产品介绍',
+                    'callback_data' => 'general.pricing'
+                ],
+                [
+                    'text'          => '服务条款',
+                    'callback_data' => 'general.terms'
+                ]
+            ]
+        ];
+        $text = '游客您好，以下是 BOT 菜单：' . PHP_EOL . PHP_EOL . '本站用户请前往用户中心进行 Telegram 绑定操作.';
+        return [
+            'text'     => $text,
+            'keyboard' => $Keyboard,
+        ];
     }
 
     /**
@@ -65,9 +89,7 @@ class Callback
                     'reply_to_message_id'       => null,
                     'reply_markup'              => json_encode(
                         [
-                            'inline_keyboard' => [
-                                Reply::getInlinekeyboard()
-                            ]
+                            'inline_keyboard' => self::getGuestIndexKeyboard()['keyboard']
                         ]
                     ),
                 ];
@@ -80,16 +102,14 @@ class Callback
                     'reply_to_message_id'       => null,
                     'reply_markup'              => json_encode(
                         [
-                            'inline_keyboard' => [
-                                Reply::getInlinekeyboard()
-                            ]
+                            'inline_keyboard' => self::getGuestIndexKeyboard()['keyboard']
                         ]
                     ),
                 ];
                 break;
             default:
                 // 主菜单
-                $temp = Reply::getInlinekeyboard(null, 'index');
+                $temp = self::getGuestIndexKeyboard();
                 $sendMessage = [
                     'text'                      => $temp['text'],
                     'disable_web_page_preview'  => false,
@@ -110,11 +130,8 @@ class Callback
                 'parse_mode'    => 'HTML',
             ]
         );
-        if ($Data['AllowEditMessage']) {
-            // 消息可编辑
-            TelegramTools::SendPost('editMessageText', $sendMessage);
-            return;
-        }
-        $bot->sendMessage($sendMessage);
+        return ($Data['AllowEditMessage']
+            ? TelegramTools::SendPost('editMessageText', $sendMessage)
+            : $bot->sendMessage($sendMessage));
     }
 }

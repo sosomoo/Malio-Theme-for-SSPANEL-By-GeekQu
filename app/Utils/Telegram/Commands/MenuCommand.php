@@ -19,7 +19,7 @@ class MenuCommand extends Command
     /**
      * @var string Command Description
      */
-    protected $description = '[私聊] 用户主菜单、个人中心.';
+    protected $description = '[私聊]     用户主菜单、个人中心.';
 
     /**
      * {@inheritdoc}
@@ -47,7 +47,7 @@ class MenuCommand extends Command
 
             $user = TelegramTools::getUser($SendUser['id']);
 
-            $reply = Reply::getInlinekeyboard($user, 'index');
+            $reply = \App\Utils\Telegram\Callbacks\UserCallback::getUserIndexKeyboard($user);
 
             // 回送信息
             return $this->replyWithMessage(
