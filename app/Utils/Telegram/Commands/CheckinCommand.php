@@ -68,17 +68,17 @@ class CheckinCommand extends Command
             $response = $this->replyWithMessage(
                 [
                     'text'       => Config::get('user_not_bind_reply'),
-                    'parse_mode' => 'MarkdownV2',
+                    'parse_mode' => 'Markdown',
                 ]
             );
         } else {
-            $checkin = $User->checkin();                
+            $checkin = $User->checkin();
             // 回送信息
             $response = $this->replyWithMessage(
                 [
                     'text'                  => $checkin['msg'],
                     'reply_to_message_id'   => $Message->getMessageId(),
-                    'parse_mode'            => 'MarkdownV2',
+                    'parse_mode'            => 'Markdown',
                 ]
             );
         }

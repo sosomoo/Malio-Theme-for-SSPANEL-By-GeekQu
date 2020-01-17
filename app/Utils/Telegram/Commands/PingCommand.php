@@ -46,7 +46,7 @@ class PingCommand extends Command
             // 回送信息
             $this->replyWithMessage(
                 [
-                    'text'       => implode(PHP_EOL ,$text),
+                    'text'       => implode(PHP_EOL, $text),
                     'parse_mode' => 'Markdown',
                 ]
             );
@@ -70,7 +70,7 @@ class PingCommand extends Command
             // 回送信息
             $this->replyWithMessage(
                 [
-                    'text' => implode(PHP_EOL ,$text),
+                    'text' => implode(PHP_EOL, $text),
                 ]
             );
         }

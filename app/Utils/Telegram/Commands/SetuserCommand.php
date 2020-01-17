@@ -2,9 +2,9 @@
 
 namespace App\Utils\Telegram\Commands;
 
-use App\Models\{User, TelegramTasks};
+use App\Models\User;
 use App\Services\Config;
-use App\Utils\Telegram\{Process, Reply, TelegramTools};
+use App\Utils\Telegram\{Reply, TelegramTools};
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -92,7 +92,7 @@ class SetuserCommand extends Command
                 'name'     => $Message->getReplyToMessage()->getFrom()->getFirstName() . ' ' . $Message->getReplyToMessage()->getFrom()->getLastName(),
                 'username' => $Message->getReplyToMessage()->getFrom()->getUsername(),
             ];
-            $User = Process::getUser($FindUser['id']);
+            $User = TelegramTools::getUser($FindUser['id']);
             if ($User == null) {
                 $response = $this->replyWithMessage(
                     [
@@ -234,7 +234,7 @@ class SetuserCommand extends Command
                     $useMethod = $useTempMethod;
                 }
             }
-            $User = Process::getUser($UserCode, $useMethod);
+            $User = TelegramTools::getUser($UserCode, $useMethod);
             if ($User == null) {
 
                 $response = $this->replyWithMessage(

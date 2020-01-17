@@ -143,6 +143,7 @@ $_ENV['finance_public'] = true;			//财务报告是否向群公开
 $_ENV['enable_welcome_message'] = true;	//机器人发送欢迎消息
 
 # Telegram BOT
+$_ENV['use_new_telegram_bot']       = true;         //是否使用新的 Telegram Bot
 $_ENV['enable_telegram']            = false;        //是否开启Telegram Bot
 $_ENV['telegram_token']             = '';           //Telegram Bot 的 Token，跟 Father Bot 申请
 $_ENV['telegram_bot']               = '';           //Telegram Bot 用户名

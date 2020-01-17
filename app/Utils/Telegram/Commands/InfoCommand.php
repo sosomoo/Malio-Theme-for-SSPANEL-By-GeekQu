@@ -4,7 +4,7 @@ namespace App\Utils\Telegram\Commands;
 
 use App\Services\Config;
 use App\Models\User;
-use App\Utils\Telegram\{Process, Reply, TelegramTools};
+use App\Utils\Telegram\{Reply, TelegramTools};
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -81,7 +81,7 @@ class InfoCommand extends Command
                     'name'     => $Message->getReplyToMessage()->getFrom()->getFirstName() . ' ' . $Message->getReplyToMessage()->getFrom()->getLastName(),
                     'username' => $Message->getReplyToMessage()->getFrom()->getUsername(),
                 ];
-                $User = Process::getUser($FindUser['id']);
+                $User = TelegramTools::getUser($FindUser['id']);
                 if ($User == null) {
                     $response = $this->replyWithMessage(
                         [

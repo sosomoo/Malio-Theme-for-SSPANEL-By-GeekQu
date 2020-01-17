@@ -56,7 +56,7 @@ class UnbindCommand extends Command
                 $this->replyWithMessage(
                     [
                         'text'       => Config::get('user_not_bind_reply'),
-                        'parse_mode' => 'MarkdownV2',
+                        'parse_mode' => 'Markdown',
                     ]
                 );
                 return;
@@ -72,7 +72,7 @@ class UnbindCommand extends Command
                 $this->replyWithMessage(
                     [
                         'text'          => $text,
-                        'parse_mode'    => 'MarkdownV2',
+                        'parse_mode'    => 'Markdown',
                     ]
                 );
                 return;
@@ -87,7 +87,7 @@ class UnbindCommand extends Command
             $this->replyWithMessage(
                 [
                     'text'                  => $text,
-                    'parse_mode'            => 'MarkdownV2',
+                    'parse_mode'            => 'Markdown',
                 ]
             );
         }

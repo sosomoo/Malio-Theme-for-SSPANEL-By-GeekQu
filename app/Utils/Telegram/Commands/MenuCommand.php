@@ -2,7 +2,7 @@
 
 namespace App\Utils\Telegram\Commands;
 
-use App\Utils\Telegram\{Process, Reply};
+use App\Utils\Telegram\{TelegramTools, Reply};
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -45,7 +45,7 @@ class MenuCommand extends Command
                 'username' => $Message->getFrom()->getUsername(),
             ];
 
-            $user = Process::getUser($SendUser['id']);
+            $user = TelegramTools::getUser($SendUser['id']);
 
             $reply = Reply::getInlinekeyboard($user, 'index');
 

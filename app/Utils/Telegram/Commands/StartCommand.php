@@ -5,7 +5,6 @@ namespace App\Utils\Telegram\Commands;
 use App\Models\User;
 use App\Services\Config;
 use App\Utils\TelegramSessionManager;
-use App\Utils\Telegram\Process;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -62,7 +61,7 @@ class StartCommand extends Command
                         $BinsUser->im_value    = $SendUser['username'];
                         $BinsUser->save();
                         if ($BinsUser->is_admin >= 1) {
-                            $text = '尊敬的**管理员**您好，恭喜绑定成功。' . PHP_EOL .'当前绑定邮箱为：' . $BinsUser->email;
+                            $text = '尊敬的**管理员**您好，恭喜绑定成功。' . PHP_EOL . '当前绑定邮箱为：' . $BinsUser->email;
                         } else {
                             if ($BinsUser->class >= 1) {
                                 $text = '尊敬的 **VIP ' . $BinsUser->class . '** 用户您好.' . PHP_EOL . '恭喜您绑定成功，当前绑定邮箱为：' . $BinsUser->email;

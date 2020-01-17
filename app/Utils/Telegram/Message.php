@@ -8,7 +8,7 @@ use App\Services\Config;
 
 class Message
 {
-    public static function MessageMethod($user, $bot, $Message)
+    public static function MessageMethod($bot, $Message)
     {
         // 触发用户
         $SendUser = [
@@ -16,6 +16,8 @@ class Message
             'name'     => $Message->getFrom()->getFirstName() . ' ' . $Message->getFrom()->getLastName(),
             'username' => $Message->getFrom()->getUsername(),
         ];
+
+        $user = TelegramTools::getUser($SendUser['id']);
 
         // 消息会话 ID
         $ChatID = $Message->getChat()->getId();
@@ -71,7 +73,7 @@ class Message
                         'reply_to_message_id'   => $Message->getMessageId(),
                     ]
                 );
-                Process::SendPost(
+                TelegramTools::SendPost(
                     'kickChatMember',
                     [
                         'chat_id'   => $ChatID,
@@ -99,7 +101,7 @@ class Message
             }
         } else {
             // 新成员加入群组
-            $NewUser = Process::getUser($Member['id']);
+            $NewUser = TelegramTools::getUser($Member['id']);
             $deNewChatMember = json_decode($NewChatMember, true);
             if (
                 Config::get('group_bound_user') === true
@@ -117,7 +119,7 @@ class Message
                         'reply_to_message_id'   => $Message->getMessageId(),
                     ]
                 );
-                Process::SendPost(
+                TelegramTools::SendPost(
                     'kickChatMember',
                     [
                         'chat_id'   => $ChatID,
