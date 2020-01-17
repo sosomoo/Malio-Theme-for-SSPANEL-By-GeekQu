@@ -649,8 +649,12 @@ class UserCallback
             case 'unbind':
                 // Telegram 账户解绑
                 $Data['AllowEditMessage'] = false;
+                $text = '发送 **/unbind 账户邮箱** 进行解绑.';
+                if (Config::get('unbind_kick_member') === true) {
+                    $text .= PHP_EOL . PHP_EOL . '根据管理员的设定，您解绑账户将会被自动移出用户群.'; 
+                }
                 $sendMessage = [
-                    'text'                      => \App\Utils\Telegram\Commands\UnbindCommand::sendtext(),
+                    'text'                      => $text,
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
                     'parse_mode'                => 'Markdown',
