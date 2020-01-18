@@ -44,6 +44,8 @@ class UserCallback
         $text = Reply::getUserTitle($user);
         $text .= PHP_EOL . PHP_EOL;
         $text .= Reply::getUserInfo($user);
+        $text .= PHP_EOL;
+        $text .= $user->valid_use_loop();
         if (Config::get('show_group_link') === true) {
             $Keyboard[] = [
                 [

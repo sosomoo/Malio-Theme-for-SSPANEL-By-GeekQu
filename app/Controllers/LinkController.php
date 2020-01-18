@@ -546,7 +546,7 @@ class LinkController extends BaseController
         $subInfo = self::getSubinfo($user, $surge);
         $userapiUrl = $subInfo['surge'];
         $source = (isset($opts['source']) && $opts['source'] != '' ? true : false);
-        if ($surge == 2) $Rule['type'] = 'ss';
+        if ($surge != 4) $Rule['type'] = 'ss';
         $items = URL::getNew_AllItems($user, $Rule);
         $All_Proxy = '';
         foreach ($items as $item) {
