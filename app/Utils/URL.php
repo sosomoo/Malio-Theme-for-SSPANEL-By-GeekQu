@@ -465,43 +465,27 @@ class URL
      * 获取全部节点 Url
      *
      * @param object $user           用户
-     * @param int    $is_ss          是否 ss
-     * @param int    $getV2rayPlugin 是否获取 V2rayPlugin 节点
      * @param array  $Rule           节点筛选规则
-     * @param bool   $find           是否筛选节点
      *
      * @return string
      */
-    public static function get_NewAllUrl($user, $is_ss, $getV2rayPlugin, $Rule, $find, $emoji = false)
+    public static function get_NewAllUrl($user, $Rule)
     {
         $return_url = '';
         if (strtotime($user->expire_in) < time()) {
             return $return_url;
         }
-        $items = array_merge(
-            self::getAllItems($user, 0, $is_ss, $emoji),
-            self::getAllItems($user, 1, $is_ss, $emoji),
-            self::getAllV2RayPluginItems($user, $emoji)
-        );
-        if ($find) {
-            foreach ($items as $item) {
-                $item = ConfController::getMatchProxy($item, $Rule);
-                if ($item !== null) {
-                    if ($getV2rayPlugin === 0 && $item['obfs'] == 'v2ray') {
-                        continue;
-                    }
-                    $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
-                }
+        $items = URL::getNew_AllItems($user, $Rule);
+        foreach ($items as $item) {
+            if ($item['type'] == 'vmess') {
+                $out = LinkController::getListItem($item, 'v2rayn');
+            } else {
+                $out = LinkController::getListItem($item, $Rule['type']);
             }
-        } else {
-            foreach ($items as $item) {
-                if ($getV2rayPlugin === 0 && $item['obfs'] == 'v2ray') {
-                    continue;
-                }
-                $return_url .= self::getItemUrl($item, $is_ss) . PHP_EOL;
+            if ($out !== null) {
+                $return_url .= $out . PHP_EOL;
             }
         }
-
         return $return_url;
     }
 
