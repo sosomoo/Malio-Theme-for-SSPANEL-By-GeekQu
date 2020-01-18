@@ -99,7 +99,7 @@ class MyCommand extends Command
         $text .= PHP_EOL . PHP_EOL;
         $text .= Reply::getUserTrafficInfo($User);
         $text .= PHP_EOL;
-        $text .= $User->valid_use_loop();
+        $text .= '流量重置时间：' . $User->valid_use_loop();
         // 回送信息
         return $this->replyWithMessage(
             [

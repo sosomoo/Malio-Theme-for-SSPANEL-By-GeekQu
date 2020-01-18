@@ -45,7 +45,7 @@ class UserCallback
         $text .= PHP_EOL . PHP_EOL;
         $text .= Reply::getUserInfo($user);
         $text .= PHP_EOL;
-        $text .= $user->valid_use_loop();
+        $text .= '流量重置时间：' . $user->valid_use_loop();
         if (Config::get('show_group_link') === true) {
             $Keyboard[] = [
                 [
