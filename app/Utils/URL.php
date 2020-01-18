@@ -689,6 +689,32 @@ class URL
                 ->orderBy('name')
                 ->get();
         }
+        # 增加中转配置，后台目前配置user=0的话是自由门直接中转
+        $tmp_nodes = array();
+        foreach($nodes as $node){
+            $tmp_nodes[]=$node;
+            if ($node->sort==12){
+                $relay_rule = Relay::where('source_node_id', $node->id)->where(
+                    static function ($query) use ($user) {
+                        $query->Where('user_id', '=',0);
+                    }
+                )->orderBy('priority', 'DESC')->orderBy('id')->first();
+                if ($relay_rule != null) {
+                    //是中转起源节点
+                    $tmp_node = $relay_rule->dist_node();
+                    $server = explode(';', $tmp_node->server);
+                    $source_server = Tools::v2Array($node->server);
+                    if (count($server)<6){
+                        $tmp_node->server.=str_repeat(";",6-count($server));
+                    }
+                    $tmp_node->server.="relayserver=".$source_server['add']."|"."outside_port=".$source_server['port'];
+                    $tmp_node->name = $node->name."=>".$tmp_node->name;
+                    $tmp_nodes[]=$tmp_node;
+                }
+
+            }
+        }
+        $nodes=$tmp_nodes;
         if ($arrout == 0) {
             $result = '';
             foreach ($nodes as $node) {
