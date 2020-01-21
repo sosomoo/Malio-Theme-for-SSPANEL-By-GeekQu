@@ -73,8 +73,6 @@ class UserController extends BaseController
 
         $Ann = Ann::orderBy('date', 'desc')->first();
 
-        $boughts = Bought::where('userid', $this->user->id)->orderBy('id', 'desc')->get();
-
         return $this->view()
             ->assign('subInfo', LinkController::getSubinfo($this->user, 0))
             ->assign('ssr_sub_token', $ssr_sub_token)
@@ -87,7 +85,6 @@ class UserController extends BaseController
             ->assign('mergeSub', Config::get('mergeSub'))
             ->assign('subUrl', Config::get('subUrl'))
             ->assign('user', $this->user)
-            ->assign('boughts', $boughts)
             ->registerClass('URL', URL::class)
             ->assign('baseUrl', Config::get('baseUrl'))
             ->assign('recaptcha_sitekey', $recaptcha_sitekey)
@@ -724,8 +721,9 @@ class UserController extends BaseController
             }
         }
 
+        $boughts = Bought::where('userid', $this->user->id)->orderBy('id', 'desc')->get();
 
-        return $this->view()->assign('userip', $userip)->assign('userloginip', $userloginip)->assign('paybacks', $paybacks)->display('user/profile.tpl');
+        return $this->view()->assign('boughts', $boughts)->assign('userip', $userip)->assign('userloginip', $userloginip)->assign('paybacks', $paybacks)->display('user/profile.tpl');
     }
 
 
