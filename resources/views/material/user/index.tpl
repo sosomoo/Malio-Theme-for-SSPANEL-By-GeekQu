@@ -537,36 +537,6 @@ table tr td:first-child {
 
                         </div>
                     </div>
-
-                    <div class="card">
-                        <div class="card-main">
-                            <div class="card-inner">
-                                <div class="card-doubleinner">
-                                    <p class="card-heading">套餐情况</p>
-                                </div>
-                                <div class="card-table">
-                                    <div class="table-responsive table-user">
-                                        <table class="table table-fixed">
-                                            <tr>
-                                              	<th>套餐使用天数</th>
-                                              	<th>下次流量重置时间</th>
-                                              	<th>套餐过期时间</th>
-                                            </tr>
-                                          	{foreach $boughts as $bought}
-                                          		{if $bought->valid()}
-                                                <tr>
-                                                  	<td>#{$bought->id} 「{$bought->shop()->name}」 已使用 {$bought->used_days()} 天</td>
-                                                  	<td>{$bought->reset_time()}</td>
-                                                  	<td>{$bought->exp_time()}</td>
-                                                </tr>
-                                          		{/if}
-                                          	{/foreach}
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                   
                 </div>
 
