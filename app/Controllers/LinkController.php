@@ -65,7 +65,6 @@ class LinkController extends BaseController
         $opts = $request->getQueryParams();
 
         // 筛选节点部分
-        $find = false;
         $Rule['type'] = (isset($opts['type']) ? trim($opts['type']) : 'all');
         $Rule['is_mu'] = (Config::get('mergeSub') === true ? 1 : 0);
         if (isset($opts['mu'])) $Rule['is_mu'] = (int) $opts['mu'];
@@ -73,26 +72,23 @@ class LinkController extends BaseController
         if (isset($opts['class'])) {
             $class = trim(urldecode($opts['class']));
             $Rule['content']['class'] = array_map(
-                function($item) {
+                function ($item) {
                     return (int) $item;
                 },
                 explode('+', $class)
             );
-            $find = true;
         }
         if (isset($opts['noclass'])) {
             $noclass = trim(urldecode($opts['noclass']));
             $Rule['content']['noclass'] = array_map(
-                function($item) {
+                function ($item) {
                     return (int) $item;
                 },
                 explode('+', $noclass)
             );
-            $find = true;
         }
         if (isset($opts['regex'])) {
             $Rule['content']['regex'] = trim(urldecode($opts['regex']));
-            $find = true;
         }
 
         // Emoji
@@ -124,32 +120,15 @@ class LinkController extends BaseController
             }
         }
 
-        $sub_type_array = [
-            'list'          => ['filename' => 'node.txt', 'class' => 'Lists'],
-            'clash'         => ['filename' => 'config.yaml', 'class' => 'Clash'],
-            'kitsunebi'     => ['filename' => 'Kitsunebi.txt', 'class' => 'Kitsunebi'],
-            'ssd'           => ['filename' => 'SSD.txt', 'class' => 'SSD'],
-            'surge'         => ['filename' => 'Surge.conf', 'class' => 'Surge'],
-            'surfboard'     => ['filename' => 'Surfboard.conf', 'class' => 'Surfboard'],
-            'shadowrocket'  => ['filename' => 'Shadowrocket.txt', 'class' => 'Shadowrocket'],
-            'quantumult'    => ['filename' => 'Quantumult.conf', 'class' => 'Quantumult'],
-            'quantumultx'   => ['filename' => 'QuantumultX.conf', 'class' => 'QuantumultX'],
-            'sub'           => ['filename' => 'node.txt', 'class' => 'Sub']
-        ];
-
         // 订阅类型
         $subscribe_type = '';
-        $sub_int_type = [
-            1 => 'SSR',
-            2 => 'SS',
-            3 => 'V2RayN',
-        ];
 
         // 请求路径以及查询参数
         $path = ($request->getUri()->getPath() . $request->getUri()->getQuery());
 
         $getBody = '';
-        
+
+        $sub_type_array = ['list', 'ssd', 'clash', 'surge', 'kitsunebi', 'surfboard', 'quantumult', 'quantumultx', 'shadowrocket', 'sub'];
         foreach ($sub_type_array as $key => $value) {
             if (isset($opts[$key])) {
                 $query_value = $opts[$key];
@@ -174,23 +153,19 @@ class LinkController extends BaseController
                         $content = self::getSubscribeCache($user, $path);
                         if ($content === false) {
                             $Cache = false;
-                            $content = self::$class($user, $query_value, $opts, $Rule, $find);
+                            $content = self::$class($user, $query_value, $opts, $Rule);
                         }
                         self::SubscribeCache($user, $path, $content);
                     } else {
-                        $content = self::$class($user, $query_value, $opts, $Rule, $find);
+                        $content = self::$class($user, $query_value, $opts, $Rule);
                     }
-                    if ($sub_type_array[$key]['class'] != $value['class']) {
-                        $filename = $sub_type_array[$query_value]['filename'];
+                    if ($value['class'] == 'Lists') {
+                        $SubscribeExtend = self::getSubscribeExtend($query_value);
                     } else {
-                        $filename = $value['filename'];
+                        $SubscribeExtend = self::getSubscribeExtend($key, $query_value);
                     }
-                    if (in_array($query_value, ['ssa'])) {
-                        $filename = 'node_' . time() . '.json';
-                    }
-                    if (in_array($query_value, ['clash', 'clashr'])) {
-                        $filename = $sub_type_array['clash']['filename'];
-                    }
+                    $filename = $SubscribeExtend['filename'] . '_' . time() . $SubscribeExtend['suffix'];
+                    $subscribe_type = $SubscribeExtend['filename'];
                     $getBody = self::getBody(
                         $user,
                         $response,
@@ -198,11 +173,6 @@ class LinkController extends BaseController
                         $filename,
                         $Cache
                     );
-                    if ($key == 'sub') {
-                        $subscribe_type = $sub_int_type[$query_value];
-                    } else {
-                        $subscribe_type = ($value['class'] == 'Lists' ? ucfirst($query_value) : $value['class']);
-                    }
                     break;
                 }
                 continue;
@@ -241,6 +211,162 @@ class LinkController extends BaseController
         }
 
         return file_get_contents($user_path_hash);
+    }
+
+    /**
+     * 获取订阅类型的文件名
+     *
+     * @param string      $type  订阅类型
+     * @param string|null $value 值
+     *
+     * @return array
+     */
+    public static function getSubscribeExtend($type, $value = null)
+    {
+        switch ($type) {
+            case 'ss':
+                $return = [
+                    'filename' => 'SS',
+                    'suffix'   => 'txt',
+                ];
+                break;
+            case 'ssa':
+                $return = [
+                    'filename' => 'SSA',
+                    'suffix'   => 'json',
+                ];
+                break;
+            case 'ssd':
+                $return = [
+                    'filename' => 'SSD',
+                    'suffix'   => 'txt',
+                ];
+                break;
+            case 'ssr':
+                $return = [
+                    'filename' => 'SSR',
+                    'suffix'   => 'txt',
+                ];
+                break;
+            case 'sub':
+                if ((int) $value == 3) {
+                    $return = self::getSubscribeExtend('v2rayn');
+                } elseif ((int) $value == 2) {
+                    $return = self::getSubscribeExtend('ss');
+                } else {
+                    $return = self::getSubscribeExtend('ssr');
+                }
+                break;
+            case 'clash':
+                if ($value !== null) {
+                    if ((int) $value == 2) {
+                        $return = self::getSubscribeExtend('clashr');
+                    } else {
+                        $return = self::getSubscribeExtend('clash');
+                    }
+                } else {
+                    $return = [
+                        'filename' => 'Clash',
+                        'suffix'   => 'yaml',
+                    ];
+                }
+                break;
+            case 'surge':
+                if ($value !== null) {
+                    $return = [
+                        'filename' => 'Surge',
+                        'suffix'   => 'conf',
+                    ];
+                    $return['filename'] .= $value;
+                } else {
+                    $return = [
+                        'filename' => 'SurgeList',
+                        'suffix'   => 'list',
+                    ];
+                }
+                break;
+            case 'clashr':
+                $return = [
+                    'filename' => 'ClashR',
+                    'suffix'   => 'yaml',
+                ];
+                break;
+            case 'v2rayn':
+                $return = [
+                    'filename' => 'V2RayN',
+                    'suffix'   => 'txt',
+                ];
+                break;
+            case 'kitsunebi':
+                $return = [
+                    'filename' => 'Kitsunebi',
+                    'suffix'   => 'txt',
+                ];
+                break;
+            case 'surfboard':
+                $return = [
+                    'filename' => 'Surfboard',
+                    'suffix'   => 'conf',
+                ];
+                break;
+            case 'quantumult':
+                if ($value !== null) {
+                    if ((int) $value == 2) {
+                        $return = self::getSubscribeExtend('quantumult_sub');
+                    } else {
+                        $return = self::getSubscribeExtend('quantumult_conf');
+                    }
+                } else {
+                    $return = [
+                        'filename' => 'Quantumult',
+                        'suffix'   => 'conf',
+                    ];
+                }
+                break;
+            case 'quantumultx':
+                $return = [
+                    'filename' => 'QuantumultX',
+                    'suffix'   => 'txt',
+                ];
+                break;
+            case 'shadowrocket':
+                $return = [
+                    'filename' => 'Shadowrocket',
+                    'suffix'   => 'txt',
+                ];
+                break;
+            case 'clash_provider':
+                $return = [
+                    'filename' => 'ClashProvider',
+                    'suffix'   => 'yaml',
+                ];
+                break;
+            case 'clashr_provider':
+                $return = [
+                    'filename' => 'ClashRProvider',
+                    'suffix'   => 'yaml',
+                ];
+                break;
+            case 'quantumult_sub':
+                $return = [
+                    'filename' => 'QuantumultSub',
+                    'suffix'   => 'conf',
+                ];
+                break;
+            case 'quantumult_conf':
+                $return = [
+                    'filename' => 'QuantumultConf',
+                    'suffix'   => 'conf',
+                ];
+                break;
+            default:
+                $return = [
+                    'filename' => 'UndefinedNode',
+                    'suffix'   => 'txt',
+                ];
+                break;
+        }
+        return $return;
     }
 
     /**
@@ -354,9 +480,8 @@ class LinkController extends BaseController
             'ss'              => '?sub=2',
             'ssr'             => '?sub=1',
             'v2ray'           => '?sub=3',
-            'v2ray_ss'        => '?sub=4',
-            'v2ray_ss_ssr'    => '?sub=5',
             // apps
+            'ssa'             => '?list=ssa',
             'ssd'             => '?ssd=1',
             'clash'           => '?clash=1',
             'clash_provider'  => '?list=clash',
@@ -378,7 +503,7 @@ class LinkController extends BaseController
         ];
 
         return array_map(
-            function($item) use ($userapiUrl) {
+            function ($item) use ($userapiUrl) {
                 return ($userapiUrl . $item);
             },
             $return_info
@@ -471,7 +596,7 @@ class LinkController extends BaseController
                 return base64_encode(implode(PHP_EOL, $return));
             default:
                 return implode(PHP_EOL, $return);
-        }        
+        }
     }
 
     public static function getListExtend($user, $list)
@@ -552,7 +677,6 @@ class LinkController extends BaseController
      * @param int    $surge 订阅类型
      * @param array  $opts  request
      * @param array  $Rule  节点筛选规则
-     * @param bool   $find  是否筛选节点
      *
      * @return string
      */
@@ -619,11 +743,10 @@ class LinkController extends BaseController
      * @param object $user       用户
      * @param int    $quantumult 订阅类型
      * @param array  $Rule       节点筛选规则
-     * @param bool   $find       是否筛选节点
      *
      * @return string
      */
-    public static function getQuantumult($user, $quantumult, $opts, $Rule)
+    public static function getQuantumult($user, int $quantumult, $opts, $Rule)
     {
         $emoji = $Rule['emoji'];
         switch ($quantumult) {
@@ -688,11 +811,10 @@ class LinkController extends BaseController
      * @param object $user        用户
      * @param int    $quantumultx 订阅类型
      * @param array  $Rule        节点筛选规则
-     * @param bool   $find        是否筛选节点
      *
      * @return string
      */
-    public static function getQuantumultX($user, $quantumultx, $opts, $Rule)
+    public static function getQuantumultX($user, int $quantumultx, $opts, $Rule)
     {
         switch ($quantumultx) {
             default:
@@ -709,7 +831,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSurfboard($user, $surfboard, $opts, $Rule)
+    public static function getSurfboard($user, int $surfboard, $opts, $Rule)
     {
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['surfboard'];
@@ -750,7 +872,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getClash($user, $clash, $opts, $Rule)
+    public static function getClash($user, int $clash, $opts, $Rule)
     {
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
@@ -816,7 +938,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSSD($user, $ssd, $opts, $Rule)
+    public static function getSSD($user, int $ssd, $opts, $Rule)
     {
         if (!URL::SSCanConnect($user)) {
             return null;
@@ -869,11 +991,10 @@ class LinkController extends BaseController
      * @param object $user 用户
      * @param array  $opts request
      * @param array  $Rule 节点筛选规则
-     * @param bool   $find 是否筛选节点
      *
      * @return string
      */
-    public static function getShadowrocket($user, $shadowrocket, $opts, $Rule)
+    public static function getShadowrocket($user, int $shadowrocket, $opts, $Rule)
     {
         $Rule['emoji'] = false; // Shadowrocket 自带 emoji
         return self::getLists($user, 'shadowrocket', $opts, $Rule);
@@ -885,11 +1006,10 @@ class LinkController extends BaseController
      * @param object $user 用户
      * @param array  $opts request
      * @param array  $Rule 节点筛选规则
-     * @param bool   $find 是否筛选节点
      *
      * @return string
      */
-    public static function getKitsunebi($user, $kitsunebi, $opts, $Rule)
+    public static function getKitsunebi($user, int $kitsunebi, $opts, $Rule)
     {
         return self::getLists($user, 'kitsunebi', $opts, $Rule);
     }
@@ -951,28 +1071,28 @@ class LinkController extends BaseController
             'checkPreRelease' => false,
             'isVerboseLogging' => false,
             'logViewer' => [
-              'topMost' => false,
-              'wrapText' => false,
-              'toolbarShown' => false,
-              'Font' => 'Consolas, 8pt',
-              'BackgroundColor' => 'Black',
-              'TextColor' => 'White'
+                'topMost' => false,
+                'wrapText' => false,
+                'toolbarShown' => false,
+                'Font' => 'Consolas, 8pt',
+                'BackgroundColor' => 'Black',
+                'TextColor' => 'White'
             ],
             'proxy' => [
-              'useProxy' => false,
-              'proxyType' => 0,
-              'proxyServer' => '',
-              'proxyPort' => 0,
-              'proxyTimeout' => 3
+                'useProxy' => false,
+                'proxyType' => 0,
+                'proxyServer' => '',
+                'proxyPort' => 0,
+                'proxyTimeout' => 3
             ],
             'hotkey' => [
-              'SwitchSystemProxy' => '',
-              'SwitchSystemProxyMode' => '',
-              'SwitchAllowLan' => '',
-              'ShowLogs' => '',
-              'ServerMoveUp' => '',
-              'ServerMoveDown' => '',
-              'RegHotkeysAtStartup' => false
+                'SwitchSystemProxy' => '',
+                'SwitchSystemProxyMode' => '',
+                'SwitchAllowLan' => '',
+                'ShowLogs' => '',
+                'ServerMoveUp' => '',
+                'ServerMoveDown' => '',
+                'RegHotkeysAtStartup' => false
             ]
         ];
 
@@ -1131,44 +1251,44 @@ class LinkController extends BaseController
             'checkPreRelease' => false,
             'isVerboseLogging' => false,
             'logViewer' => [
-              'topMost' => false,
-              'wrapText' => false,
-              'toolbarShown' => false,
-              'Font' => 'Consolas, 8pt',
-              'BackgroundColor' => 'Black',
-              'TextColor' => 'White'
+                'topMost' => false,
+                'wrapText' => false,
+                'toolbarShown' => false,
+                'Font' => 'Consolas, 8pt',
+                'BackgroundColor' => 'Black',
+                'TextColor' => 'White'
             ],
             'proxy' => [
-              'useProxy' => false,
-              'proxyType' => 0,
-              'proxyServer' => '',
-              'proxyPort' => 0,
-              'proxyTimeout' => 3
+                'useProxy' => false,
+                'proxyType' => 0,
+                'proxyServer' => '',
+                'proxyPort' => 0,
+                'proxyTimeout' => 3
             ],
             'hotkey' => [
-              'SwitchSystemProxy' => '',
-              'SwitchSystemProxyMode' => '',
-              'SwitchAllowLan' => '',
-              'ShowLogs' => '',
-              'ServerMoveUp' => '',
-              'ServerMoveDown' => '',
-              'RegHotkeysAtStartup' => false
+                'SwitchSystemProxy' => '',
+                'SwitchSystemProxyMode' => '',
+                'SwitchAllowLan' => '',
+                'ShowLogs' => '',
+                'ServerMoveUp' => '',
+                'ServerMoveDown' => '',
+                'RegHotkeysAtStartup' => false
             ],
             'subscriptions' => [
-              [
-                'airport' => Config::get('appName'),
-                'encryption' => $user->method,
-                'password' => $user->passwd,
-                'port' => $user->port,
-                'expiry' => $user->class_expire,
-                'traffic_used' => Tools::flowToGB($user->u + $user->d),
-                'traffic_total' => Tools::flowToGB($user->transfer_enable),
-                'url' => self::getSubinfo($user, 0)['ssd'],
-                'plugin' => $plugin,
-                'plugin_options' => $plugin_opts,
-                'plugin_arguments' => '',
-                'use_proxy' => false
-              ]
+                [
+                    'airport' => Config::get('appName'),
+                    'encryption' => $user->method,
+                    'password' => $user->passwd,
+                    'port' => $user->port,
+                    'expiry' => $user->class_expire,
+                    'traffic_used' => Tools::flowToGB($user->u + $user->d),
+                    'traffic_total' => Tools::flowToGB($user->transfer_enable),
+                    'url' => self::getSubinfo($user, 0)['ssd'],
+                    'plugin' => $plugin,
+                    'plugin_options' => $plugin_opts,
+                    'plugin_arguments' => '',
+                    'use_proxy' => false
+                ]
             ]
         ];
 
@@ -1182,11 +1302,10 @@ class LinkController extends BaseController
      * @param int    $sub  订阅类型
      * @param array  $opts request
      * @param array  $Rule 节点筛选规则
-     * @param bool   $find 是否筛选节点
      *
      * @return string
      */
-    public static function getSub($user, $sub, $opts, $Rule)
+    public static function getSub($user, int $sub, $opts, $Rule)
     {
         $return_url = '';
         switch ($sub) {

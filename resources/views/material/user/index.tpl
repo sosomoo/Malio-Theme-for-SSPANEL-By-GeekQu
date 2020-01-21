@@ -171,6 +171,9 @@ table tr td:first-child {
                         <div class="card-main">
                         <div class="card-inner margin-bottom-no">
                             <p class="card-heading" style="margin-bottom: 0;"><i class="icon icon-md">account_circle</i>流量使用情况</p>
+
+                                <p>下次流量重置时间：{$user->valid_use_loop()}</p>
+
                                 <div class="progressbar">
                                     <div class="before"></div>
                                     <div class="bar tuse color3"
@@ -415,11 +418,11 @@ table tr td:first-child {
 												</p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_2</span> [ SSR ]：
-													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_ssr" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssr","#general_ssr","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
+													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_ssr" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssr","#general_ssr","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
 												</p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_3</span> [ VMess ]：
-													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_v2ray" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=v2ray","#general_v2ray","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
+													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="general_v2ray" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=v2ray","#general_v2ray","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a>
 												</p>
 											</div>
 
@@ -434,13 +437,13 @@ table tr td:first-child {
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="{if $config["subscribe_client"]===true}/user/getPcClient?type=ssr-win{else}https://github.com/shadowsocksrr/shadowsocksr-csharp/releases{/if}"><i class="material-icons">save_alt</i> 下载</a> SSR(R) - [ SS/SSR ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/ShadowsocksR"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="win_ssr" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssr","#win_ssr","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>订阅链接</a>.<a id="win_ssr" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssr","#win_ssr","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://github.com/Fndroid/clash_for_windows_pkg/releases"><i class="material-icons">save_alt</i> 下载</a> Clash for Windows - [ SS/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Windows/Clash-for-Windows"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 													<p>使用方式：<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clash"])}"><i class="material-icons icon-sm">how_to_vote</i>Clash for Windows 一键导入</a></p>
                                             	<hr/>
-												<p><span class="icon icon-lg text-white">filter_5</span> <a class="btn-dl" href="https://t.me/clashr4ssr"><i class="material-icons">save_alt</i> 下载</a> ClashR for Windows - [ SS/SSR/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_5</span> <a class="btn-dl" href="#"><i class="material-icons">save_alt</i> 下载</a> ClashR for Windows - [ SS/SSR/VMess ]：</p>
 													<p>教程文档：自行摸索</p>
 													<p>使用方式：<a class="btn-dl" href="{$subInfo["clashr"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clashr"])}"><i class="material-icons icon-sm">how_to_vote</i>ClashR for Windows 一键导入</a></p>
 											</div>
@@ -454,7 +457,7 @@ table tr td:first-child {
 													<p>教程文档：<a class="btn-dl" href="/doc/#/macOS/ClashX"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 													<p>使用方式：<a class="btn-dl" href="{$subInfo["clash"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clash"])}"><i class="material-icons icon-sm">how_to_vote</i>ClashX 一键导入</a></p>
                                                 <hr/>
-												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://t.me/clashr4ssr"><i class="material-icons">save_alt</i> 下载</a> ClashXR - [ SS/SSR/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href=""><i class="material-icons">save_alt</i> 下载</a> ClashXR - [ SS/SSR/VMess ]：</p>
 													<p>教程文档：自行摸索</p>
 													<p>使用方式：<a class="btn-dl" href="{$subInfo["clashr"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a>.<a class="btn-dl" href="clash://install-config?url={urlencode($subInfo["clashr"])}"><i class="material-icons icon-sm">how_to_vote</i>ClashXR 一键导入</a></p>
 											</div>
@@ -485,15 +488,15 @@ table tr td:first-child {
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/kitsunebi-proxy-utility/id1446584073?ls=1&mt=8"><i class="material-icons">save_alt</i> 下载</a> Kitsunebi - [ SS/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Kitsunebi"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["kitsunebi"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SS + V2 混合订阅</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["kitsunebi"]}"><i class="material-icons icon-sm">how_to_vote</i>SS + V2 混合订阅</a></p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/quantumult/id1252015438?ls=1&mt=8"><i class="material-icons">save_alt</i> 下载</a> Quantumult - [ SS/SSR/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Quantumult_sub"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["quantumult_v2"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a id="quan_sub" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_sub"]}","#quan_sub","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整订阅配置</a>.<a id="quan_conf" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_conf"]}","#quan_conf","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整策略组配置</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["quantumult_v2"]}"><i class="material-icons icon-sm">how_to_vote</i>V2 订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a>.<a id="quan_sub" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_sub"]}","#quan_sub","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整订阅配置</a>.<a id="quan_conf" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo["quantumult_conf"]}","#quan_conf","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">how_to_vote</i>完整策略组配置</a></p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://apps.apple.com/us/app/quantumult-x/id1443988620"><i class="material-icons">save_alt</i> 下载</a> QuantumultX - [ SS/SSR/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/QuantumultX"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["quantumultx"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>混合订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["quantumultx"]}"><i class="material-icons icon-sm">how_to_vote</i>混合订阅</a>.<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>SSR 订阅</a></p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_5</span> <a class="btn-dl" href="https://itunes.apple.com/us/app/shadowrocket/id932747118?mt=8"><i class="material-icons">save_alt</i> 下载</a> Shadowrocket - [ SS/SSR/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/iOS/Shadowrocket"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
@@ -501,25 +504,29 @@ table tr td:first-child {
 											</div>
 
 											<div class="tab-pane fade" id="sub_center_android">
-												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Android/releases"><i class="material-icons">save_alt</i> 下载</a> SSD - [ SS ]：</p>
+												<p><span class="icon icon-lg text-white">filter_1</span> <a class="btn-dl" href="https://github.com/shadowsocks/shadowsocks-android/releases"><i class="material-icons">save_alt</i> 下载</a> SS - [ SS ]：</p>
+													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/Shadowsocks-Android"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssa"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Android/releases"><i class="material-icons">save_alt</i> 下载</a> SSD - [ SS ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/ShadowsocksD"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssd"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a>.<a id="android_ssd" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssd","#android_ssd","")><i class="material-icons icon-sm">how_to_vote</i>全部 URL</a></p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_2</span> <a class="btn-dl" href="#"><i class="material-icons">save_alt</i> 下载</a> SSR - [ SSR ]：</p>
+												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="#"><i class="material-icons">save_alt</i> 下载</a> SSR - [ SSR ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/ShadowsocksR"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["ssr"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_3</span> <a class="btn-dl" href="https://github.com/2dust/v2rayNG/releases"><i class="material-icons">save_alt</i> 下载</a> V2rayNG - [ SS/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://github.com/2dust/v2rayNG/releases"><i class="material-icons">save_alt</i> 下载</a> V2rayNG - [ SS/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/V2rayNG"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["v2ray"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝链接</a></p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_4</span> <a class="btn-dl" href="https://rink.hockeyapp.net/recruit/2113783c503645abb0a5ec6317e1a169"><i class="material-icons">save_alt</i> 下载</a> Surfboard - [ SS ]：</p>
+												<p><span class="icon icon-lg text-white">filter_5</span> <a class="btn-dl" href="https://rink.hockeyapp.net/recruit/2113783c503645abb0a5ec6317e1a169"><i class="material-icons">save_alt</i> 下载</a> Surfboard - [ SS ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/Surfboard"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
 													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["surfboard"]}"><i class="material-icons icon-sm">how_to_vote</i>拷贝托管</a>.<a class="btn-dl" href="{$subInfo["surfboard"]}"><i class="material-icons icon-sm">how_to_vote</i>配置下载</a></p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_5</span> <a class="btn-dl" href="https://play.google.com/store/apps/details?id=fun.kitsunebi.kitsunebi4android&hl=zh"><i class="material-icons">save_alt</i> 下载</a> Kitsunebi - [ SS/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_6</span> <a class="btn-dl" href="https://play.google.com/store/apps/details?id=fun.kitsunebi.kitsunebi4android&hl=zh"><i class="material-icons">save_alt</i> 下载</a> Kitsunebi - [ SS/VMess ]：</p>
 													<p>教程文档：<a class="btn-dl" href="/doc/#/Android/Kitsunebi"><i class="material-icons icon-sm">how_to_vote</i>点击查看</a></p>
-													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["kitsunebi"]}&extend=1"><i class="material-icons icon-sm">how_to_vote</i>SS + V2 混合订阅</a></p>
+													<p>使用方式：<a class="copy-text btn-dl" data-clipboard-text="{$subInfo["kitsunebi"]}"><i class="material-icons icon-sm">how_to_vote</i>SS + V2 混合订阅</a></p>
 											</div>
 										</div>
 

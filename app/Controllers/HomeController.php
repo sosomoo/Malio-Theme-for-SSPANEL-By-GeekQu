@@ -232,7 +232,7 @@ class HomeController extends BaseController
                     $msg = [
                         '**订阅链接：**',
                         '```',
-                        $subInfo['ssr'] . '&extend=1',
+                        $subInfo['ssr'],
                         '```'
                     ];
                     break;
@@ -240,7 +240,7 @@ class HomeController extends BaseController
                     $msg = [
                         '**订阅链接：**',
                         '```',
-                        $subInfo['v2ray'] . '&extend=1',
+                        $subInfo['v2ray'],
                         '```'
                     ];
                     break;
@@ -276,7 +276,7 @@ class HomeController extends BaseController
                     $msg = [
                         '**包含 ss、v2ray 的合并订阅链接：**',
                         '```',
-                        $subInfo['kitsunebi'] . '&extend=1',
+                        $subInfo['kitsunebi'],
                         '```'
                     ];
                     break;
