@@ -629,7 +629,7 @@ class Tools
         }
 
         return [
-            'name' => ($node_name . ' - ' . $node_port . ' 单端口'),
+            'name' => (Config::get('disable_sub_mu_port') ? $node_name : $node_name . ' - ' . $node_port . ' 单端口'),
             'address' => $node_server[0],
             'port' => $node_port
         ];

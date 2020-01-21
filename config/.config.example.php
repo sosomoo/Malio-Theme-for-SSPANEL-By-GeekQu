@@ -37,6 +37,7 @@ $_ENV['checkNodeIp'] = true; //是否webapi验证节点ip
 // 可用于为用户推送最新地址等信息，尽可能简短且数量不宜太多
 $_ENV['sub_message']       = [];
 $_ENV['enable_sub_extend'] = true;      // 是否开启订阅中默认显示流量剩余以及账户到期时间以及 sub_message 中的信息
+$_ENV['disable_sub_mu_port'] = false;   // 将订阅中单端口的信息去除
 
 //邮件设置--------------------------------------------------------------------------------------------
 $_ENV['mailDriver'] = 'none';	//发送邮件方式：none / mailgun / smtp / sendgrid
