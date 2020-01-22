@@ -129,7 +129,7 @@ class LinkController extends BaseController
         $getBody = '';
 
         $sub_type_array = ['list', 'ssd', 'clash', 'surge', 'kitsunebi', 'surfboard', 'quantumult', 'quantumultx', 'shadowrocket', 'sub'];
-        foreach ($sub_type_array as $key => $value) {
+        foreach ($sub_type_array as $key) {
             if (isset($opts[$key])) {
                 $query_value = $opts[$key];
                 if ($query_value != '0' && $query_value != '') {
@@ -138,16 +138,23 @@ class LinkController extends BaseController
                         $query_value = 1;
                     }
                     if ($key == 'surge' && $query_value == '1') {
-                        $value['class'] = 'Lists';
+                        $key = 'list';
                         $query_value = 'surge';
                     }
                     if ($key == 'quantumult' && $query_value == '1') {
-                        $value['class'] = 'Lists';
+                        $key = 'list';
                         $query_value = 'quantumult';
                     }
                     // 兼容代码结束
+                    if ($key == 'list') {
+                        $SubscribeExtend = self::getSubscribeExtend($query_value);
+                    } else {
+                        $SubscribeExtend = self::getSubscribeExtend($key, $query_value);
+                    }
+                    $filename = $SubscribeExtend['filename'] . '_' . time() . '.' . $SubscribeExtend['suffix'];
+                    $subscribe_type = $SubscribeExtend['filename'];
                     $Cache = false;
-                    $class = ('get' . $value['class']);
+                    $class = ('get' . $SubscribeExtend['class']);
                     if (Config::get('enable_sub_cache') === true) {
                         $Cache = true;
                         $content = self::getSubscribeCache($user, $path);
@@ -159,13 +166,6 @@ class LinkController extends BaseController
                     } else {
                         $content = self::$class($user, $query_value, $opts, $Rule);
                     }
-                    if ($value['class'] == 'Lists') {
-                        $SubscribeExtend = self::getSubscribeExtend($query_value);
-                    } else {
-                        $SubscribeExtend = self::getSubscribeExtend($key, $query_value);
-                    }
-                    $filename = $SubscribeExtend['filename'] . '_' . time() . $SubscribeExtend['suffix'];
-                    $subscribe_type = $SubscribeExtend['filename'];
                     $getBody = self::getBody(
                         $user,
                         $response,
@@ -228,24 +228,28 @@ class LinkController extends BaseController
                 $return = [
                     'filename' => 'SS',
                     'suffix'   => 'txt',
+                    'class'    => 'Sub'
                 ];
                 break;
             case 'ssa':
                 $return = [
                     'filename' => 'SSA',
                     'suffix'   => 'json',
+                    'class'    => 'Lists'
                 ];
                 break;
             case 'ssd':
                 $return = [
                     'filename' => 'SSD',
                     'suffix'   => 'txt',
+                    'class'    => 'SSD'
                 ];
                 break;
             case 'ssr':
                 $return = [
                     'filename' => 'SSR',
                     'suffix'   => 'txt',
+                    'class'    => 'Sub'
                 ];
                 break;
             case 'sub':
@@ -261,13 +265,16 @@ class LinkController extends BaseController
                 if ($value !== null) {
                     if ((int) $value == 2) {
                         $return = self::getSubscribeExtend('clashr');
+                        $return['class'] = 'Clash';
                     } else {
                         $return = self::getSubscribeExtend('clash');
+                        $return['class'] = 'Clash';
                     }
                 } else {
                     $return = [
                         'filename' => 'Clash',
                         'suffix'   => 'yaml',
+                        'class'    => 'Lists'
                     ];
                 }
                 break;
@@ -276,12 +283,14 @@ class LinkController extends BaseController
                     $return = [
                         'filename' => 'Surge',
                         'suffix'   => 'conf',
+                        'class'    => 'Surge'
                     ];
                     $return['filename'] .= $value;
                 } else {
                     $return = [
                         'filename' => 'SurgeList',
                         'suffix'   => 'list',
+                        'class'    => 'Lists'
                     ];
                 }
                 break;
@@ -289,24 +298,28 @@ class LinkController extends BaseController
                 $return = [
                     'filename' => 'ClashR',
                     'suffix'   => 'yaml',
+                    'class'    => 'Lists'
                 ];
                 break;
             case 'v2rayn':
                 $return = [
                     'filename' => 'V2RayN',
                     'suffix'   => 'txt',
+                    'class'    => 'Sub'
                 ];
                 break;
             case 'kitsunebi':
                 $return = [
                     'filename' => 'Kitsunebi',
                     'suffix'   => 'txt',
+                    'class'    => 'Lists'
                 ];
                 break;
             case 'surfboard':
                 $return = [
                     'filename' => 'Surfboard',
                     'suffix'   => 'conf',
+                    'class'    => 'Surfboard'
                 ];
                 break;
             case 'quantumult':
@@ -320,6 +333,7 @@ class LinkController extends BaseController
                     $return = [
                         'filename' => 'Quantumult',
                         'suffix'   => 'conf',
+                        'class'    => 'Lists'
                     ];
                 }
                 break;
@@ -327,42 +341,49 @@ class LinkController extends BaseController
                 $return = [
                     'filename' => 'QuantumultX',
                     'suffix'   => 'txt',
+                    'class'    => 'Lists'
                 ];
                 break;
             case 'shadowrocket':
                 $return = [
                     'filename' => 'Shadowrocket',
                     'suffix'   => 'txt',
+                    'class'    => 'Lists'
                 ];
                 break;
             case 'clash_provider':
                 $return = [
                     'filename' => 'ClashProvider',
                     'suffix'   => 'yaml',
+                    'class'    => 'Lists'
                 ];
                 break;
             case 'clashr_provider':
                 $return = [
                     'filename' => 'ClashRProvider',
                     'suffix'   => 'yaml',
+                    'class'    => 'Lists'
                 ];
                 break;
             case 'quantumult_sub':
                 $return = [
                     'filename' => 'QuantumultSub',
                     'suffix'   => 'conf',
+                    'class'    => 'Quantumult'
                 ];
                 break;
             case 'quantumult_conf':
                 $return = [
                     'filename' => 'QuantumultConf',
                     'suffix'   => 'conf',
+                    'class'    => 'Quantumult'
                 ];
                 break;
             default:
                 $return = [
                     'filename' => 'UndefinedNode',
                     'suffix'   => 'txt',
+                    'class'    => 'Sub'
                 ];
                 break;
         }
@@ -680,7 +701,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSurge($user, int $surge, $opts, $Rule)
+    public static function getSurge($user, $surge, $opts, $Rule)
     {
         if ($surge == 1) {
             return self::getLists($user, 'surge', $opts, $Rule);
@@ -746,7 +767,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getQuantumult($user, int $quantumult, $opts, $Rule)
+    public static function getQuantumult($user, $quantumult, $opts, $Rule)
     {
         $emoji = $Rule['emoji'];
         switch ($quantumult) {
@@ -814,7 +835,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getQuantumultX($user, int $quantumultx, $opts, $Rule)
+    public static function getQuantumultX($user, $quantumultx, $opts, $Rule)
     {
         switch ($quantumultx) {
             default:
@@ -831,7 +852,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSurfboard($user, int $surfboard, $opts, $Rule)
+    public static function getSurfboard($user, $surfboard, $opts, $Rule)
     {
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['surfboard'];
@@ -872,7 +893,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getClash($user, int $clash, $opts, $Rule)
+    public static function getClash($user, $clash, $opts, $Rule)
     {
         $subInfo = self::getSubinfo($user, 0);
         $userapiUrl = $subInfo['clash'];
@@ -938,7 +959,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSSD($user, int $ssd, $opts, $Rule)
+    public static function getSSD($user, $ssd, $opts, $Rule)
     {
         if (!URL::SSCanConnect($user)) {
             return null;
@@ -994,7 +1015,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getShadowrocket($user, int $shadowrocket, $opts, $Rule)
+    public static function getShadowrocket($user, $shadowrocket, $opts, $Rule)
     {
         $Rule['emoji'] = false; // Shadowrocket 自带 emoji
         return self::getLists($user, 'shadowrocket', $opts, $Rule);
@@ -1009,7 +1030,7 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getKitsunebi($user, int $kitsunebi, $opts, $Rule)
+    public static function getKitsunebi($user, $kitsunebi, $opts, $Rule)
     {
         return self::getLists($user, 'kitsunebi', $opts, $Rule);
     }
@@ -1305,14 +1326,10 @@ class LinkController extends BaseController
      *
      * @return string
      */
-    public static function getSub($user, int $sub, $opts, $Rule)
+    public static function getSub($user, $sub, $opts, $Rule)
     {
         $return_url = '';
         switch ($sub) {
-            case 1: // SSR
-                $Rule['type'] = 'ssr';
-                $getListExtend = $Rule['extend'] ? self::getListExtend($user, 'ssr') : [];
-                break;
             case 2: // SS
                 $Rule['type'] = 'ss';
                 $getListExtend = $Rule['extend'] ? self::getListExtend($user, 'ss') : [];
@@ -1321,8 +1338,14 @@ class LinkController extends BaseController
                 $Rule['type'] = 'vmess';
                 $getListExtend = $Rule['extend'] ? self::getListExtend($user, 'v2rayn') : [];
                 break;
+            default: // SSR
+                $Rule['type'] = 'ssr';
+                $getListExtend = $Rule['extend'] ? self::getListExtend($user, 'ssr') : [];
+                break;
         }
-        $return_url .= implode(PHP_EOL, $getListExtend) . PHP_EOL;
+        if ($Rule['extend']) {
+            $return_url .= implode(PHP_EOL, $getListExtend) . PHP_EOL;
+        }
         $return_url .= URL::get_NewAllUrl($user, $Rule);
         return base64_encode($return_url);
     }
