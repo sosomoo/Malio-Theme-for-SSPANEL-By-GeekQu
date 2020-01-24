@@ -65,7 +65,7 @@ $_ENV['sendgrid_sender'] = '';
 //备份设置--------------------------------------------------------------------------------------------
 $_ENV['auto_backup_email'] = '';		//接收备份的邮箱
 $_ENV['auto_backup_passwd'] = '';	//备份的压缩密码
-$_ENV['backup_notify'] = true;		//备份通知到TG群中
+$_ENV['backup_notify'] = false;		//备份通知到TG群中
 
 
 //用户注册设置-----------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ $_ENV['subscribeLog_keep_days'] = 7;		    //订阅记录保留天数
 
 //Bot 设置--------------------------------------------------------------------------------------------
 #通用
-$_ENV['finance_public'] = true;			//财务报告是否向群公开
+$_ENV['finance_public'] = false;			//财务报告是否向群公开
 $_ENV['enable_welcome_message'] = true;	//机器人发送欢迎消息
 
 # Telegram BOT
@@ -148,11 +148,11 @@ $_ENV['use_new_telegram_bot']       = true;         //是否使用新的 Telegra
 $_ENV['enable_telegram']            = false;        //是否开启Telegram Bot
 $_ENV['telegram_token']             = '';           //Telegram Bot 的 Token，跟 Father Bot 申请
 $_ENV['telegram_bot']               = '';           //Telegram Bot 用户名
-$_ENV['telegram_group_quiet']       = true;         //Telegram Bot 在群组中不回应
+$_ENV['telegram_group_quiet']       = false;        //Telegram Bot 在群组中不回应
 $_ENV['telegram_chatid']            = '';           //Telegram 群组会话 ID，把 Bot 拉进群里之后跟他 /ping 一下即可得到。
 $_ENV['telegram_request_token']     = '';           //Telegram 机器人请求验证 Key，随意设置，由大小写英文和数字组成，更新这个参数之后请 php xcat setTelegram
 
-$_ENV['enable_tuling']              = true;			//是否开启图灵机器人
+$_ENV['enable_tuling']              = false;	    //是否开启图灵机器人
 $_ENV['tuling_apikey']              = '';			//图灵机器人 API Key
 $_ENV['tuling_apisecert']           = '';			//图灵机器人密钥
 
@@ -202,11 +202,11 @@ $_ENV['telegram_general_terms']                 = '服务条款.';              
 
 //沟通设置--------------------------------------------------------------------------------------------
 #客服系统设置，注册地址 https://www.mylivechat.com
-$_ENV['enable_mylivechat'] = true;		//是否开启客服系统
+$_ENV['enable_mylivechat'] = false;		//是否开启客服系统
 $_ENV['mylivechat_id'] = '';			//客服系统ID
 
 # PushBear  基于微信模板的向关注了二维码的用户以微信方式推送消息 https://pushbear.ftqq.com/
-$_ENV['usePushBear'] = true;		// true 启用	false 禁用
+$_ENV['usePushBear'] = false;		// true 启用	false 禁用
 $_ENV['PushBear_sendkey'] = '';	//请填写您在PushBear获取的sendkey  请仔细检查勿粘贴错
 
 #工单系统设置
@@ -214,11 +214,11 @@ $_ENV['enable_ticket'] = true;		//是否开启工单系统
 $_ENV['mail_ticket'] = true;		//是否开启工单邮件提醒
 
 # Server酱  用户提交新工单或者回复工单时用微信提醒机场主 http://sc.ftqq.com/
-$_ENV['useScFtqq'] = true;		//是否开启工单Server酱提醒
+$_ENV['useScFtqq'] = false;		//是否开启工单Server酱提醒
 $_ENV['ScFtqq_SCKEY'] = '';	//请填写您在Server酱获取的SCKEY  请仔细检查勿粘贴错
 
 #管理员联系方式设置
-$_ENV['enable_admin_contact'] = true;			//是否开启管理员联系方式
+$_ENV['enable_admin_contact'] = false;			//是否开启管理员联系方式
 $_ENV['admin_contact1'] = 'QQ：1233456';		//QQ、邮箱、微信仅用于举例
 $_ENV['admin_contact2'] = '邮箱123456@qq.com';	//也可以写电话、tg等其他联系方式
 $_ENV['admin_contact3'] = '微信～123456';		//没有格式要求，想怎么写就怎么写，可留空
@@ -234,9 +234,9 @@ $_ENV['recaptcha_secret'] = '';
 $_ENV['geetest_id'] = '';
 $_ENV['geetest_key'] = '';
 
-$_ENV['enable_reg_captcha'] = true;		//启用注册验证码
-$_ENV['enable_login_captcha'] = true;	//启用登录验证码
-$_ENV['enable_checkin_captcha'] = true;	//启用签到验证码
+$_ENV['enable_reg_captcha'] = false;		//启用注册验证码
+$_ENV['enable_login_captcha'] = false;	//启用登录验证码
+$_ENV['enable_checkin_captcha'] = false;	//启用签到验证码
 
 
 //支付系统设置----------------------------------------------------------------------------------------
@@ -314,7 +314,7 @@ $_ENV['tomatopay'] = [
 //其他面板显示设置------------------------------------------------------------------------------------------
 
 #用户文档
-$_ENV['enable_documents'] = true;	    //是否允许未登陆用户查看文档中心
+$_ENV['enable_documents'] = false;	    //是否允许未登陆用户查看文档中心
 $_ENV['documents_name'] = $_ENV['appName'] . ' 文档中心';	    //文档中心名称
 $_ENV['remote_documents'] = true;	    //是否从远程加载文档中心，否的话请执行 php xcat initdocuments
 $_ENV['documents_source'] = 'https://raw.githubusercontent.com/GeekQu/PANEL_DOC/master/GeekQu';	    //远程文档加载地址
@@ -347,7 +347,7 @@ $_ENV['detect_gfw_count'] = '3';												//尝试次数
 #离线检测
 $_ENV['enable_detect_offline'] = true;
 #离线检测是否推送到Server酱 请配置好上文的Server配置
-$_ENV['enable_detect_offline_useScFtqq'] = true;
+$_ENV['enable_detect_offline_useScFtqq'] = false;
 
 
 //V2Ray相关设置------------------------------------------------------------------------------------------
@@ -442,7 +442,7 @@ $_ENV['redis_database'] = '';
 $_ENV['redis_password']= '';
 
 #Radius设置
-$_ENV['enable_radius'] = true;			//是否开启Radius
+$_ENV['enable_radius'] = false;			//是否开启Radius
 $_ENV['radius_db_host'] = '';				//以下4项为Radius数据库设置
 $_ENV['radius_db_database'] = '';
 $_ENV['radius_db_user'] = '';
@@ -450,16 +450,16 @@ $_ENV['radius_db_password'] = '';
 $_ENV['radius_secret'] = '';					//Radius连接密钥
 
 #Cloudflare
-$_ENV['cloudflare_enable'] = true;										//是否开启 Cloudflare 解析
+$_ENV['cloudflare_enable'] = false;										//是否开启 Cloudflare 解析
 $_ENV['cloudflare_email'] = 'user@example.com';								//Cloudflare 邮箱地址
 $_ENV['cloudflare_key'] = 'c2547eb745079dac9320b638f5e225cf483cc5cfdda41';	//Cloudflare API Key
 $_ENV['cloudflare_name'] = 'example.com';									//域名
 
 #不安全中转模式，这个开启之后使用除了 auth_aes128_md5 或者 auth_aes128_sha1 以外的协议地用户也可以设置和使用中转
-$_ENV['relay_insecure_mode'] = true;		//强烈推荐不开启
+$_ENV['relay_insecure_mode'] = false;		//强烈推荐不开启
 
 #是否夹带统计代码，自己在 resources/views/{主题名} 下创建一个 analytics.tpl ，如果有必要就用 literal 界定符
-$_ENV['enable_analytics_code'] = true;
+$_ENV['enable_analytics_code'] = false;
 $_ENV['sspanelAnalysis'] = true;
 
 //自定义设置---------------------------------------------------------------------
