@@ -82,16 +82,6 @@ class UserCallback
                 return Callback::CallbackDataHandler($bot, $Callback, $Data, $SendUser);
             }
         }
-        if ($user->telegram_id != $SendUser['id']) {
-            return TelegramTools::SendPost(
-                'answerCallbackQuery',
-                [
-                    'callback_query_id' => $Callback->getId(),
-                    'text'              => '您好，您无法操作他人的账户.',
-                    'show_alert'        => true,
-                ]
-            );
-        }
         $CallbackDataExplode = explode('|', $Data['CallbackData']);
         $Operate = explode('.', $CallbackDataExplode[0]);
         $op_1 = $Operate[1];
@@ -110,6 +100,16 @@ class UserCallback
                 break;
             case 'checkin':
                 // 签到
+                if ($Operate[2] != $SendUser['id']) {
+                    return TelegramTools::SendPost(
+                        'answerCallbackQuery',
+                        [
+                            'callback_query_id' => $Callback->getId(),
+                            'text'              => '您好，您无法操作他人的账户.',
+                            'show_alert'        => true,
+                        ]
+                    );
+                }
                 self::UserCheckin($user, $bot, $Callback, $Data, $SendUser);
                 break;
             case 'center':
