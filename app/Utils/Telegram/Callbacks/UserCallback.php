@@ -1087,7 +1087,23 @@ class UserCallback
             ]
         );
         // 回送信息
-        $temp = self::getUserIndexKeyboard($user);
+        if ($Data['ChatID'] > 0) {
+            $temp = self::getUserIndexKeyboard($user);
+        } else {
+            $temp['text'] = Reply::getUserTitle($user);
+            $temp['text'] .= PHP_EOL . PHP_EOL;
+            $temp['text'] .= Reply::getUserTrafficInfo($user);
+            $temp['text'] .= PHP_EOL;
+            $temp['text'] .= '流量重置时间：' . $user->valid_use_loop();
+            $temp['keyboard'] = [
+                [
+                    [
+                        'text'          => (!$user->isAbleToCheckin() ? '已签到' : '签到'),
+                        'callback_data' => 'user.checkin.' . $SendUser['id']
+                    ]
+                ],
+            ];
+        }
         $sendMessage = [
             'text'                  => $temp['text'] . PHP_EOL . PHP_EOL . $checkin['msg'],
             'chat_id'               => $Data['ChatID'],
