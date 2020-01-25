@@ -46,11 +46,11 @@ class UserCallback
         $text .= Reply::getUserInfo($user);
         $text .= PHP_EOL;
         $text .= '流量重置时间：' . $user->valid_use_loop();
-        if (Config::get('show_group_link') === true) {
+        if ($_ENV['show_group_link'] === true) {
             $Keyboard[] = [
                 [
                     'text'  => '加入用户群',
-                    'url'   => Config::get('telegram_group_link')
+                    'url'   => $_ENV['telegram_group_link']
                 ],
             ];
         }
@@ -82,16 +82,6 @@ class UserCallback
                 return Callback::CallbackDataHandler($bot, $Callback, $Data, $SendUser);
             }
         }
-        if ($user->telegram_id != $SendUser['id']) {
-            return TelegramTools::SendPost(
-                'answerCallbackQuery',
-                [
-                    'callback_query_id' => $Callback->getId(),
-                    'text'              => '您好，您无法操作他人的账户.',
-                    'show_alert'        => true,
-                ]
-            );
-        }
         $CallbackDataExplode = explode('|', $Data['CallbackData']);
         $Operate = explode('.', $CallbackDataExplode[0]);
         $op_1 = $Operate[1];
@@ -110,6 +100,16 @@ class UserCallback
                 break;
             case 'checkin':
                 // 签到
+                if ($Operate[2] != $SendUser['id']) {
+                    return TelegramTools::SendPost(
+                        'answerCallbackQuery',
+                        [
+                            'callback_query_id' => $Callback->getId(),
+                            'text'              => '您好，您无法操作他人的账户.',
+                            'show_alert'        => true,
+                        ]
+                    );
+                }
                 self::UserCheckin($user, $bot, $Callback, $Data, $SendUser);
                 break;
             case 'center':
@@ -474,9 +474,9 @@ class UserCallback
             case 'encrypt':
                 // 加密方式更改
                 $keyboard = $back;
-                if (Config::get('protocol_specify') === true) {
+                if ($_ENV['protocol_specify'] === true) {
                     if (isset($CallbackDataExplode[1])) {
-                        if (in_array($CallbackDataExplode[1], Config::getSupportParam('method')) && Config::get('protocol_specify') === true) {
+                        if (in_array($CallbackDataExplode[1], Config::getSupportParam('method')) && $_ENV['protocol_specify'] === true) {
                             $temp = $user->setMethod($CallbackDataExplode[1]);
                             if ($temp['ok'] === true) {
                                 $text = '您当前的加密方式为：' . $user->method . PHP_EOL . PHP_EOL . $temp['msg'];
@@ -519,9 +519,9 @@ class UserCallback
             case 'protocol':
                 // 协议更改
                 $keyboard = $back;
-                if (Config::get('protocol_specify') === true) {
+                if ($_ENV['protocol_specify'] === true) {
                     if (isset($CallbackDataExplode[1])) {
-                        if (in_array($CallbackDataExplode[1], Config::getSupportParam('protocol')) && Config::get('protocol_specify') === true) {
+                        if (in_array($CallbackDataExplode[1], Config::getSupportParam('protocol')) && $_ENV['protocol_specify'] === true) {
                             $temp = $user->setProtocol($CallbackDataExplode[1]);
                             if ($temp['ok'] === true) {
                                 $text = '您当前的协议为：' . $user->protocol . PHP_EOL . PHP_EOL . $temp['msg'];
@@ -564,9 +564,9 @@ class UserCallback
             case 'obfs':
                 // 混淆更改
                 $keyboard = $back;
-                if (Config::get('protocol_specify') === true) {
+                if ($_ENV['protocol_specify'] === true) {
                     if (isset($CallbackDataExplode[1])) {
-                        if (in_array($CallbackDataExplode[1], Config::getSupportParam('obfs')) && Config::get('protocol_specify') === true) {
+                        if (in_array($CallbackDataExplode[1], Config::getSupportParam('obfs')) && $_ENV['protocol_specify'] === true) {
                             $temp = $user->setObfs($CallbackDataExplode[1]);
                             if ($temp['ok'] === true) {
                                 $text = '您当前的协议为：' . $user->obfs . PHP_EOL . PHP_EOL . $temp['msg'];
@@ -652,7 +652,7 @@ class UserCallback
                 // Telegram 账户解绑
                 $Data['AllowEditMessage'] = false;
                 $text = '发送 **/unbind 账户邮箱** 进行解绑.';
-                if (Config::get('unbind_kick_member') === true) {
+                if ($_ENV['unbind_kick_member'] === true) {
                     $text .= PHP_EOL . PHP_EOL . '根据管理员的设定，您解绑账户将会被自动移出用户群.'; 
                 }
                 $sendMessage = [
@@ -669,7 +669,7 @@ class UserCallback
                     TelegramTools::SendPost(
                         'unbanChatMember',
                         [
-                            'chat_id'   => Config::get('telegram_chatid'),
+                            'chat_id'   => $_ENV['telegram_chatid'],
                             'user_id'   => $SendUser['id'],
                         ]
                     );
@@ -990,9 +990,9 @@ class UserCallback
         $text = [
             '<strong>分享计划，您每邀请 1 位用户注册：</strong>',
             '',
-            '- 您会获得 <strong>' . Config::get('invite_gift') . 'G</strong> 流量奖励.',
-            '- 对方将获得 <strong>' . Config::get('invite_get_money') . ' 元</strong> 奖励作为初始资金.',
-            '- 对方充值时您还会获得对方充值金额的 <strong>' . Config::get('code_payback') . '%</strong> 的返利.',
+            '- 您会获得 <strong>' . $_ENV['invite_gift'] . 'G</strong> 流量奖励.',
+            '- 对方将获得 <strong>' . $_ENV['invite_get_money'] . ' 元</strong> 奖励作为初始资金.',
+            '- 对方充值时您还会获得对方充值金额的 <strong>' . $_ENV['code_payback'] . '%</strong> 的返利.',
             '',
             '已获得返利：' . $paybacks_sum . ' 元.',
         ];
@@ -1034,7 +1034,7 @@ class UserCallback
                     $user->addInviteCode();
                     $code = InviteCode::where('user_id', $user->id)->first();
                 }
-                $inviteUrl = Config::get('baseUrl') . '/auth/register?code=' . $code->code;
+                $inviteUrl = $_ENV['baseUrl'] . '/auth/register?code=' . $code->code;
                 $text = '<a href="' . $inviteUrl . '">' . $inviteUrl . '</a>';
                 $sendMessage = [
                     'text'                      => $text,
@@ -1087,7 +1087,23 @@ class UserCallback
             ]
         );
         // 回送信息
-        $temp = self::getUserIndexKeyboard($user);
+        if ($Data['ChatID'] > 0) {
+            $temp = self::getUserIndexKeyboard($user);
+        } else {
+            $temp['text'] = Reply::getUserTitle($user);
+            $temp['text'] .= PHP_EOL . PHP_EOL;
+            $temp['text'] .= Reply::getUserTrafficInfo($user);
+            $temp['text'] .= PHP_EOL;
+            $temp['text'] .= '流量重置时间：' . $user->valid_use_loop();
+            $temp['keyboard'] = [
+                [
+                    [
+                        'text'          => (!$user->isAbleToCheckin() ? '已签到' : '签到'),
+                        'callback_data' => 'user.checkin.' . $SendUser['id']
+                    ]
+                ],
+            ];
+        }
         $sendMessage = [
             'text'                  => $temp['text'] . PHP_EOL . PHP_EOL . $checkin['msg'],
             'chat_id'               => $Data['ChatID'],

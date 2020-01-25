@@ -40,17 +40,17 @@ class MyCommand extends Command
 
         if ($ChatID < 0) {
             // 群组
-            if (Config::get('enable_delete_user_cmd') === true) {
+            if ($_ENV['enable_delete_user_cmd'] === true) {
                 TelegramTools::DeleteMessage([
                     'chatid'      => $ChatID,
                     'messageid'   => $MessageID,
                 ]);
             }
-            if (Config::get('telegram_group_quiet') === true) {
+            if ($_ENV['telegram_group_quiet'] === true) {
                 // 群组中不回应
                 return;
             }
-            if ($ChatID != Config::get('telegram_chatid')) {
+            if ($ChatID != $_ENV['telegram_chatid']) {
                 // 非我方群组
                 return;
             }
@@ -71,7 +71,7 @@ class MyCommand extends Command
             // 回送信息
             $response = $this->replyWithMessage(
                 [
-                    'text'                  => Config::get('user_not_bind_reply'),
+                    'text'                  => $_ENV['user_not_bind_reply'],
                     'reply_to_message_id'   => $MessageID,
                     'parse_mode'            => 'Markdown',
                 ]

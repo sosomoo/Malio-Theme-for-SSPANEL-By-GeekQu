@@ -32,7 +32,7 @@ class TelegramTools
      */
     public static function SendPost($Method, $Params)
     {
-        $URL = 'https://api.telegram.org/bot' . Config::get('telegram_token') . '/' . $Method;
+        $URL = 'https://api.telegram.org/bot' . $_ENV['telegram_token'] . '/' . $Method;
         $POSTData = json_encode($Params);
         $C = curl_init();
         curl_setopt($C, CURLOPT_URL, $URL);
@@ -53,8 +53,8 @@ class TelegramTools
     {
         return [
             'id'    => [],
-            'email' => Config::get('remark_user_search_email'),
-            'port'  => Config::get('remark_user_search_port'),
+            'email' => $_ENV['remark_user_search_email'],
+            'port'  => $_ENV['remark_user_search_port'],
         ];
     }
 
@@ -66,24 +66,24 @@ class TelegramTools
     public static function getUserActionOption()
     {
         return [
-            'is_admin'          => Config::get('remark_user_option_is_admin'),
-            'enable'            => Config::get('remark_user_option_enable'),
-            'money'             => Config::get('remark_user_option_money'),
-            'port'              => Config::get('remark_user_option_port'),
-            'transfer_enable'   => Config::get('remark_user_option_transfer_enable'),
-            'passwd'            => Config::get('remark_user_option_passwd'),
-            'method'            => Config::get('remark_user_option_method'),
-            'protocol'          => Config::get('remark_user_option_protocol'),
-            'protocol_param'    => Config::get('remark_user_option_protocol_param'),
-            'obfs'              => Config::get('remark_user_option_obfs'),
-            'obfs_param'        => Config::get('remark_user_option_obfs_param'),
-            'invite_num'        => Config::get('remark_user_option_invite_num'),
-            'node_group'        => Config::get('remark_user_option_node_group'),
-            'class'             => Config::get('remark_user_option_class'),
-            'class_expire'      => Config::get('remark_user_option_class_expire'),
-            'expire_in'         => Config::get('remark_user_option_expire_in'),
-            'node_speedlimit'   => Config::get('remark_user_option_node_speedlimit'),
-            'node_connector'    => Config::get('remark_user_option_node_connector'),
+            'is_admin'          => $_ENV['remark_user_option_is_admin'],
+            'enable'            => $_ENV['remark_user_option_enable'],
+            'money'             => $_ENV['remark_user_option_money'],
+            'port'              => $_ENV['remark_user_option_port'],
+            'transfer_enable'   => $_ENV['remark_user_option_transfer_enable'],
+            'passwd'            => $_ENV['remark_user_option_passwd'],
+            'method'            => $_ENV['remark_user_option_method'],
+            'protocol'          => $_ENV['remark_user_option_protocol'],
+            'protocol_param'    => $_ENV['remark_user_option_protocol_param'],
+            'obfs'              => $_ENV['remark_user_option_obfs'],
+            'obfs_param'        => $_ENV['remark_user_option_obfs_param'],
+            'invite_num'        => $_ENV['remark_user_option_invite_num'],
+            'node_group'        => $_ENV['remark_user_option_node_group'],
+            'class'             => $_ENV['remark_user_option_class'],
+            'class_expire'      => $_ENV['remark_user_option_class_expire'],
+            'expire_in'         => $_ENV['remark_user_option_expire_in'],
+            'node_speedlimit'   => $_ENV['remark_user_option_node_speedlimit'],
+            'node_connector'    => $_ENV['remark_user_option_node_connector'],
         ];
     }
 
@@ -359,7 +359,7 @@ class TelegramTools
      */
     public static function getUserEmail($email, $ChatID)
     {
-        if (Config::get('enable_user_email_group_show') === true || $ChatID > 0) {
+        if ($_ENV['enable_user_email_group_show'] === true || $ChatID > 0) {
             return $email;
         }
         $a = strpos($email, '@');
@@ -546,7 +546,7 @@ class TelegramTools
         if (isset($Params['executetime']) && is_numeric($Params['executetime'])) {
             $executetime = $Params['executetime'];
         } else {
-            $executetime = Config::get('delete_message_time');
+            $executetime = $_ENV['delete_message_time'];
         }
         if ($executetime >= 1) {
             $executetime += time();

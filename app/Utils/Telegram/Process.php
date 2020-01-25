@@ -12,7 +12,7 @@ class Process
     public static function index()
     {
         try {
-            $bot = new Api(Config::get('telegram_token'));
+            $bot = new Api($_ENV['telegram_token']);
             $bot->addCommands(
                 [
                     Commands\MyCommand::class,

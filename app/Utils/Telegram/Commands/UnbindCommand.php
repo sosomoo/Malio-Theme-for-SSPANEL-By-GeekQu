@@ -3,7 +3,7 @@
 namespace App\Utils\Telegram\Commands;
 
 use App\Models\User;
-use App\Services\Config;
+use App\Utils\Telegram\TelegramTools;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -55,7 +55,7 @@ class UnbindCommand extends Command
                 // 回送信息
                 $this->replyWithMessage(
                     [
-                        'text'       => Config::get('user_not_bind_reply'),
+                        'text'       => $_ENV['user_not_bind_reply'],
                         'parse_mode' => 'Markdown',
                     ]
                 );
@@ -90,13 +90,20 @@ class UnbindCommand extends Command
                     'parse_mode'            => 'Markdown',
                 ]
             );
+        } else {
+            if ($_ENV['enable_delete_user_cmd'] === true) {
+                TelegramTools::DeleteMessage([
+                    'chatid'      => $ChatID,
+                    'messageid'   => $MessageID,
+                ]);
+            }
         }
     }
 
     public function sendtext()
     {
         $text = '发送 **/unbind 账户邮箱** 进行解绑.';
-        if (Config::get('unbind_kick_member') === true) {
+        if ($_ENV['unbind_kick_member'] === true) {
             $text .= PHP_EOL . PHP_EOL . '根据管理员的设定，您解绑账户将会被自动移出用户群.'; 
         }
         return $text;

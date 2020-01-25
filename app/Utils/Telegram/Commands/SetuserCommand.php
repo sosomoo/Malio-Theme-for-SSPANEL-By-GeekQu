@@ -44,21 +44,21 @@ class SetuserCommand extends Command
             'username' => $Message->getFrom()->getUsername(),
         ];
 
-        if (Config::get('enable_delete_user_cmd') === true) {
+        if ($_ENV['enable_delete_user_cmd'] === true) {
             TelegramTools::DeleteMessage([
                 'chatid'      => $ChatID,
                 'messageid'   => $Message->getMessageId(),
             ]);
         }
 
-        if (!in_array($SendUser['id'], Config::get('telegram_admins'))) {
+        if (!in_array($SendUser['id'], $_ENV['telegram_admins'])) {
             $AdminUser = User::where('is_admin', 1)->where('telegram_id', $SendUser['id'])->first();
             if ($AdminUser == null) {
                 // 非管理员回复消息
-                if (Config::get('enable_not_admin_reply') === true && Config::get('not_admin_reply_msg') != '') {
+                if ($_ENV['enable_not_admin_reply'] === true && $_ENV['not_admin_reply_msg'] != '') {
                     $response = $this->replyWithMessage(
                         [
-                            'text'                  => Config::get('not_admin_reply_msg'),
+                            'text'                  => $_ENV['not_admin_reply_msg'],
                             'parse_mode'            => 'HTML',
                             'reply_to_message_id'   => $MessageID,
                         ]
@@ -96,7 +96,7 @@ class SetuserCommand extends Command
             if ($User == null) {
                 $response = $this->replyWithMessage(
                     [
-                        'text'                  => Config::get('no_user_found'),
+                        'text'                  => $_ENV['no_user_found'],
                         'parse_mode'            => 'HTML',
                         'reply_to_message_id'   => $MessageID,
                     ]
@@ -105,7 +105,7 @@ class SetuserCommand extends Command
                 TelegramTools::DeleteMessage([
                     'chatid'      => $ChatID,
                     'messageid'   => $response->getMessageId(),
-                    'executetime' => (time() + Config::get('delete_admin_message_time'))
+                    'executetime' => (time() + $_ENV['delete_admin_message_time'])
                 ]);
                 return;
             }
@@ -122,7 +122,7 @@ class SetuserCommand extends Command
                 TelegramTools::DeleteMessage([
                     'chatid'      => $ChatID,
                     'messageid'   => $response->getMessageId(),
-                    'executetime' => (time() + Config::get('delete_admin_message_time'))
+                    'executetime' => (time() + $_ENV['delete_admin_message_time'])
                 ]);
                 // 储存 Bot 所发的 Message ID
                 TelegramTools::FindUserSave([
@@ -160,7 +160,7 @@ class SetuserCommand extends Command
             TelegramTools::DeleteMessage([
                 'chatid'      => $ChatID,
                 'messageid'   => $response->getMessageId(),
-                'executetime' => (time() + Config::get('delete_admin_message_time'))
+                'executetime' => (time() + $_ENV['delete_admin_message_time'])
             ]);
             return;
         }
@@ -184,7 +184,7 @@ class SetuserCommand extends Command
                 TelegramTools::DeleteMessage([
                     'chatid'      => $ChatID,
                     'messageid'   => $response->getMessageId(),
-                    'executetime' => (time() + Config::get('delete_admin_message_time'))
+                    'executetime' => (time() + $_ENV['delete_admin_message_time'])
                 ]);
                 return;
             }
@@ -208,7 +208,7 @@ class SetuserCommand extends Command
                 TelegramTools::DeleteMessage([
                     'chatid'      => $ChatID,
                     'messageid'   => $response->getMessageId(),
-                    'executetime' => (time() + Config::get('delete_admin_message_time'))
+                    'executetime' => (time() + $_ENV['delete_admin_message_time'])
                 ]);
                 return;
             }
@@ -239,7 +239,7 @@ class SetuserCommand extends Command
 
                 $response = $this->replyWithMessage(
                     [
-                        'text'                  => Config::get('no_user_found'),
+                        'text'                  => $_ENV['no_user_found'],
                         'parse_mode'            => 'HTML',
                         'reply_to_message_id'   => $MessageID,
                     ]
@@ -248,7 +248,7 @@ class SetuserCommand extends Command
                 TelegramTools::DeleteMessage([
                     'chatid'      => $ChatID,
                     'messageid'   => $response->getMessageId(),
-                    'executetime' => (time() + Config::get('delete_admin_message_time'))
+                    'executetime' => (time() + $_ENV['delete_admin_message_time'])
                 ]);
                 return;
             }
@@ -261,7 +261,7 @@ class SetuserCommand extends Command
         if ($useOptionMethod == '') {
             $response = $this->replyWithMessage(
                 [
-                    'text'                  => Config::get('data_method_not_found'),
+                    'text'                  => $_ENV['data_method_not_found'],
                     'parse_mode'            => 'HTML',
                     'reply_to_message_id'   => $MessageID,
                 ]
@@ -270,7 +270,7 @@ class SetuserCommand extends Command
             TelegramTools::DeleteMessage([
                 'chatid'      => $ChatID,
                 'messageid'   => $response->getMessageId(),
-                'executetime' => (time() + Config::get('delete_admin_message_time'))
+                'executetime' => (time() + $_ENV['delete_admin_message_time'])
             ]);
             return;
         }
@@ -288,7 +288,7 @@ class SetuserCommand extends Command
         TelegramTools::DeleteMessage([
             'chatid'      => $ChatID,
             'messageid'   => $response->getMessageId(),
-            'executetime' => (time() + Config::get('delete_admin_message_time'))
+            'executetime' => (time() + $_ENV['delete_admin_message_time'])
         ]);
         return;
     }

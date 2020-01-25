@@ -2,7 +2,7 @@
 
 namespace App\Utils\Telegram\Commands;
 
-use App\Utils\Telegram\{TelegramTools, Reply};
+use App\Utils\Telegram\{TelegramTools};
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -28,6 +28,9 @@ class MenuCommand extends Command
     {
         $Update  = $this->getUpdate();
         $Message = $Update->getMessage();
+
+        // 消息 ID
+        $MessageID = $Message->getMessageId();
 
         // 消息会话 ID
         $ChatID = $Message->getChat()->getId();
@@ -63,6 +66,13 @@ class MenuCommand extends Command
                     ),
                 ]
             );
+        } else {
+            if ($_ENV['enable_delete_user_cmd'] === true) {
+                TelegramTools::DeleteMessage([
+                    'chatid'      => $ChatID,
+                    'messageid'   => $MessageID,
+                ]);
+            }
         }
     }
 }

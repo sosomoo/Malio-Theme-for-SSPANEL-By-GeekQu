@@ -64,6 +64,12 @@
                             href="https://github.com/xcxnig">Miku</a>，<a href="https://github.com/ZJY2003">Tony Zou</a>，<a
                             href="https://github.com/laurieryayoi">Nymph</a></td>
             </tr>
+
+            <tr>
+                <td>基于 UIM 修改版</td>
+                <td>GeekQu，Rico</td>
+            </tr>
+
             <tr>
                 <td>监督</td>
                 <td><a href="https://github.com/Talocan">Anankke</a></td>
@@ -102,7 +108,7 @@
 
     <!-- 版权底部 -->
     <footer id="footer">
-        <p class="copyright">&copy;2015-2018 {$config["appName"]}</p>
+        <p class="copyright">&copy;2015-2018 v20200125 {$config["appName"]}</p>
     </footer>
     <!-- 版权结束 -->
 </div>
