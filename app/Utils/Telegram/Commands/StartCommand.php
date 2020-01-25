@@ -84,7 +84,7 @@ class StartCommand extends Command
         } else {
             // 群组
 
-            if (Config::get('telegram_group_quiet') === true) {
+            if ($_ENV['telegram_group_quiet'] === true) {
                 // 群组中不回应
                 return;
             }

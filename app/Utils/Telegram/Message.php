@@ -61,9 +61,9 @@ class Message
             'name'     => $NewChatMember->getFirstName() . ' ' . $NewChatMember->getLastName(),
             'username' => $NewChatMember->getUsername(),
         ];
-        if ($NewChatMember->getUsername() == Config::get('telegram_bot')) {
+        if ($NewChatMember->getUsername() == $_ENV['telegram_bot']) {
             // 机器人加入新群组
-            if (Config::get('allow_to_join_new_groups') !== true && !in_array($ChatID, Config::get('group_id_allowed_to_join'))) {
+            if ($_ENV['allow_to_join_new_groups'] !== true && !in_array($ChatID, $_ENV['group_id_allowed_to_join'])) {
                 // 退群
                 $bot->sendMessage(
                     [
@@ -79,8 +79,8 @@ class Message
                         'user_id'   => $Member['id'],
                     ]
                 );
-                if (count(Config::get('telegram_admins')) >= 1) {
-                    foreach (Config::get('telegram_admins') as $id) {
+                if (count($_ENV['telegram_admins']) >= 1) {
+                    foreach ($_ENV['telegram_admins'] as $id) {
                         $bot->sendMessage(
                             [
                                 'text'      => '由于您的设定，Bot 退出了一个群组.' . PHP_EOL . PHP_EOL . '群组名称：' . $Message->getChat()->getTitle(),
@@ -103,9 +103,9 @@ class Message
             $NewUser = TelegramTools::getUser($Member['id']);
             $deNewChatMember = json_decode($NewChatMember, true);
             if (
-                Config::get('group_bound_user') === true
+                $_ENV['group_bound_user'] === true
                 &&
-                $ChatID == Config::get('telegram_chatid')
+                $ChatID == $_ENV['telegram_chatid']
                 &&
                 $NewUser == null
                 &&
@@ -127,7 +127,7 @@ class Message
                 );
                 return;
             }
-            if (Config::get('enable_welcome_message') === true) {
+            if ($_ENV['enable_welcome_message'] === true) {
                 $text = ($NewUser->class >= 1 ? '欢迎 VIP' . $NewUser->class . ' 用户 ' . $Member['name'] . '回到组织.' : '欢迎 ' . $Member['name']);
                 $bot->sendMessage(
                     [

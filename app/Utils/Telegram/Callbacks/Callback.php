@@ -2,8 +2,7 @@
 
 namespace App\Utils\Telegram\Callbacks;
 
-use App\Services\Config;
-use App\Utils\Telegram\{Reply, TelegramTools};
+use App\Utils\Telegram\TelegramTools;
 
 class Callback
 {
@@ -31,7 +30,7 @@ class Callback
             'AllowEditMessage'  => $AllowEditMessage,                               // 消息是否可编辑
         ];
 
-        if ($Data['ChatID'] < 0 && Config::get('telegram_group_quiet') === true) {
+        if ($Data['ChatID'] < 0 && $_ENV['telegram_group_quiet'] === true) {
             // 群组中不回应
             return;
         }
@@ -84,7 +83,7 @@ class Callback
             case 'general.pricing':
                 // 产品介绍
                 $sendMessage = [
-                    'text'                      => Config::get('telegram_general_pricing'),
+                    'text'                      => $_ENV['telegram_general_pricing'],
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
                     'reply_markup'              => json_encode(
@@ -97,7 +96,7 @@ class Callback
             case 'general.terms':
                 // 服务条款
                 $sendMessage = [
-                    'text'                      => Config::get('telegram_general_terms'),
+                    'text'                      => $_ENV['telegram_general_terms'],
                     'disable_web_page_preview'  => false,
                     'reply_to_message_id'       => null,
                     'reply_markup'              => json_encode(
