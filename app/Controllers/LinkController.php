@@ -314,6 +314,9 @@ class LinkController extends BaseController
                     'suffix'   => 'txt',
                     'class'    => 'Lists'
                 ];
+                if ($value !== null) {
+                    $return['class'] = 'Kitsunebi';
+                }
                 break;
             case 'surfboard':
                 $return = [
@@ -343,6 +346,9 @@ class LinkController extends BaseController
                     'suffix'   => 'txt',
                     'class'    => 'Lists'
                 ];
+                if ($value !== null) {
+                    $return['class'] = 'QuantumultX';
+                }
                 break;
             case 'shadowrocket':
                 $return = [
@@ -350,6 +356,9 @@ class LinkController extends BaseController
                     'suffix'   => 'txt',
                     'class'    => 'Lists'
                 ];
+                if ($value !== null) {
+                    $return['class'] = 'Shadowrocket';
+                }
                 break;
             case 'clash_provider':
                 $return = [
@@ -554,6 +563,7 @@ class LinkController extends BaseController
                 $return = AppURI::getClashURI($item, true);
                 break;
             case 'v2rayn':
+                $item['ps'] = $item['remark'];
                 $return = 'vmess://' . base64_encode(json_encode($item, 320));
                 break;
             case 'kitsunebi':
@@ -678,8 +688,9 @@ class LinkController extends BaseController
         }
         foreach ($info_array as $remark) {
             $Extend_ss['remark']    = $remark;
+            $Extend_ssr['remark']   = $remark;
             $Extend_VMess['remark'] = $remark;
-            if (in_array($list, ['kitsunebi', 'quantumult'])) {
+            if (in_array($list, ['kitsunebi', 'quantumult', 'v2rayn'])) {
                 $out = self::getListItem($Extend_VMess, $list);
             } elseif ($list == 'ssr') {
                 $out = self::getListItem($Extend_ssr, $list);
