@@ -29,6 +29,9 @@ class MenuCommand extends Command
         $Update  = $this->getUpdate();
         $Message = $Update->getMessage();
 
+        // 消息 ID
+        $MessageID = $Message->getMessageId();
+
         // 消息会话 ID
         $ChatID = $Message->getChat()->getId();
 
@@ -63,6 +66,13 @@ class MenuCommand extends Command
                     ),
                 ]
             );
+        } else {
+            if ($_ENV['enable_delete_user_cmd'] === true) {
+                TelegramTools::DeleteMessage([
+                    'chatid'      => $ChatID,
+                    'messageid'   => $MessageID,
+                ]);
+            }
         }
     }
 }

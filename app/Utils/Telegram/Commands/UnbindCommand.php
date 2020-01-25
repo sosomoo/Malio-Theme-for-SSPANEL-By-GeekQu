@@ -4,6 +4,7 @@ namespace App\Utils\Telegram\Commands;
 
 use App\Models\User;
 use App\Services\Config;
+use App\Utils\Telegram\TelegramTools;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 
@@ -90,6 +91,13 @@ class UnbindCommand extends Command
                     'parse_mode'            => 'Markdown',
                 ]
             );
+        } else {
+            if (Config::get('enable_delete_user_cmd') === true) {
+                TelegramTools::DeleteMessage([
+                    'chatid'      => $ChatID,
+                    'messageid'   => $MessageID,
+                ]);
+            }
         }
     }
 
