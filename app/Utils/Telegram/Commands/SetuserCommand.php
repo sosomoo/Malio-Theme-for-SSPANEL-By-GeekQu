@@ -105,7 +105,7 @@ class SetuserCommand extends Command
                 TelegramTools::DeleteMessage([
                     'chatid'      => $ChatID,
                     'messageid'   => $response->getMessageId(),
-                    'executetime' => (time() + $_ENV['delete_admin_message_time'])
+                    'executetime' => $_ENV['delete_admin_message_time']
                 ]);
                 return;
             }
@@ -122,7 +122,7 @@ class SetuserCommand extends Command
                 TelegramTools::DeleteMessage([
                     'chatid'      => $ChatID,
                     'messageid'   => $response->getMessageId(),
-                    'executetime' => (time() + $_ENV['delete_admin_message_time'])
+                    'executetime' => $_ENV['delete_admin_message_time']
                 ]);
                 // 储存 Bot 所发的 Message ID
                 TelegramTools::FindUserSave([
@@ -160,7 +160,7 @@ class SetuserCommand extends Command
             TelegramTools::DeleteMessage([
                 'chatid'      => $ChatID,
                 'messageid'   => $response->getMessageId(),
-                'executetime' => (time() + $_ENV['delete_admin_message_time'])
+                'executetime' => $_ENV['delete_admin_message_time']
             ]);
             return;
         }
@@ -184,7 +184,7 @@ class SetuserCommand extends Command
                 TelegramTools::DeleteMessage([
                     'chatid'      => $ChatID,
                     'messageid'   => $response->getMessageId(),
-                    'executetime' => (time() + $_ENV['delete_admin_message_time'])
+                    'executetime' => $_ENV['delete_admin_message_time']
                 ]);
                 return;
             }
@@ -208,7 +208,7 @@ class SetuserCommand extends Command
                 TelegramTools::DeleteMessage([
                     'chatid'      => $ChatID,
                     'messageid'   => $response->getMessageId(),
-                    'executetime' => (time() + $_ENV['delete_admin_message_time'])
+                    'executetime' => $_ENV['delete_admin_message_time']
                 ]);
                 return;
             }
@@ -248,7 +248,7 @@ class SetuserCommand extends Command
                 TelegramTools::DeleteMessage([
                     'chatid'      => $ChatID,
                     'messageid'   => $response->getMessageId(),
-                    'executetime' => (time() + $_ENV['delete_admin_message_time'])
+                    'executetime' => $_ENV['delete_admin_message_time']
                 ]);
                 return;
             }
@@ -270,7 +270,7 @@ class SetuserCommand extends Command
             TelegramTools::DeleteMessage([
                 'chatid'      => $ChatID,
                 'messageid'   => $response->getMessageId(),
-                'executetime' => (time() + $_ENV['delete_admin_message_time'])
+                'executetime' => $_ENV['delete_admin_message_time']
             ]);
             return;
         }
@@ -288,7 +288,7 @@ class SetuserCommand extends Command
         TelegramTools::DeleteMessage([
             'chatid'      => $ChatID,
             'messageid'   => $response->getMessageId(),
-            'executetime' => (time() + $_ENV['delete_admin_message_time'])
+            'executetime' => $_ENV['delete_admin_message_time']
         ]);
         return;
     }

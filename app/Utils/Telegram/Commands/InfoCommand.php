@@ -109,7 +109,7 @@ class InfoCommand extends Command
             TelegramTools::DeleteMessage([
                 'chatid'      => $ChatID,
                 'messageid'   => $response->getMessageId(),
-                'executetime' => (time() + $_ENV['delete_admin_message_time'])
+                'executetime' => $_ENV['delete_admin_message_time']
             ]);
         }
     }

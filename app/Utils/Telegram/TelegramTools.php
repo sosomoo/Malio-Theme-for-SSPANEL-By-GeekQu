@@ -548,7 +548,7 @@ class TelegramTools
         } else {
             $executetime = $_ENV['delete_message_time'];
         }
-        if ($executetime >= 1) {
+        if ($executetime != 0) {
             $executetime += time();
             $task = new TelegramTasks();
             $task->type          = 1;
