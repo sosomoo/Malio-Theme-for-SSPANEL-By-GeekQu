@@ -83,13 +83,14 @@ class MyCommand extends Command
             } else {
                 // 群组
                 $response = self::Group($User, $SendUser, $ChatID, $Message, $MessageID);
+                // 消息删除任务
+                TelegramTools::DeleteMessage([
+                    'chatid'      => $ChatID,
+                    'messageid'   => $response->getMessageId(),
+                ]);
             }
         }
-        // 消息删除任务
-        TelegramTools::DeleteMessage([
-            'chatid'      => $ChatID,
-            'messageid'   => $response->getMessageId(),
-        ]);
+
         return $response;
     }
 
