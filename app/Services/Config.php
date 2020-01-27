@@ -65,7 +65,8 @@ class Config
             'auto_detect_ban_time' => self::get('auto_detect_ban_time'),
             'auto_detect_ban' => self::get('auto_detect_ban'),
             'subscribe_client' => self::get('subscribe_client'),
-            'enable_sub_cache' => self::get('enable_sub_cache')
+            'enable_sub_cache' => self::get('enable_sub_cache'),
+            'use_new_telegram_bot' => self::get('use_new_telegram_bot'),
         ];
     }
 
