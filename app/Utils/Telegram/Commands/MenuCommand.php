@@ -49,6 +49,16 @@ class MenuCommand extends Command
             ];
 
             $user = TelegramTools::getUser($SendUser['id']);
+            if ($user == null) {
+                // 回送信息
+                $this->replyWithMessage(
+                    [
+                        'text'       => $_ENV['user_not_bind_reply'],
+                        'parse_mode' => 'Markdown',
+                    ]
+                );
+                return;
+            }
 
             $reply = \App\Utils\Telegram\Callbacks\UserCallback::getUserIndexKeyboard($user);
 
