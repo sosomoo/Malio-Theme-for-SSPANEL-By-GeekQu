@@ -667,7 +667,7 @@
     qrcode1.clear();
     qrcode1.makeCode(ga_qrcode);
 
-    {if $config['enable_telegram'] == 'true'}
+    {if $config['enable_telegram'] === true}
 
     var telegram_qrcode = 'mod://bind/{$bind_token}';
 

@@ -262,7 +262,7 @@ table tr td:first-child {
                                     <br/>
                                     <strong>查看所有公告请<a href="/user/announcement">点击这里</a></strong>
                                 {/if}
-                                {if $config["enable_admin_contact"] == 'true'}
+                                {if $config["enable_admin_contact"] === true}
                                     <p class="card-heading">管理员联系方式</p>
                                     {if $config["admin_contact1"]!=null}
                                         <p>{$config["admin_contact1"]}</p>
