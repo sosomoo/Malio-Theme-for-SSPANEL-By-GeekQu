@@ -662,8 +662,9 @@ class LinkController extends BaseController
             'address'   => $baseUrl,
             'port'      => 10086,
             'method'    => 'chacha20-ietf-poly1305',
-            'passwd'    => 'WWW.GOV.CN',
-            'obfs'      => 'plain'
+            'passwd'    => $user->passwd,
+            'obfs'      => 'plain',
+            'group'     => $_ENV['appName']
         ];
         $Extend_ssr = [
             'remark'    => '',
@@ -671,15 +672,17 @@ class LinkController extends BaseController
             'address'   => $baseUrl,
             'port'      => 10086,
             'method'    => 'chacha20-ietf',
-            'passwd'    => 'WWW.GOV.CN',
-            'obfs'      => 'plain'
+            'passwd'    => $user->passwd,
+            'protocol'  => 'origin',
+            'obfs'      => 'plain',
+            'group'     => $_ENV['appName']
         ];
         $Extend_VMess = [
             'remark'    => '',
             'type'      => 'vmess',
             'add'       => $baseUrl,
             'port'      => 10086,
-            'id'        => '2661b5f8-8062-34a5-9371-a44313a75b6b',
+            'id'        => $user->getUuid(),
             'alterId'   => 0,
             'net'       => 'tcp'
         ];
