@@ -335,30 +335,21 @@ class UserController extends AdminController
         $user->forbidden_ip = str_replace(PHP_EOL, ',', $request->getParam('forbidden_ip'));
         $user->forbidden_port = str_replace(PHP_EOL, ',', $request->getParam('forbidden_port'));
 
-        $detect_ban = (int)$request->getParam('detect_ban');
-        // 手动解封
-        if ($user->detect_ban == 1 && $detect_ban == 0) {
-            $user->detect_ban = 0;
-        }
         // 手动封禁
-        if ($user->detect_ban == 0 && $detect_ban == 1) {
-            if ((int)$request->getParam('ban_time') == 0) {
-                $rs['ret'] = 0;
-                $rs['msg'] = "修改失败，封禁时长不能为 0";
-                return $response->getBody()->write(json_encode($rs));
-            }
-            $user->detect_ban = 1;
-            $end_time = date('Y-m-d H:i:s');
-            $user->last_detect_ban_time = $end_time;
-            $DetectBanLog = new DetectBanLog();
-            $DetectBanLog->user_name = $user->user_name;
-            $DetectBanLog->user_id = $user->id;
-            $DetectBanLog->email = $user->email;
-            $DetectBanLog->detect_number = '0';
-            $DetectBanLog->ban_time = (int)$request->getParam('ban_time');
-            $DetectBanLog->start_time = strtotime('1989-06-04 00:05:00');
-            $DetectBanLog->end_time = strtotime($end_time);
-            $DetectBanLog->all_detect_number = $user->all_detect_number;
+        $ban_time = (int) $request->getParam('ban_time');
+        if ($ban_time > 0) {
+            $user->enable                       = 0;
+            $end_time                           = date('Y-m-d H:i:s');
+            $user->last_detect_ban_time         = $end_time;
+            $DetectBanLog                       = new DetectBanLog();
+            $DetectBanLog->user_name            = $user->user_name;
+            $DetectBanLog->user_id              = $user->id;
+            $DetectBanLog->email                = $user->email;
+            $DetectBanLog->detect_number        = '0';
+            $DetectBanLog->ban_time             = $ban_time;
+            $DetectBanLog->start_time           = strtotime('1989-06-04 00:05:00');
+            $DetectBanLog->end_time             = strtotime($end_time);
+            $DetectBanLog->all_detect_number    = $user->all_detect_number;
             $DetectBanLog->save();
         }
 
