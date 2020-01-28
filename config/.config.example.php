@@ -169,8 +169,8 @@ $_ENV['not_admin_reply_msg']        = '!';          //非管理员操作管理�
 $_ENV['no_user_found']              = '!';          //管理员操作时，找不到用户的回复
 $_ENV['no_search_value_provided']   = '!';          //管理员操作时，没有提供用户搜索值的回复
 $_ENV['data_method_not_found']      = '!';          //管理员操作时，修改数据的字段没有找到的回复
-$_ENV['delete_message_time']        = 180;          //在以下时间后删除用户命令触发的 bot 回复，单位：秒，删除时间可能会因为定时任务而有差异
-$_ENV['delete_admin_message_time']  = 86400;        //在以下时间后删除管理命令触发的 bot 回复，单位：秒，删除时间可能会因为定时任务而有差异
+$_ENV['delete_message_time']        = 180;          //在以下时间后删除用户命令触发的 bot 回复，单位：秒，删除时间可能会因为定时任务而有差异，为 0 代表不开启此功能
+$_ENV['delete_admin_message_time']  = 86400;        //在以下时间后删除管理命令触发的 bot 回复，单位：秒，删除时间可能会因为定时任务而有差异，为 0 代表不开启此功能
 $_ENV['enable_delete_user_cmd']     = false;        //自动删除群组中用户发送的命令，使用 delete_message_time 配置的时间，删除时间可能会因为定时任务而有差异
 
 $_ENV['remark_user_search_email']               = ['邮箱'];                     //用户搜索字段 email 的别名，可多个，格式为 PHP 数组

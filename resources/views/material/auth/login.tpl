@@ -69,7 +69,7 @@
                 </div>
                 <div class="auth-bottom auth-row">
                     <div class="tgauth">
-                        {if $config['enable_telegram'] == 'true'}
+                        {if $config['enable_telegram'] === true}
                             <span>Telegram</span>
                             <button class="btn" id="calltgauth"><i class="icon icon-lg">near_me</i></button>
                             <span>快捷登录</span>
@@ -222,7 +222,7 @@
     })
 </script>
 
-{if $config['enable_telegram'] == 'true'}
+{if $config['enable_telegram'] === true}
     <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs@gh-pages/qrcode.min.js"></script>
     <script>
         var telegram_qrcode = 'mod://login/{$login_token}';
@@ -322,7 +322,7 @@
         }, handlerEmbed);
     </script>
 {/if}
-{if $config['enable_telegram'] == 'true'}
+{if $config['enable_telegram'] === true}
     <script>
         $(document).ready(function () {
             var el = document.createElement('script');

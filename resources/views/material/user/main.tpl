@@ -94,7 +94,7 @@
                         </li>
                     {/if}
 
-                        {if $config['enable_ticket']=='true'}
+                        {if $config['enable_ticket']===true}
                             <li>
                                 <a href="/user/ticket"><i class="icon icon-lg">question_answer</i>&nbsp;工单系统</a>
                             </li>
@@ -149,7 +149,7 @@
 
                         <li><a href="/user/bought"><i class="icon icon-lg">shopping_cart</i>&nbsp;购买记录</a></li>
 
-                        {if $config['enable_donate']=='true'}
+                        {if $config['enable_donate']===true}
                             <li>
                                 <a href="/user/donate"><i class="icon icon-lg">attach_money</i>&nbsp;捐赠公示</a>
                             </li>
@@ -174,4 +174,4 @@
     </div>
 </nav>
 
-{if $config["enable_mylivechat"] == 'true'}{include file='mylivechat.tpl'}{/if}
+{if $config["enable_mylivechat"] === true}{include file='mylivechat.tpl'}{/if}

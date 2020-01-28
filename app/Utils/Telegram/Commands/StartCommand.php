@@ -3,7 +3,7 @@
 namespace App\Utils\Telegram\Commands;
 
 use App\Models\User;
-use App\Services\Config;
+use App\Utils\Telegram\TelegramTools;
 use App\Utils\TelegramSessionManager;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
@@ -84,6 +84,13 @@ class StartCommand extends Command
         } else {
             // 群组
 
+            if ($_ENV['enable_delete_user_cmd'] === true) {
+                TelegramTools::DeleteMessage([
+                    'chatid'      => $ChatID,
+                    'messageid'   => $Message->getMessageId(),
+                ]);
+            }
+
             if ($_ENV['telegram_group_quiet'] === true) {
                 // 群组中不回应
                 return;
@@ -92,11 +99,16 @@ class StartCommand extends Command
             // 发送 '输入中' 会话状态
             $this->replyWithChatAction(['action' => Actions::TYPING]);
             // 回送信息
-            $this->replyWithMessage(
+            $response = $this->replyWithMessage(
                 [
                     'text' => '喵喵喵.',
                 ]
             );
+            // 消息删除任务
+            TelegramTools::DeleteMessage([
+                'chatid'      => $ChatID,
+                'messageid'   => $response->getMessageId(),
+            ]);
         }
     }
 }
