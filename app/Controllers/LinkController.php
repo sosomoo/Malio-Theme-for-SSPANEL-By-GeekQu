@@ -727,8 +727,8 @@ class LinkController extends BaseController
         $items = URL::getNew_AllItems($user, $Rule);
         $All_Proxy = '';
         foreach ($items as $item) {
-            $URI = AppURI::getSurgeURI($item, $surge) . PHP_EOL;
-            if ($item !== null) $All_Proxy .= $URI;
+            $URI = AppURI::getSurgeURI($item, $surge);
+            if ($URI !== null) $All_Proxy .= $URI . PHP_EOL;
         }
         if ($source) {
             $SourceURL = trim(urldecode($opts['source']));
@@ -916,7 +916,7 @@ class LinkController extends BaseController
         $Proxys = [];
         foreach ($items as $item) {
             $Proxy = AppURI::getClashURI($item, $ssr_support);
-            if ($item !== null) {
+            if ($Proxy !== null) {
                 if (isset($opts['source']) && $opts['source'] != '') {
                     $Proxy['class'] = $item['class'];
                 }
