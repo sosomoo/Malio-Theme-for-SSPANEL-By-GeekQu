@@ -151,22 +151,6 @@ table tr td:first-child {
 
                 <div class="col-xx-12 col-sm-5">
 
-				{if $user->detect_ban==1}
-                    <div class="card">
-                        <div class="card-main">
-                            <div class="card-inner margin-bottom-no">
-                                <p class="card-heading"><i class="icon icon-md">account_circle</i>账户违规</p>
-							{if $user->user_detect_ban_number()==0}
-								<p><strong>您好，您的账户因触碰了审计规则或其他原因，目前被暂停使用</strong></p>
-							{else}
-								<p><strong>您好，您的账户因触碰了 {$user->user_detect_ban_number()} 次审计规则，目前被暂停使用</strong></p>
-							{/if}
-							    <p><strong>解除时间：{$user->relieve_time()}</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                {/if}
-
                     <div class="card">
                         <div class="card-main">
                         <div class="card-inner margin-bottom-no">
