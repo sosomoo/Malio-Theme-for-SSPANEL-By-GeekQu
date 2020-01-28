@@ -8,7 +8,7 @@ class Internationalization
 {
     public function __construct()
     {
-        $this->lang;
+        $this->lang = 'en';
     }
 
     public function detectLang($request, $response, $args)
@@ -45,13 +45,9 @@ class Internationalization
                     $lang = 'en';
                 }
 
-                if ($user->isLogin) {
-                    $user->lang = $lang;
-                    $user->save();
-                }
-                //Cookie::set([
-                //    'lang' => $lang
-                //],'1775445251');
+                Cookie::set([
+                    'lang' => $lang
+                ],'1775445251');
             }
         }
 
