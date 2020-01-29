@@ -378,6 +378,7 @@ $_ENV['db_collation'] = 'utf8_general_ci';
 $_ENV['db_prefix'] = '';
 $_ENV['muKeyList'] = [];                //多 key 列表
 $_ENV['subscribe_client'] = false;        //下载协议客户端时附带节点和订阅信息
+$_ENV['subscribe_client_url'] = '';       //使用独立的服务器提供附带节点和订阅信息的协议客户端下载，为空表示不使用
 
 $_ENV['mu_port_migration'] = false;       //为后端直接下发偏移后的端口
 $_ENV['relay_port_migration'] = false;    //为中转规则下发偏移后的端口，此项未经测试

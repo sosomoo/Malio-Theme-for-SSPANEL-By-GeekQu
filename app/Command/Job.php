@@ -32,6 +32,7 @@ use App\Utils\Telegram;
 use ArrayObject;
 use App\Models\Disconnect;
 use App\Models\GConfig;
+use App\Models\Token;
 use App\Models\UnblockIp;
 use Exception;
 use RuntimeException;
@@ -153,6 +154,8 @@ class Job
 
         // 清理订阅记录
         UserSubscribeLog::where('request_time', '<', date('Y-m-d H:i:s', time() - 86400 * (int) Config::get('subscribeLog_keep_days')))->delete();
+
+        Token::where('expire_time', '<', time())->delete();
 
         NodeInfoLog::where('log_time', '<', time() - 86400 * 3)->delete();
         NodeOnlineLog::where('log_time', '<', time() - 86400 * 3)->delete();

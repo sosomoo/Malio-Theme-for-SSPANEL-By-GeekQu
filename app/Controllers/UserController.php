@@ -37,6 +37,7 @@ use App\Models\BlockIp;
 use App\Models\UnblockIp;
 use App\Models\Payback;
 use App\Models\Relay;
+use App\Models\Token;
 use App\Models\UserSubscribeLog;
 use App\Utils\QQWry;
 use App\Utils\GA;
@@ -73,9 +74,28 @@ class UserController extends BaseController
 
         $Ann = Ann::orderBy('date', 'desc')->first();
 
+        if ($_ENV['subscribe_client_url'] != '') {
+            $getClient = new Token();
+            for ($i = 0; $i < 10; $i++) {
+                $token = $this->user->id . Tools::genRandomChar(16);
+                $Elink = Token::where('token', '=', $token)->first();
+                if ($Elink == null) {
+                    $getClient->token = $token;
+                    break;
+                }
+            }
+            $getClient->user_id     = $this->user->id;
+            $getClient->create_time = time();
+            $getClient->expire_time = time() + 10 * 60;
+            $getClient->save();
+        } else {
+            $token = '';
+        }
+
         return $this->view()
             ->assign('subInfo', LinkController::getSubinfo($this->user, 0))
             ->assign('ssr_sub_token', $ssr_sub_token)
+            ->assign('getClient', $token)
             ->assign('display_ios_class', Config::get('display_ios_class'))
             ->assign('display_ios_topup', Config::get('display_ios_topup'))
             ->assign('ios_account', Config::get('ios_account'))
@@ -1886,6 +1906,12 @@ class UserController extends BaseController
                 $content = LinkController::getSSRPcConf($this->user);
                 $client_path .= $type . '/';
                 break;
+            case 'v2rayn-win':
+                $temp_file_path .= $type . '_' . $user_token . '.zip';
+                $user_config_file_name = 'guiNConfig.json';
+                $content = LinkController::getV2RayPcNConf($this->user);
+                $client_path .= $type . '/';
+                break;
             default:
                 return 'gg';
         }
@@ -1907,6 +1933,21 @@ class UserController extends BaseController
         unlink($temp_file_path);
 
         return $newResponse;
+    }
+
+    public function getClientfromToken($request, $response, $args)
+    {
+        $token = $args['token'];
+        $Etoken = Token::where('token', '=', $token)->where('create_time', '>', time() - 60 * 10)->first();
+        if ($Etoken == null) {
+            return '下载链接已失效，请刷新页面后重新点击.';
+        }
+        $user = User::find($Etoken->user_id);
+        if ($user == null) {
+            return null;
+        }
+        $this->user = $user;
+        return self::getPcClient($request, $response, $args);
     }
 
     /**
