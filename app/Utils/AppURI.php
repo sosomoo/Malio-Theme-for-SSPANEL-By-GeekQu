@@ -308,10 +308,10 @@ class AppURI
                             : ('&obfsParam=' . $item['add'] . '&path=' . $item['path'] . '&obfs=websocket'));
                         break;
                     case 'kcp':
-                        $obfs .= 'obfsParam={"header":' . '"' . ($item['type'] == '' || $item['type'] == 'noop' ? 'none' : $item['type']) . '"' . '}&obfs=mkcp';
+                        $obfs .= 'obfsParam={"header":' . '"' . ($item['headerType'] == '' || $item['headerType'] == 'noop' ? 'none' : $item['headerType']) . '"' . '}&obfs=mkcp';
                         break;
                     case 'mkcp':
-                        $obfs .= 'obfsParam={"header":' . '"' . ($item['type'] == '' || $item['type'] == 'noop' ? 'none' : $item['type']) . '"' . '}&obfs=mkcp';
+                        $obfs .= 'obfsParam={"header":' . '"' . ($item['headerType'] == '' || $item['headerType'] == 'noop' ? 'none' : $item['headerType']) . '"' . '}&obfs=mkcp';
                         break;
                     case 'h2':
                         $obfs .= ($item['host'] != ''
@@ -355,7 +355,7 @@ class AppURI
                 $protocol = '';
                 switch ($item['net']) {
                     case 'kcp':
-                        $protocol .= ('&kcpheader=' . $item['type']);
+                        $protocol .= ('&kcpheader=' . $item['headerType']);
                         break;
                     case 'ws':
                         $protocol .= ('&wspath=' . $item['path'] . '&wsHost=' . $item['host']);

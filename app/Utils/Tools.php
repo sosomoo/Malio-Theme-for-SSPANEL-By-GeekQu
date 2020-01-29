@@ -502,7 +502,7 @@ class Tools
         }
         $item['aid'] = (int) $server[2];
         $item['net'] = 'tcp';
-        $item['type'] = 'none';
+        $item['headerType'] = 'none';
         if (count($server) >= 4) {
             $item['net'] = $server[3];
             if ($item['net'] == 'ws') {
@@ -513,7 +513,7 @@ class Tools
         }
         if (count($server) >= 5) {
             if (in_array($item['net'], array('kcp', 'http', 'mkcp'))) {
-                $item['type'] = $server[4];
+                $item['headerType'] = $server[4];
             } elseif ($server[4] == 'ws') {
                 $item['net'] = 'ws';
             } elseif ($server[4] == 'tls') {
