@@ -564,6 +564,7 @@ class LinkController extends BaseController
                 break;
             case 'v2rayn':
                 $item['ps'] = $item['remark'];
+                $item['type'] = $item['headerType'];
                 $return = 'vmess://' . base64_encode(json_encode($item, 320));
                 break;
             case 'kitsunebi':
@@ -1327,6 +1328,112 @@ class LinkController extends BaseController
             ]
         ];
 
+        return json_encode($config, JSON_PRETTY_PRINT);
+    }
+
+    public static function getV2RayPcNConf($user)
+    {
+        $subUrl = self::getSubinfo($user, 0)['v2ray'];
+        $subId = Uuid::uuid3(Uuid::NAMESPACE_DNS, $subUrl)->toString();
+        $config = [
+            'inbound' => [
+                [
+                    'localPort'         => 10808,
+                    'protocol'          => 'socks',
+                    'udpEnabled'        => true,
+                    'sniffingEnabled'   => true,
+                ],
+            ],
+            'logEnabled'        => false,
+            'loglevel'          => 'warning',
+            'index'             => 0,
+            'vmess'             => [],
+            'muxEnabled'        => false,
+            'domainStrategy'    => 'IPIfNonMatch',
+            'routingMode'       => '3',
+            'useragent'         => [],
+            'userdirect'        => [],
+            'userblock'         => [],
+            'kcpItem'           => [
+                'mtu'               => 1350,
+                'tti'               => 50,
+                'uplinkCapacity'    => 12,
+                'downlinkCapacity'  => 100,
+                'congestion'        => false,
+                'readBufferSize'    => 2,
+                'writeBufferSize'   => 2,
+            ],
+            'listenerType'          => 0,
+            'urlGFWList'            => 'https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt',
+            'allowLANConn'          => false,
+            'enableStatistics'      => true,
+            'statisticsFreshRate'   => 2000,
+            'remoteDNS'             => '114.114.114.114,1.2.4.8,223.5.5.5,8,8,8,8',
+            'subItem'               => [
+                [
+                    'id'        => $subId,
+                    'remarks'   => $_ENV['appName'],
+                    'url'       => $subUrl,
+                    'enabled'   => true,
+                ],
+            ],
+            'uiItem' => [
+                'mainQRCodeWidth' => 600,
+            ],
+            'userPacRule' => []
+        ];
+        $Rule = [
+            'type'   => 'vmess',
+            'is_mu'  => ($_ENV['mergeSub'] === true ? 1 : 0),
+            'emoji'  => $_ENV['add_emoji_to_node_name'],
+            'extend' => $_ENV['enable_sub_extend'],
+        ];
+        $proxys = [];
+        $items = URL::getNew_AllItems($user, $Rule);
+        foreach ($items as $item) {
+            if (!in_array($item['net'], ['tcp', 'ws', 'kcp', 'h2'])) {
+                continue;
+            }
+            $proxy = [
+                'configVersion'     => 2,
+                'address'           => $item['add'],
+                'port'              => $item['port'],
+                'id'                => $item['id'],
+                'alterId'           => $item['aid'],
+                'security'          => 'auto',
+                'network'           => $item['net'],
+                'remarks'           => $item['remark'],
+                'headerType'        => 'none',
+                'requestHost'       => '',
+                'path'              => '',
+                'streamSecurity'    => '',
+                'allowInsecure'     => '',
+                'configType'        => 1,
+                'testResult'        => '',
+                'subid'             => $subId,
+            ];
+            switch ($item['net']) {
+                case 'h2':
+                    $proxy['requestHost'] = ($item['host'] != '' ? $item['host'] : $item['add']);
+                    $proxy['path']        = $item['path'];
+                    break;
+                case 'ws':
+                    $proxy['requestHost'] = ($item['host'] != '' ? $item['host'] : $item['add']);
+                    $proxy['path']        = $item['path'];
+                    break;
+                case 'kcp':
+                    $proxy['headerType']  = $item['type'];
+                    break;
+            }
+            if ($item['tls'] == 'tls') {
+                $proxy['streamSecurity'] = $item['tls'];
+                if ($item['verify_cert'] == false){
+                    $proxy['allowInsecure'] = 'true';
+                }
+            }
+            $proxys[] = $proxy;
+        }
+        $config['vmess'] = $proxys;
         return json_encode($config, JSON_PRETTY_PRINT);
     }
 

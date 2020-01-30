@@ -67,6 +67,7 @@ class Config
             'subscribe_client' => self::get('subscribe_client'),
             'enable_sub_cache' => self::get('enable_sub_cache'),
             'use_new_telegram_bot' => self::get('use_new_telegram_bot'),
+            'subscribe_client_url' => self::get('subscribe_client_url'),
         ];
     }
 

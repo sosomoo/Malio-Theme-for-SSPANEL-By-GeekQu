@@ -210,6 +210,15 @@ class DefaultConfig
                 'operator_id'   => 0,
                 'operator_name' => '系统默认',
             ],
+
+            'get.Detect.Log' => [
+                'key'           => $key,
+                'value'         => '0',
+                'name'          => '审计记录的处理记录',
+                'comment'       => '',
+                'operator_id'   => 0,
+                'operator_name' => '系统默认',
+            ],
         ];
         return ($key === null
             ? $configs

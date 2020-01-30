@@ -108,7 +108,7 @@
 
     <!-- 版权底部 -->
     <footer id="footer">
-        <p class="copyright">&copy;2015-2018 v20200125 {$config["appName"]}</p>
+        <p class="copyright">&copy;2015-2018 v20200130 {$config["appName"]}</p>
     </footer>
     <!-- 版权结束 -->
 </div>

@@ -425,12 +425,13 @@ class Tools
         }
         return $object;
     }
-    public static function relayRulePortCheck($rules){
+    public static function relayRulePortCheck($rules)
+    {
         $res = array();
-        foreach($rules as $value) {
+        foreach ($rules as $value) {
             $res[$value->port][] = $value->port;
         }
-        return count($res)==count($rules);
+        return count($res) == count($rules);
     }
 
     public static function getRelayNodeIp($source_node, $dist_node)
@@ -501,7 +502,7 @@ class Tools
         }
         $item['aid'] = (int) $server[2];
         $item['net'] = 'tcp';
-        $item['type'] = 'none';
+        $item['headerType'] = 'none';
         if (count($server) >= 4) {
             $item['net'] = $server[3];
             if ($item['net'] == 'ws') {
@@ -511,8 +512,8 @@ class Tools
             }
         }
         if (count($server) >= 5) {
-            if (in_array($item['net'], array('kcp', 'http','mkcp'))) {
-                $item['type'] = $server[4];
+            if (in_array($item['net'], array('kcp', 'http', 'mkcp'))) {
+                $item['headerType'] = $server[4];
             } elseif ($server[4] == 'ws') {
                 $item['net'] = 'ws';
             } elseif ($server[4] == 'tls') {
@@ -526,11 +527,11 @@ class Tools
                 unset($item['server']);
             }
             if (array_key_exists('relayserver', $item)) {
-                $item['localserver']= $item['add'];
+                $item['localserver'] = $item['add'];
                 $item['add'] = $item['relayserver'];
                 unset($item['relayserver']);
-                if ($item['tls']=='tls'){
-                    $item['verify_cert']=false;
+                if ($item['tls'] == 'tls') {
+                    $item['verify_cert'] = false;
                 }
             }
             if (array_key_exists('outside_port', $item)) {
@@ -868,10 +869,10 @@ class Tools
      */
     public static function delDirAndFile($dirPath)
     {
-        if ($handle = opendir($dirPath)){
-            while (false !== ($item = readdir($handle))){
-                if ($item != '.' && $item != '..'){
-                    if (is_dir($dirPath . '/' . $item)){
+        if ($handle = opendir($dirPath)) {
+            while (false !== ($item = readdir($handle))) {
+                if ($item != '.' && $item != '..') {
+                    if (is_dir($dirPath . '/' . $item)) {
                         self::delDirAndFile($dirPath . '/' . $item);
                     } else {
                         unlink($dirPath . '/' . $item);

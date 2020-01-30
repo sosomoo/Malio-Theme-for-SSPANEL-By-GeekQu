@@ -31,6 +31,8 @@ use App\Utils\GA;
 use App\Utils\Telegram;
 use ArrayObject;
 use App\Models\Disconnect;
+use App\Models\GConfig;
+use App\Models\Token;
 use App\Models\UnblockIp;
 use Exception;
 use RuntimeException;
@@ -152,6 +154,8 @@ class Job
 
         // 清理订阅记录
         UserSubscribeLog::where('request_time', '<', date('Y-m-d H:i:s', time() - 86400 * (int) Config::get('subscribeLog_keep_days')))->delete();
+
+        Token::where('expire_time', '<', time())->delete();
 
         NodeInfoLog::where('log_time', '<', time() - 86400 * 3)->delete();
         NodeOnlineLog::where('log_time', '<', time() - 86400 * 3)->delete();
@@ -788,10 +792,12 @@ class Job
             }
 
             // 审计封禁解封
-            if ($user->detect_ban == 1) {
-                $logs = DetectBanLog::where('user_id', $user->id)->orderBy("id", "desc")->first();
-                if (($logs->end_time + $logs->ban_time * 60) <= time() || $logs == null) {
-                    $user->detect_ban = 0;
+            if ($user->enable == 0) {
+                $logs = DetectBanLog::where('user_id', $user->id)->orderBy('id', 'desc')->first();
+                if ($logs != null) {
+                    if (($logs->end_time + $logs->ban_time * 60) <= time()) {
+                        $user->enable = 1;
+                    }
                 }
             }
 
@@ -822,6 +828,11 @@ class Job
                 $Task->delete();
             }
         }
+
+        if ($_ENV['enable_auto_detect_ban'] === true) {
+            self::DetectBan();
+        }
+
     }
 
     public static function detectGFW()
@@ -927,5 +938,89 @@ class Job
             echo($node->id . 'interval skip' . PHP_EOL);
             sleep(3);
         }
+    }
+
+    public static function DetectBan()
+    {
+        echo '审计封禁检查开始.';
+        $last_id = (int) Config::getdb('get.Detect.Log');
+        $new_logs = DetectLog::where('id', '>', $last_id)->orderBy('id', 'desc')->get();
+        if (count($new_logs) != 0) {
+            $Config = GConfig::find('get.Detect.Log');
+            $Config->value = $new_logs[0]->id;
+            $Config->save();
+            $user_logs = [];
+            foreach ($new_logs as $log) {
+                if (!in_array($log->user_id, array_keys($user_logs))) {
+                    $user_logs[$log->user_id] = 0;
+                }
+                $user_logs[$log->user_id]++;
+            }
+            foreach ($user_logs as $userid => $value) {
+                $user = User::find($userid);
+                if ($user == null) {
+                    continue;
+                }
+                $user->all_detect_number += $value;
+                $user->save();
+                if ($user->enable == 0 || ($user->is_admin && Config::get('auto_detect_ban_allow_admin') === true) || in_array($user->id, Config::get('auto_detect_ban_allow_users'))) {
+                    continue;
+                }
+                if (Config::get('auto_detect_ban_type') == 1) {
+                    $last_DetectBanLog      = DetectBanLog::where('user_id', $userid)->orderBy('id', 'desc')->first();
+                    $last_all_detect_number = ($last_DetectBanLog == null ? 0 : (int) $last_DetectBanLog->all_detect_number);
+                    $detect_number          = ($user->all_detect_number - $last_all_detect_number);
+                    if ($detect_number >= Config::get('auto_detect_ban_number')) {
+                        $last_detect_ban_time               = $user->last_detect_ban_time;
+                        $end_time                           = date('Y-m-d H:i:s');
+                        $user->enable                       = 0;
+                        $user->last_detect_ban_time         = $end_time;
+                        $user->save();
+                        $DetectBanLog                       = new DetectBanLog();
+                        $DetectBanLog->user_name            = $user->user_name;
+                        $DetectBanLog->user_id              = $user->id;
+                        $DetectBanLog->email                = $user->email;
+                        $DetectBanLog->detect_number        = $detect_number;
+                        $DetectBanLog->ban_time             = Config::get('auto_detect_ban_time');
+                        $DetectBanLog->start_time           = strtotime($last_detect_ban_time);
+                        $DetectBanLog->end_time             = strtotime($end_time);
+                        $DetectBanLog->all_detect_number    = $user->all_detect_number;
+                        $DetectBanLog->save();
+                    }
+                } else {
+                    $number = $user->all_detect_number;
+                    $tmp = 0;
+                    foreach (Config::get('auto_detect_ban') as $key => $value) {
+                        if ($number >= $key) {
+                            if ($key >= $tmp) {
+                                $tmp = $key;
+                            }
+                        }
+                    }
+                    if ($tmp != 0) {
+                        if (Config::get('auto_detect_ban')[$tmp]['type'] == 'kill') {
+                            $user->kill_user();
+                        } else {
+                            $last_detect_ban_time               = $user->last_detect_ban_time;
+                            $end_time                           = date('Y-m-d H:i:s');
+                            $user->enable                       = 0;
+                            $user->last_detect_ban_time         = $end_time;
+                            $user->save();
+                            $DetectBanLog                       = new DetectBanLog();
+                            $DetectBanLog->user_name            = $user->user_name;
+                            $DetectBanLog->user_id              = $user->id;
+                            $DetectBanLog->email                = $user->email;
+                            $DetectBanLog->detect_number        = $number;
+                            $DetectBanLog->ban_time             = Config::get('auto_detect_ban')[$tmp]['time'];
+                            $DetectBanLog->start_time           = strtotime('1989-06-04 00:05:00');
+                            $DetectBanLog->end_time             = strtotime($end_time);
+                            $DetectBanLog->all_detect_number    = $number;
+                            $DetectBanLog->save();
+                        }
+                    }
+                }
+            }
+        }
+        echo '审计封禁检查结束.';
     }
 }

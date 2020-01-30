@@ -369,6 +369,9 @@ $app->group('/res', function () {
     $this->get('/captcha/{id}', App\Controllers\ResController::class . ':captcha');
 });
 
+$app->group('/getClient', function () {
+    $this->get('/{token}', App\Controllers\UserController::class . ':getClientfromToken');
+});
 
 $app->group('/link', function () {
     $this->get('/{token}', App\Controllers\LinkController::class . ':GetContent');

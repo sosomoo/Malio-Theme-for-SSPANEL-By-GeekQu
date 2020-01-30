@@ -469,8 +469,8 @@ class User extends Model
     // 当前解封时间
     public function relieve_time()
     {
-        if ($this->attributes['detect_ban'] == 1) {
-            $logs = DetectBanLog::where('user_id', $this->attributes['id'])->orderBy("id", "desc")->first();
+        $logs = DetectBanLog::where('user_id', $this->attributes['id'])->orderBy('id', 'desc')->first();
+        if ($this->attributes['enable'] == 0 && $logs != null) {
             $time = ($logs->end_time + $logs->ban_time * 60);
             return date('Y-m-d H:i:s', $time);
         } else {
