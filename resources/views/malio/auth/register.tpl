@@ -54,7 +54,7 @@
                         {$i18n->get('please-fill-in-your-nickname')}
                       </div>
                     </div>
-                    {if $enable_email_verify == false}
+                    {if $enable_email_verify == 'false'}
                       {if $malio_config['enable_register_email_restrict'] == true}
                       <div class="form-group col-lg-6 col-sm-12 col-xs-12">
                         <label for="email">{$i18n->get('email')}</label>
@@ -276,8 +276,6 @@
 
   <!-- JS Libraies -->
   <script src="/theme/malio/assets/modules/jquery-pwstrength/jquery.pwstrength.min.js"></script>
-  <script src="/theme/malio/assets/modules/selectric/public/jquery.selectric.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.3/dist/js/select2.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.25.6/dist/sweetalert2.all.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 
