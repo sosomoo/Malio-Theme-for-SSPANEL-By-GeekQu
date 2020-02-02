@@ -37,9 +37,9 @@ abstract class AbstractPayment
 
         $p->status = 1;
         $p->save();
-        
         $user = User::find($p->userid);
-
+        $user->money += $p->total;
+        $user->save();
         $codeq = new Code();
         $codeq->code = $method;
         $codeq->isused = 1;
@@ -48,9 +48,6 @@ abstract class AbstractPayment
         $codeq->usedatetime = date('Y-m-d H:i:s');
         $codeq->userid = $user->id;
         $codeq->save();
-
-        $user->money += $p->total;
-        $user->save();
 
         if ($user->ref_by >= 1) {
             $gift_user = User::where('id', '=', $user->ref_by)->first();
