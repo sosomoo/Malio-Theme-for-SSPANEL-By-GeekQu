@@ -172,6 +172,7 @@ $_ENV['data_method_not_found']      = '!';          //管理员操作时，修�
 $_ENV['delete_message_time']        = 180;          //在以下时间后删除用户命令触发的 bot 回复，单位：秒，删除时间可能会因为定时任务而有差异，为 0 代表不开启此功能
 $_ENV['delete_admin_message_time']  = 86400;        //在以下时间后删除管理命令触发的 bot 回复，单位：秒，删除时间可能会因为定时任务而有差异，为 0 代表不开启此功能
 $_ENV['enable_delete_user_cmd']     = false;        //自动删除群组中用户发送的命令，使用 delete_message_time 配置的时间，删除时间可能会因为定时任务而有差异
+$_ENV['help_any_command']           = false;        //允许任意未知的命令触发 /help 的回复
 
 $_ENV['remark_user_search_email']               = ['邮箱'];                     //用户搜索字段 email 的别名，可多个，格式为 PHP 数组
 $_ENV['remark_user_search_port']                = ['端口'];                     //用户搜索字段 port 的别名，可多个，格式为 PHP 数组

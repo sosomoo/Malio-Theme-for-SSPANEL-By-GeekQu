@@ -40,6 +40,17 @@ class HelpCommand extends Command
                 return;
             }
         }
+        if (
+            ((stripos($Message->getText(), '/' . $this->name) !== 0 && strlen($Message->getText()) !== 5)
+                ||
+                stripos($Message->getText(), '/' . $this->name . ' ') !== 0
+                ||
+                stripos($Message->getText(), '/' . $this->name . '@' . $_ENV['telegram_bot']) !== 0)
+            &&
+            $_ENV['help_any_command'] === false
+        ) {
+            return;
+        }
         $this->replyWithChatAction(['action' => Actions::TYPING]);
         $commands = $this->telegram->getCommands();
         $text = '系统中可用的所有命令.';
