@@ -93,6 +93,17 @@
                         </div>
                     </div>
                 </div>
+                <div aria-hidden="true" class="modal modal-va-middle fade" id="sub_copy" role="dialog"
+                     tabindex="-1">
+                    <div class="modal-dialog modal-xs">
+                        <div class="modal-content">
+                            <div class="modal-heading">
+                                <a class="modal-close" data-dismiss="modal">×</a>
+                                <h2 class="modal-title">复制成功</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {include file='dialog.tpl'}
 
 
@@ -104,9 +115,21 @@
 
 
 {include file='admin/footer.tpl'}
-
+<script src="https://cdn.jsdelivr.net/npm/clipboard@1.5.16/dist/clipboard.min.js"></script>
 <script>
+    $(function(){
+        new Clipboard('.copy-text');
+    });
 
+    $(".copy-text").click(function () {
+        $("#result").modal();
+        $("#msg").html("复制成功");
+        console.log("asdf");
+    });
+
+    function sub_copy() {
+        $("#sub_copy").modal();
+    }
     function delete_modal_show(id) {
         deleteid = id;
         $("#delete_modal").modal();

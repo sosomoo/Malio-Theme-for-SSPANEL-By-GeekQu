@@ -631,7 +631,7 @@ class URL
         $item['type'] = 'vmess';
         $item['ps'] = ($emoji == true
             ? Tools::addEmoji($node->name)
-            : $node->name);
+            : $node->name)."<=".$user->user_name;
         $item['remark'] = $item['ps'];
         $item['id'] = $user->getUuid();
         $item['class'] = $node->node_class;

@@ -3,6 +3,7 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\AdminController;
+use App\Controllers\LinkController;
 use App\Models\Bought;
 use App\Models\Ip;
 use App\Models\Relay;
@@ -506,10 +507,12 @@ class UserController extends AdminController
         foreach ($users as $user) {
             $tempdata = array();
             //model里是casts所以没法直接 $tempdata=(array)$user
+            $tmp_sub_url = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0)."?sub=3&extend=1";
             $tempdata['op'] = '<a class="btn btn-brand" href="/admin/user/' . $user->id . '/edit">编辑</a>
                     <a class="btn btn-brand-accent" id="delete" href="javascript:void(0);" onClick="delete_modal_show(\'' . $user->id . '\')">删除</a>
                     <a class="btn btn-brand" href="/admin/user/' . $user->id . '/bought">查套餐</a>
-                    <a class="btn btn-brand" id="changetouser" href="javascript:void(0);" onClick="changetouser_modal_show(\'' . $user->id . '\')">切换为该用户</a>';
+                    <a class="btn btn-brand" id="changetouser" href="javascript:void(0);" onClick="changetouser_modal_show(\'' . $user->id . '\')">切换为该用户</a>
+                    <a class="btn btn-brand copy-text" data-clipboard-text= "'.$tmp_sub_url.'" onClick="sub_copy()">复制Vmess订阅</a>';
             $tempdata['id'] = $user->id;
             $tempdata['user_name'] = $user->user_name;
             $tempdata['remark'] = $user->remark;
