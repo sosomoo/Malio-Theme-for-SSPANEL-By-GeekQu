@@ -330,9 +330,7 @@ class AppURI
                     if ($item['verify_cert'] == false){
                         $tls .= '&allowInsecure=1';
                     }
-                    if (isset($item['localserver'])) {
-                        $tls .= '&peer=' . $item['localserver'];
-                    }
+                    $tls .= '&peer=' . $item['host'];
                 }
                 $return = ('vmess://' . Tools::base64_url_encode('chacha20-poly1305:' . $item['id'] . '@' . $item['add'] . ':' . $item['port']) . '?remarks=' . rawurlencode($item['remark']) . $obfs . $tls);
                 break;
