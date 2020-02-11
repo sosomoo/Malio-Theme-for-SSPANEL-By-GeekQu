@@ -15,10 +15,6 @@ class Internationalization
     {
         $user = Auth::getUser();
         if ($user->isLogin == true && $user->lang != null) {
-            if ($user->lang == '' || $user->lang == null) {
-                $user->lang = 'zh-cn';
-                $user->save();
-            }
             $lang = $user->lang;
         } else {
             $cookie = Cookie::get('lang');

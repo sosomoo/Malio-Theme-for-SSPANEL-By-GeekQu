@@ -23,3 +23,4 @@ CREATE TABLE IF NOT EXISTS `sms_verify` (
 
 
 ALTER TABLE `user` ADD COLUMN `lang` varchar(128) NOT NULL DEFAULT 'zh-cn' COMMENT '用户的语言';
+UPDATE `user` SET `lang` = `zh-cn`;
