@@ -176,12 +176,14 @@ class Node extends Model
 
     public function getServer()
     {
+        $out = '';
         $explode = explode(';', $this->attributes['server']);
-        if (stripos($explode[1], 'server=') !== false) {
-            return URL::parse_args($explode[1])['server'];
-        } else {
-            return $explode[0];
+        if (in_array($this->attributes['sort'], [0, 10])) {
+            if (stripos($explode[1], 'server=') !== false) {
+                $out = URL::parse_args($explode[1])['server'];
+            }
         }
+        return ($out != '' ? $out : $explode[0]);
     }
 
     public function getOffsetPort($port)
