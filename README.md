@@ -20,7 +20,7 @@ SSPanel UIM 是一款专为 Shadowsocks / ShadowsocksR / V2Ray 设计的多用�
 
 ## AD
 
-**特别优惠 Malio SSPANEL 主题 + Rico V2Ray 后端，原价 1000 CNY，现在只需 899 CNY，👉[查看详情](https://malio.fxxkmy.life/)**
+**特别优惠 Malio SSPANEL 主题 + Rico V2Ray 后端，现在只需 144 usdt，👉[查看详情](https://malio.fxxkmy.life/)**
 
 ## 特性
 
