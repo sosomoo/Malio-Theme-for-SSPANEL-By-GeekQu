@@ -288,6 +288,7 @@ class AppURI
                             'mode' => 'websocket',
                         ];
                         $v2rayplugin['tls'] = $item['tls'] == 'tls' ? true : false;
+                        $v2rayplugin['peer'] = $v2rayplugin['tls'] ? $v2rayplugin['address']:"";
                         $return = ('ss://' . Tools::base64_url_encode($item['method'] . ':' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port']) . '?v2ray-plugin=' . base64_encode(json_encode($v2rayplugin)) . '#' . rawurlencode($item['remark']));
                     }
                     if ($item['obfs'] == 'plain') {
