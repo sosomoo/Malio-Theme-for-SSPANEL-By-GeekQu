@@ -83,6 +83,7 @@ class AppURI
                 }
                 break;
         }
+        //file_put_contents("/tmp/test.log", json_encode($return)."\r\n", FILE_APPEND);
         return $return;
     }
 
@@ -290,7 +291,7 @@ class AppURI
                         ];
                         $v2rayplugin['tls'] = $item['tls'] == 'tls' ? true : false;
                         if  ($v2rayplugin['tls']) {
-                            if ($v2rayplugin['host']!="" && $v2rayplugin['host']!="windowsupdate.windows.com"){
+                            if ($v2rayplugin['host']!="" && $v2rayplugin['host']!='microsoft.com'){
                                 $v2rayplugin['peer'] = $v2rayplugin['host'];
                             }else {
                                 $v2rayplugin['peer'] =  $v2rayplugin['address'];
