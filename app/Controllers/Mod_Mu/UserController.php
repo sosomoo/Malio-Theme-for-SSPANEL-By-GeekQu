@@ -139,14 +139,12 @@ class UserController extends BaseController
                 $user_raw = Tools::keyFilter($user_raw, $key_list);
                 $user_raw->uuid = $user_raw->getUuid();
                 $users[] = $user_raw;
-            } else {
-                if (Config::get('keep_connect') === true) {
-                    // 流量耗尽用户限速至 1Mbps
-                    $user_raw = Tools::keyFilter($user_raw, $key_list);
-                    $user_raw->uuid = $user_raw->getUuid();
-                    $user_raw->node_speedlimit = 1;
-                    $users[] = $user_raw;
-                }
+            } else if (Config::get('keep_connect') === true) {
+                // 流量耗尽用户限速至 1Mbps
+                $user_raw = Tools::keyFilter($user_raw, $key_list);
+                $user_raw->uuid = $user_raw->getUuid();
+                $user_raw->node_speedlimit = 1;
+                $users[] = $user_raw;
             }
         }
 
