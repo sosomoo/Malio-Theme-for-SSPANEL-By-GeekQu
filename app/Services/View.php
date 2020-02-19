@@ -22,7 +22,11 @@ class View
             $theme = $user->theme;
 
             $i18n = new Internationalization();
-            $i18n->lang = $user->lang;
+            if (MalioConfig::get('only_one_lang') != 'none') {
+                $i18n->lang = MalioConfig::get('only_one_lang');
+            } else {
+                $i18n->lang = $user->lang;
+            }
             $smarty->assign('i18n', $i18n);
         } else {
             $theme = Config::get('theme');

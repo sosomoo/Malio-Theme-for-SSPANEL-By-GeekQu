@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\InviteCode;
 use App\Services\Auth;
 use App\Services\Config;
+use App\Services\MalioConfig;
 use App\Utils\AliPay;
 use App\Utils\TelegramSessionManager;
 use App\Utils\TelegramProcess;
@@ -51,7 +52,11 @@ class HomeController extends BaseController
             
             if (!Auth::getUser()->isLogin) {
                 $i18n = new Internationalization();
-                $i18n->detectLang($request, $response, $args);
+                if (MalioConfig::get('only_one_lang') != 'none') {
+                    $i18n->lang = MalioConfig::get('only_one_lang');
+                } else {
+                    $i18n->detectLang($request, $response, $args);
+                }
                 return $this->view()
                     ->assign('i18n', $i18n)
                     ->assign('geetest_html', $GtSdk)
@@ -82,7 +87,11 @@ class HomeController extends BaseController
     {
         if (!Auth::getUser()->isLogin) {
             $i18n = new Internationalization();
-            $i18n->detectLang($request, $response, $args);
+            if (MalioConfig::get('only_one_lang') != 'none') {
+                $i18n->lang = MalioConfig::get('only_one_lang');
+            } else {
+                $i18n->detectLang($request, $response, $args);
+            }
             return $this->view()->assign('i18n', $i18n)->display('indexold.tpl');
         } else {
             return $this->view()->display('indexold.tpl');

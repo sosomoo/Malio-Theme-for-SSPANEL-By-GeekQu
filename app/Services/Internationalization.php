@@ -8,7 +8,7 @@ class Internationalization
 {
     public function __construct()
     {
-        $this->lang = 'en';
+        $this->lang = MalioConfig::get('default_lang');
     }
 
     public function detectLang($request, $response, $args)
@@ -38,7 +38,7 @@ class Internationalization
                 }
 
                 if ($lang == null) {
-                    $lang = 'en';
+                    $lang = MalioConfig::get('default_lang');
                 }
 
                 Cookie::set([

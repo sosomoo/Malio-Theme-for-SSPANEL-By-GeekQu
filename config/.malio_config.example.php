@@ -34,6 +34,8 @@ $Malio_Config['reset_bandwidth_and_expire_date_when_change_class'] = false;    /
 $Malio_Config['force_user_to_bind_tg_when_join_group'] = true;   // 设置为true时，限制只有绑定了tg的用户才能加入群组，如未绑定将会被踢出群组。.config.php 需要设置群组id，机器人在群组中不回应设为false才能用。机器人需要在群里组设定为管理员才能踢人。(定制功能)
 $Malio_Config['ip_database'] = 'QQWry';   //  IP归属地数据库，可选 QQWry | GeoIP2
 $Malio_Config['enable_i18n'] = true;   //  是否显示切换语言的按钮
+$Malio_Config['default_lang'] = 'zh-cn';   //  面板默认的语言，支持 en | zh-cn
+$Malio_Config['only_one_lang'] = 'none';   //  强制使用某种语言，支持 en | zh-cn | none
 
 
 ####### 支付系统 #######

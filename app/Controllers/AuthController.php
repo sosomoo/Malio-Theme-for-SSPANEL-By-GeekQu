@@ -70,7 +70,11 @@ class AuthController extends BaseController
         }
 
         $i18n = new Internationalization();
-        $i18n->detectLang($request, $response, $args);
+        if (MalioConfig::get('only_one_lang') != 'none') {
+            $i18n->lang = MalioConfig::get('only_one_lang');
+        } else {
+            $i18n->detectLang($request, $response, $args);
+        }
 
         return $this->view()
             ->assign('geetest_html', $GtSdk)
@@ -254,7 +258,11 @@ class AuthController extends BaseController
         }
 
         $i18n = new Internationalization();
-        $i18n->detectLang($request, $response, $args);
+        if (MalioConfig::get('only_one_lang') != 'none') {
+            $i18n->lang = MalioConfig::get('only_one_lang');
+        } else {
+            $i18n->detectLang($request, $response, $args);
+        }
 
         return $this->view()
             ->assign('i18n', $i18n)
