@@ -207,6 +207,13 @@ $_ENV['payment_system']='none';
 $_ENV['stripe_key'] = '';
 $_ENV['stripe_webhook_endpoint_secret'] = '';
 
+# wolfpay 以下内容可以在用户中心首页下方取得 (仅在malio聚合支付系统下生效)
+$_ENV['wolfpay']=['config'=>[
+    'hid'=>'商户ID',
+    'key'=>'商户KEY',
+    'url'=>'商户API网址'
+]];
+
 # payssion
 $_ENV['payssion_api_key'] = '';
 $_ENV['payssion_secret_key'] = '';

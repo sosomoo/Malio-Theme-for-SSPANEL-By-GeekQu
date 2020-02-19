@@ -171,7 +171,10 @@ $app->group('/user', function () {
 $app->group('/payment', function () {
     $this->get('/notify', App\Services\Payment::class . ':notify');
     $this->post('/notify', App\Services\Payment::class . ':notify');
+    $this->get('/notify/{type}', App\Services\Payment::class . ':notify');
     $this->post('/notify/{type}', App\Services\Payment::class . ':notify');
+    $this->get('/notify/{type}/{method}', App\Services\Payment::class . ':notify');
+    $this->post('/notify/{type}/{method}', App\Services\Payment::class . ':notify');
     $this->post('/status', App\Services\Payment::class . ':getStatus');
 
     $this->post('/bitpay/notify', App\Services\BitPayment::class . ':notify');
@@ -438,6 +441,10 @@ $app->get('/tomato_back/{type}', 'App\Services\Payment:notify');
 $app->post('/flyfoxpay_back/{type}', 'App\Services\Payment:notify');
 $app->get('/flyfoxpay_back/{type}', 'App\Services\Payment:notify');
 // end of flyfox
+
+// wolfpay
+$app->post('/wolfpay_back/{type}', 'App\Services\Payment:notify');
+$app->get('/wolfpay_back/{type}', 'App\Services\Payment:notify');
 
 // Run Slim Routes for App
 $app->run();

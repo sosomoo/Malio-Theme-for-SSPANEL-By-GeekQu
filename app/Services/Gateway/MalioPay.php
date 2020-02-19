@@ -101,6 +101,23 @@ class MalioPay extends AbstractPayment
                         );
                     }
                     return json_encode($return);
+                case ('wolfpay'):
+                    $wolfpay = new Wolfpay();
+                    $result = $wolfpay->purchase_maliopay($type, $price);
+                    if ($result['errcode'] == 0) {
+                        $return = array(
+                            'ret' => 1,
+                            'type' => 'url',
+                            'tradeno' => $result['tradeno'],
+                            'url' => $result['url']
+                        );
+                    } else {
+                        $return = array(
+                            'ret' => 0,
+                            'msg' => $result['errmsg']
+                        );
+                    }
+                    return json_encode($return);
             }
         } else if ($type == 'wechat') {
             $payment_system = MalioConfig::get('mups_wechat');
@@ -204,7 +221,6 @@ class MalioPay extends AbstractPayment
                 }
                 return $return;
             case ('tomatopay'):
-                
                 $type = 'alipay';
                 $settings = Config::get("tomatopay")[$type];
                 $order_data = $_REQUEST;
@@ -303,7 +319,7 @@ class MalioPay extends AbstractPayment
                             }
                             $order = Paylist::where('tradeno', '=', $source['id'])->first();
                             if ($order->status != 1) {
-                                $this->postPayment($source['id'], 'Stripe '.$type);
+                                $this->postPaymentMaliopay($source['id'], 'Stripe '.$type);
                                 echo 'SUCCESS';
                             } else {
                                 echo 'ERROR';
@@ -316,6 +332,32 @@ class MalioPay extends AbstractPayment
                 }
         
                 http_response_code(200);
+            case ('wolfpay'):
+                $type = $args['method'];
+                $settings = Config::get("wolfpay") ['config'];
+                $security['orderid'] = $_REQUEST['out_trade_no'];
+                if ($security['orderid'] == '' OR $security['orderid'] == null) {
+                    header("Location: /user/code");
+                } else {
+                    //实例化支付类
+                    //$pay = new Pays($settings['hid'], $settings['key']);
+                    $wolfpay = new Wolfpay();
+                    //接收异步通知数据
+                    $data = $_GET;
+                    //商户订单号
+                    $out_trade_no = $data['out_trade_no'];
+                    //验证签名
+                    if ($wolfpay->verify($data)) {
+                        //验证支付状态
+                        if ($data['trade_status'] == 'TRADE_SUCCESS') {
+                            $wolfpay->postPaymentMaliopay($data['out_trade_no'], "在线支付");
+                            echo "success";
+                            header("Location: /user/code");
+                        }
+                    } else {
+                        echo '錯誤';
+                    }
+                }
             default:
                 return 'failed';
         }

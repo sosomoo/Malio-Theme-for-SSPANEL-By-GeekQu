@@ -18,7 +18,7 @@
       </div>
     </li>
     {else}
-    <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown" class="nav-link nav-link-lg nav-link-user"></li>
+    <li class="dropdown dropdown-list-toggle"></li>
     {/if}
     <li class="dropdown"><a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
         <img alt="image" src="{$user->gravatar}?d=retro" class="rounded-circle mr-1">
