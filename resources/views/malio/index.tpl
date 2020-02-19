@@ -153,8 +153,8 @@
           {if $malio_config['enable_i18n'] == true}
           <li class="nav-item dropdown"><a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle" aria-expanded="false">🇬🇧Language</a>
             <ul class="dropdown-menu">
-              <li><a href="##" class="dropdown-item">🇨🇳简体中文</a></li>
-              <li><a href="##" class="dropdown-item">🇬🇧English</a></li>
+              <li><a href="##" class="dropdown-item" onclick="changeLang('zh-cn')">🇨🇳简体中文</a></li>
+              <li><a href="##" class="dropdown-item" onclick="changeLang('en')">🇬🇧English</a></li>
             </ul>
           </li>
           {/if}
@@ -537,6 +537,11 @@
   <script>
     var code = "UG93ZXJlZCBieSA8YSBocmVmPSIvc3RhZmYiPlNTUEFORUw8L2E+Jm5ic3A7JmJ1bGw7Jm5ic3A7VGhlbWUgYnkgPGEgaHJlZj0iaHR0cHM6Ly90Lm1lL2VkaXRYWSIgdGFyZ2V0PSJibGFuayI+ZWRpdFhZPC9hPg==";
     $('#copyright').html(atob(code));
+
+    function changeLang(lang) {
+      document.cookie = "lang="+lang;
+      location.reload();
+    }
   </script>
 
 </body>
