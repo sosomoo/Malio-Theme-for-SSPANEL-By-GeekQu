@@ -63,10 +63,12 @@ class AppURI
                 }
                 $tls = ', over-tls=false, certificate=1';
                 if ($item['tls'] == 'tls') {
-                    $tls = ', over-tls=true, tls-host=' . $item['host'];
+                    $tls = ', over-tls=true';
                     if ($item['verify_cert']) {
+                        $tls .=', tls-host=' . $item['host'];
                         $tls .= ', certificate=1';
                     } else {
+                        $tls .=', tls-host=' . $item['host'];
                         $tls .= ', certificate=0';
                     }
                 }
@@ -286,6 +288,16 @@ class AppURI
                             'mode' => 'websocket',
                         ];
                         $v2rayplugin['tls'] = $item['tls'] == 'tls' ? true : false;
+                        if  ($v2rayplugin['tls']) {
+                            if ($v2rayplugin['host'] != '' && $v2rayplugin['host'] != 'microsoft.com'){
+                                $v2rayplugin['peer'] = $v2rayplugin['host'];
+                            }else {
+                                $v2rayplugin['peer'] =  $v2rayplugin['address'];
+                            }
+                        }else {
+                            $v2rayplugin['peer'] = '';
+                        }
+
                         $return = ('ss://' . Tools::base64_url_encode($item['method'] . ':' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port']) . '?v2ray-plugin=' . base64_encode(json_encode($v2rayplugin)) . '#' . rawurlencode($item['remark']));
                     }
                     if ($item['obfs'] == 'plain') {
@@ -328,9 +340,7 @@ class AppURI
                     if ($item['verify_cert'] == false){
                         $tls .= '&allowInsecure=1';
                     }
-                    if (isset($item['localserver'])) {
-                        $tls .= '&peer=' . $item['localserver'];
-                    }
+                    $tls .= '&peer=' . $item['host'];
                 }
                 $return = ('vmess://' . Tools::base64_url_encode('chacha20-poly1305:' . $item['id'] . '@' . $item['add'] . ':' . $item['port']) . '?remarks=' . rawurlencode($item['remark']) . $obfs . $tls);
                 break;

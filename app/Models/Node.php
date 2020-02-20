@@ -179,7 +179,7 @@ class Node extends Model
         $out = '';
         $explode = explode(';', $this->attributes['server']);
         if (in_array($this->attributes['sort'], [0, 10])) {
-            if (stripos($explode[1], 'server=') !== false) {
+            if (isset($explode[1]) && stripos($explode[1], 'server=') !== false) {
                 $out = URL::parse_args($explode[1])['server'];
             }
         }

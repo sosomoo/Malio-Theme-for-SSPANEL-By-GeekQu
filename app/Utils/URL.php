@@ -619,7 +619,6 @@ class URL
         $return_array['group'] = Config::get('appName');
         $return_array['type'] = 'ss';
         $return_array['ratio'] = $node->traffic_rate;
-
         return $return_array;
     }
 

@@ -527,7 +527,6 @@ class Tools
                 unset($item['server']);
             }
             if (array_key_exists('relayserver', $item)) {
-                $item['localserver'] = $item['add'];
                 $item['add'] = $item['relayserver'];
                 unset($item['relayserver']);
                 if ($item['tls'] == 'tls') {
