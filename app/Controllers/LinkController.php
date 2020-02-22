@@ -668,15 +668,17 @@ class LinkController extends BaseController
             'group'     => $_ENV['appName']
         ];
         $Extend_ssr = [
-            'remark'    => '',
-            'type'      => 'ssr',
-            'address'   => $baseUrl,
-            'port'      => 10086,
-            'method'    => 'chacha20-ietf',
-            'passwd'    => $user->passwd,
-            'protocol'  => 'origin',
-            'obfs'      => 'plain',
-            'group'     => $_ENV['appName']
+            'remark'         => '',
+            'type'           => 'ssr',
+            'address'        => $baseUrl,
+            'port'           => 10086,
+            'method'         => 'chacha20-ietf',
+            'passwd'         => $user->passwd,
+            'protocol'       => 'origin',
+            'protocol_param' => '',
+            'obfs'           => 'plain',
+            'obfs_param'     => '',
+            'group'          => $_ENV['appName']
         ];
         $Extend_VMess = [
             'remark'    => '',
