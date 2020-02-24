@@ -13,6 +13,7 @@ use App\Utils\Tools;
 use App\Utils\URL;
 use App\Services\Config;
 use App\Services\AppsProfiles;
+use voku\helper\AntiXSS;
 
 /**
  *  HomeController
@@ -197,7 +198,8 @@ class LinkController extends BaseController
         $log->subscribe_type = $type;
         $log->request_ip = $_SERVER['REMOTE_ADDR'];
         $log->request_time = date('Y-m-d H:i:s');
-        $log->request_user_agent = $ua;
+        $antiXss = new AntiXSS();
+        $log->request_user_agent = $antiXss->xss_clean($ua);
         $log->save();
     }
 
