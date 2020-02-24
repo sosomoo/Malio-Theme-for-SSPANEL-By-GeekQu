@@ -8,6 +8,7 @@ use App\Models\{Link, User, UserSubscribeLog, Smartline};
 use App\Utils\{URL, Tools, AppURI, ConfRender};
 use App\Services\{Config, AppsProfiles};
 use Ramsey\Uuid\Uuid;
+use voku\helper\AntiXSS;
 
 /**
  *  LinkController
@@ -444,7 +445,8 @@ class LinkController extends BaseController
         $log->subscribe_type = $type;
         $log->request_ip = $_SERVER['REMOTE_ADDR'];
         $log->request_time = date('Y-m-d H:i:s');
-        $log->request_user_agent = $ua;
+        $antiXss = new AntiXSS();
+        $log->request_user_agent = $antiXss->xss_clean($ua);
         $log->save();
     }
 
