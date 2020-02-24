@@ -110,7 +110,7 @@ $Malio_Config['enable_index_popup_ann'] = false;   //  是否在用户登录后�
 $Malio_Config['enable_index_popup_ann_time'] = false;   //  重要公告弹窗是否24小时只弹一次
 $Malio_Config['index_popup_ann_content'] = '仅在有重大通知时使用，否则会降低用户体验，可以使用HTML标签';   //  重要公告的内容
 
-// 不在首页显示的一键导入按钮，clash | kitsunebi | quantumult | shadowrocket | v2ray | ss | ssr | ssd | surge | surborad | copy-ss | copy-ssr | copy-vmess
+// 不在首页显示的一键导入按钮，clash | kitsunebi | quantumult | shadowrocket | v2ray | ss | ssr | ssd | surge | surfboard | copy-ss | copy-ssr | copy-vmess
 $Malio_Config['index_hidden_import_buttons'] = ['copy-ss','copy-ssr','ssd','copy-vmess'];
 
 $Malio_Config['enable_share'] = true;   // 是否显示共享账号

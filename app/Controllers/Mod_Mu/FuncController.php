@@ -62,53 +62,16 @@ class FuncController extends BaseController
                 $server = null;
             }
 
-            if (Config::get('relay_port_migration') == 'true') {
-                foreach ($rules as $rule) {
-                    $dis = $this->get_dis_node_info($rule['dist_node_id']);
-                    if ($dis != null) {
-                        $rule['source_node_sort'] = $node->sort;
-                        $rule['dist_node_sort'] = $dis->sort;
-                        if (in_array($dis->sort, [0, 10])) {
-                            $dis_server = explode(';', $dis->server);
-                            $rule['dist_node_server'] = $dis_server[0];
-                        } else {
-                            $rule['dist_node_server'] = $dis->server;
-                        }
-
-                        if (in_array($dis->sort, [0, 10]) && strpos($dis->server, ';') !== false && $dis->mu_only != -1) {
-                            $muPort = Tools::get_MuOutPortArray($dis->server);
-                            $user = User::where('port', '=', $rule['port'])->first();
-                            if ($user != null) {
-                                if ($user->is_multi_user != 0) {
-                                    if ($muPort['type'] == 0) {
-                                        if (in_array($rule['port'], array_keys($muPort['port']))) {
-                                            $rule['port'] = $muPort['port'][$rule['port']];
-                                        }
-                                    } else {
-                                        $rule['port'] = ($rule['port'] + $muPort['type']);
-                                    }
-                                }
-                            }
-                        }
-
-                    } else {
-                        $rule['source_node_sort'] = $node->sort;
-                        $rule['dist_node_sort'] = null;
-                        $rule['dist_node_server'] = null;
-                    }
-                }
-            } else {
-                foreach ($rules as $rule) {
-                    $dis = $this->get_dis_node_info($rule['dist_node_id']);
-                    if ($dis != null) {
-                        $rule['source_node_sort'] = $node->sort;
-                        $rule['dist_node_sort'] = $dis->sort;
-                        $rule['dist_node_server'] = $dis->server;
-                    } else {
-                        $rule['source_node_sort'] = $node->sort;
-                        $rule['dist_node_sort'] = null;
-                        $rule['dist_node_server'] = null;
-                    }
+            foreach ($rules as $rule) {
+                $dis = $this->get_dis_node_info($rule['dist_node_id']);
+                if ($dis != null) {
+                    $rule['source_node_sort'] = $node->sort;
+                    $rule['dist_node_sort'] = $dis->sort;
+                    $rule['dist_node_server'] = $dis->server;
+                } else {
+                    $rule['source_node_sort'] = $node->sort;
+                    $rule['dist_node_sort'] = null;
+                    $rule['dist_node_server'] = null;
                 }
             }
 

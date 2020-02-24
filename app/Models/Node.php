@@ -6,8 +6,9 @@ namespace App\Models;
  * Node Model
  */
 
-use App\Utils\Tools;
+use App\Utils\{Tools, URL};
 use App\Utils\DNSoverHTTPS;
+
 class Node extends Model
 {
     protected $connection = 'default';
@@ -171,5 +172,22 @@ class Node extends Model
         $node_ip_str = $this->attributes['node_ip'];
         $node_ip_array = explode(',', $node_ip_str);
         return $node_ip_array[0];
+    }
+
+    public function getServer()
+    {
+        $out = '';
+        $explode = explode(';', $this->attributes['server']);
+        if (in_array($this->attributes['sort'], [0, 10])) {
+            if (isset($explode[1]) && stripos($explode[1], 'server=') !== false) {
+                $out = URL::parse_args($explode[1])['server'];
+            }
+        }
+        return ($out != '' ? $out : $explode[0]);
+    }
+
+    public function getOffsetPort($port)
+    {
+        return Tools::OutPort($this->attributes['server'], $this->attributes['name'], $port)['port'];
     }
 }

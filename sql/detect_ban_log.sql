@@ -15,6 +15,5 @@ CREATE TABLE IF NOT EXISTS `detect_ban_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='审计封禁日志';
 
 
-ALTER TABLE `user` ADD `detect_ban` int(2) NOT NULL DEFAULT '0' AFTER `enable`;
-ALTER TABLE `user` ADD `last_detect_ban_time` datetime DEFAULT '1989-06-04 00:05:00' AFTER `detect_ban`;
+ALTER TABLE `user` ADD `last_detect_ban_time` datetime DEFAULT '1989-06-04 00:05:00' AFTER `enable`;
 ALTER TABLE `user` ADD `all_detect_number` int(11) NOT NULL DEFAULT '0' AFTER `last_detect_ban_time`;

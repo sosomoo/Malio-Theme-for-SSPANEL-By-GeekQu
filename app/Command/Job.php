@@ -19,6 +19,7 @@ use App\Models\TelegramSession;
 use App\Models\EmailVerify;
 use App\Models\UserSubscribeLog;
 use App\Models\DetectBanLog;
+use App\Models\TelegramTasks;
 use App\Services\Config;
 use App\Services\Password;
 use App\Utils\DNSoverHTTPS;
@@ -29,8 +30,9 @@ use App\Utils\QQWry;
 use App\Utils\GA;
 use App\Utils\Telegram;
 use ArrayObject;
-use CloudXNS\Api;
 use App\Models\Disconnect;
+use App\Models\GConfig;
+use App\Models\Token;
 use App\Models\UnblockIp;
 use Exception;
 use RuntimeException;
@@ -75,7 +77,7 @@ class Job
                 'mysqldump --opt --user=' . Config::get('db_username') . ' --password=' . Config::get('db_password') . ' --host=' . $db_address_array[0] . ' ' . (isset($db_address_array[1]) ? '-P ' . $db_address_array[1] : '') . ' -d ' . Config::get('db_database') . ' alive_ip ss_node_info ss_node_online_log user_traffic_log detect_log telegram_session >> /tmp/ssmodbackup/mod.sql',
                 $ret
             );
-            if (Config::get('enable_radius') == 'true') {
+            if (Config::get('enable_radius') == true) {
                 $db_address_array = explode(':', Config::get('radius_db_host'));
                 system(
                     'mysqldump --user=' . Config::get('radius_db_user') . ' --password=' . Config::get('radius_db_password') . ' --host=' . $db_address_array[0] . ' ' . (isset($db_address_array[1]) ? '-P ' . $db_address_array[1] : '') . '' . Config::get('radius_db_database') . '> /tmp/ssmodbackup/radius.sql',
@@ -101,7 +103,7 @@ class Job
         system('rm -rf /tmp/ssmodbackup', $ret);
         system('rm /tmp/ssmodbackup.zip', $ret);
 
-        if (Config::get('backup_notify') == 'true') {
+        if (Config::get('backup_notify') == true) {
             Telegram::Send('备份完毕了喵~今天又是安全祥和的一天呢。');
         }
     }
@@ -153,6 +155,8 @@ class Job
         // 清理订阅记录
         UserSubscribeLog::where('request_time', '<', date('Y-m-d H:i:s', time() - 86400 * (int) Config::get('subscribeLog_keep_days')))->delete();
 
+        Token::where('expire_time', '<', time())->delete();
+
         NodeInfoLog::where('log_time', '<', time() - 86400 * 3)->delete();
         NodeOnlineLog::where('log_time', '<', time() - 86400 * 3)->delete();
         TrafficLog::where('log_time', '<', time() - 86400 * 3)->delete();
@@ -161,8 +165,8 @@ class Job
         EmailVerify::where('expire_in', '<', time() - 86400 * 3)->delete();
         system('rm ' . BASE_PATH . '/storage/*.png', $ret);
 
-        if (Config::get('sendDailyJob_Telegram') == 'true') {
-            Telegram::Send(Config::get('sendDailyJob_Msg'));
+        if (Config::getdb('Telegram.enable.DailyJob') !== '0') {
+            Telegram::Send(Config::getdb('Telegram.msg.DailyJob'));
         }
 
         //auto reset
@@ -303,7 +307,7 @@ class Job
                     $ips[$alive_ip->ip] = 1;
                     if ($user->node_connector < count($ips)) {
                         //暂时封禁
-                        $isDisconnect = Disconnect::where('id', '=', $alive_ip->ip)->where(
+                        $isDisconnect = Disconnect::where('ip', '=', $alive_ip->ip)->where(
                             'userid',
                             '=',
                             $user->id
@@ -446,12 +450,12 @@ class Job
         $adminUser = User::where('is_admin', '=', '1')->get();
 
         //节点掉线检测
-        if (Config::get('enable_detect_offline') == 'true') {
+        if (Config::get('enable_detect_offline') == true) {
             $nodes = Node::all();
 
             foreach ($nodes as $node) {
                 if ($node->isNodeOnline() === false && !file_exists(BASE_PATH . '/storage/' . $node->id . '.offline')) {
-                    if (Config::get('useScFtqq') == 'true' && Config::get('enable_detect_offline_useScFtqq') == 'true') {
+                    if (Config::get('useScFtqq') == true && Config::get('enable_detect_offline_useScFtqq') == true) {
                         $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
                         $text = '管理员您好，系统发现节点 ' . $node->name . ' 掉线了，请您及时处理。';
                         $postdata = http_build_query(
@@ -481,71 +485,18 @@ class Job
                             Mail::send($to, $subject, 'news/warn.tpl', [
                                 'user' => $user,
                                 'text' => $text
-                            ], [
                             ]);
                         } catch (Exception $e) {
                             echo $e->getMessage();
                         }
-
-                        if (Config::get('enable_cloudxns') == 'true' && ($node->sort == 0 || $node->sort == 10 || $node->sort == 12 || $node->sort == 13)) {
-                            $api = new Api();
-                            $api->setApiKey(Config::get('cloudxns_apikey'));//修改成自己API KEY
-                            $api->setSecretKey(Config::get('cloudxns_apisecret'));//修改成自己的SECERET KEY
-
-                            $api->setProtocol(true);
-
-                            $domain_json = json_decode($api->domain->domainList());
-
-                            foreach ($domain_json->data as $domain) {
-                                if (strpos($domain->domain, Config::get('cloudxns_domain')) !== false) {
-                                    $domain_id = $domain->id;
-                                }
-                            }
-
-                            $record_json = json_decode($api->record->recordList($domain_id, 0, 0, 2000));
-
-                            foreach ($record_json->data as $record) {
-                                if (($record->host . '.' . Config::get('cloudxns_domain')) == $node->server) {
-                                    $record_id = $record->record_id;
-
-                                    $Temp_node = Node::where('node_class', '<=', $node->node_class)->where(
-                                        static function ($query) use ($node) {
-                                            $query->where('node_group', '=', $node->node_group)
-                                                ->orWhere('node_group', '=', 0);
-                                        }
-                                    )->whereRaw('UNIX_TIMESTAMP()-`node_heartbeat`<300')->first();
-
-                                    if ($Temp_node != null) {
-                                        $api->record->recordUpdate(
-                                            $domain_id,
-                                            $record->host,
-                                            $Temp_node->server,
-                                            'CNAME',
-                                            55,
-                                            60,
-                                            1,
-                                            '',
-                                            $record_id
-                                        );
-                                    }
-
-                                    $notice_text = str_replace(
-                                        array('%node_name%', '%Temp_node_name%'),
-                                        array($node->name, $Temp_node->name),
-                                        Config::get('sendNodeOffline_Update_Msg')
-                                    );
-                                }
-                            }
-                        } else {
-                            $notice_text = str_replace(
-                                '%node_name%',
-                                $node->name,
-                                Config::get('sendNodeOffline_Msg')
-                            );
-                        }
+                        $notice_text = str_replace(
+                            '%node_name%',
+                            $node->name,
+                            Config::getdb('Telegram.msg.NodeOffline')
+                        );
                     }
 
-                    if (Config::get('sendNodeOffline_Telegram') == 'true') {
+                    if (Config::getdb('Telegram.enable.NodeOffline') !== '0') {
                         Telegram::Send($notice_text);
                     }
 
@@ -557,7 +508,7 @@ class Job
                     fwrite($myfile, $txt);
                     fclose($myfile);
                 } elseif ($node->isNodeOnline() === true && file_exists(BASE_PATH . '/storage/' . $node->id . '.offline')) {
-                    if (Config::get('useScFtqq') == 'true' && Config::get('enable_detect_offline_useScFtqq') == 'true') {
+                    if (Config::get('useScFtqq') == true && Config::get('enable_detect_offline_useScFtqq') == true) {
                         $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
                         $text = '管理员您好，系统发现节点 ' . $node->name . ' 恢复上线了。';
                         $postdata = http_build_query(
@@ -587,61 +538,18 @@ class Job
                             Mail::send($to, $subject, 'news/warn.tpl', [
                                 'user' => $user,
                                 'text' => $text
-                            ], [
                             ]);
                         } catch (Exception $e) {
                             echo $e->getMessage();
                         }
-
-                        if (Config::get('enable_cloudxns') == 'true' && ($node->sort == 0 || $node->sort == 10 || $node->sort == 12 || $node->sort == 13)) {
-                            $api = new Api();
-                            $api->setApiKey(Config::get('cloudxns_apikey'));//修改成自己API KEY
-                            $api->setSecretKey(Config::get('cloudxns_apisecret'));//修改成自己的SECERET KEY
-                            $api->setProtocol(true);
-
-                            $domain_json = json_decode($api->domain->domainList());
-
-                            foreach ($domain_json->data as $domain) {
-                                if (strpos($domain->domain, Config::get('cloudxns_domain')) !== false) {
-                                    $domain_id = $domain->id;
-                                }
-                            }
-
-                            $record_json = json_decode($api->record->recordList($domain_id, 0, 0, 2000));
-
-                            foreach ($record_json->data as $record) {
-                                if (($record->host . '.' . Config::get('cloudxns_domain')) == $node->server) {
-                                    $record_id = $record->record_id;
-
-                                    $api->record->recordUpdate(
-                                        $domain_id,
-                                        $record->host,
-                                        $node->getNodeIp(),
-                                        'A',
-                                        55,
-                                        600,
-                                        1,
-                                        '',
-                                        $record_id
-                                    );
-                                }
-                            }
-
-                            $notice_text = str_replace(
-                                '%node_name%',
-                                $node->name,
-                                Config::get('sendNodeOnline_Update_Msg')
-                            );
-                        } else {
-                            $notice_text = str_replace(
-                                '%node_name%',
-                                $node->name,
-                                Config::get('sendNodeOnline_Msg')
-                            );
-                        }
+                        $notice_text = str_replace(
+                            '%node_name%',
+                            $node->name,
+                            Config::getdb('Telegram.msg.NodeOnline')
+                        );
                     }
 
-                    if (Config::get('sendNodeOnline_Telegram') == 'true') {
+                    if (Config::getdb('Telegram.enable.NodeOnline') !== '0') {
                         Telegram::Send($notice_text);
                     }
 
@@ -652,7 +560,7 @@ class Job
 
 
         //登录地检测
-        if (Config::get('login_warn') == 'true') {
+        if (Config::get('login_warn') == true) {
             $iplocation = new QQWry();
             $Logs = LoginIp::where('datetime', '>', time() - 60)->get();
             foreach ($Logs as $log) {
@@ -746,7 +654,7 @@ class Job
             if (!file_exists(BASE_PATH . '/storage/traffic_notified/') && !mkdir($concurrentDirectory = BASE_PATH . '/storage/traffic_notified/') && !is_dir($concurrentDirectory)) {
                 throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
             }
-            if (Config::get('notify_limit_mode') != 'false') {
+            if (Config::get('notify_limit_mode') != false) {
                 $user_traffic_left = $user->transfer_enable - $user->u - $user->d;
                 $under_limit = 'false';
 
@@ -788,7 +696,9 @@ class Job
             }
 
             if (Config::get('account_expire_delete_days') >= 0 &&
-                strtotime($user->expire_in) + Config::get('account_expire_delete_days') * 86400 < time()
+                strtotime($user->expire_in) + Config::get('account_expire_delete_days') * 86400 < time() &&
+                $user->money <= Config::get('auto_clean_min_money')
+
             ) {
                 $subject = Config::get('appName') . '-您的用户账户已经被删除了';
                 $to = $user->email;
@@ -882,10 +792,12 @@ class Job
             }
 
             // 审计封禁解封
-            if ($user->detect_ban == 1) {
-                $logs = DetectBanLog::where('user_id', $user->id)->orderBy("id", "desc")->first();
-                if (($logs->end_time + $logs->ban_time * 60) <= time() || $logs == null) {
-                    $user->detect_ban = 0;
+            if ($user->enable == 0) {
+                $logs = DetectBanLog::where('user_id', $user->id)->orderBy('id', 'desc')->first();
+                if ($logs != null) {
+                    if (($logs->end_time + $logs->ban_time * 60) <= time()) {
+                        $user->enable = 1;
+                    }
                 }
             }
 
@@ -906,6 +818,21 @@ class Job
                 Radius::Add($user, $user->passwd);
             }
         }
+
+        if (Config::get('enable_telegram') === true) {
+            # 删除 tg 消息
+            $TelegramTasks = TelegramTasks::where('type', 1)->where('executetime', '<', time())->get();
+            foreach ($TelegramTasks as $Task) {
+                \App\Utils\Telegram\TelegramTools::SendPost('deleteMessage', ['chat_id' => $Task->chatid, 'message_id' => $Task->messageid]);
+                TelegramTasks::where('chatid', $Task->chatid)->where('type', '<>', 1)->where('messageid', $Task->messageid)->delete();
+                $Task->delete();
+            }
+        }
+
+        if ($_ENV['enable_auto_detect_ban'] === true) {
+            self::DetectBan();
+        }
+
     }
 
     public static function detectGFW()
@@ -962,58 +889,13 @@ class Job
                             } catch (Exception $e) {
                                 echo $e->getMessage();
                             }
-                            if (Config::get('enable_cloudxns') == 'true' && ($node->sort == 0 || $node->sort == 10 || $node->sort == 12 || $node->sort == 13)) {
-                                $api = new Api();
-                                $api->setApiKey(Config::get('cloudxns_apikey'));
-                                //修改成自己API KEY
-                                $api->setSecretKey(Config::get('cloudxns_apisecret'));
-                                //修改成自己的SECERET KEY
-                                $api->setProtocol(true);
-                                $domain_json = json_decode($api->domain->domainList());
-                                foreach ($domain_json->data as $domain) {
-                                    if (strpos($domain->domain, Config::get('cloudxns_domain')) !== false) {
-                                        $domain_id = $domain->id;
-                                    }
-                                }
-                                $record_json = json_decode($api->record->recordList($domain_id, 0, 0, 2000));
-                                foreach ($record_json->data as $record) {
-                                    if (($record->host . '.' . Config::get('cloudxns_domain')) == $node->server) {
-                                        $record_id = $record->record_id;
-                                        $Temp_node = Node::where('node_class', '<=', $node->node_class)->where(
-                                            static function ($query) use ($node) {
-                                                $query->where('node_group', '=', $node->node_group)
-                                                    ->orWhere('node_group', '=', 0);
-                                            }
-                                        )->whereRaw('UNIX_TIMESTAMP()-`node_heartbeat`<300')->first();
-                                        if ($Temp_node != null) {
-                                            $api->record->recordUpdate(
-                                                $domain_id,
-                                                $record->host,
-                                                $Temp_node->server,
-                                                'CNAME',
-                                                55,
-                                                60,
-                                                1,
-                                                '',
-                                                $record_id
-                                            );
-                                        }
-                                        $notice_text = str_replace(
-                                            array('%node_name%', '%Temp_node_name%'),
-                                            array($node->name, $Temp_node->name),
-                                            Config::get('sendNodeGFW_Update_Msg')
-                                        );
-                                    }
-                                }
-                            } else {
-                                $notice_text = str_replace(
-                                    '%node_name%',
-                                    $node->name,
-                                    Config::get('sendNodeGFW_Msg')
-                                );
-                            }
+                            $notice_text = str_replace(
+                                '%node_name%',
+                                $node->name,
+                                Config::getdb('Telegram.msg.NodeGFW')
+                            );
                         }
-                        if (Config::get('sendNodeGFW_Telegram') == 'true') {
+                        if (Config::getdb('Telegram.enable.NodeGFW') !== '0') {
                             Telegram::Send($notice_text);
                         }
                         $file_node = fopen(BASE_PATH . '/storage/' . $node->id . '.gfw', 'wb+');
@@ -1038,50 +920,13 @@ class Job
                             } catch (Exception $e) {
                                 echo $e->getMessage();
                             }
-                            if (Config::get('enable_cloudxns') == 'true' && ($node->sort == 0 || $node->sort == 10 || $node->sort == 12 || $node->sort == 13)) {
-                                $api = new Api();
-                                $api->setApiKey(Config::get('cloudxns_apikey'));
-                                //修改成自己API KEY
-                                $api->setSecretKey(Config::get('cloudxns_apisecret'));
-                                //修改成自己的SECERET KEY
-                                $api->setProtocol(true);
-                                $domain_json = json_decode($api->domain->domainList());
-                                foreach ($domain_json->data as $domain) {
-                                    if (strpos($domain->domain, Config::get('cloudxns_domain')) !== false) {
-                                        $domain_id = $domain->id;
-                                    }
-                                }
-                                $record_json = json_decode($api->record->recordList($domain_id, 0, 0, 2000));
-                                foreach ($record_json->data as $record) {
-                                    if (($record->host . '.' . Config::get('cloudxns_domain')) == $node->server) {
-                                        $record_id = $record->record_id;
-                                        $api->record->recordUpdate(
-                                            $domain_id,
-                                            $record->host,
-                                            $node->getNodeIp(),
-                                            'A',
-                                            55,
-                                            600,
-                                            1,
-                                            '',
-                                            $record_id
-                                        );
-                                    }
-                                }
-                                $notice_text = str_replace(
-                                    '%node_name%',
-                                    $node->name,
-                                    Config::get('sendNodeGFW_recover_Update_Msg')
-                                );
-                            } else {
-                                $notice_text = str_replace(
-                                    '%node_name%',
-                                    $node->name,
-                                    Config::get('sendNodeGFW_recover_Msg')
-                                );
-                            }
+                            $notice_text = str_replace(
+                                '%node_name%',
+                                $node->name,
+                                Config::getdb('Telegram.msg.NodeGFW_recover')
+                            );
                         }
-                        if (Config::get('sendNodeGFW_recover_Telegram') == 'true') {
+                        if (Config::getdb('Telegram.enable.NodeGFW_recover') !== '0') {
                             Telegram::Send($notice_text);
                         }
                         unlink(BASE_PATH . '/storage/' . $node->id . '.gfw');
@@ -1093,5 +938,89 @@ class Job
             echo($node->id . 'interval skip' . PHP_EOL);
             sleep(3);
         }
+    }
+
+    public static function DetectBan()
+    {
+        echo '审计封禁检查开始.';
+        $last_id = (int) Config::getdb('get.Detect.Log');
+        $new_logs = DetectLog::where('id', '>', $last_id)->orderBy('id', 'desc')->get();
+        if (count($new_logs) != 0) {
+            $Config = GConfig::find('get.Detect.Log');
+            $Config->value = $new_logs[0]->id;
+            $Config->save();
+            $user_logs = [];
+            foreach ($new_logs as $log) {
+                if (!in_array($log->user_id, array_keys($user_logs))) {
+                    $user_logs[$log->user_id] = 0;
+                }
+                $user_logs[$log->user_id]++;
+            }
+            foreach ($user_logs as $userid => $value) {
+                $user = User::find($userid);
+                if ($user == null) {
+                    continue;
+                }
+                $user->all_detect_number += $value;
+                $user->save();
+                if ($user->enable == 0 || ($user->is_admin && Config::get('auto_detect_ban_allow_admin') === true) || in_array($user->id, Config::get('auto_detect_ban_allow_users'))) {
+                    continue;
+                }
+                if (Config::get('auto_detect_ban_type') == 1) {
+                    $last_DetectBanLog      = DetectBanLog::where('user_id', $userid)->orderBy('id', 'desc')->first();
+                    $last_all_detect_number = ($last_DetectBanLog == null ? 0 : (int) $last_DetectBanLog->all_detect_number);
+                    $detect_number          = ($user->all_detect_number - $last_all_detect_number);
+                    if ($detect_number >= Config::get('auto_detect_ban_number')) {
+                        $last_detect_ban_time               = $user->last_detect_ban_time;
+                        $end_time                           = date('Y-m-d H:i:s');
+                        $user->enable                       = 0;
+                        $user->last_detect_ban_time         = $end_time;
+                        $user->save();
+                        $DetectBanLog                       = new DetectBanLog();
+                        $DetectBanLog->user_name            = $user->user_name;
+                        $DetectBanLog->user_id              = $user->id;
+                        $DetectBanLog->email                = $user->email;
+                        $DetectBanLog->detect_number        = $detect_number;
+                        $DetectBanLog->ban_time             = Config::get('auto_detect_ban_time');
+                        $DetectBanLog->start_time           = strtotime($last_detect_ban_time);
+                        $DetectBanLog->end_time             = strtotime($end_time);
+                        $DetectBanLog->all_detect_number    = $user->all_detect_number;
+                        $DetectBanLog->save();
+                    }
+                } else {
+                    $number = $user->all_detect_number;
+                    $tmp = 0;
+                    foreach (Config::get('auto_detect_ban') as $key => $value) {
+                        if ($number >= $key) {
+                            if ($key >= $tmp) {
+                                $tmp = $key;
+                            }
+                        }
+                    }
+                    if ($tmp != 0) {
+                        if (Config::get('auto_detect_ban')[$tmp]['type'] == 'kill') {
+                            $user->kill_user();
+                        } else {
+                            $last_detect_ban_time               = $user->last_detect_ban_time;
+                            $end_time                           = date('Y-m-d H:i:s');
+                            $user->enable                       = 0;
+                            $user->last_detect_ban_time         = $end_time;
+                            $user->save();
+                            $DetectBanLog                       = new DetectBanLog();
+                            $DetectBanLog->user_name            = $user->user_name;
+                            $DetectBanLog->user_id              = $user->id;
+                            $DetectBanLog->email                = $user->email;
+                            $DetectBanLog->detect_number        = $number;
+                            $DetectBanLog->ban_time             = Config::get('auto_detect_ban')[$tmp]['time'];
+                            $DetectBanLog->start_time           = strtotime('1989-06-04 00:05:00');
+                            $DetectBanLog->end_time             = strtotime($end_time);
+                            $DetectBanLog->all_detect_number    = $number;
+                            $DetectBanLog->save();
+                        }
+                    }
+                }
+            }
+        }
+        echo '审计封禁检查结束.';
     }
 }

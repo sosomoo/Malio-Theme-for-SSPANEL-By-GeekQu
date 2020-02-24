@@ -11,6 +11,22 @@
         <div class="col-lg-12 col-sm-12">
             <section class="content-inner margin-top-no">
 
+                {if $config['enable_sub_cache']===true}
+                <div class="card">
+                    <div class="card-main">
+                        <div class="card-inner">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-10 col-md-push-1">
+                                        <a class="btn btn-block btn-brand waves-attach waves-light" href="/admin/user/{$edit_user->id}/cleanSubCache">清空订阅缓存</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/if}
+
                 <div class="card">
                     <div class="card-main">
                         <div class="card-inner">
@@ -87,14 +103,6 @@
 				<div class="card">
 					<div class="card-main">
 						<div class="card-inner">
-
-							<div class="form-group form-group-label">
-								<div class="checkbox switch">
-									<label for="detect_ban">
-										<input {if $edit_user->detect_ban==1}checked{/if} class="access-hide" id="detect_ban" type="checkbox"><span class="switch-toggle"></span>审计已封禁
-									</label>
-								</div>
-							</div>
 
                             <div class="form-group form-group-label">
                                 <label class="floating-label" for="ban_time">手动封禁时长 (分钟)，不封禁不要修改</label>
@@ -363,12 +371,6 @@
                 var ga_enable = 0;
             }
 
-			if(document.getElementById('detect_ban').checked) {
-				var detect_ban=1;
-			} else {
-				var detect_ban=0;
-			}
-
             $.ajax({
                 type: "PUT",
                 url: "/admin/user/{$edit_user->id}",
@@ -391,7 +393,6 @@
                     enable,
                     is_admin,
                     ga_enable,
-                    detect_ban: detect_ban,
                     ban_time: $$getValue('ban_time'),
                     ref_by: $$getValue('ref_by'),
                     forbidden_ip: $$getValue('forbidden_ip'),

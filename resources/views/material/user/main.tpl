@@ -45,7 +45,7 @@
                                 class="icon icon-lg margin-right">exit_to_app</span>登出</a>
                 </li>
                 <li> 
-                    <a href="//en.gravatar.com/" target="view_window"><i class="icon icon-md t4-text">insert_photo</i>设置头像</a>
+                    <a href="//en.gravatar.com/" target="view_window"><i class="icon icon-lg margin-right">insert_photo</i>设置头像</a>
                 </li>
             </ul>
             {else}
@@ -88,13 +88,13 @@
                             <a href="/user/trafficlog"><i class="icon icon-lg">hourglass_empty</i>&nbsp;流量记录</a>
                         </li>
 
-                    {if $config['subscribeLog']=='true'}
+                    {if $config['subscribeLog']===true}
                         <li>
                             <a href="/user/subscribe_log"><i class="icon icon-lg">important_devices</i>&nbsp;订阅记录</a>
                         </li>
                     {/if}
 
-                        {if $config['enable_ticket']=='true'}
+                        {if $config['enable_ticket']===true}
                             <li>
                                 <a href="/user/ticket"><i class="icon icon-lg">question_answer</i>&nbsp;工单系统</a>
                             </li>
@@ -149,7 +149,7 @@
 
                         <li><a href="/user/bought"><i class="icon icon-lg">shopping_cart</i>&nbsp;购买记录</a></li>
 
-                        {if $config['enable_donate']=='true'}
+                        {if $config['enable_donate']===true}
                             <li>
                                 <a href="/user/donate"><i class="icon icon-lg">attach_money</i>&nbsp;捐赠公示</a>
                             </li>
@@ -174,4 +174,4 @@
     </div>
 </nav>
 
-{if $config["enable_mylivechat"] == 'true'}{include file='mylivechat.tpl'}{/if}
+{if $config["enable_mylivechat"] === true}{include file='mylivechat.tpl'}{/if}

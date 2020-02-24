@@ -59,6 +59,12 @@ $app->get('/500', App\Controllers\HomeController::class . ':page500');
 $app->post('/notify', App\Controllers\HomeController::class . ':notify');
 $app->get('/tos', App\Controllers\HomeController::class . ':tos');
 $app->get('/staff', App\Controllers\HomeController::class . ':staff');
+$app->post('/tomato_back/{type}', App\Services\Payment::class . ':notify');
+$app->get('/tomato_back/{type}', App\Services\Payment::class . ':notify');
+
+// New Telegram
+$app->post('/TelegramCallback', App\Controllers\HomeController::class . ':NewTelegram');
+// Old Telegram
 $app->post('/telegram_callback', App\Controllers\HomeController::class . ':telegram');
 
 // User Center
@@ -129,7 +135,6 @@ $app->group('/user', function () {
     $this->post('/gaset', App\Controllers\UserController::class . ':GaSet');
     $this->get('/gareset', App\Controllers\UserController::class . ':GaReset');
     $this->get('/telegram_reset', App\Controllers\UserController::class . ':telegram_reset');
-    $this->get('/discord_reset', App\Controllers\UserController::class . ':discord_reset');
     $this->post('/resetport', App\Controllers\UserController::class . ':ResetPort');
     $this->post('/specifyport', App\Controllers\UserController::class . ':SpecifyPort');
     $this->post('/pacset', App\Controllers\UserController::class . ':PacSet');
@@ -147,9 +152,6 @@ $app->group('/user', function () {
     // getUserAllURL
     $this->get('/getUserAllURL', App\Controllers\UserController::class . ':getUserAllURL');
 
-    // getPcClient
-    $this->get('/getPcClient', App\Controllers\UserController::class . ':getPcClient');
-
     //Reconstructed Payment System
     $this->post('/payment/purchase', App\Services\Payment::class . ':purchase');
     $this->get('/payment/return', App\Services\Payment::class . ':returnHTML');
@@ -166,6 +168,11 @@ $app->group('/user', function () {
     $this->get('/share-account', App\Controllers\UserController::class . ':share_account');
     $this->post('/api/change-lang', App\Controllers\UserController::class . ':changeLang');
     $this->get('/qrcode', App\Controllers\UserController::class . ':qrcode');
+    // getPcClient
+    $this->get('/getPcClient', App\Controllers\UserController::class . ':getPcClient');
+
+    // CleanSubCache
+    $this->get('/cleanSubCache', App\Controllers\UserController::class . ':cleanSubCache');
 })->add(new Auth());
 
 $app->group('/payment', function () {
@@ -314,6 +321,11 @@ $app->group('/admin', function () {
     $this->post('/user/create', App\Controllers\Admin\UserController::class . ':createNewUser');
     $this->post('/user/buy', App\Controllers\Admin\UserController::class . ':buy');
 
+    $this->get('/user/{id}/bought', App\Controllers\Admin\UserController::class . ':bought');
+    $this->post('/user/{id}/bought/ajax', App\Controllers\Admin\UserController::class . ':bought_ajax');
+    $this->delete('/user/bought', App\Controllers\Admin\UserController::class . ':bought_delete');
+    $this->post('/user/{id}/bought/buy', App\Controllers\Admin\UserController::class . ':bought_add');
+
 
     $this->get('/coupon', App\Controllers\AdminController::class . ':coupon');
     $this->post('/coupon', App\Controllers\AdminController::class . ':addCoupon');
@@ -330,24 +342,18 @@ $app->group('/admin', function () {
     // stats
     $this->get('/api/analytics/income', App\Controllers\AdminController::class . ':getIncome');
     $this->get('/api/analytics/new-users', App\Controllers\AdminController::class . ':newUsers');
+
+    // CleanSubCache
+    $this->get('/user/{id}/cleanSubCache', App\Controllers\Admin\UserController::class . ':cleanSubCache');
+
+    // Config Mange
+    $this->group('/config', function () {
+        $this->get('/telegram', App\Controllers\Admin\GConfigController::class . ':telegram');
+        $this->post('/telegram/ajax', App\Controllers\Admin\GConfigController::class . ':telegram_ajax');
+        $this->get('/telegram/{key}/edit', App\Controllers\Admin\GConfigController::class . ':telegram_edit');
+        $this->put('/telegram/{key}', App\Controllers\Admin\GConfigController::class . ':telegram_update');
+    });
 })->add(new Admin());
-
-// API
-$app->group('/api', function () {
-    $this->get('/token/{token}', App\Controllers\ApiController::class . ':token');
-    $this->post('/token', App\Controllers\ApiController::class . ':newToken');
-    $this->get('/node', App\Controllers\ApiController::class . ':node')->add(new Api());
-    $this->get('/user/{id}', App\Controllers\ApiController::class . ':userInfo')->add(new Api());
-    $this->get('/sublink', App\Controllers\Client\ClientApiController::class . ':GetSubLink');
-});
-
-// mu
-$app->group('/mu', function () {
-    $this->get('/users', App\Controllers\Mu\UserController::class . ':index');
-    $this->post('/users/{id}/traffic', App\Controllers\Mu\UserController::class . ':addTraffic');
-    $this->post('/nodes/{id}/online_count', App\Controllers\Mu\NodeController::class . ':onlineUserLog');
-    $this->post('/nodes/{id}/info', App\Controllers\Mu\NodeController::class . ':info');
-})->add(new Mu());
 
 // mu
 $app->group('/mod_mu', function () {
@@ -379,6 +385,9 @@ $app->group('/res', function () {
     $this->get('/captcha/{id}', App\Controllers\ResController::class . ':captcha');
 });
 
+$app->group('/getClient', function () {
+    $this->get('/{token}', App\Controllers\UserController::class . ':getClientfromToken');
+});
 
 $app->group('/link', function () {
     $this->get('/{token}', App\Controllers\LinkController::class . ':GetContent');
@@ -407,6 +416,7 @@ $app->get('/gettransfer', App\Controllers\VueController::class . ':getTransfer')
 $app->get('/getCaptcha', App\Controllers\VueController::class . ':getCaptcha');
 $app->post('/getChargeLog', App\Controllers\VueController::class . ':getChargeLog');
 $app->get('/getnodelist', App\Controllers\VueController::class . ':getNodeList');
+$app->get('/nodeinfo/{id}', App\Controllers\VueController::class . ':getNodeInfo');
 
 /**
  * chenPay

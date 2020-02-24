@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Services\Config;
+use App\Services\DefaultConfig;
 
 class Update
 {
@@ -17,7 +18,11 @@ class Update
             return false;
         }
 
-        echo (PHP_EOL);
+        echo(PHP_EOL);
+        // 检查并创建新增的配置项
+        echo DefaultConfig::detectConfigs();
+
+        echo(PHP_EOL);
 
         echo('开始升级客户端...' . PHP_EOL);
         Job::updatedownload();
@@ -134,11 +139,6 @@ class Update
 
     public static function old_to_new($version_old)
     {
-        if ($version_old <= 0) {
-            echo ('执行升级：0 -> 1');
-            $conn = mysqli_connect(Config::get('db_host'), Config::get('db_username'), Config::get('db_password'), Config::get('db_database'));
-            mysqli_query($conn, 'ALTER TABLE user ADD discord BIGINT NULL AFTER telegram_id');
-        }
     }
 
     public static function update_malio_config($xcat)

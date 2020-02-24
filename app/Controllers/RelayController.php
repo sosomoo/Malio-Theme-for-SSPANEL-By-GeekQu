@@ -268,6 +268,8 @@ class RelayController extends UserController
             return $response->getBody()->write(json_encode($rs));
         }
 
+        Tools::delSubCache();
+
         $rs['ret'] = 1;
         $rs['msg'] = '添加成功';
         return $response->getBody()->write(json_encode($rs));
@@ -432,6 +434,8 @@ class RelayController extends UserController
             return $response->getBody()->write(json_encode($rs));
         }
 
+        Tools::delSubCache();
+
         $rs['ret'] = 1;
         $rs['msg'] = '修改成功';
         return $response->getBody()->write(json_encode($rs));
@@ -453,6 +457,9 @@ class RelayController extends UserController
             $rs['msg'] = '删除失败';
             return $response->getBody()->write(json_encode($rs));
         }
+
+        Tools::delSubCache();
+
         $rs['ret'] = 1;
         $rs['msg'] = '删除成功';
         return $response->getBody()->write(json_encode($rs));

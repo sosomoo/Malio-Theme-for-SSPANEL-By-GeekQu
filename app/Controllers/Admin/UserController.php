@@ -2,22 +2,22 @@
 
 namespace App\Controllers\Admin;
 
-use App\Models\User;
-use App\Models\Ip;
-use App\Models\Bought;
-use App\Models\Relay;
-use App\Models\DetectBanLog;
 use App\Controllers\AdminController;
-use App\Services\Config;
+use App\Models\Bought;
+use App\Models\Ip;
+use App\Models\Relay;
+use App\Models\User;
+use App\Models\DetectBanLog;
+use App\Models\Shop;
 use App\Services\Auth;
+use App\Services\Config;
 use App\Services\Mail;
 use App\Utils;
-use App\Utils\Hash;
-use App\Utils\Radius;
-use App\Utils\QQWry;
-use App\Utils\Check;
-use App\Utils\Tools;
 use App\Utils\GA;
+use App\Utils\Hash;
+use App\Utils\QQWry;
+use App\Utils\Radius;
+use App\Utils\Tools;
 use Exception;
 
 
@@ -25,19 +25,38 @@ class UserController extends AdminController
 {
     public function index($request, $response, $args)
     {
-        $table_config['total_column'] = array('op' => '操作', 'id' => 'ID', 'user_name' => '用户名',
-            'remark' => '备注', 'email' => '邮箱', 'money' => '金钱',
-            'im_type' => '联络方式类型', 'im_value' => '联络方式详情',
-            'node_group' => '群组', 'expire_in' => '账户过期时间',
-            'class' => '等级', 'class_expire' => '等级过期时间',
-            'passwd' => '连接密码', 'port' => '连接端口', 'method' => '加密方式',
-            'protocol' => '连接协议', 'obfs' => '连接混淆方式',
-            'online_ip_count' => '在线IP数', 'last_ss_time' => '上次使用时间',
-            'used_traffic' => '已用流量/GB', 'enable_traffic' => '总流量/GB',
-            'last_checkin_time' => '上次签到时间', 'today_traffic' => '今日流量/MB',
-            'enable' => '是否启用', 'reg_date' => '注册时间',
-            'reg_ip' => '注册IP', 'auto_reset_day' => '自动重置流量日',
-            'auto_reset_bandwidth' => '自动重置流量/GB', 'ref_by' => '邀请人ID', 'ref_by_user_name' => '邀请人用户名',
+        $table_config['total_column'] = array(
+            'op' => '操作',
+            'id' => 'ID',
+            'user_name' => '用户名',
+            'remark' => '备注',
+            'email' => '邮箱',
+            'money' => '金钱',
+            'im_type' => '联络方式类型',
+            'im_value' => '联络方式详情',
+            'node_group' => '群组',
+            'expire_in' => '账户过期时间',
+            'class' => '等级',
+            'class_expire' => '等级过期时间',
+            'passwd' => '连接密码',
+            'port' => '连接端口',
+            'method' => '加密方式',
+            'protocol' => '连接协议',
+            'obfs' => '混淆方式',
+            'obfs_param' => '混淆参数',
+            'online_ip_count' => '在线IP数',
+            'last_ss_time' => '上次使用时间',
+            'used_traffic' => '已用流量/GB',
+            'enable_traffic' => '总流量/GB',
+            'last_checkin_time' => '上次签到时间',
+            'today_traffic' => '今日流量/MB',
+            'enable' => '是否启用',
+            'reg_date' => '注册时间',
+            'reg_ip' => '注册IP',
+            'auto_reset_day' => '自动重置流量日',
+            'auto_reset_bandwidth' => '自动重置流量/GB',
+            'ref_by' => '邀请人ID',
+            'ref_by_user_name' => '邀请人用户名',
             'top_up' => '累计充值');
         $table_config['default_show_column'] = array('op', 'id', 'user_name', 'remark', 'email');
         $table_config['ajax_url'] = 'user/ajax';
@@ -116,7 +135,7 @@ class UserController extends AdminController
             $text = '您好，管理员已经为您生成账户，用户名: ' . $email . '，登录密码为：' . $pass . '，感谢您的支持。 ';
             try {
                 Mail::send($to, $subject, 'newuser.tpl', [
-                    'user' => $user, 'text' => $text
+                    'user' => $user, 'text' => $text,
                 ], [
                 ]);
             } catch (Exception $e) {
@@ -177,7 +196,6 @@ class UserController extends AdminController
         return $response->getBody()->write(json_encode($result));
     }
 
-
     public function search($request, $response, $args)
     {
         $pageNum = 1;
@@ -189,10 +207,8 @@ class UserController extends AdminController
         $users = User::where('email', 'LIKE', '%' . $text . '%')->orWhere('user_name', 'LIKE', '%' . $text . '%')->orWhere('im_value', 'LIKE', '%' . $text . '%')->orWhere('port', 'LIKE', '%' . $text . '%')->orWhere('remark', 'LIKE', '%' . $text . '%')->paginate(20, ['*'], 'page', $pageNum);
         $users->setPath('/admin/user/search/' . $text);
 
-
         //Ip::where("datetime","<",time()-90)->get()->delete();
         $total = Ip::where('datetime', '>=', time() - 90)->orderBy('userid', 'desc')->get();
-
 
         $userip = array();
         $useripcount = array();
@@ -207,7 +223,6 @@ class UserController extends AdminController
             $regloc[$user->id] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
         }
 
-
         foreach ($total as $single) {
             if (isset($useripcount[$single->userid]) && !isset($userip[$single->userid][$single->ip])) {
                 ++$useripcount[$single->userid];
@@ -215,7 +230,6 @@ class UserController extends AdminController
                 $userip[$single->userid][$single->ip] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
             }
         }
-
 
         return $this->view()->assign('users', $users)->assign('regloc', $regloc)->assign('useripcount', $useripcount)->assign('userip', $userip)->display('admin/user/index.tpl');
     }
@@ -229,13 +243,10 @@ class UserController extends AdminController
             $pageNum = $request->getQueryParams()['page'];
         }
 
-
         $users->setPath('/admin/user/sort/' . $text . '/' . $asc);
-
 
         //Ip::where("datetime","<",time()-90)->get()->delete();
         $total = Ip::where('datetime', '>=', time() - 90)->orderBy('userid', 'desc')->get();
-
 
         $userip = array();
         $useripcount = array();
@@ -250,7 +261,6 @@ class UserController extends AdminController
             $regloc[$user->id] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
         }
 
-
         foreach ($total as $single) {
             if (isset($useripcount[$single->userid]) && !isset($userip[$single->userid][$single->ip])) {
                 ++$useripcount[$single->userid];
@@ -259,10 +269,8 @@ class UserController extends AdminController
             }
         }
 
-
         return $this->view()->assign('users', $users)->assign('regloc', $regloc)->assign('useripcount', $useripcount)->assign('userip', $userip)->display('admin/user/index.tpl');
     }
-
 
     public function edit($request, $response, $args)
     {
@@ -285,7 +293,6 @@ class UserController extends AdminController
         $passwd = $request->getParam('passwd');
 
         Radius::ChangeUserName($email1, $email2, $passwd);
-
 
         if ($request->getParam('pass') != '') {
             $user->pass = Hash::passwordHash($request->getParam('pass'));
@@ -328,30 +335,21 @@ class UserController extends AdminController
         $user->forbidden_ip = str_replace(PHP_EOL, ',', $request->getParam('forbidden_ip'));
         $user->forbidden_port = str_replace(PHP_EOL, ',', $request->getParam('forbidden_port'));
 
-        $detect_ban = (int)$request->getParam('detect_ban');
-        // 手动解封
-        if ($user->detect_ban == 1 && $detect_ban == 0) {
-            $user->detect_ban = 0;
-        }
         // 手动封禁
-        if ($user->detect_ban == 0 && $detect_ban == 1) {
-            if ((int)$request->getParam('ban_time') == 0) {
-                $rs['ret'] = 0;
-                $rs['msg'] = "修改失败，封禁时长不能为 0";
-                return $response->getBody()->write(json_encode($rs));
-            }
-            $user->detect_ban = 1;
-            $end_time = date('Y-m-d H:i:s');
-            $user->last_detect_ban_time = $end_time;
-            $DetectBanLog = new DetectBanLog();
-            $DetectBanLog->user_name = $user->user_name;
-            $DetectBanLog->user_id = $user->id;
-            $DetectBanLog->email = $user->email;
-            $DetectBanLog->detect_number = '0';
-            $DetectBanLog->ban_time = (int)$request->getParam('ban_time');
-            $DetectBanLog->start_time = strtotime('1989-06-04 00:05:00');
-            $DetectBanLog->end_time = strtotime($end_time);
-            $DetectBanLog->all_detect_number = $user->all_detect_number;
+        $ban_time = (int) $request->getParam('ban_time');
+        if ($ban_time > 0) {
+            $user->enable                       = 0;
+            $end_time                           = date('Y-m-d H:i:s');
+            $user->last_detect_ban_time         = $end_time;
+            $DetectBanLog                       = new DetectBanLog();
+            $DetectBanLog->user_name            = $user->user_name;
+            $DetectBanLog->user_id              = $user->id;
+            $DetectBanLog->email                = $user->email;
+            $DetectBanLog->detect_number        = '0';
+            $DetectBanLog->ban_time             = $ban_time;
+            $DetectBanLog->start_time           = strtotime('1989-06-04 00:05:00');
+            $DetectBanLog->end_time             = strtotime($end_time);
+            $DetectBanLog->all_detect_number    = $user->all_detect_number;
             $DetectBanLog->save();
         }
 
@@ -407,7 +405,7 @@ class UserController extends AdminController
             'old_key' => Utils\Cookie::get('key'),
             'old_ip' => Utils\Cookie::get('ip'),
             'old_expire_in' => Utils\Cookie::get('expire_in'),
-            'old_local' => $request->getParam('local')
+            'old_local' => $request->getParam('local'),
         ], $expire_in);
         $rs['ret'] = 1;
         $rs['msg'] = '切换成功';
@@ -510,6 +508,7 @@ class UserController extends AdminController
             //model里是casts所以没法直接 $tempdata=(array)$user
             $tempdata['op'] = '<a class="btn btn-brand" href="/admin/user/' . $user->id . '/edit">编辑</a>
                     <a class="btn btn-brand-accent" id="delete" href="javascript:void(0);" onClick="delete_modal_show(\'' . $user->id . '\')">删除</a>
+                    <a class="btn btn-brand" href="/admin/user/' . $user->id . '/bought">查套餐</a>
                     <a class="btn btn-brand" id="changetouser" href="javascript:void(0);" onClick="changetouser_modal_show(\'' . $user->id . '\')">切换为该用户</a>';
             $tempdata['id'] = $user->id;
             $tempdata['user_name'] = $user->user_name;
@@ -540,6 +539,7 @@ class UserController extends AdminController
             $tempdata['method'] = $user->method;
             $tempdata['protocol'] = $user->protocol;
             $tempdata['obfs'] = $user->obfs;
+            $tempdata['obfs_param'] = $user->obfs_param;
             $tempdata['online_ip_count'] = $user->online_ip_count();
             $tempdata['last_ss_time'] = $user->lastSsTime();
             $tempdata['used_traffic'] = Tools::flowToGB($user->u + $user->d);
@@ -574,5 +574,137 @@ class UserController extends AdminController
             'data' => $data,
         ];
         return json_encode($info, true);
+    }
+
+    public function cleanSubCache($request, $response, $args)
+    {
+        $id = $args['id'];
+        $user_path = (BASE_PATH . '/storage/SubscribeCache/' . $id . '/');
+        Tools::delDirAndFile($user_path);
+
+        $res['ret'] = 1;
+        $res['msg'] = '清理成功';
+
+        return $this->echoJson($response, $res);
+    }
+
+    public function bought($request, $response, $args)
+    {
+        $id = $args['id'];
+        $user = User::find($id);
+        $table_config['total_column'] = array(
+            'op'         => '操作',
+            'id'         => 'ID',
+            'name'       => '商品名称',
+            'valid'      => '是否有效期内',
+            'auto_renew' => '自动续费时间',
+            'reset_time' => '流量重置时间',
+            'buy_time'   => '套餐购买时间',
+            'exp_time'   => '套餐过期时间',
+            'content'    => '商品详细内容',
+        );
+        $table_config['default_show_column'] = array('op', 'name', 'valid', 'reset_time');
+        $table_config['ajax_url'] = 'bought/ajax';
+        $shops = Shop::where('status', 1)->orderBy('name')->get();
+        return $this->view()->assign('table_config', $table_config)->assign('shops', $shops)->assign('user', $user)->display('admin/user/bought.tpl');
+    }
+
+    public function bought_ajax($request, $response, $args)
+    {
+        $start = $request->getParam("start");
+        $limit_length = $request->getParam('length');
+        $id = $args['id'];
+        $user = User::find($id);
+        $boughts = Bought::where('userid', $user->id)->skip($start)->limit($limit_length)->orderBy('id', 'desc')->get();
+        $total_conut = Bought::where('userid', $user->id)->count();
+        $data = [];
+        foreach ($boughts as $bought) {
+            $shop = $bought->shop();
+            if ($shop == null) {
+                $bought->delete();
+                continue;
+            }
+            $tempdata = [];
+            $tempdata['op']          = '<a class="btn btn-brand-accent" id="delete" href="javascript:void(0);" onClick="delete_modal_show(\'' . $bought->id . '\')">删除</a>';
+            $tempdata['id']          = $bought->id;
+            $tempdata['name']        = $shop->name;
+            $tempdata['content']     = $shop->content();
+            $tempdata['auto_renew']  = ($bought->renew == 0 ? '不自动续费' : $bought->renew_date());
+            $tempdata['buy_time']    = $bought->datetime();
+            if ($bought->use_loop()) {
+                $tempdata['valid'] = ($bought->valid() ? '有效' : '已过期');
+            } else {
+                $tempdata['valid'] = '-';
+            }
+            $tempdata['reset_time']  = $bought->reset_time();
+            $tempdata['exp_time']    = $bought->exp_time();
+            $data[] = $tempdata;
+        }
+        $info = [
+            'draw' => $request->getParam('draw'),
+            'recordsTotal' => $total_conut,
+            'recordsFiltered' => $total_conut,
+            'data' => $data
+        ];
+        return json_encode($info, true);
+    }
+
+    public function bought_delete($request, $response, $args)
+    {
+        $id = $request->getParam('id');
+        $Bought = Bought::find($id);
+        if (!$Bought->delete()) {
+            $rs['ret'] = 0;
+            $rs['msg'] = '删除失败';
+            return $response->getBody()->write(json_encode($rs));
+        }
+        $rs['ret'] = 1;
+        $rs['msg'] = '删除成功';
+        return $response->getBody()->write(json_encode($rs));
+    }
+
+    public function bought_add($request, $response, $args)
+    {
+        $id = $args['id'];
+        $user = User::find($id);
+        $shop_id  = (int) $request->getParam('buy_shop');
+        $buy_type = (int) $request->getParam('buy_type');
+        if ($shop_id == '') {
+            $rs['ret'] = 0;
+            $rs['msg'] = '请选择套餐';
+            return $response->getBody()->write(json_encode($rs));
+        }
+        $shop = Shop::find($shop_id);
+        if ($shop == null) {
+            $rs['ret'] = 0;
+            $rs['msg'] = '套餐不存在';
+            return $response->getBody()->write(json_encode($rs));
+        }
+        if ($buy_type != 0) {
+            if (bccomp($user->money, $shop->price, 2) == -1) {
+                $res['ret'] = 0;
+                $res['msg'] = '喵喵喵~ 该用户余额不足。';
+                return $response->getBody()->write(json_encode($res));
+            }
+            $user->money = bcsub($user->money, $shop->price, 2);
+            $user->save();
+        }
+        $boughts = Bought::where('userid', $user->id)->get();
+        foreach ($boughts as $disable_bought) {
+            $disable_bought->renew = 0;
+            $disable_bought->save();
+        }
+        $bought = new Bought();
+        $bought->userid = $user->id;
+        $bought->shopid = $shop->id;
+        $bought->datetime = time();
+        $bought->renew = 0;
+        $bought->coupon = '';
+        $bought->price = $shop->price;
+        $bought->save();
+        $shop->buy($user);
+        $rs['msg'] = ($buy_type != 0 ? '套餐购买成功' : '套餐添加成功');
+        $rs['ret'] = 1;
+        return $response->getBody()->write(json_encode($rs));
     }
 }

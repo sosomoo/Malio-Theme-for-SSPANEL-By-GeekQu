@@ -38,6 +38,7 @@ use App\Models\BlockIp;
 use App\Models\UnblockIp;
 use App\Models\Payback;
 use App\Models\Relay;
+use App\Models\Token;
 use App\Models\UserSubscribeLog;
 use App\Utils\QQWry;
 use App\Utils\GeoIP2;
@@ -63,7 +64,7 @@ class UserController extends BaseController
 
         $GtSdk = null;
         $recaptcha_sitekey = null;
-        if (Config::get('enable_checkin_captcha') == 'true') {
+        if (Config::get('enable_checkin_captcha') == true) {
             switch (Config::get('captcha_provider')) {
                 case 'recaptcha':
                     $recaptcha_sitekey = Config::get('recaptcha_sitekey');
@@ -83,11 +84,30 @@ class UserController extends BaseController
 
         $class_left_days = floor((strtotime($this->user->class_expire)-time())/86400)+1;
 
+        if ($_ENV['subscribe_client_url'] != '') {
+            $getClient = new Token();
+            for ($i = 0; $i < 10; $i++) {
+                $token = $this->user->id . Tools::genRandomChar(16);
+                $Elink = Token::where('token', '=', $token)->first();
+                if ($Elink == null) {
+                    $getClient->token = $token;
+                    break;
+                }
+            }
+            $getClient->user_id     = $this->user->id;
+            $getClient->create_time = time();
+            $getClient->expire_time = time() + 10 * 60;
+            $getClient->save();
+        } else {
+            $token = '';
+        }
+
         return $this->view()
             ->assign('class_left_days', $class_left_days)
             ->assign('paybacks_sum', $paybacks_sum)
             ->assign('subInfo', LinkController::getSubinfo($this->user, 0))
             ->assign('ssr_sub_token', $ssr_sub_token)
+            ->assign('getClient', $token)
             ->assign('display_ios_class', Config::get('display_ios_class'))
             ->assign('display_ios_topup', Config::get('display_ios_topup'))
             ->assign('ios_account', Config::get('ios_account'))
@@ -133,7 +153,7 @@ class UserController extends BaseController
 
     public function donate($request, $response, $args)
     {
-        if (Config::get('enable_donate') != 'true') {
+        if (Config::get('enable_donate') != true) {
             exit(0);
         }
 
@@ -289,7 +309,7 @@ class UserController extends BaseController
             $res['ret'] = 1;
             $res['msg'] = '充值成功，充值的金额为' . $codeq->number . '元。';
 
-            if (Config::get('enable_donate') == 'true') {
+            if (Config::get('enable_donate') == true) {
                 if ($this->user->is_hide == 1) {
                     Telegram::Send('姐姐姐姐，一位不愿透露姓名的大老爷给我们捐了 ' . $codeq->number . ' 元呢~');
                 } else {
@@ -377,77 +397,20 @@ class UserController extends BaseController
 
     public function ResetPort($request, $response, $args)
     {
-        $price = Config::get('port_price');
         $user = $this->user;
-
-        if ($user->money < $price) {
-            $res['ret'] = 0;
-            $res['msg'] = '余额不足';
-            return $response->getBody()->write(json_encode($res));
-        }
-
-        $origin_port = $user->port;
-
-        $user->port = Tools::getAvPort();
-
-
-        $relay_rules = Relay::where('user_id', $user->id)->where('port', $origin_port)->get();
-        foreach ($relay_rules as $rule) {
-            $rule->port = $user->port;
-            $rule->save();
-        }
-
-        $user->money -= $price;
-        $user->save();
-
-        $res['ret'] = 1;
-        $res['msg'] = $user->port;
+        $temp = $user->ResetPort();
+        $res['msg'] = $temp['msg'];
+        $res['ret'] = ($temp['ok'] === true ? 1 : 0);
         return $response->getBody()->write(json_encode($res));
     }
 
     public function SpecifyPort($request, $response, $args)
     {
-        $price = Config::get('port_price_specify');
         $user = $this->user;
-
-        if ($user->money < $price) {
-            $res['ret'] = 0;
-            $res['msg'] = '余额不足';
-            return $response->getBody()->write(json_encode($res));
-        }
-
         $port = $request->getParam('port');
-
-        if ($port < Config::get('min_port') || $port > Config::get('max_port') || Tools::isInt($port) == false) {
-            $res['ret'] = 0;
-            $res['msg'] = '端口不在要求范围内';
-            return $response->getBody()->write(json_encode($res));
-        }
-
-        $port_occupied = User::pluck('port')->toArray();
-
-        if (in_array($port, $port_occupied) == true) {
-            $res['ret'] = 0;
-            $res['msg'] = '端口已被占用';
-            return $response->getBody()->write(json_encode($res));
-        }
-
-        $origin_port = $user->port;
-
-        $user->port = $port;
-
-
-        $relay_rules = Relay::where('user_id', $user->id)->where('port', $origin_port)->get();
-        foreach ($relay_rules as $rule) {
-            $rule->port = $user->port;
-            $rule->save();
-        }
-
-        $user->money -= $price;
-        $user->save();
-
-        $res['ret'] = 1;
-        $res['msg'] = '钦定成功';
+        $temp = $user->SpecifyPort($port);
+        $res['msg'] = $temp['msg'];
+        $res['ret'] = ($temp['ok'] === true ? 1 : 0);
         return $response->getBody()->write(json_encode($res));
     }
 
@@ -505,7 +468,7 @@ class UserController extends BaseController
                 $server = Tools::ssv2Array($node->server);
                 $array_node['server'] = $server['add'];
             } else {
-                $array_node['server'] = $node->server;
+                $array_node['server'] = $node->getServer();
             }
             $array_node['sort'] = $node->sort;
             $array_node['info'] = $node->info;
@@ -678,7 +641,7 @@ class UserController extends BaseController
 
                 $node_prefix[$name_cheif][] = $node;
 
-                if (Config::get('enable_flag') == 'true') {
+                if (Config::get('enable_flag') == true) {
                     $regex = Config::get('flag_regex');
                     $matches = array();
                     preg_match($regex, $name_cheif, $matches);
@@ -1295,7 +1258,7 @@ class UserController extends BaseController
 
     public function ticket($request, $response, $args)
     {
-        if (Config::get('enable_ticket') != 'true') {
+        if (Config::get('enable_ticket') != true) {
             exit(0);
         }
         $pageNum = $request->getQueryParams()['page'] ?? 1;
@@ -1341,7 +1304,7 @@ class UserController extends BaseController
         $new_ticket = Ticket::where('userid', $this->user->id)->where('title', $ticket->title)->orderBy('id','desc')->first();
         $ticket_url = Config::get('baseUrl').'/admin/ticket/'.$new_ticket->id.'/view';
 
-        if (Config::get('mail_ticket') == 'true') {
+        if (Config::get('mail_ticket') == true && $markdown != '') {
             $adminUser = User::where('is_admin', '=', '1')->get();
             foreach ($adminUser as $user) {
                 $subject = '新工单被开启';
@@ -1358,7 +1321,7 @@ class UserController extends BaseController
         }
 
         /* notify admins on telegram */
-        if (Config::get('enable_telegram') == 'true') {
+        if (Config::get('enable_telegram') == true) {
             $messageText = 'Hi，管理员'.PHP_EOL.'有新工单需要您处理'.PHP_EOL.PHP_EOL.$this->user->user_name.': '.$title.PHP_EOL.$content;
             $keyboard = new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
                 [
@@ -1380,7 +1343,7 @@ class UserController extends BaseController
             }
         }
 
-        if (Config::get('useScFtqq') == 'true') {
+        if (Config::get('useScFtqq') == true && $markdown != '') {
             $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
             $postdata = http_build_query(
                 array(
@@ -1429,96 +1392,93 @@ class UserController extends BaseController
             return $newResponse;
         }
 
-        if ($content != '这条工单已被关闭') {
-            if ($status == 1 && $ticket_main->status != $status) {
-                if (Config::get('mail_ticket') == 'true') {
-                    $adminUser = User::where('is_admin', '=', '1')->get();
-                    foreach ($adminUser as $user) {
-                        $subject = Config::get('appName') . '-工单被重新开启';
-                        $to = $user->email;
-                        $text = '管理员，有人重新开启了<a href="' . Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view">工单</a>，请您及时处理。';
-                        try {
-                            Mail::send($to, $subject, 'news/warn.tpl', [
-                                'user' => $user, 'text' => $text
-                            ], [
-                            ]);
-                        } catch (Exception $e) {
-                        }
+        if ($status == 1 && $ticket_main->status != $status) {
+            if (Config::get('mail_ticket') == true && $markdown != '') {
+                $adminUser = User::where('is_admin', '=', '1')->get();
+                foreach ($adminUser as $user) {
+                    $subject = Config::get('appName') . '-工单被重新开启';
+                    $to = $user->email;
+                    $text = '管理员，有人重新开启了<a href="' . Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view">工单</a>，请您及时处理。';
+                    try {
+                        Mail::send($to, $subject, 'news/warn.tpl', [
+                            'user' => $user, 'text' => $text
+                        ], []);
+                    } catch (Exception $e) {
+                        echo $e->getMessage();
                     }
                 }
-                if (Config::get('useScFtqq') == 'true') {
-                    $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
-                    $postdata = http_build_query(
-                        array(
-                            'text' => Config::get('appName') . '-工单被重新开启',
-                            'desp' => $markdown
-                        )
-                    );
-                    $opts = array('http' =>
-                        array(
-                            'method' => 'POST',
-                            'header' => 'Content-type: application/x-www-form-urlencoded',
-                            'content' => $postdata
-                        ));
-                    $context = stream_context_create($opts);
-                    file_get_contents('https://sc.ftqq.com/' . $ScFtqq_SCKEY . '.send', false, $context);
-                    $useScFtqq = Config::get('ScFtqq_SCKEY');
-                }
-            } else {
-                if (Config::get('mail_ticket') == 'true') {
-                    $adminUser = User::where('is_admin', '=', '1')->get();
-                    $ticket_url = Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view';
-                    foreach ($adminUser as $user) {
-                        $subject = '工单被回复';
-                        $to = $user->email;
-                        $text = '有人回复了工单，请您及时处理';
-                        try {
-                            Mail::send($to, $subject, 'ticket/ticket_replay_admin.tpl', [
-                                'user' => $this->user, 'text' => $text, 'ticket_url' => $ticket_url, 'content' => $content, 'title' => $ticket_main->title
-                            ], [
-                            ]);
-                        } catch (Exception $e) {
-                        }
+            }
+            if (Config::get('useScFtqq') == true && $markdown != '') {
+                $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
+                $postdata = http_build_query(
+                    array(
+                        'text' => Config::get('appName') . '-工单被重新开启',
+                        'desp' => $markdown
+                    )
+                );
+                $opts = array('http' =>
+                array(
+                    'method' => 'POST',
+                    'header' => 'Content-type: application/x-www-form-urlencoded',
+                    'content' => $postdata
+                ));
+                $context = stream_context_create($opts);
+                file_get_contents('https://sc.ftqq.com/' . $ScFtqq_SCKEY . '.send', false, $context);
+                $useScFtqq = Config::get('ScFtqq_SCKEY');
+            }
+        } else {
+            if (Config::get('mail_ticket') == true && $markdown != '') {
+                $adminUser = User::where('is_admin', '=', '1')->get();
+                foreach ($adminUser as $user) {
+                    $subject = Config::get('appName') . '-工单被回复';
+                    $to = $user->email;
+                    $text = '管理员，有人回复了<a href="' . Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view">工单</a>，请您及时处理。';
+                    try {
+                        Mail::send($to, $subject, 'news/warn.tpl', [
+                            'user' => $user, 'text' => $text
+                        ], []);
+                    } catch (Exception $e) {
+                        echo $e->getMessage();
                     }
                 }
-                if (Config::get('enable_telegram') == 'true') {
-                    $messageText = 'Hi，管理员'.PHP_EOL.'有人回复了工单，请您及时处理'.PHP_EOL.PHP_EOL.$this->user->user_name.': '.$ticket_main->title.PHP_EOL.$content;
-                    $ticket_url = Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view';
-                    $keyboard = new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
+            }
+            if (Config::get('enable_telegram') == 'true') {
+                $messageText = 'Hi，管理员'.PHP_EOL.'有人回复了工单，请您及时处理'.PHP_EOL.PHP_EOL.$this->user->user_name.': '.$ticket_main->title.PHP_EOL.$content;
+                $ticket_url = Config::get('baseUrl') . '/admin/ticket/' . $ticket_main->id . '/view';
+                $keyboard = new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
+                    [
                         [
-                            [
-                                ['text' => '回复工单', 'url' => $ticket_url]
-                            ]
+                            ['text' => '回复工单', 'url' => $ticket_url]
                         ]
-                    );
-                    $bot = new BotApi(Config::get('telegram_token'));
-                    $adminUser = User::where('is_admin', '=', '1')->get();
-                    foreach ($adminUser as $user) {
-                        if ($user->telegram_id != null) {
-                            try {
-                                $bot->sendMessage($user->telegram_id, $messageText, null, null, null, $keyboard);
-                            } catch (Exception $e) {
-                            }
+                    ]
+                );
+                $bot = new BotApi(Config::get('telegram_token'));
+                $adminUser = User::where('is_admin', '=', '1')->get();
+                foreach ($adminUser as $user) {
+                    if ($user->telegram_id != null) {
+                        try {
+                            $bot->sendMessage($user->telegram_id, $messageText, null, null, null, $keyboard);
+                        } catch (Exception $e) {
                         }
                     }
                 }
-                if (Config::get('useScFtqq') == 'true') {
-                    $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
-                    $postdata = http_build_query(
-                        array(
-                            'text' => Config::get('appName') . '-工单被回复',
-                            'desp' => $markdown
-                        )
-                    );
-                    $opts = array('http' =>
-                        array(
-                            'method' => 'POST',
-                            'header' => 'Content-type: application/x-www-form-urlencoded',
-                            'content' => $postdata
-                        ));
-                    $context = stream_context_create($opts);
-                    file_get_contents('https://sc.ftqq.com/' . $ScFtqq_SCKEY . '.send', false, $context);
-                }
+            }
+            if (Config::get('useScFtqq') == true && $markdown != '') {
+                $ScFtqq_SCKEY = Config::get('ScFtqq_SCKEY');
+                $postdata = http_build_query(
+                    array(
+                        'text' => Config::get('appName') . '-工单被回复',
+                        'desp' => $markdown
+                    )
+                );
+                $opts = array('http' =>
+                array(
+                    'method' => 'POST',
+                    'header' => 'Content-type: application/x-www-form-urlencoded',
+                    'content' => $postdata
+                ));
+                $context = stream_context_create($opts);
+                file_get_contents('https://sc.ftqq.com/' . $ScFtqq_SCKEY . '.send', false, $context);
             }
         }
         
@@ -1573,12 +1533,6 @@ class UserController extends BaseController
         if ($user->telegram_id != 0) {
             $res['ret'] = 0;
             $res['msg'] = '您绑定了 Telegram ，所以此项并不能被修改。';
-            return $response->getBody()->write(json_encode($res));
-        }
-
-        if ($user->discord != 0) {
-            $res['ret'] = 0;
-            $res['msg'] = '您绑定了 Discord ，所以此项并不能被修改。';
             return $response->getBody()->write(json_encode($res));
         }
 
@@ -1651,6 +1605,8 @@ class UserController extends BaseController
         }
 
         $user->save();
+
+        $user->cleanSubCache();
 
         if (!URL::SSCanConnect($user)) {
             $res['ret'] = 1;
@@ -1758,6 +1714,7 @@ class UserController extends BaseController
 
         Radius::Add($user, $pwd);
 
+        $user->cleanSubCache();
 
         return $this->echoJson($response, $res);
     }
@@ -1821,7 +1778,7 @@ class UserController extends BaseController
 
     public function doCheckIn($request, $response, $args)
     {
-        if (Config::get('enable_checkin_captcha') == 'true') {
+        if (Config::get('enable_checkin_captcha') == true) {
             switch (Config::get('captcha_provider')) {
                 case 'recaptcha':
                     $recaptcha = $request->getParam('recaptcha');
@@ -1849,10 +1806,11 @@ class UserController extends BaseController
             return $response->getBody()->write(json_encode($res));
         }
 
-        if (!$this->user->isAbleToCheckin()) {
+        $checkin = $this->user->checkin();
+        if ($checkin['ok'] === false) {
             $res['ret'] = 0;
-            $res['msg'] = '您似乎已经签到过了...';
-            return $response->getBody()->write(json_encode($res));
+            $res['msg'] = $checkin['msg'];
+            return $this->echoJson($response, $res);
         }
         if (MalioConfig::get('daily_bonus_mode') == 'malio') {
             $traffic = random_int(MalioConfig::get('daily_bonus_settings')[$this->user->class]['min'], MalioConfig::get('daily_bonus_settings')[$this->user->class]['max']);
@@ -1887,8 +1845,9 @@ class UserController extends BaseController
             return $this->echoJson($response, $res);
         }
 
-        if (Config::get('enable_kill') == 'true') {
+        if (Config::get('enable_kill') == true) {
             Auth::logout();
+            $user->cleanSubCache();
             $user->kill_user();
             $res['ret'] = 1;
             $res['msg'] = '您的帐号已经从我们的系统中删除。欢迎下次光临!';
@@ -1927,19 +1886,10 @@ class UserController extends BaseController
         return $this->view()->display('user/disable.tpl');
     }
 
-    public function discord_reset($request, $response, $args)
-    {
-        $user = $this->user;
-        $user->discord = 0;
-        $user->save();
-        return $response->withStatus(302)->withHeader('Location', '/user/edit');
-    }
-
     public function telegram_reset($request, $response, $args)
     {
         $user = $this->user;
-        $user->telegram_id = 0;
-        $user->save();
+        $user->TelegramReset();
         return $response->withStatus(302)->withHeader('Location', '/user/edit');
     }
 
@@ -1947,6 +1897,7 @@ class UserController extends BaseController
     {
         $user = $this->user;
         $user->clean_link();
+        $user->cleanSubCache();
         return $response->withStatus(302)->withHeader('Location', '/user');
     }
 
@@ -2022,8 +1973,11 @@ class UserController extends BaseController
         $user->obfs = $scheme['obfs'];
         $user->save();
 
+        $user->cleanSubCache();
+
         $res['ret'] = 1;
         $res['msg'] = '切换' . $scheme['name'] . '成功';
+
         return $this->echoJson($response, $res);
     }
 
@@ -2040,7 +1994,7 @@ class UserController extends BaseController
                 $return .= URL::getAllUrl($user, 0, 0) . PHP_EOL;
                 break;
             case 'ssd':
-                $return .= URL::getAllSSDUrl($user) . PHP_EOL;
+                $return .= LinkController::getSSD($user, 1, [], ['type' => 'ss', 'is_mu' => 1], false) . PHP_EOL;
                 break;
             case 'v2ray':
                 $return .= URL::getAllVMessUrl($user) . PHP_EOL;
@@ -2050,7 +2004,8 @@ class UserController extends BaseController
                 break;
         }
         $newResponse = $response->withHeader('Content-type', ' application/octet-stream; charset=utf-8')->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')->withHeader('Content-Disposition', ' attachment; filename=node.txt');
-        $newResponse->getBody()->write($return);
+        $newResponse->write($return);
+
         return $newResponse;
     }
 
@@ -2179,6 +2134,13 @@ class UserController extends BaseController
         return $this->echoJson($response, $res);
     }
 
+    /**
+     * 获取包含订阅信息的客户端压缩档
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param array    $args
+     */
     public function getPcClient($request, $response, $args)
     {
         $zipArc = new \ZipArchive();
@@ -2207,6 +2169,12 @@ class UserController extends BaseController
                 $content = LinkController::getSSRPcConf($this->user);
                 $client_path .= $type . '/';
                 break;
+            case 'v2rayn-win':
+                $temp_file_path .= $type . '_' . $user_token . '.zip';
+                $user_config_file_name = 'guiNConfig.json';
+                $content = LinkController::getV2RayPcNConf($this->user);
+                $client_path .= $type . '/';
+                break;
             default:
                 return 'gg';
         }
@@ -2224,9 +2192,41 @@ class UserController extends BaseController
         $zipArc->close();
 
         $newResponse = $response->withHeader('Content-type', ' application/octet-stream')->withHeader('Content-Disposition', ' attachment; filename=' . $type . '.zip');
-        $newResponse->getBody()->write(file_get_contents($temp_file_path));
+        $newResponse->write(file_get_contents($temp_file_path));
         unlink($temp_file_path);
 
         return $newResponse;
+    }
+
+    public function getClientfromToken($request, $response, $args)
+    {
+        $token = $args['token'];
+        $Etoken = Token::where('token', '=', $token)->where('create_time', '>', time() - 60 * 10)->first();
+        if ($Etoken == null) {
+            return '下载链接已失效，请刷新页面后重新点击.';
+        }
+        $user = User::find($Etoken->user_id);
+        if ($user == null) {
+            return null;
+        }
+        $this->user = $user;
+        return self::getPcClient($request, $response, $args);
+    }
+
+    /**
+     * 清理订阅缓存
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param array    $args
+     */
+    public function cleanSubCache($request, $response, $args)
+    {
+        $this->user->cleanSubCache();
+
+        $res['ret'] = 1;
+        $res['msg'] = '清理成功';
+
+        return $this->echoJson($response, $res);
     }
 }

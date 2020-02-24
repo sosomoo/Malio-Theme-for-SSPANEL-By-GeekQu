@@ -9,10 +9,6 @@
   <!-- General CSS Files -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.8.2/css/all.min.css">
-  
-  <!-- CSS Libraries -->
-  <link rel="stylesheet" href="/theme/malio/assets/modules/selectric/public/selectric.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.3/dist/css/select2.min.css">
 
   <!-- Template CSS -->
   <link rel="stylesheet" href="/theme/malio/assets/css/style.css">

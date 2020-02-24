@@ -44,6 +44,45 @@ class Tools
         return round($value, 2) . 'B';
     }
 
+    /**
+     * 根据流量值转换 B 输出
+     */
+    public static function flowAutoShowZ($Value)
+    {
+        $number = substr($Value, 0, strlen($Value) - 2);
+        if (!is_numeric($number)) return null;
+        $unit = strtoupper(substr($Value, -2));
+        $kb = 1024;
+        $mb = 1048576;
+        $gb = 1073741824;
+        $tb = $gb * 1024;
+        $pb = $tb * 1024;
+        switch ($unit) {
+            case 'B':
+                $number = round($number, 2);
+                break;
+            case 'KB':
+                $number = round($number * $kb, 2);
+                break;
+            case 'MB':
+                $number = round($number * $mb, 2);
+                break;
+            case 'GB':
+                $number = round($number * $gb, 2);
+                break;
+            case 'TB':
+                $number = round($number * $tb, 2);
+                break;
+            case 'PB':
+                $number = round($number * $pb, 2);
+                break;
+            default:
+                return null;
+                break;
+        }
+        return $number;
+    }
+
     //虽然名字是toMB，但是实际上功能是from MB to B
     public static function toMB($traffic)
     {
@@ -280,7 +319,7 @@ class Tools
 
         $relay_able_list = Config::getSupportParam('relay_able_protocol');
 
-        return in_array($user->protocol, $relay_able_list) || Config::get('relay_insecure_mode') == 'true';
+        return in_array($user->protocol, $relay_able_list) || Config::get('relay_insecure_mode') == true;
     }
 
     public static function has_conflict_rule($input_rule, $ruleset, $edit_rule_id = 0, $origin_node_id = 0, $user_id = 0)
@@ -386,12 +425,13 @@ class Tools
         }
         return $object;
     }
-    public static function relayRulePortCheck($rules){
+    public static function relayRulePortCheck($rules)
+    {
         $res = array();
-        foreach($rules as $value) {
+        foreach ($rules as $value) {
             $res[$value->port][] = $value->port;
         }
-        return count($res)==count($rules);
+        return count($res) == count($rules);
     }
 
     public static function getRelayNodeIp($source_node, $dist_node)
@@ -462,7 +502,7 @@ class Tools
         }
         $item['aid'] = (int) $server[2];
         $item['net'] = 'tcp';
-        $item['type'] = 'none';
+        $item['headerType'] = 'none';
         if (count($server) >= 4) {
             $item['net'] = $server[3];
             if ($item['net'] == 'ws') {
@@ -472,8 +512,8 @@ class Tools
             }
         }
         if (count($server) >= 5) {
-            if (in_array($item['net'], array('kcp', 'http','mkcp'))) {
-                $item['type'] = $server[4];
+            if (in_array($item['net'], array('kcp', 'http', 'mkcp'))) {
+                $item['headerType'] = $server[4];
             } elseif ($server[4] == 'ws') {
                 $item['net'] = 'ws';
             } elseif ($server[4] == 'tls') {
@@ -489,8 +529,8 @@ class Tools
             if (array_key_exists('relayserver', $item)) {
                 $item['add'] = $item['relayserver'];
                 unset($item['relayserver']);
-                if ($item['tls']=='tls'){
-                    $item['verify_cert']=false;
+                if ($item['tls'] == 'tls') {
+                    $item['verify_cert'] = false;
                 }
             }
             if (array_key_exists('outside_port', $item)) {
@@ -514,7 +554,7 @@ class Tools
     {
         $server = explode(';', $node);
         $item = [
-            'host' => 'windowsupdate.microsoft.com',
+            'host' => 'microsoft.com',
             'path' => '',
             'net' => 'ws',
             'tls' => ''
@@ -553,6 +593,14 @@ class Tools
                 unset($item['outside_port']);
             }
         }
+        if ($item['net'] == 'obfs') {
+            if (stripos($server[4], 'http') !== false) {
+                $item['obfs'] = 'simple_obfs_http';
+            }
+            if (stripos($server[4], 'tls') !== false) {
+                $item['obfs'] = 'simple_obfs_tls';
+            }
+        }
         return $item;
     }
 
@@ -581,7 +629,7 @@ class Tools
         }
 
         return [
-            'name' => ($node_name . ' - ' . $node_port . ' 单端口'),
+            'name' => (Config::get('disable_sub_mu_port') ? $node_name : $node_name . ' - ' . $node_port . ' 单端口'),
             'address' => $node_server[0],
             'port' => $node_port
         ];
@@ -604,7 +652,7 @@ class Tools
                     $port[substr($item['port'], 0, strpos($item['port'], '#'))] = (int) substr($item['port'], strpos($item['port'], '#') + 1);
                 }
             } else {
-                $$type = (int) $item['port'];
+                $type = (int) $item['port'];
             }
         }
 
@@ -786,11 +834,12 @@ class Tools
             : ($done['emoji'] . ' ' . $Name));
     }
 
-    /** 
-     * Add files and sub-directories in a folder to zip file. 
-     * @param string $folder 
-     * @param ZipArchive $zipFile 
-     * @param int $exclusiveLength Number of text to be exclusived from the file path. 
+    /**
+     * Add files and sub-directories in a folder to zip file.
+     *
+     * @param string     $folder
+     * @param ZipArchive $zipFile
+     * @param int        $exclusiveLength Number of text to be exclusived from the file path.
      */
     public static function folderToZip($folder, &$zipFile, $exclusiveLength)
     {
@@ -798,17 +847,52 @@ class Tools
         while (false !== $f = readdir($handle)) {
             if ($f != '.' && $f != '..') {
                 $filePath = "$folder/$f";
-                // Remove prefix from file path before add to zip. 
+                // Remove prefix from file path before add to zip.
                 $localPath = substr($filePath, $exclusiveLength);
                 if (is_file($filePath)) {
                     $zipFile->addFile($filePath, $localPath);
                 } elseif (is_dir($filePath)) {
-                    // Add sub-directory. 
+                    // Add sub-directory.
                     $zipFile->addEmptyDir($localPath);
                     self::folderToZip($filePath, $zipFile, $exclusiveLength);
                 }
             }
         }
         closedir($handle);
+    }
+
+    /**
+     * 清空文件夹
+     *
+     * @param string $dirName
+     */
+    public static function delDirAndFile($dirPath)
+    {
+        if ($handle = opendir($dirPath)) {
+            while (false !== ($item = readdir($handle))) {
+                if ($item != '.' && $item != '..') {
+                    if (is_dir($dirPath . '/' . $item)) {
+                        self::delDirAndFile($dirPath . '/' . $item);
+                    } else {
+                        unlink($dirPath . '/' . $item);
+                    }
+                }
+            }
+            closedir($handle);
+        }
+    }
+
+    /**
+     * 清空订阅缓存
+     */
+    public static function delSubCache()
+    {
+        if (Config::get('enable_sub_cache') === true) {
+            $path = (BASE_PATH . '/storage/SubscribeCache/');
+            //rm -rf /home/happy/baidu/*
+            $a = system('rm -rf ' . $path . '*');
+            return ($a === false ?: true);
+        }
+        return true;
     }
 }
