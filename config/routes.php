@@ -59,8 +59,6 @@ $app->get('/500', App\Controllers\HomeController::class . ':page500');
 $app->post('/notify', App\Controllers\HomeController::class . ':notify');
 $app->get('/tos', App\Controllers\HomeController::class . ':tos');
 $app->get('/staff', App\Controllers\HomeController::class . ':staff');
-$app->post('/tomato_back/{type}', App\Services\Payment::class . ':notify');
-$app->get('/tomato_back/{type}', App\Services\Payment::class . ':notify');
 
 // New Telegram
 $app->post('/TelegramCallback', App\Controllers\HomeController::class . ':NewTelegram');

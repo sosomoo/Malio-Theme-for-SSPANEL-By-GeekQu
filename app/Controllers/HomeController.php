@@ -55,8 +55,6 @@ class HomeController extends BaseController
         if (Config::get('newIndex') === false && Config::get('theme') == 'material') {
             return $response->write($this->view()->fetch('indexold.tpl'));
         } else {
-
-            
             if (!Auth::getUser()->isLogin) {
                 $i18n = new Internationalization();
                 if (MalioConfig::get('only_one_lang') != 'none') {
@@ -64,7 +62,7 @@ class HomeController extends BaseController
                 } else {
                     $i18n->detectLang($request, $response, $args);
                 }
-                return $this->view()
+                return $response->write($this->view()
                     ->assign('i18n', $i18n)
                     ->assign('geetest_html', $GtSdk)
                     ->assign('login_token', $login_token)
@@ -74,9 +72,9 @@ class HomeController extends BaseController
                     ->assign('enable_regcaptcha', Config::get('enable_reg_captcha'))
                     ->assign('base_url', Config::get('baseUrl'))
                     ->assign('recaptcha_sitekey', $recaptcha_sitekey)
-                    ->display('index.tpl');
+                    ->display('index.tpl'));
             } else {
-                return $this->view()
+                return $response->write($this->view()
                     ->assign('geetest_html', $GtSdk)
                     ->assign('login_token', $login_token)
                     ->assign('login_number', $login_number)
@@ -85,7 +83,8 @@ class HomeController extends BaseController
                     ->assign('enable_regcaptcha', Config::get('enable_reg_captcha'))
                     ->assign('base_url', Config::get('baseUrl'))
                     ->assign('recaptcha_sitekey', $recaptcha_sitekey)
-                    ->display('index.tpl');
+                    ->display('index.tpl')
+                );
             }
         }
     }
