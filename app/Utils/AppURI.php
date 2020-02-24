@@ -3,7 +3,6 @@
 namespace App\Utils;
 
 use App\Services\Config;
-use function PHPSTORM_META\elementType;
 
 class AppURI
 {
@@ -83,7 +82,6 @@ class AppURI
                 }
                 break;
         }
-        //file_put_contents("/tmp/test.log", json_encode($return)."\r\n", FILE_APPEND);
         return $return;
     }
 
@@ -291,13 +289,13 @@ class AppURI
                         ];
                         $v2rayplugin['tls'] = $item['tls'] == 'tls' ? true : false;
                         if  ($v2rayplugin['tls']) {
-                            if ($v2rayplugin['host']!="" && $v2rayplugin['host']!='microsoft.com'){
+                            if ($v2rayplugin['host'] != '' && $v2rayplugin['host'] != 'microsoft.com'){
                                 $v2rayplugin['peer'] = $v2rayplugin['host'];
                             }else {
                                 $v2rayplugin['peer'] =  $v2rayplugin['address'];
                             }
                         }else {
-                            $v2rayplugin['peer']="";
+                            $v2rayplugin['peer'] = '';
                         }
 
                         $return = ('ss://' . Tools::base64_url_encode($item['method'] . ':' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port']) . '?v2ray-plugin=' . base64_encode(json_encode($v2rayplugin)) . '#' . rawurlencode($item['remark']));

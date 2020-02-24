@@ -172,6 +172,7 @@ $_ENV['data_method_not_found']      = '!';          //管理员操作时，修�
 $_ENV['delete_message_time']        = 180;          //在以下时间后删除用户命令触发的 bot 回复，单位：秒，删除时间可能会因为定时任务而有差异，为 0 代表不开启此功能
 $_ENV['delete_admin_message_time']  = 86400;        //在以下时间后删除管理命令触发的 bot 回复，单位：秒，删除时间可能会因为定时任务而有差异，为 0 代表不开启此功能
 $_ENV['enable_delete_user_cmd']     = false;        //自动删除群组中用户发送的命令，使用 delete_message_time 配置的时间，删除时间可能会因为定时任务而有差异
+$_ENV['help_any_command']           = false;        //允许任意未知的命令触发 /help 的回复
 
 $_ENV['remark_user_search_email']               = ['邮箱'];                     //用户搜索字段 email 的别名，可多个，格式为 PHP 数组
 $_ENV['remark_user_search_port']                = ['端口'];                     //用户搜索字段 port 的别名，可多个，格式为 PHP 数组
@@ -461,72 +462,6 @@ $_ENV['relay_insecure_mode'] = false;		//强烈推荐不开启
 #是否夹带统计代码，自己在 resources/views/{主题名} 下创建一个 analytics.tpl ，如果有必要就用 literal 界定符
 $_ENV['enable_analytics_code'] = false;
 $_ENV['sspanelAnalysis'] = true;
-
-//自定义设置---------------------------------------------------------------------
-
-//是否向 Telegram 群组推送系统今天的运行状况
-$_ENV['sendDiary_Telegram'] = true;
-
-//自定义向 Telegram 群组推送系统今天的运行状况的信息
-$_ENV['sendDiary_Msg'] = ('各位老爷少奶奶，我来为大家报告一下系统今天的运行状况哈~' . PHP_EOL
-    . '今日签到人数：%getTodayCheckinUser%' . PHP_EOL
-    . '今日使用总流量：%lastday_total%' . PHP_EOL
-    . '晚安~');
-
-//是否向 Telegram 群组推送数据库清理通知
-$_ENV['sendDailyJob_Telegram'] = true;
-
-//自定义向 Telegram 群组推送数据库清理通知的信息
-$_ENV['sendDailyJob_Msg'] = '姐姐姐姐，数据库被清理了，感觉身体被掏空了呢~';
-
-
-//是否向 Telegram 群组推送节点掉线通知
-$_ENV['sendNodeOffline_Telegram'] = true;
-
-//自定义向 Telegram 群组推送节点掉线通知的信息
-$_ENV['sendNodeOffline_Msg'] = '喵喵喵~ %node_name% 节点掉线了喵~';
-
-
-//是否向 Telegram 群组推送节点上线通知
-$_ENV['sendNodeOnline_Telegram'] = true;
-
-//自定义向 Telegram 群组推送节点上线通知的信息
-$_ENV['sendNodeOnline_Msg'] = '喵喵喵~ %node_name% 节点恢复了喵~';
-
-
-//是否向 Telegram 群组推送节点被墙通知
-$_ENV['sendNodeGFW_Telegram'] = true;
-
-//自定义向 Telegram 群组推送节点被墙通知的信息
-$_ENV['sendNodeGFW_Msg'] = '喵喵喵~ %node_name% 节点被墙了喵~';
-
-
-//是否向 Telegram 群组推送节点被墙恢复通知
-$_ENV['sendNodeGFW_recover_Telegram'] = true;
-
-//自定义向 Telegram 群组推送节点被墙恢复通知的信息
-$_ENV['sendNodeGFW_recover_Msg'] = '喵喵喵~ %node_name% 节点恢复了喵~';
-
-
-//是否向 Telegram 群组推送节点新增通知
-$_ENV['sendAddNode_Telegram'] = true;
-
-//自定义向 Telegram 群组推送节点新增通知的信息
-$_ENV['sendAddNode_Msg'] = '新节点添加~ %node_name%';
-
-
-//是否向 Telegram 群组推送节点修改通知
-$_ENV['sendUpdateNode_Telegram'] = true;
-
-//自定义向 Telegram 群组推送节点修改通知的信息
-$_ENV['sendUpdateNode_Msg'] = '节点信息被修改~ %node_name%';
-
-
-//是否向 Telegram 群组推送节点删除通知
-$_ENV['sendDeleteNode_Telegram'] = true;
-
-//自定义向 Telegram 群组推送节点删除通知的信息
-$_ENV['sendDeleteNode_Msg'] = '节点被删除~ %node_name%';
 
 
 #在套了CDN之后获取用户真实ip，如果您不知道这是什么，请不要乱动

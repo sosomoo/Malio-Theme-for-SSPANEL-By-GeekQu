@@ -40,6 +40,11 @@ class HelpCommand extends Command
                 return;
             }
         }
+        if (!preg_match('/^\/help\s?(@' . $_ENV['telegram_bot'] . ')?.*/i', $Message->getText())) {
+            if ($_ENV['help_any_command'] === false) {
+                return;
+            }
+        }
         $this->replyWithChatAction(['action' => Actions::TYPING]);
         $commands = $this->telegram->getCommands();
         $text = '系统中可用的所有命令.';

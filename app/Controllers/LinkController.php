@@ -8,6 +8,7 @@ use App\Models\{Link, User, UserSubscribeLog, Smartline};
 use App\Utils\{URL, Tools, AppURI, ConfRender};
 use App\Services\{Config, AppsProfiles};
 use Ramsey\Uuid\Uuid;
+use voku\helper\AntiXSS;
 
 /**
  *  LinkController
@@ -444,7 +445,8 @@ class LinkController extends BaseController
         $log->subscribe_type = $type;
         $log->request_ip = $_SERVER['REMOTE_ADDR'];
         $log->request_time = date('Y-m-d H:i:s');
-        $log->request_user_agent = $ua;
+        $antiXss = new AntiXSS();
+        $log->request_user_agent = $antiXss->xss_clean($ua);
         $log->save();
     }
 
@@ -668,15 +670,17 @@ class LinkController extends BaseController
             'group'     => $_ENV['appName']
         ];
         $Extend_ssr = [
-            'remark'    => '',
-            'type'      => 'ssr',
-            'address'   => $baseUrl,
-            'port'      => 10086,
-            'method'    => 'chacha20-ietf',
-            'passwd'    => $user->passwd,
-            'protocol'  => 'origin',
-            'obfs'      => 'plain',
-            'group'     => $_ENV['appName']
+            'remark'         => '',
+            'type'           => 'ssr',
+            'address'        => $baseUrl,
+            'port'           => 10086,
+            'method'         => 'chacha20-ietf',
+            'passwd'         => $user->passwd,
+            'protocol'       => 'origin',
+            'protocol_param' => '',
+            'obfs'           => 'plain',
+            'obfs_param'     => '',
+            'group'          => $_ENV['appName']
         ];
         $Extend_VMess = [
             'remark'    => '',

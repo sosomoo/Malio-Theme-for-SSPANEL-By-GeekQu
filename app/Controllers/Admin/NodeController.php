@@ -19,7 +19,7 @@ class NodeController extends AdminController
     {
         $table_config['total_column'] = array('op' => '操作', 'id' => 'ID', 'name' => '节点名称',
             'type' => '显示与隐藏', 'sort' => '类型',
-            'server' => '节点地址', 'node_ip' => '节点IP',
+            'server' => '节点地址', 'outaddress' => '出口地址', 'node_ip' => '节点IP',
             'info' => '节点信息',
             'status' => '状态', 'traffic_rate' => '流量比率', 'node_group' => '节点群组',
             'node_class' => '节点等级', 'node_speedlimit' => '节点限速/Mbps',
@@ -252,7 +252,7 @@ class NodeController extends AdminController
 
         $total_column = array('op' => '操作', 'id' => 'ID', 'name' => '节点名称',
             'type' => '显示与隐藏', 'sort' => '类型',
-            'server' => '节点地址', 'node_ip' => '节点IP',
+            'server' => '节点地址', 'outaddress' => '出口地址', 'node_ip' => '节点IP',
             'info' => '节点信息',
             'status' => '状态', 'traffic_rate' => '流量比率', 'node_group' => '节点群组',
             'node_class' => '节点等级', 'node_speedlimit' => '节点限速/Mbps',
@@ -266,6 +266,10 @@ class NodeController extends AdminController
                 $key_str .= 'id as op';
                 continue;
             }
+            if ($single_key == 'outaddress') {
+                $key_str .= ',server as ' . $single_key;
+                continue;
+            }
 
             $key_str .= ',' . $single_key;
         }
@@ -274,6 +278,10 @@ class NodeController extends AdminController
         $datatables->edit('op', static function ($data) {
             return '<a class="btn btn-brand" ' . ($data['sort'] == 999 ? 'disabled' : 'href="/admin/node/' . $data['id'] . '/edit"') . '>编辑</a>
                     <a class="btn btn-brand-accent" ' . ($data['sort'] == 999 ? 'disabled' : 'id="delete" value="' . $data['id'] . '" href="javascript:void(0);" onClick="delete_modal_show(\'' . $data['id'] . '\')"') . '>删除</a>';
+        });
+
+        $datatables->edit('outaddress', static function ($data) {
+            return (in_array($data['sort'], [0, 10, 11, 12, 13]) ? explode(';', $data['server'])[0] : '');
         });
 
         $datatables->edit('node_bandwidth', static function ($data) {
