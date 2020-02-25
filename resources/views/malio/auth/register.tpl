@@ -84,7 +84,7 @@
                       {/if}
                     {/if}
 
-                    {if $enable_email_verify == 'true' && $config['register_mode'] == 'invite'}
+                    {if $enable_email_verify == true && $config['register_mode'] == 'invite'}
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
                       <label for="code" class="d-block">{$i18n->get('invitation-code')} {if $malio_config['code_required'] == false}({$i18n->get('optional')}){/if}</label>
                       <input id="code" type="text" class="form-control" name="code" {if $malio_config['code_required'] == true}required{/if}>
@@ -97,7 +97,7 @@
                     {/if}
                   </div>
 
-                  {if $enable_email_verify == 'true'}
+                  {if $enable_email_verify == true}
                   <div class="row">
                     {if $malio_config['enable_register_email_restrict'] == true}
                     <div class="form-group col-lg-6 col-sm-12 col-xs-12">
@@ -360,7 +360,7 @@
               "area_code": $('#area_code').val(),
               "sms_code": $('#sms_code').val(),
               {/if}
-              code: code{if $enable_email_verify == 'true'},
+              code: code{if $enable_email_verify == true},
               emailcode: $("#email_code").val(){/if}{if $geetest_html != null},
               geetest_challenge: validate.geetest_challenge,
               geetest_validate: validate.geetest_validate,
@@ -408,7 +408,7 @@
     }
   </script>
 
-  {if $enable_email_verify == 'true'}
+  {if $enable_email_verify == true}
   <script>
     var wait = 60;
 

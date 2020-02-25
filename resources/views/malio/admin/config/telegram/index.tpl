@@ -3,7 +3,7 @@
 <main class="content">
     <div class="content-header ui-content-header">
         <div class="container">
-            <h1 class="content-heading">订阅记录</h1>
+            <h1 class="content-heading">Telegram 配置</h1>
         </div>
     </div>
     <div class="container">
@@ -13,7 +13,6 @@
                 <div class="card">
                     <div class="card-main">
                         <div class="card-inner">
-                            <p>这里是所有用户最近 {$config['subscribeLog_keep_days']} 天的订阅记录。</p>
                             <p>显示表项: {include file='table/checkbox.tpl'}</p>
                         </div>
                     </div>
@@ -39,3 +38,4 @@
         {include file='table/js_2.tpl'}
     });
 </script>
+
