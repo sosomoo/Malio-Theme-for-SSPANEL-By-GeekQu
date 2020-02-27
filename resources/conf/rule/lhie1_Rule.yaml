@@ -123,6 +123,7 @@ Rule:
 - DOMAIN-SUFFIX,biligame.net,AsianTV
 - DOMAIN-SUFFIX,hdslb.com,AsianTV
 - DOMAIN-SUFFIX,im9.com,AsianTV
+- DOMAIN-SUFFIX,bilivideo.com,AsianTV
 
 # > IQIYI
 - DOMAIN-KEYWORD,qiyi,AsianTV

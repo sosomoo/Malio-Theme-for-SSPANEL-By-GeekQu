@@ -26,6 +26,12 @@ class Mod_Mu
 
         $keys = Config::getMuKey();
         $auth = in_array($key, $keys);
+        if ($auth === false){
+            return $response->withJson([
+                'ret' => 0,
+                'data' => 'Token or IP is invalid. Now, your IP address is ' . $_SERVER['REMOTE_ADDR']
+            ]);
+        }
 
         if (Config::get('checkNodeIp') === true){
             $node = Node::where('node_ip', 'LIKE', $_SERVER['REMOTE_ADDR'] . '%')->first();
