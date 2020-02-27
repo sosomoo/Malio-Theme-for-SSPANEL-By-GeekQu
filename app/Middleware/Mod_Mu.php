@@ -28,6 +28,13 @@ class Mod_Mu
         $keys = Config::getMuKey();
         $auth = in_array($key, $keys);
 
+        if ($auth == false) {
+            $res['ret'] = 0;
+            $res['data'] = 'token is invalid';
+            $response->getBody()->write(json_encode($res));
+            return $response;
+        }
+
         if (Config::get('checkNodeIp') === true){
             $node = Node::where('node_ip', 'LIKE', $_SERVER['REMOTE_ADDR'] . '%')->first();
             if ($auth === false || ($node === null && $_SERVER['REMOTE_ADDR'] != '127.0.0.1')) {
