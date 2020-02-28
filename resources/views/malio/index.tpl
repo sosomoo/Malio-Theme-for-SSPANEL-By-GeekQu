@@ -221,7 +221,7 @@
       </div>
       <div class="col-4 col-md-2 text-center">
         <div class="h2 font-weight-bold">{$malio_config['index_statistics_1_data']}</div>
-        <div class="text-uppercase font-weight-bold ls-2 text-primary">{$i18n->get('servers')}</div>
+        <div class="text-uppercase font-weight-bold ls-2 text-primary">{$i18n->get('index-servers')}</div>
       </div>
       <div class="col-4 col-md-2 text-center">
         <div class="h2 font-weight-bold">{$malio_config['index_statistics_2_data']}</div>
