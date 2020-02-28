@@ -699,6 +699,10 @@ class LinkController extends BaseController
             $Extend_ssr['remark']   = $remark;
             $Extend_VMess['remark'] = $remark;
             if (in_array($list, ['kitsunebi', 'quantumult', 'v2rayn'])) {
+                if ($list == 'v2rayn') {
+                    unset($Extend_VMess['alterId']);
+                    $Extend_VMess['aid'] = 0;
+                }
                 $out = self::getListItem($Extend_VMess, $list);
             } elseif ($list == 'ssr') {
                 $out = self::getListItem($Extend_ssr, $list);
