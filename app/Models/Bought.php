@@ -39,7 +39,7 @@ class Bought extends Model
      */
     public function used_days()
     {
-        return (int) ((time() - $this->datetime) / 86400);
+        return (int) ((strtotime(date('Y-m-d')) - $this->datetime) / 86400);
     }
 
     /*
