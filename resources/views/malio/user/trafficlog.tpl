@@ -9,7 +9,7 @@
             var xs_data = {};
             var columns_data = [];
             {foreach $logs as $single_log}
-                var log_traffic = {number_format($single_log->totalUsedRaw()/1024,2)};
+                var log_traffic = {number_format($single_log->totalUsedRaw()/1024,2,'.', '')};
                 if ( log_traffic > 0.5) {
                     var node_name = '{$single_log->node()->name}'.split(" - ")[0];
                     var node_name_x = '{$single_log->node()->name}'.split(" - ")[0]+'_x';
