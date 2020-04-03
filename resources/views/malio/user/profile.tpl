@@ -231,7 +231,7 @@
       </div>
       <div class="modal-body">
         <p>{$i18n->get('telegram-modal-desc',[$telegram_bot])}</p>
-        <div id="telegram-qr" style="text-align: center"></div>
+        <h2 style="text-align: center"><code>{$bind_token}</code></h2>
       </div>
       <div class="modal-footer bg-whitesmoke br">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">{$i18n->get('cancel')}</button>
@@ -239,11 +239,6 @@
     </div>
   </div>
 </div>
-<script>
-  jQuery('#telegram-qr').qrcode({
-    "text": 'mod://bind/{$bind_token}'
-  });
-</script>
 {/if}
 
 {if $malio_config['enable_2fa'] == true}

@@ -1217,8 +1217,8 @@ $I18N['telegram-connect'] = array(
     'zh-cn' => '立即绑定'
 );
 $I18N['telegram-modal-desc'] = array(
-    'en' => 'Copy or take a screenshot of this QR Code and send to the Telegram Bot <a href="https://t.me/$1" target="blank">@$1</a>',
-    'zh-cn' => '将下面的二维码复制或截图发送给 Telegram 机器人 <a href="https://t.me/$1" target="blank">@$1</a>'
+    'en' => 'Copy this bind code and send to the Telegram Bot <a href="https://t.me/$1" target="blank">@$1</a>',
+    'zh-cn' => '将下面的绑定码复制发送给 Telegram 机器人 <a href="https://t.me/$1" target="blank">@$1</a>'
 );
 $I18N['connect-to-another-account'] = array(
     'en' => 'Connect to a new account',
