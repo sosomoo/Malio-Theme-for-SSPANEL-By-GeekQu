@@ -265,9 +265,12 @@ class URL
             case 'vmess':
                 $sort = [11, 12];
                 break;
+            case 'trojan':
+                $sort = [14];
+                break;
             default:
                 $Rule['type'] = 'all';
-                $sort = [0, 10, 11, 12, 13];
+                $sort = [0, 10, 11, 12, 13, 14];
                 break;
         }
         if ($user->is_admin) {
@@ -296,7 +299,7 @@ class URL
             $nodes = $node_query->orderBy('name')->get();
         }
         $return_array = array();
-        if ($is_mu != 0 && $Rule['type'] != 'vmess') {
+        if ($is_mu != 0 && $Rule['type'] != 'vmess' && $Rule['type'] != 'trojan') {
             $mu_node_query = Node::query();
             $mu_node_query->where('sort', 9)->where('type', '1');
             if ($user->is_admin) {
@@ -351,6 +354,17 @@ class URL
                 if (in_array($node->sort, [11, 12]) && (($Rule['type'] == 'all' && $x == 0) || ($Rule['type'] != 'all'))) {
                     // V2Ray
                     $item = self::getV2Url($user, $node, 1, $emoji);
+                    if ($item != null) {
+                        $find = (isset($Rule['content']['regex']) && $Rule['content']['regex'] != '' ? ConfController::getMatchProxy($item, ['content' => ['regex' => $Rule['content']['regex']]]) : true);
+                        if ($find) {
+                            $return_array[] = $item;
+                        }
+                    }
+                    continue;
+                }
+                if (in_array($node->sort, [14]) && (($Rule['type'] == 'all' && $x == 0) || ($Rule['type'] == 'trojan'))) {
+                    // Trojan
+                    $item = self::getTrojanItem($user, $node, $emoji);
                     if ($item != null) {
                         $find = (isset($Rule['content']['regex']) && $Rule['content']['regex'] != '' ? ConfController::getMatchProxy($item, ['content' => ['regex' => $Rule['content']['regex']]]) : true);
                         if ($find) {
@@ -442,6 +456,59 @@ class URL
         return $return_array;
     }
 
+     
+    /**
+     * 获取 Trojan 全部节点
+     *
+     * @param User $user 用户
+     * @param bool $emoji
+     *
+     * @return array
+     */
+    public static function getAllTrojan($user, $emoji = false)
+    {
+        $return_array = array();
+        $nodes = Node::where('sort', 14)
+            ->where('type', '1')
+            ->orderBy('name')
+            ->get();
+        foreach ($nodes as $node) {
+            $item = self::getTrojanItem($user, $node, $emoji);
+            if ($item != null) {
+                $return_array[] = $item;
+            }
+        }
+        return $return_array;
+    }
+    /**
+     * Trojan 节点
+     *
+     * @param User $user 用户
+     * @param Node $node
+     * @param bool $emoji
+     *
+     * @return array
+     */
+    public static function getTrojanItem($user, $node, $emoji = false)
+    {
+        $server = explode(';', $node->server);
+        $opt    = [];
+        if (isset($server[1])) {
+            $opt = self::parse_args($server[1]);
+        }
+        $item['remark']   = ($emoji == true ? Tools::addEmoji($node->name) : $node->name);
+        $item['type']     = 'trojan';
+        $item['address']  = $server[0];
+        $item['port']     = (isset($opt['port']) ? (int) $opt['port'] : 443);
+        $item['passwd']   = $user->uuid;
+        $item['host']     = $item['address'];
+        if (isset($opt['host'])) {
+            $item['host'] = $opt['host'];
+        }
+        return $item;
+    }
+
+    
     public static function getAllUrl($user, $is_mu, $is_ss = 0, $getV2rayPlugin = 1)
     {
         $return_url = '';

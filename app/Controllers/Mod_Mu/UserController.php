@@ -131,19 +131,20 @@ class UserController extends BaseController
 
         $key_list = array('email', 'method', 'obfs', 'obfs_param', 'protocol', 'protocol_param',
             'forbidden_ip', 'forbidden_port', 'node_speedlimit', 'disconnect_ip',
-            'is_multi_user', 'id', 'port', 'passwd', 'u', 'd', 'node_connector');
+            'is_multi_user', 'id', 'port', 'passwd', 'u', 'd', 'node_connector',
+            'sort', 'uuid');
 
         $users = array();
 
         foreach ($users_raw as $user_raw) {
+            $user_raw = Tools::keyFilter($user_raw, $key_list);
+            if ($node->sort == 14) {
+                $user_raw->sha224uuid = hash('sha224', $user_raw->uuid);
+            }
             if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
-                $user_raw = Tools::keyFilter($user_raw, $key_list);
-                $user_raw->uuid = $user_raw->getUuid();
                 $users[] = $user_raw;
             } else if (Config::get('keep_connect') === true) {
                 // 流量耗尽用户限速至 1Mbps
-                $user_raw = Tools::keyFilter($user_raw, $key_list);
-                $user_raw->uuid = $user_raw->getUuid();
                 $user_raw->node_speedlimit = 1;
                 $users[] = $user_raw;
             }

@@ -13,7 +13,6 @@ use App\Utils\GA;
 use App\Utils\QQWry;
 use App\Utils\Radius;
 use App\Utils\URL;
-use Ramsey\Uuid\Uuid;
 use App\Models\DetectLog;
 use App\Models\DetectBanLog;
 
@@ -140,10 +139,11 @@ class User extends Model
 
     public function getUuid()
     {
-        return Uuid::uuid3(
-            Uuid::NAMESPACE_DNS,
-            $this->attributes['id'] . '|' . $this->attributes['passwd']
-        )->toString();
+        // return Uuid::uuid3(
+        //     Uuid::NAMESPACE_DNS,
+        //     $this->attributes['id'] . '|' . $this->attributes['passwd']
+        // )->toString();
+        return $this->attributes['uuid'];
     }
 
     /*
