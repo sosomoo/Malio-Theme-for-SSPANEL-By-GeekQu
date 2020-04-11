@@ -119,6 +119,7 @@
                                             <option value="13" {if $node->sort==13}selected{/if}>Shadowsocks
                                                 V2Ray-Plugin
                                             </option>
+                                            <option value="14" {if $node->sort==14}selected{/if}>Trojan</option>
                                         </select>
                                     </div>
                                 </div>

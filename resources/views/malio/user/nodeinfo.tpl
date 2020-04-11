@@ -64,7 +64,11 @@
   <div id="app">
     <div class="main-wrapper">
       <ul class="nav nav-tabs" id="myTab" role="tablist">
-        {if (in_array("ssr",$malio_config['support_sub_type']))}
+        {if $node->sort == 14}
+        <li class="nav-item">
+          <a class="nav-link" id="trojan-tab" data-toggle="tab" href="#trojan" role="tab" aria-controls="trojan" aria-selected="true">Trojan</a>
+        </li>
+        {elseif (in_array("ssr",$malio_config['support_sub_type']))}
         {if $node->mu_only != 1}
         <li class="nav-item">
           <a class="nav-link active" id="ssr-tab" data-toggle="tab" href="#ssr" role="tab" aria-controls="ssr" aria-selected="true">ShadowsocksR</a>
@@ -91,6 +95,32 @@
         {/if}
       </ul>
       <div class="tab-content" id="myTabContent">
+        {if $node->sort == 14}
+        <div class="tab-pane fade active show" id="trojan" role="tabpanel" aria-labelledby="trojan-tab">
+          <div class="row mt-2">
+            <div class="col-12 col-sm-3 col-md-3">
+              <ul class="nav nav-pills flex-column" id="myTab4" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="trojan-info-tab" data-toggle="tab" href="#trojan-info" role="tab" aria-controls="trojan-info" aria-selected="true">信息</a>
+                </li>
+              </ul>
+            </div>
+            <div class="col-12 col-sm-9 col-md-9">
+              <div class="tab-content no-padding" id="myTab2Content">
+                <div class="tab-pane fade active show" id="trojan-info" role="tabpanel" aria-labelledby="trojan-info-tab">
+                  {$sort14Node = URL::getTrojanItem($user, $node, false)}
+                  <p>服务器地址：<code class="card-tag tag-blue">{$sort14Node['address']}</code></p>
+                  <p>服务器端口：<code class="card-tag tag-volcano">{$sort14Node['port']}</code></p>
+                  <p>密码：<code class="card-tag tag-geekblue">{$sort14Node['passwd']}</code></p>
+                  {if $sort14Node['host'] != $sort14Node['address']}
+                      <p>HOST&PEER：<code class="card-tag tag-green">{$sort14Node['host']}</code></p>
+                  {/if}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {elseif in_array("ssr",$malio_config['support_sub_type']) }
         <div class="tab-pane fade {if $node->mu_only != 1}active show{/if}" id="ssr" role="tabpanel" aria-labelledby="ssr-tab">
           <div class="row mt-2">
             {if URL::SSRCanConnect($user, $mu)}
@@ -364,6 +394,7 @@
             </div>
         {/foreach}
       </div>
+      {/if}
     </div>
   </div>
 
