@@ -158,7 +158,7 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <p>{$i18n->get('customize-invitation-link-price')}</p>
+          <p>{$i18n->get('customize-invitation-link-price',[$config['custom_invite_price']])}</p>
           <label>{$i18n->get('enter-customize-invitation-link-postfix')}</label>
           <input id="custom-invite-link" type="text" class="form-control">
           <div class="invalid-feedback" id="custom-invite-feedback">
