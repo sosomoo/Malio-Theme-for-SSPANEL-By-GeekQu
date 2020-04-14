@@ -137,18 +137,20 @@ class UserController extends BaseController
         $users = array();
 
         foreach ($users_raw as $user_raw) {
-            $user_raw = Tools::keyFilter($user_raw, $key_list);
             if ($node->sort == 14) {
                 $user_raw->sha224uuid = hash('sha224', $user_raw->uuid);
             }
             if ($user_raw->transfer_enable > $user_raw->u + $user_raw->d) {
+            	$user_raw = Tools::keyFilter($user_raw, $key_list);
                 $users[] = $user_raw;
             } else if (Config::get('keep_connect') === true) {
+            	$user_raw = Tools::keyFilter($user_raw, $key_list);
                 // 流量耗尽用户限速至 1Mbps
                 $user_raw->node_speedlimit = 1;
                 $users[] = $user_raw;
             }
         }
+        
 
         $res = [
             'ret' => 1,
