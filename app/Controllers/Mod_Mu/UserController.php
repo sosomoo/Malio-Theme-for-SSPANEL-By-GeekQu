@@ -132,7 +132,7 @@ class UserController extends BaseController
         $key_list = array('email', 'method', 'obfs', 'obfs_param', 'protocol', 'protocol_param',
             'forbidden_ip', 'forbidden_port', 'node_speedlimit', 'disconnect_ip',
             'is_multi_user', 'id', 'port', 'passwd', 'u', 'd', 'node_connector',
-            'sort', 'uuid');
+            'sort', 'uuid', 'sha224uuid');
 
         $users = array();
 
