@@ -40,9 +40,9 @@ $Malio_Config['only_one_lang'] = 'none';   //  强制使用某种语言，支持
 
 ####### 支付系统 #######
 // 支付系统写 none 意味着不启用此收款方式
-// 支付宝目前支持 bitpayx | stripe | tomatopay | f2fpay | wolfpay
+// 支付宝目前支持 bitpayx | stripe | tomatopay | f2fpay | wolfpay | materialpay
 $Malio_Config['mups_alipay'] = 'bitpayx';   // Malio 聚合支付系统里面的 支付宝 要用的支付平台  
-// 微信支付目前支持 bitpayx | stripe
+// 微信支付目前支持 bitpayx | stripe | materialpay
 $Malio_Config['mups_wechat'] = 'bitpayx';   // Malio 聚合支付系统里面的 微信支付 要用的支付平台
 $Malio_Config['mups_minimum_amount'] = 0;   //  Malio 聚合支付系统限制最低的充值金额
 

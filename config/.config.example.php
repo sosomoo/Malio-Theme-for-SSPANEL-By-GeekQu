@@ -300,6 +300,10 @@ $_ENV['zfbjk_qrcodeurl']='';
 #   客服和技术 24x7 在线支持： https://t.me/joinchat/GLKSKhUnE4GvEAPgqtChAQ
 $_ENV['bitpay_secret'] = '';
 
+# materialpay
+$_ENV['materialpay_appid']='';				//AppID
+$_ENV['materialpay_secret']='';			//AppSecret
+
 
 #PayJs
 $_ENV['payjs_mchid'] = '';

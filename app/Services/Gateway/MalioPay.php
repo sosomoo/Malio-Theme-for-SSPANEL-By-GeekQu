@@ -118,6 +118,23 @@ class MalioPay extends AbstractPayment
                         );
                     }
                     return json_encode($return);
+                case ('materialpay'):
+                    $materialpay = new MaterialPay(Config::get('materialpay_secret'));
+                    $result = $materialpay->purchase_maliopay($type, $price);
+                    if ($result['errcode'] == 0) {
+                        $return = array(
+                            'ret' => 1,
+                            'type' => 'url',
+                            'tradeno' => $result['tradeno'],
+                            'url' => $result['url']
+                        );
+                    } else {
+                        $return = array(
+                            'ret' => 0,
+                            'msg' => $result['errmsg']
+                        );
+                    }
+                    return json_encode($return);
             }
         } else if ($type == 'wechat') {
             $payment_system = MalioConfig::get('mups_wechat');
@@ -159,6 +176,23 @@ class MalioPay extends AbstractPayment
                 case ('stripe'):
                     $stripe = new StripePay();
                     $result = $stripe->purchase_maliopay($type, $price);
+                    if ($result['errcode'] == 0) {
+                        $return = array(
+                            'ret' => 1,
+                            'type' => 'qrcode',
+                            'tradeno' => $result['tradeno'],
+                            'url' => $result['url']
+                        );
+                    } else {
+                        $return = array(
+                            'ret' => 0,
+                            'msg' => $result['errmsg']
+                        );
+                    }
+                    return json_encode($return);
+                case ('materialpay'):
+                    $materialpay = new MaterialPay(Config::get('materialpay_secret'));
+                    $result = $materialpay->purchase_maliopay($type, $price);
                     if ($result['errcode'] == 0) {
                         $return = array(
                             'ret' => 1,
@@ -357,6 +391,33 @@ class MalioPay extends AbstractPayment
                     } else {
                         echo '錯誤';
                     }
+                }
+            case ('materialpay'):
+                $data = array();
+                $data['tradeStatus'] = $request->getParam('tradeStatus');
+                $data['payAmount'] = number_format($request->getParam('payAmount'),2);
+                $data['tradeNo'] = $request->getParam('tradeNo');
+                $data['payType'] = $request->getParam('payType');
+                $data['outTradeNo'] = $request->getParam('outTradeNo');
+
+                $pl = Paylist::where('tradeno',$data['outTradeNo'])->first();
+                if ($pl->status == 1) {
+                    echo 'success';
+                    return;
+                }
+
+                $materialpay = new MaterialPay(Config::get('materialpay_secret'));
+                // 准备待签名数据
+                $str_to_sign = $materialpay->prepareSign($data);
+                // 验证签名
+                $resultVerify = $materialpay->verify($str_to_sign, $request->getParam('sign'));
+                if ($resultVerify) {
+                    $materialpay->postPaymentMaliopay($data['outTradeNo'], 'MaterialPay - ' . $data['outTradeNo']);
+                    echo 'success';
+                    return;
+                } else {
+                    echo 'fail';
+                    return;
                 }
             default:
                 return 'failed';
