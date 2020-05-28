@@ -339,8 +339,16 @@
                     </div>
                     <div class="card-body">
                       <div class="buttons">
+                        {if (in_array("ss",$malio_config['support_sub_type'])) || (in_array("v2ray",$malio_config['support_sub_type']))}
                         {if (!in_array("clash",$malio_config['index_hidden_import_buttons']))}
                           <a href="##" class="btn btn-icon icon-left btn-primary btn-clash btn-lg btn-round" onclick="importSublink('clash')"><i class="malio-clash"></i> {$i18n->get('import-clash-config')}</a>
+                        {/if}
+                        {/if}
+                        
+                        {if (in_array("ss",$malio_config['support_sub_type'])) || (in_array("v2ray",$malio_config['support_sub_type']))}
+                        {if (!in_array("kitsunebi",$malio_config['index_hidden_import_buttons']))}
+                        <a href="##" class="btn btn-icon icon-left btn-primary btn-kitsunebi copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="malio-kitsunebi"></i> {$i18n->get('copy-kitsunebi-config-url')}</a>
+                        {/if}
                         {/if}
 
                         {if (!in_array("quantumult",$malio_config['index_hidden_import_buttons']))}
@@ -355,6 +363,7 @@
                           <a href="##" class="btn btn-icon icon-left btn-primary btn-shadowrocket btn-lg btn-round" onclick="importSublink('shadowrocket')"><i class="malio-shadowrocket"></i> {$i18n->get('import-shadowrocket-config')}</a>
                         {/if}
 
+                        {if (in_array("ss",$malio_config['support_sub_type']))}
                         {if (!in_array("surge",$malio_config['index_hidden_import_buttons']))}
                           <div class="dropdown d-inline">
                             <button class="btn btn-primary btn-surge dropdown-toggle btn-icon btn-round btn-lg" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -374,23 +383,23 @@
                         {if (!in_array("surfboard",$malio_config['index_hidden_import_buttons']))}
                           <a href="##" class="btn btn-icon icon-left btn-primary btn-surfboard btn-lg btn-round" onclick="importSublink('surfboard')"><i class="malio-surfboard"></i> {$i18n->get('import-surfboard-config')}</a>
                         {/if}
-
-                        {if (!in_array("v2ray",$malio_config['index_hidden_import_buttons']))}
-                          <a href="##" class="btn btn-icon icon-left btn-primary btn-v2ray copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-v2rayng"></i> {$i18n->get('copy-v2ray-config-url')}</a>
-                        {/if}
                         
                         {if (!in_array("ss",$malio_config['index_hidden_import_buttons']))}
                           <a href="##" class="btn btn-icon icon-left btn-primary btn-ss copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ss']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-ssr"></i> {$i18n->get('copy-ss-config-url')}</a>
                         {/if}
-
-                        {if (!in_array("kitsunebi",$malio_config['index_hidden_import_buttons']))}
-                        <a href="##" class="btn btn-icon icon-left btn-primary btn-kitsunebi copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="malio-kitsunebi"></i> {$i18n->get('copy-kitsunebi-config-url')}</a>
                         {/if}
 
+                        {if (in_array("v2ray",$malio_config['support_sub_type']))}
+                        {if (!in_array("v2ray",$malio_config['index_hidden_import_buttons']))}
+                          <a href="##" class="btn btn-icon icon-left btn-primary btn-v2ray copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['v2ray']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"><i class="malio-v2rayng"></i> {$i18n->get('copy-v2ray-config-url')}</a>
+                        {/if}
+                        {/if}
+                        
                         {if (!in_array("ssd",$malio_config['index_hidden_import_buttons']))}
                         <a href="##" class="btn btn-icon icon-left btn-primary btn-quantumult copy-text btn-lg btn-round" data-clipboard-text="{$subInfo['ssd']}"><i class="malio-ssr"></i> {$i18n->get('copy-ssd-config-url')}</a>
                         {/if}
                         
+                        {if (in_array("ssr",$malio_config['support_sub_type']))}
                         {if (!in_array("ssr",$malio_config['index_hidden_import_buttons']))}
                         <div class="dropdown d-inline">
                           <button class="btn btn-primary btn-ssr dropdown-toggle btn-icon btn-round btn-lg" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -401,6 +410,7 @@
                             <a class="dropdown-item copy-text" href="##" data-clipboard-text="{$subInfo['ssr']}{if $malio_config['enable_sub_extend'] == true}&extend=1{/if}"> {$i18n->get('copy-ssr-config-url')}</a>
                           </div>
                         </div>
+                        {/if}
                         {/if}
                         
                         

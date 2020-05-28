@@ -525,7 +525,7 @@ class LinkController extends BaseController
             'surge3'          => '?surge=3',
             'surge4'          => '?surge=4',
             'surfboard'       => '?surfboard=1',
-            'quantumult'      => '?quantumult=' . $int,
+            'quantumult'      => '?quantumult=1' . $int,
             'quantumult_v2'   => '?list=quantumult',
             'quantumult_sub'  => '?quantumult=2',
             'quantumult_conf' => '?quantumult=3',

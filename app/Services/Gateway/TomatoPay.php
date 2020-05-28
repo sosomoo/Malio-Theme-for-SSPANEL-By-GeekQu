@@ -187,7 +187,6 @@ $sign = md5(substr($o,0,-1).$settings['token']);
 				}
 			}
 		});
-		setTimeout(f, 1000);
 	});
 </script>
 ';

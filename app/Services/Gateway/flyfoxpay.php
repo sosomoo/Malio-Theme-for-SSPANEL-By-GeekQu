@@ -224,7 +224,6 @@ if ($pay->verify($data)) {
 				}
 			}
 		});
-		setTimeout(f, 1000);
 	});
 </script>
 ';

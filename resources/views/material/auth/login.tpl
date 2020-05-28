@@ -231,10 +231,17 @@
         qrcode.makeCode(telegram_qrcode);
     </script>
     <script>
+        var flag = false;
+
         $(document).ready(function () {
             $("#calltgauth").click(
                     function () {
-                        f();
+                        if(flag == false){
+                            f();
+                            flag = true;
+                        }else{
+                            return 0;
+                        }
                     }
             );
 

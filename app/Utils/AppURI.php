@@ -38,6 +38,9 @@ class AppURI
                             : '');
                         $return = $item['remark'] . ' = vmess, ' . $item['add'] . ', ' . $item['port'] . ', username = ' . $item['id'] . $ws . $tls;
                         break;
+                    case 'trojan':
+                        $return = ($item['remark'] . ' = trojan, ' . $item['address'] . ', ' . $item['port'] . ', password=' . $item['passwd']) . ", sni=" . $item['host'];
+                        break;
                 }
                 break;
         }
@@ -143,6 +146,12 @@ class AppURI
                         $return .= ($item['tls'] == 'tls' ? ', obfs=over-tls' : '');
                         break;
                 }
+                $return .= (', tag=' . $item['remark']);
+                break;
+            case 'trojan':
+                // ;trojan=example.com:443, password=pwd, over-tls=true, tls-verification=true, fast-open=false, udp-relay=false, tag=trojan-tls-01
+                $return  = ('trojan=' . $item['address'] . ':' . $item['port'] . ', password=' . $item['passwd'] . ', tls-host=' . $item['host']);
+                $return .= ', over-tls=true, tls-verification=true';
                 $return .= (', tag=' . $item['remark']);
                 break;
         }
@@ -267,6 +276,16 @@ class AppURI
                     }
                 }
                 break;
+            case 'trojan':
+                $return = [
+                    'name'        => $item['remark'],
+                    'type'        => 'trojan',
+                    'server'      => $item['address'],
+                    'port'        => $item['port'],
+                    'password'    => $item['passwd'],
+                    'sni'         => $item['host']
+                ];
+                break;
         }
         return $return;
     }
@@ -343,6 +362,10 @@ class AppURI
                     $tls .= '&peer=' . $item['host'];
                 }
                 $return = ('vmess://' . Tools::base64_url_encode('chacha20-poly1305:' . $item['id'] . '@' . $item['add'] . ':' . $item['port']) . '?remarks=' . rawurlencode($item['remark']) . $obfs . $tls);
+                break;
+            case 'trojan':
+                $return  = ('trojan://' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port']);
+                $return .= ('?peer=' . $item['host'] . '#' . rawurlencode($item['remark']));
                 break;
         }
         return $return;
@@ -477,6 +500,18 @@ class AppURI
                     }
                     $return['plugin_opts'] = $plugin_options;
                 }
+                break;
+        }
+        return $return;
+    }
+
+    public static function getTrojanURI(array $item)
+    {
+        $return = null;
+        switch ($item['type']) {
+            case 'trojan':
+                $return  = ('trojan://' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port']);
+                $return .= ('?peer=' . $item['host'] . '#' .  rawurlencode($item['remark']));
                 break;
         }
         return $return;

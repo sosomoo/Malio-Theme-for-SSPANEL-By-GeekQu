@@ -36,6 +36,7 @@ use App\Models\Token;
 use App\Models\UnblockIp;
 use Exception;
 use RuntimeException;
+use Ramsey\Uuid\Uuid;
 
 class Job
 {
@@ -610,6 +611,11 @@ class Job
 
         $users = User::all();
         foreach ($users as $user) {
+            $user->uuid = Uuid::uuid3(
+                Uuid::NAMESPACE_DNS,
+                strval($user->id) . '|' . $user->passwd
+            )->toString();
+            $user->save();
             if (($user->transfer_enable <= $user->u + $user->d || $user->enable == 0 || (strtotime($user->expire_in) < time() && strtotime($user->expire_in) > 644447105)) && RadiusBan::where(
                 'userid',
                 $user->id
