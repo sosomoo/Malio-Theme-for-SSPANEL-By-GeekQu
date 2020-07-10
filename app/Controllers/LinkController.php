@@ -964,9 +964,25 @@ class LinkController extends BaseController
             $ProxyGroups = ConfController::getClashProxyGroup2String($ProxyGroups);
         }
 
+        $confStr = [
+            'mode'       => 'rule',
+            'Proxy'      => 'proxies',
+            'ProxyGroup' => 'proxy-groups',
+            'Rule'       => 'rules',
+        ];
+        if (isset($opts['newconf']) && (int) $opts['newconf'] == 0) {
+            $confStr = [
+                'mode'       => 'Rule',
+                'Proxy'      => 'Proxy',
+                'ProxyGroup' => 'Proxy Group',
+                'Rule'       => 'Rule',
+            ];
+        }
+
         $render = ConfRender::getTemplateRender();
         $render->assign('user', $user)
             ->assign('userapiUrl', $userapiUrl)
+            ->assign('confStr', $confStr)
             ->assign('opts', $opts)
             ->assign('Proxys', $Proxys)
             ->assign('ProxyGroups', $ProxyGroups)

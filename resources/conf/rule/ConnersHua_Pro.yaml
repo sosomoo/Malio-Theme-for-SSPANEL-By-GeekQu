@@ -1,4 +1,3 @@
-Rule:
 # Feeb
 - DOMAIN-KEYWORD,epochtimes,REJECT
 - DOMAIN-SUFFIX,881903.com,REJECT

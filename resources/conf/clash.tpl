@@ -17,7 +17,7 @@ redir-port: {if array_key_exists("redir-port",$opts)}{$opts['redir-port']}{else}
 allow-lan: true
 
 # 规则模式：Rule（规则） / Global（全局代理）/ Direct（全局直连）
-mode: Rule
+mode: {$confStr['mode']}
 
 # 设置日志输出级别 (默认级别：silent，即不输出任何内容，以避免因日志内容过大而导致程序内存溢出）。
 # 5 个级别：silent / info / warning / error / debug。级别越高日志输出量越大，越倾向于调试，若需要请自行开启。
@@ -56,15 +56,16 @@ secret: '{if array_key_exists("secret",$opts)}{$opts['secret']}{else}{/if}'
   # (2) 如果您不在乎可能解析到污染的结果，更加追求速度。请将 nameserver 列表的服务器插入至 fallback 列表内，并移除重复项。
 {/if}
 
-Proxy:
+{$confStr['Proxy']}:
 {foreach $Proxys as $Proxy}
   - {json_encode($Proxy,320)}
 {/foreach}
 
-Proxy Group:
+{$confStr['ProxyGroup']}:
 {$ProxyGroups}
 
 # 规则
+{$confStr['Rule']}:
 {if $Profiles == 'ConnersHua_Pro'}
 {include file='rule/ConnersHua_Pro.yaml'}
 {elseif $Profiles == 'ConnersHua_BacktoCN'}

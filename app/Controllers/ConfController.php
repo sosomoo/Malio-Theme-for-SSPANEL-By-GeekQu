@@ -358,6 +358,17 @@ class ConfController extends BaseController
      */
     public static function getClashConfs($User, $AllProxys, $Configs, $local = false)
     {
+        $confStr = [
+            'Proxy'      => 'proxies',
+            'ProxyGroup' => 'proxy-groups',
+        ];
+        if (isset($_GET['newconf']) && (int) $_GET['newconf'] == 0) {
+            $confStr = [
+                'Proxy'      => 'Proxy',
+                'ProxyGroup' => 'Proxy Group',
+            ];
+        }
+
         if (isset($Configs['Proxy']) || count($Configs['Proxy']) != 0) {
             $tmpProxys = array_merge($AllProxys, $Configs['Proxy']);
         } else {
@@ -369,14 +380,14 @@ class ConfController extends BaseController
             $Proxys[] = $Proxy;
         }
         $tmp = self::getClashConfGeneral($Configs['General']);
-        $tmp['Proxy'] = $Proxys;
+        $tmp[$confStr['Proxy']] = $Proxys;
         if (isset($Configs['ProxyGroup'])) {
-            $tmp['Proxy Group'] = self::getClashConfProxyGroup(
+            $tmp[$confStr['ProxyGroup']] = self::getClashConfProxyGroup(
                 $AllProxys,
                 $Configs['ProxyGroup']
             );
         } else {
-            $tmp['Proxy Group'] = self::getClashConfProxyGroup(
+            $tmp[$confStr['ProxyGroup']] = self::getClashConfProxyGroup(
                 $AllProxys,
                 $Configs['Proxy Group']
             );
@@ -475,14 +486,19 @@ class ConfController extends BaseController
      */
     public static function getClashConfRule($Rules, $local)
     {
+        $confStr = 'rules';
+        if (isset($_GET['newconf']) && (int) $_GET['newconf'] == 0) {
+            $confStr = 'Rule';
+        }
+        $return = ($confStr . ':' . PHP_EOL);
+
         // 加载本地规则文件
         if ($local) {
             $render = ConfRender::getTemplateRender();
-            return $render->fetch(trim($Rules['source']));
+            return $return . $render->fetch(trim($Rules['source']));
         }
 
         // 加载远程规则文件
-        $return = ('Rule:' . PHP_EOL);
         if (isset($Rules['source']) && $Rules['source'] != '') {
             $sourceURL = trim($Rules['source']);
             // 远程规则仅支持 github 以及 gitlab
@@ -500,10 +516,10 @@ class ConfController extends BaseController
                     } catch (ParseException $exception) {
                         $sourceRule['error'] = printf('无法解析 YAML 字符串: %s', $exception->getMessage());
                     }
-                    if (isset($sourceRule['error']) || !isset($sourceRule['Rule'])) {
+                    if (isset($sourceRule['error']) || !isset($sourceRule[$confStr])) {
                         $return .= $sourceContent;
                     } else {
-                        $return .= Yaml::dump($sourceRule['Rule'], 4, 2);
+                        $return .= Yaml::dump($sourceRule[$confStr], 4, 2);
                     }
                 }
             } else {
